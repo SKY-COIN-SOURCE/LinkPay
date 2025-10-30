@@ -1,0 +1,21 @@
+name = "linkpay-worker"
+main = "packages/worker/src/index.ts"
+compatibility_date = "2025-10-27"
+
+[[d1_databases]]
+binding = "LINKPAY_DB"
+database_name = "linkpay-db"
+database_id = "57c3542b-6e11-4523-b276-fc72aaaa01c9"
+
+[vars]
+EPC = "0.02"
+REF_PCT = "0.10"
+ALLOWED_ORIGIN = "http://localhost:5173"
+
+[[kv_namespaces]]
+binding = "RL"
+id = "dev-rl"
+preview_id = "dev-rl"
+
+[triggers]
+crons = ["0 0 * * *"]

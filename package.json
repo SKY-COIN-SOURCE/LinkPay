@@ -1,0 +1,20 @@
+{
+  "name": "linkpay-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "wrangler dev packages/worker/src/index.ts --local --persist-to=./.wrangler/state",
+    "dev:web": "pnpm -C apps/web dev",
+    "dev": "concurrently -k \"pnpm dev:api\" \"pnpm dev:web\"",
+    "build:web": "pnpm -C apps/web build",
+    "deploy:api": "wrangler deploy packages/worker/src/index.ts",
+    "deploy:web": "wrangler pages publish apps/web/dist --project-name=linkpay-web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "wrangler": "^3.80.0"
+  }
+}
