@@ -1,0 +1,13 @@
+[build]
+  base    = "apps/web"
+  command = "npm ci && npm run build"
+  publish = "apps/web/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA redirect: ya añadimos _redirects en public, pero por si acaso:
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
