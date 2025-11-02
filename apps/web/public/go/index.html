@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinkPay — Redirigiendo…</title>
+  <style>
+    :root { --bg:#0b0c10; --card:#11131a; --text:#e8ecf1; --muted:#9aa3af; --brand:#3b82f6; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    .wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .card{width:100%;max-width:560px;background:var(--card);border:1px solid #1b1f2a;border-radius:24px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    h1{margin:0 0 6px;font-weight:700;letter-spacing:.2px}
+    p{margin:6px 0 18px;color:var(--muted)}
+    .bar{height:10px;background:#1f2633;border-radius:999px;overflow:hidden;margin:12px 0 22px}
+    .fill{height:100%;width:0;background:linear-gradient(90deg,var(--brand),#60a5fa)}
+    .row{display:flex;gap:12px;align-items:center}
+    button, a.btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:600;cursor:pointer}
+    .primary{background:var(--brand);color:#fff}
+    .ghost{background:#1b2230;color:var(--text)}
+    .ad{margin-top:10px;background:#0d1117;border:1px dashed #222b3b;border-radius:16px;padding:12px}
+    small{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Mostrando anuncio…</h1>
+      <p>Serás redirigido automáticamente en <b id="count">5</b> s.</p>
+      <div class="bar"><div id="fill" class="fill"></div></div>
+
+      <div class="row">
+        <button id="skip" class="ghost" disabled>Saltar ahora</button>
+        <a id="continue" class="btn primary" href="#" style="display:none">Continuar</a>
+      </div>
+
+      <div class="ad" id="adbox">
+        <!-- Pega aquí el código de tu Direct Link (Monetag/Propeller). -->
+        <!-- EJEMPLO (Monetag): -->
+        <!-- <script data-cfasync="false" src="//topcreativeformat.com/your_zone_code.js"></script> -->
+      </div>
+
+      <p><small>LinkPay — monetizando el tiempo entre clic y destino.</small></p>
+    </div>
+  </div>
+
+  <script>
+    // Lee ?to=<url-encoded> de la query
+    const urlParams = new URLSearchParams(location.search);
+    const target = urlParams.get('to');
+    if (!target) {
+      document.querySelector('h1').textContent = 'Falta el destino';
+      document.querySelector('p').textContent = 'Este enlace no es válido.';
+    }
+
+    // Cuenta atrás + barra de progreso
+    const total = 5; // segundos
+    let left = total;
+    const count = document.getElementById('count');
+    const fill = document.getElementById('fill');
+    const skip = document.getElementById('skip');
+    const go = document.getElementById('continue');
+
+    const update = () => {
+      count.textContent = left;
+      fill.style.width = ((total - left) / total) * 100 + '%';
+    };
+    update();
+
+    const t = setInterval(() => {
+      left--; update();
+      if (left <= 0) {
+        clearInterval(t);
+        if (target) location.href = target;
+      }
+      if (left <= total - 2) { // habilitar "Saltar" tras 2s
+        skip.disabled = false;
+      }
+    }, 1000);
+
+    skip.addEventListener('click', () => target && (location.href = target));
+    if (target) {
+      go.href = target;
+      go.style.display = 'inline-block';
+    }
+  </script>
+</body>
+</html>
