@@ -6,6 +6,35 @@
     <title>LinkPay</title>
     <link rel="manifest" href="/manifest.webmanifest" />
   </head>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>window.netlifyIdentity?.on('login', () => location.href='/app/');</script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+(function () {
+  function bindCTA() {
+    const candidates = Array.from(document.querySelectorAll('a,button'));
+    const target = candidates.find(el =>
+      /empezar gratis|iniciar sesión|empieza ahora/i.test((el.textContent||'').trim())
+    );
+    if (!target) return;
+    target.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.open('login');
+      } else {
+        location.href = '/app/';
+      }
+    });
+  }
+
+  // Tras login, ir a /app
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('login', () => location.href = '/app/');
+    window.netlifyIdentity.on('init', bindCTA);
+  }
+  document.addEventListener('DOMContentLoaded', bindCTA);
+})();
+</script>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
