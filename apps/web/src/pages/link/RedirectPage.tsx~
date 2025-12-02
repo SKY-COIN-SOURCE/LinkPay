@@ -1,0 +1,219 @@
+// src/pages/link/RedirectPage.tsx
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../../lib/supabaseClient";
+
+type LinkRow = {
+  id: number;
+  slug: string;
+  original_url: string;
+};
+
+export function RedirectPage() {
+  const { slug } = useParams<{ slug: string }>();
+
+  const [link, setLink] = useState<LinkRow | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [seconds, setSeconds] = useState(5);
+
+  // 1) Cargar datos del link y registrar clic
+  useEffect(() => {
+    if (!slug) return;
+
+    async function fetchAndTrack() {
+      setLoading(true);
+      setError(null);
+
+      // Buscar link por slug
+      const { data, error } = await supabase
+        .from("links")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (error || !data) {
+        console.error(error);
+        setError("Este enlace no existe o ha caducado.");
+        setLoading(false);
+        return;
+      }
+
+      setLink(data as LinkRow);
+
+      // Registrar clic en tabla `clicks`
+      try {
+        await supabase.from("clicks").insert({
+          link_id: (data as any).id,
+          // aquí se podrían añadir más campos (ip, user_agent...) vía Edge Function
+        });
+      } catch (err) {
+        console.error("Error registrando clic", err);
+      }
+
+      setLoading(false);
+    }
+
+    fetchAndTrack();
+  }, [slug]);
+
+  // 2) Cargar script de anuncios
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.dataset.zone = "10218144"; // tu zone ID
+    script.src = "https://groleegni.net/vignette.min.js";
+    script.async = true;
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // 3) Cuenta atrás + redirección final
+  useEffect(() => {
+    if (!link) return;
+    if (seconds <= 0) {
+      window.location.href = link.original_url;
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setSeconds((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [seconds, link]);
+
+  // ESTADOS DE CARGA / ERROR
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-50 flex items-center justify-center">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-6 py-5 text-center shadow-xl shadow-blue-900/40">
+          <p className="text-sm font-medium text-slate-200">
+            Preparando tu enlace…
+          </p>
+          <p className="mt-1 text-xs text-slate-400">
+            Estamos verificando el destino y cargando el anuncio.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !link) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-50 flex items-center justify-center">
+        <div className="rounded-2xl border border-red-500/40 bg-red-950/30 px-6 py-5 text-center">
+          <p className="text-sm font-semibold text-red-200">
+            Enlace no disponible
+          </p>
+          <p className="mt-1 text-xs text-red-100/80">
+            {error ?? "El enlace que has abierto ya no está activo."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // PANTALLA INTERMEDIA PROFESIONAL
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
+      {/* Top bar minimal */}
+      <header className="w-full border-b border-slate-800">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600/90 text-[11px] font-semibold">
+              LP
+            </div>
+            <span className="text-xs font-semibold tracking-tight">
+              LinkPay · Smart Link Layer
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-400">
+            Tecnología de monetización sobre tu enlace
+          </p>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10 md:flex-row md:items-start">
+          {/* Columna anuncio */}
+          <div className="flex-1">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-xl shadow-blue-900/40">
+              <div className="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Anuncio patrocinado</span>
+                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                  Se cerrará automáticamente
+                </span>
+              </div>
+
+              <div className="h-56 w-full rounded-xl border border-slate-800 bg-slate-950/70 flex items-center justify-center text-xs text-slate-500">
+                Zona de anuncio LinkPay
+              </div>
+
+              <p className="mt-3 text-[11px] text-slate-500">
+                LinkPay coloca una capa de monetización sobre tu enlace. El
+                destino original no se modifica, solo se protege con nuestra
+                tecnología de anuncios.
+              </p>
+            </div>
+          </div>
+
+          {/* Columna info / cuenta atrás */}
+          <div className="w-full max-w-xs space-y-4">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <p className="text-xs font-semibold text-slate-200">
+                Redirigiendo a tu destino…
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">
+                En cuanto terminemos de mostrar el anuncio, irás
+                automáticamente al contenido que estabas buscando.
+              </p>
+
+              <div className="mt-4">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-3xl font-semibold text-white">
+                    {seconds}
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    segundos restantes
+                  </span>
+                </div>
+
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                  <div
+                    className="h-full rounded-full bg-blue-500 transition-all"
+                    style={{
+                      width: `${((5 - seconds) / 5) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                <button
+                  onClick={() => (window.location.href = link.original_url)}
+                  className="mt-4 w-full rounded-lg border border-blue-500/40 bg-blue-600/90 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500"
+                >
+                  Ir ahora sin esperar
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-3 text-[11px] text-slate-400">
+              <p className="font-medium text-slate-300">
+                ¿Qué es esta página?
+              </p>
+              <p className="mt-1">
+                Los creadores que comparten este enlace usan LinkPay para
+                monetizar sus clics sin cambiar el destino original. Tú llegas
+                al mismo sitio; ellos cobran por el tráfico que ya generan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
