@@ -14,13 +14,15 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@supabase/supabase-js": "^2.84.0",
-    "framer-motion": "^12.23.24",
+    "framer-motion": "^12.23.25",
     "lucide-react": "^0.554.0",
     "otpauth": "^9.4.1",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
+    "react-confetti": "^6.4.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.9.6",
+    "react-spring-bottom-sheet": "^3.4.1",
     "recharts": "^3.5.1"
   },
   "devDependencies": {
