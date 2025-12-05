@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Link2,
   Zap,
@@ -13,6 +13,7 @@ import {
   Lock,
   MousePointer2,
   EyeOff,
+  ChevronDown,
 } from 'lucide-react';
 import { LinkService } from '../../lib/linkService';
 import { useNavigate } from 'react-router-dom';
@@ -44,6 +45,11 @@ export function CreateLinkPage() {
   // Estados NUEVOS solo para UX
   const [showConfetti, setShowConfetti] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [engineOpen, setEngineOpen] = useState(true); // pestaña motor abierta/cerrada
+
+  // NEW: refs para auto-scroll móvil
+  const engineRef = useRef<HTMLDivElement | null>(null);
+  const [engineScrollY, setEngineScrollY] = useState<number | null>(null);
 
   useEffect(() => {
     if (result) {
@@ -97,10 +103,68 @@ export function CreateLinkPage() {
     }
   };
 
-  // ============= RENDERIZADORES DE VISTA (como funciones) =============
+  // NEW: toggle con auto-scroll SOLO en móvil
+  const handleToggleEngine = () => {
+    const isBrowser = typeof window !== 'undefined';
+    const isMobile = isBrowser && window.innerWidth <= 800;
+
+    if (!isMobile) {
+      // En escritorio solo abrimos/cerramos, sin scroll especial
+      setEngineOpen((prev) => !prev);
+      return;
+    }
+
+    if (!isBrowser) {
+      setEngineOpen((prev) => !prev);
+      return;
+    }
+
+    if (!engineOpen) {
+      // Vamos a abrir el panel en móvil
+      const currentScroll = window.scrollY || window.pageYOffset;
+      setEngineScrollY(currentScroll);
+      setEngineOpen(true);
+
+      // Dejamos que el contenido se expanda un poco y luego hacemos scroll
+      setTimeout(() => {
+        if (engineRef.current) {
+          const rect = engineRef.current.getBoundingClientRect();
+          const absoluteBottom = rect.bottom + window.scrollY;
+          const viewportHeight =
+            window.innerHeight || document.documentElement.clientHeight;
+
+          // *** AJUSTE: más margen para que se vea también el botón "Crear enlace"
+          const target = Math.max(
+            0,
+            absoluteBottom - viewportHeight + 220 // antes 24
+          );
+
+          window.scrollTo({ top: target, behavior: 'smooth' });
+        }
+      }, 60);
+    } else {
+      // Vamos a cerrar el panel
+      const prev = engineScrollY;
+      setEngineOpen(false);
+
+      setTimeout(() => {
+        if (prev != null) {
+          window.scrollTo({ top: prev, behavior: 'smooth' });
+        } else if (engineRef.current) {
+          const top =
+            engineRef.current.getBoundingClientRect().top +
+            window.scrollY -
+            40;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }, 80);
+    }
+  };
+
+  // ============= VISTA DE ÉXITO =============
 
   const renderSuccessView = () => {
-    if (!result) return null; // seguridad extra
+    if (!result) return null;
 
     return (
       <motion.div
@@ -128,7 +192,7 @@ export function CreateLinkPage() {
 
             <h2>¡Tu Smart Link está activo!</h2>
             <p className="lp-success-sub">
-              Estrategia:{' '}
+              Modo:{' '}
               <strong className="lp-success-mode">
                 {result.monetization_mode?.toUpperCase()}
               </strong>
@@ -167,13 +231,15 @@ export function CreateLinkPage() {
             </div>
 
             <p className="lp-success-foot">
-              Consejo: comparte este Smart Link en tus redes, bio de TikTok o descripción de vídeo.
+              Tip: pega este Smart Link en tu bio de TikTok, Instagram o descripción de vídeo.
             </p>
           </div>
         </div>
       </motion.div>
     );
   };
+
+  // ============= VISTA FORMULARIO SIMPLE =============
 
   const renderFormView = () => (
     <motion.div
@@ -187,7 +253,7 @@ export function CreateLinkPage() {
       <style>{baseStyles}</style>
 
       <div className="lp-create-inner">
-        {/* Header */}
+        {/* Header muy simple */}
         <header className="lp-header-v2">
           <div className="lp-header-left">
             <div className="lp-chip">
@@ -196,235 +262,242 @@ export function CreateLinkPage() {
             </div>
 
             <div className="lp-title-row">
-              <h1>Crear Enlace</h1>
-              <span className="lp-level-pill">Nivel 1 · Smart Link básico</span>
+              {/* Título eliminado para limpiar */}
             </div>
 
             <p>
-              Transforma cualquier URL en una máquina de ingresos. Pensado para creadores,
-              tiendas y funnels avanzados.
+              Pega tu enlace, añade nuestra tecnología y gana dinero con cada clic.
             </p>
-
-            <div className="lp-progress-bar">
-              <div className="lp-progress-fill" />
-            </div>
-          </div>
-          <div className="lp-header-status">
-            <span className="lp-status-dot" />
-            Motor activo
           </div>
         </header>
 
-        {/* Grid principal */}
-        <form className="lp-grid" onSubmit={handleCreate}>
-          {/* Columna izquierda: entrada básica */}
-          <section className="lp-col-main">
-            {/* URL DESTINO */}
-            <div className="lp-card-v2 lp-card-main">
-              <label className="lp-label-v2">URL de destino</label>
-              <p className="lp-label-sub">
-                Pega aquí cualquier enlace público (vídeos, tiendas, perfiles...).
-              </p>
-              <div className="lp-input-icon-wrapper">
-                <span className="lp-input-icon">
-                  <Link2 size={18} />
-                </span>
+        <form className="lp-flow" onSubmit={handleCreate}>
+          {/* 1. URL DESTINO */}
+          <div className="lp-card-v2 lp-card-main lp-card-animate lp-card-url">
+            <label className="lp-label-v2">URL de destino</label>
+            <p className="lp-label-sub">
+              Cualquier enlace público: vídeos, tiendas, redes, lo que quieras.
+            </p>
+            <div className="lp-input-icon-wrapper">
+              <span className="lp-input-icon">
+                <Link2 size={18} />
+              </span>
+              <input
+                type="text"
+                placeholder="https://tuvideo.com/..."
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                className="lp-input-v2 lp-input-with-icon"
+                required
+              />
+            </div>
+          </div>
+
+          {/* 2. ALIAS SIMPLE */}
+          <div className="lp-card-v2 lp-card-main lp-card-animate lp-card-alias">
+            <div className="lp-section-title">
+              <span className="lp-section-icon">
+                <Zap size={16} />
+              </span>
+              <div>
+                <div className="lp-section-label">Nombre del enlace (alias)</div>
+                <div className="lp-section-caption">
+                  Para que se vea bonito y fácil de recordar.
+                </div>
+              </div>
+            </div>
+
+            <div className="lp-field-v2">
+              <label className="lp-label-v2">Alias (opcional)</label>
+              <div className="lp-alias-row-v2">
+                <span className="lp-alias-prefix-v2">linkpay.gg/</span>
                 <input
                   type="text"
-                  placeholder="https://tuvideo.com/..."
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="lp-input-v2 lp-input-with-icon"
-                  required
+                  value={alias}
+                  onChange={(e) => setAlias(e.target.value)}
+                  placeholder="mi-enlace"
+                  className="lp-input-v2 lp-alias-input-v2"
                 />
               </div>
+              <p className="lp-help-v2">Si lo dejas vacío, creamos uno automático.</p>
             </div>
+          </div>
 
-            {/* CONFIG BÁSICA */}
-            <div className="lp-card-v2 lp-card-main">
-              <div className="lp-section-title">
-                <span className="lp-section-icon">
-                  <Zap size={16} />
-                </span>
-                <div>
-                  <div className="lp-section-label">Configuración del Smart Link</div>
-                  <div className="lp-section-caption">
-                    Alias personalizado y estrategia de monetización.
-                  </div>
-                </div>
-              </div>
-
-              {/* Alias */}
-              <div className="lp-field-v2">
-                <label className="lp-label-v2">Alias (opcional)</label>
-                <div className="lp-alias-row-v2">
-                  <span className="lp-alias-prefix-v2">linkpay.gg/</span>
-                  <input
-                    type="text"
-                    value={alias}
-                    onChange={(e) => setAlias(e.target.value)}
-                    placeholder="mi-enlace"
-                    className="lp-input-v2 lp-alias-input-v2"
-                  />
-                </div>
-                <p className="lp-help-v2">Déjalo vacío para generar uno aleatorio.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Columna derecha: “motor” + opciones */}
-          <aside className="lp-col-side">
-            <div className="lp-engine-card">
+          {/* 3. MOTOR DE INGRESOS (ahora antes del botón y colapsable) */}
+          <div
+            ref={engineRef}
+            className={`lp-engine-card ${engineOpen ? 'open' : 'closed'}`}
+          >
+            <button
+              type="button"
+              className="lp-engine-header-click"
+              onClick={handleToggleEngine}
+            >
               <div className="lp-engine-top">
                 <div className="lp-engine-chip">
                   MODO {mode === 'standard' ? 'ESTÁNDAR' : 'TURBO'}
                 </div>
                 <div className="lp-engine-title">Motor de ingresos</div>
                 <p className="lp-engine-sub">
-                  Elige cómo quieres que LinkPay optimice tus anuncios y protege tu enlace
-                  con reglas avanzadas.
+                  Ajusta cómo mostramos anuncios y protege tu enlace (opcional).
                 </p>
               </div>
+              <ChevronDown
+                size={18}
+                className={`lp-engine-chevron ${engineOpen ? 'open' : ''}`}
+              />
+            </button>
 
-              {/* Selector de modo */}
-              <div className="lp-mode-row-v2">
-                <button
-                  type="button"
-                  className={`lp-mode-pill-v2 ${mode === 'standard' ? 'active' : ''}`}
-                  onClick={() => setMode('standard')}
+            <AnimatePresence initial={false}>
+              {engineOpen && (
+                <motion.div
+                  className="lp-engine-body"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
                 >
-                  <span className="lp-mode-pill-icon standard">
-                    <Zap size={16} />
-                  </span>
-                  <div className="lp-mode-pill-texts">
-                    <span className="main">  Estándar</span>
-                    <span className="sub">   Balance ideal entre UX e ingresos.</span>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  className={`lp-mode-pill-v2 ${mode === 'turbo' ? 'active' : ''}`}
-                  onClick={() => setMode('turbo')}
-                >
-                  <span className="lp-mode-pill-icon turbo">
-                    <Rocket size={16} />
-                  </span>
-                  <div className="lp-mode-pill-texts">
-                    <span className="main">Turbo</span>
-                    <span className="sub">   Máximos ingresos, más impacto publicitario.</span>
-                  </div>
-                </button>
-              </div>
-
-              {/* Toggle avanzadas -> BottomSheet */}
-              <div className="lp-advanced-toggle-v2">
-                <button
-                  type="button"
-                  onClick={() => setSheetOpen(true)}
-                >
-                  <Settings size={15} />
-                  Opciones avanzadas (contraseña, expiración...)
-                </button>
-              </div>
-
-              <BottomSheet
-                open={sheetOpen}
-                onDismiss={() => setSheetOpen(false)}
-                snapPoints={({ maxHeight }) => [
-                  Math.min(maxHeight * 0.6, 480),
-                  Math.min(maxHeight * 0.9, 640),
-                ]}
-              >
-                <div className="lp-advanced-sheet-header">
-                  <h3>Opciones avanzadas</h3>
-                  <p>Protege tu enlace con contraseña, caducidad y límites.</p>
-                </div>
-
-                <div className="lp-advanced-grid-v2 lp-advanced-grid-sheet">
-                  <div className="lp-field-v2">
-                    <label className="lp-label-v2">Contraseña</label>
-                    <div className="lp-input-icon-wrapper">
-                      <span className="lp-input-icon">
-                        <Lock size={15} />
-                      </span>
-                      <input
-                        type="text"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Opcional"
-                        className="lp-input-v2 lp-input-with-icon"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="lp-field-v2">
-                    <label className="lp-label-v2">Fecha de expiración</label>
-                    <div className="lp-input-icon-wrapper">
-                      <span className="lp-input-icon">
-                        <Calendar size={15} />
-                      </span>
-                      <input
-                        type="datetime-local"
-                        value={expirationDate}
-                        onChange={(e) => setExpirationDate(e.target.value)}
-                        className="lp-input-v2 lp-input-with-icon"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="lp-field-v2">
-                    <label className="lp-label-v2">Límite de clics</label>
-                    <div className="lp-input-icon-wrapper">
-                      <span className="lp-input-icon">
-                        <MousePointer2 size={15} />
-                      </span>
-                      <input
-                        type="number"
-                        value={maxClicks}
-                        onChange={(e) => setMaxClicks(e.target.value)}
-                        placeholder="Ej: 100"
-                        className="lp-input-v2 lp-input-with-icon"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="lp-field-v2 lp-private-row-v2">
-                    <div
-                      className={`lp-switch-v2 ${isPrivate ? 'on' : ''}`}
-                      onClick={() => setIsPrivate(!isPrivate)}
+                  {/* Selector de modo */}
+                  <div className="lp-mode-row-v2">
+                    <button
+                      type="button"
+                      className={`lp-mode-pill-v2 ${mode === 'standard' ? 'active' : ''}`}
+                      onClick={() => setMode('standard')}
                     >
-                      <div className="lp-switch-thumb-v2" />
+                      <span className="lp-mode-pill-icon standard">
+                        <Zap size={16} />
+                      </span>
+                      <div className="lp-mode-pill-texts">
+                        <span className="main">Estándar</span>
+                        <span className="sub">      Equilibrio entre experiencia y dinero.</span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`lp-mode-pill-v2 ${mode === 'turbo' ? 'active' : ''}`}
+                      onClick={() => setMode('turbo')}
+                    >
+                      <span className="lp-mode-pill-icon turbo">
+                        <Rocket size={16} />
+                      </span>
+                      <div className="lp-mode-pill-texts">
+                        <span className="main">Turbo</span>
+                        <span className="sub">      Máximo dinero, más impacto publicitario.</span>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Toggle avanzadas -> BottomSheet */}
+                  <div className="lp-advanced-toggle-v2">
+                    <button
+                      type="button"
+                      onClick={() => setSheetOpen(true)}
+                    >
+                      <Settings size={15} />
+                      Opciones avanzadas (contraseña, fecha, clicks…)
+                    </button>
+                  </div>
+
+                  <BottomSheet
+                    open={sheetOpen}
+                    onDismiss={() => setSheetOpen(false)}
+                    snapPoints={({ maxHeight }) => [
+                      Math.min(maxHeight * 0.6, 480),
+                      Math.min(maxHeight * 0.9, 640),
+                    ]}
+                  >
+                    <div className="lp-advanced-sheet-header">
+                      <h3>Opciones avanzadas</h3>
+                      <p>Solo si quieres controlar quién entra y hasta cuándo.</p>
                     </div>
-                    <div className="lp-private-label-v2">
-                      <EyeOff size={15} />
-                      <span>Enlace privado (oculto en tu listado público)</span>
+
+                    <div className="lp-advanced-grid-v2 lp-advanced-grid-sheet">
+                      <div className="lp-field-v2">
+                        <label className="lp-label-v2">Contraseña</label>
+                        <div className="lp-input-icon-wrapper">
+                          <span className="lp-input-icon">
+                            <Lock size={15} />
+                          </span>
+                          <input
+                            type="text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Opcional"
+                            className="lp-input-v2 lp-input-with-icon"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="lp-field-v2">
+                        <label className="lp-label-v2">Fecha de expiración</label>
+                        <div className="lp-input-icon-wrapper">
+                          <span className="lp-input-icon">
+                            <Calendar size={15} />
+                          </span>
+                          <input
+                            type="datetime-local"
+                            value={expirationDate}
+                            onChange={(e) => setExpirationDate(e.target.value)}
+                            className="lp-input-v2 lp-input-with-icon"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="lp-field-v2">
+                        <label className="lp-label-v2">Límite de clics</label>
+                        <div className="lp-input-icon-wrapper">
+                          <span className="lp-input-icon">
+                            <MousePointer2 size={15} />
+                          </span>
+                          <input
+                            type="number"
+                            value={maxClicks}
+                            onChange={(e) => setMaxClicks(e.target.value)}
+                            placeholder="Ej: 100"
+                            className="lp-input-v2 lp-input-with-icon"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="lp-field-v2 lp-private-row-v2">
+                        <div
+                          className={`lp-switch-v2 ${isPrivate ? 'on' : ''}`}
+                          onClick={() => setIsPrivate(!isPrivate)}
+                        >
+                          <div className="lp-switch-thumb-v2" />
+                        </div>
+                        <div className="lp-private-label-v2">
+                          <EyeOff size={15} />
+                          <span>Enlace privado (no aparece en tu lista pública)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </BottomSheet>
+
+                  {/* HUD resumen */}
+                  <div className="lp-engine-footer">
+                    <div className="lp-engine-stat">
+                      <span className="label">Alias</span>
+                      <span className="value">
+                        {alias ? `linkpay.gg/${alias}` : 'Se generará automáticamente'}
+                      </span>
+                    </div>
+                    <div className="lp-engine-stat">
+                      <span className="label">Seguridad</span>
+                      <span className="value">
+                        {password || expirationDate || maxClicks || isPrivate
+                          ? 'Reglas avanzadas activas'
+                          : 'Modo simple · sin restricciones'}
+                      </span>
                     </div>
                   </div>
-                </div>
-              </BottomSheet>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-              {/* HUD resumen */}
-              <div className="lp-engine-footer">
-                <div className="lp-engine-stat">
-                  <span className="label">Alias</span>
-                  <span className="value">
-                    {alias ? `linkpay.gg/${alias}` : 'Se generará automáticamente'}
-                  </span>
-                </div>
-                <div className="lp-engine-stat">
-                  <span className="label">Seguridad</span>
-                  <span className="value">
-                    {password || expirationDate || maxClicks || isPrivate
-                      ? 'Reglas avanzadas activas'
-                      : 'Modo simple · sin restricciones'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Error + CTA */}
+          {/* 4. CTA PRINCIPAL (botón debajo del motor) */}
           <div className="lp-footer-row">
             {errorMsg && (
               <div className="lp-error-v2">
@@ -460,7 +533,7 @@ export function CreateLinkPage() {
   );
 }
 
-// ===================== ESTILOS V2 (idénticos a los que ya tenías) =====================
+// ===================== ESTILOS V2 =====================
 const baseStyles = `
   .spin { animation: spin 1s linear infinite; }
   @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -476,6 +549,7 @@ const baseStyles = `
     background: #020617;
     touch-action: pan-y; /* solo scroll vertical */
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -489,41 +563,86 @@ const baseStyles = `
     font-size: 16px;
   }
 
-  /* Fondo general */
+  /* Fondo general: "galaxia" azul animada */
   .lp-bg {
-    background:
-      radial-gradient(circle at top, #0b1120 0%, #020617 55%, #000 100%);
     min-height: 100dvh;
+    background:
+      radial-gradient(circle at 0% 0%, #1e3a8a 0, transparent 55%),
+      radial-gradient(circle at 100% 100%, #0f172a 0, #020617 55%, #000 100%);
+    background-color: #020617;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lp-bg::before,
+  .lp-bg::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(56, 189, 248, 0.15), transparent 60%),
+      radial-gradient(circle at 80% 100%, rgba(129, 140, 248, 0.16), transparent 55%);
+    opacity: 0.9;
+    filter: blur(32px);
+    pointer-events: none;
+    animation: lp-nebula 20s ease-in-out infinite alternate;
+  }
+
+  .lp-bg::after {
+    background:
+      radial-gradient(circle at 0% 100%, rgba(34, 197, 94, 0.18), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.16), transparent 55%);
+    mix-blend-mode: screen;
+    animation: lp-orbit 30s linear infinite;
+  }
+
+  @keyframes lp-nebula {
+    0% { transform: translate3d(-10px, -10px, 0) scale(1); opacity: 0.85; }
+    100% { transform: translate3d(20px, 10px, 0) scale(1.1); opacity: 1; }
+  }
+
+  @keyframes lp-orbit {
+    0% { transform: rotate(0deg) scale(1.05); }
+    100% { transform: rotate(360deg) scale(1.05); }
   }
 
   .lp-create-shell {
+    position: fixed;
+    inset: 0;
     width: 100%;
     display: flex;
     justify-content: center;
     min-height: 100dvh;
     padding-top: env(safe-area-inset-top, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
-    position: relative;
-    overflow: hidden;
+    overflow-y: auto;
     overflow-x: hidden;
     font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     -webkit-overflow-scrolling: touch;
   }
 
   .lp-create-inner {
+    position: relative;
+    z-index: 1;
     width: 100%;
     max-width: 1080px;
-    padding: 32px 16px 96px 16px;
+    padding: 32px 16px 72px 16px; /* más padding abajo para ver el botón */
     margin: 0 auto;
   }
 
   /* HEADER */
   .lp-header-v2 {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
+  }
+
+  .lp-header-left {
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto;
   }
 
   .lp-header-left h1 {
@@ -535,49 +654,18 @@ const baseStyles = `
   }
 
   .lp-header-left p {
-    margin: 0;
+    margin: 0 auto;
     color: #9ca3af;
-    font-size: 14px;
-    max-width: 460px;
+    font-size: 13px;
+    max-width: 520px;
   }
 
   .lp-title-row {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: 8px;
     flex-wrap: wrap;
-  }
-
-  .lp-level-pill {
-    padding: 3px 8px;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #a5b4fc;
-    background: rgba(79, 70, 229, 0.16);
-    border: 1px solid rgba(129, 140, 248, 0.45);
-  }
-
-  .lp-progress-bar {
-    margin-top: 10px;
-    width: 100%;
-    height: 4px;
-    border-radius: 999px;
-    background: rgba(15, 23, 42, 0.9);
-    overflow: hidden;
-  }
-
-  .lp-progress-fill {
-    width: 75%;
-    height: 100%;
-    background: linear-gradient(90deg, #22c55e, #4f46e5);
-    transform-origin: left;
-    animation: lp-progress-in 0.5s ease-out forwards;
-  }
-
-  @keyframes lp-progress-in {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
   }
 
   .lp-chip {
@@ -586,14 +674,22 @@ const baseStyles = `
     gap: 6px;
     padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(30, 64, 175, 0.6);
+    background: rgba(30, 64, 175, 0.75);
     color: #e5e7eb;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-bottom: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.65);
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
+      0 0 18px rgba(59, 130, 246, 0.45);
+    animation: lp-chip-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes lp-chip-glow {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8), 0 0 10px rgba(59, 130, 246, 0.35); }
+    50% { box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.9), 0 0 22px rgba(96, 165, 250, 0.8); }
   }
 
   .lp-chip-dot {
@@ -604,65 +700,46 @@ const baseStyles = `
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
   }
 
-  .lp-header-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #a5b4fc;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(129, 140, 248, 0.45);
-    background: radial-gradient(circle at top, rgba(79, 70, 229, 0.22), transparent);
-  }
-
-  .lp-status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.28);
-  }
-
-  /* GRID */
-  .lp-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 18px;
-    align-items: flex-start;
-  }
-
-  .lp-col-main {
+  /* FLOW base (móvil / tablet) */
+  .lp-flow {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
 
-  .lp-col-side {
-    display: flex;
-  }
-
   /* CARDS */
   .lp-card-v2 {
-    background: rgba(15, 23, 42, 0.92);
+    background: rgba(15, 23, 42, 0.94);
     border-radius: 20px;
     border: 1px solid rgba(30, 64, 175, 0.55);
-    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.75);
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.85);
     padding: 16px 16px 18px 16px;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition:
+      transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease,
+      background 0.25s ease;
   }
 
   .lp-card-main {
-    background: rgba(15, 23, 42, 0.96);
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
   }
 
   .lp-card-v2:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.9);
-    border-color: rgba(129, 140, 248, 0.7);
+    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.95);
+    border-color: rgba(129, 140, 248, 0.8);
+  }
+
+  .lp-card-animate {
+    animation: lp-card-enter 0.45s ease-out;
+  }
+
+  @keyframes lp-card-enter {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .lp-label-v2 {
@@ -698,12 +775,12 @@ const baseStyles = `
     border-radius: 14px;
     border: 1px solid rgba(148, 163, 184, 0.7);
     padding: 11px 12px;
-    font-size: 16px; /* subido a 16px para evitar zoom */
+    font-size: 16px;
     font-weight: 500;
     outline: none;
     color: #f9fafb;
-    background: rgba(15, 23, 42, 0.9);
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    background: rgba(15, 23, 42, 0.92);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.18s ease;
   }
 
   .lp-input-v2::placeholder {
@@ -716,8 +793,9 @@ const baseStyles = `
 
   .lp-input-v2:focus {
     border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 32px rgba(79, 70, 229, 0.5);
     background: rgba(15, 23, 42, 0.98);
+    transform: translateY(-1px);
   }
 
   .lp-section-title {
@@ -736,6 +814,7 @@ const baseStyles = `
     align-items: center;
     justify-content: center;
     color: #0f172a;
+    box-shadow: 0 12px 30px rgba(249, 115, 22, 0.55);
   }
 
   .lp-section-label {
@@ -779,7 +858,7 @@ const baseStyles = `
     border: none;
     background: transparent;
     padding: 9px 10px;
-    font-size: 16px; /* también 16px aquí */
+    font-size: 16px;
     color: #f9fafb;
     outline: none;
     flex: 1;
@@ -791,13 +870,13 @@ const baseStyles = `
     color: #9ca3af;
   }
 
-  /* ENGINE PANEL (derecha) */
+  /* ENGINE PANEL */
   .lp-engine-card {
     background: radial-gradient(circle at top left, #111827, #020617);
     border-radius: 24px;
     border: 1px solid rgba(148, 163, 184, 0.65);
     box-shadow: 0 22px 65px rgba(0, 0, 0, 0.9);
-    padding: 18px 18px 16px 18px;
+    padding: 10px 14px 12px 14px;
     color: #e5e7eb;
     width: 100%;
     position: relative;
@@ -820,9 +899,29 @@ const baseStyles = `
     pointer-events: none;
   }
 
-  .lp-engine-top {
+  .lp-engine-card.open {
+    padding-bottom: 14px;
+  }
+
+  .lp-engine-card.closed {
+    padding-bottom: 8px;
+  }
+
+  .lp-engine-header-click {
     position: relative;
     z-index: 1;
+    border: none;
+    background: transparent;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0 4px 0;
+    cursor: pointer;
+  }
+
+  .lp-engine-top {
+    text-align: left;
   }
 
   .lp-engine-chip {
@@ -850,7 +949,23 @@ const baseStyles = `
   .lp-engine-sub {
     font-size: 12px;
     color: #9ca3af;
-    margin: 0 0 12px 0;
+    margin: 0 0 4px 0;
+  }
+
+  .lp-engine-chevron {
+    flex-shrink: 0;
+    color: #9ca3af;
+    transition: transform 0.18s ease;
+  }
+
+  .lp-engine-chevron.open {
+    transform: rotate(180deg);
+  }
+
+  .lp-engine-body {
+    position: relative;
+    z-index: 1;
+    margin-top: 8px;
   }
 
   /* Mode pills v2 */
@@ -1026,24 +1141,12 @@ const baseStyles = `
     text-align: right;
   }
 
-  /* Footer CTA tipo app */
+  /* Footer CTA (botón final) */
   .lp-footer-row {
-    grid-column: 1 / -1;
     margin-top: 6px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    position: sticky;
-    bottom: 0;
-    padding-top: 8px;
-    padding-bottom: env(safe-area-inset-bottom, 12px);
-    background: linear-gradient(
-      to top,
-      rgba(2, 6, 23, 0.98),
-      rgba(2, 6, 23, 0.9),
-      transparent
-    );
-    z-index: 5;
   }
 
   .lp-error-v2 {
@@ -1076,8 +1179,14 @@ const baseStyles = `
   .lp-btn-primary-gradient {
     background: linear-gradient(135deg, #4f46e5 0%, #6366f1 40%, #22c55e 100%);
     box-shadow:
-      0 20px 60px rgba(15, 23, 42, 0.8),
+      0 20px 60px rgba(15, 23, 42, 0.9),
       0 0 0 1px rgba(248, 250, 252, 0.06);
+    animation: lp-btn-glow 6s ease-in-out infinite;
+  }
+
+  @keyframes lp-btn-glow {
+    0%, 100% { filter: saturate(1); box-shadow: 0 20px 60px rgba(15, 23, 42, 0.9), 0 0 0 1px rgba(248, 250, 252, 0.06); }
+    50% { filter: saturate(1.15); box-shadow: 0 28px 80px rgba(15, 23, 42, 1), 0 0 0 1px rgba(191, 219, 254, 0.4); }
   }
 
   .lp-btn-primary:hover:not(:disabled) {
@@ -1243,7 +1352,6 @@ const baseStyles = `
     margin: 0;
   }
 
-  /* Capa de confeti */
   .lp-confetti-layer {
     position: fixed;
     inset: 0;
@@ -1251,7 +1359,7 @@ const baseStyles = `
     z-index: 40;
   }
 
-  /* Theming del BottomSheet */
+  /* BottomSheet */
   .rsbs-root {
     --rsbs-bg: rgba(15, 23, 42, 0.98);
     --rsbs-backdrop-bg: rgba(15, 23, 42, 0.7);
@@ -1281,30 +1389,62 @@ const baseStyles = `
     padding: 0 12px 12px;
   }
 
-  /* RESPONSIVE (mismo flujo que antes: motor primero en móvil) */
+  /* ===== LAYOUT ESCRITORIO ===== */
+  @media (min-width: 1024px) {
+    /* *** AJUSTE: que el contenido se alinee con el área derecha (no centrado bajo el sidebar) */
+    .lp-create-shell {
+      justify-content: flex-start;
+    }
+
+    /* desplazamos todo a la derecha, dejando hueco para el sidebar (~260px) */
+    .lp-create-inner {
+      margin: 0 40px 0 260px;
+    }
+
+    .lp-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-auto-rows: auto;
+      column-gap: 18px;
+      row-gap: 14px;
+      grid-template-areas:
+        "url engine"
+        "alias engine"
+        "footer footer";
+      align-items: flex-start;
+    }
+
+    .lp-card-url {
+      grid-area: url;
+    }
+
+    .lp-card-alias {
+      grid-area: alias;
+    }
+
+    .lp-engine-card {
+      grid-area: engine;
+      align-self: stretch;
+    }
+
+    .lp-footer-row {
+      grid-area: footer;
+      max-width: 520px;
+      justify-self: center;
+    }
+  }
+
+  /* RESPONSIVE MÓVIL / TABLET */
   @media (max-width: 800px) {
     .lp-create-inner {
       max-width: 480px;
       margin: 0 auto;
-      padding: 18px 12px 80px 12px;
-    }
-
-    .lp-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .lp-col-side {
-      order: -1; /* motor arriba, igual que antes */
+      padding: 20px 12px 80px 12px;
     }
 
     .lp-header-v2 {
       flex-direction: column;
-      align-items: flex-start;
       gap: 10px;
-    }
-
-    .lp-header-left h1 {
-      font-size: 24px;
     }
 
     .lp-header-left p {
