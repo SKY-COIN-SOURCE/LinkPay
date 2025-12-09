@@ -248,13 +248,7 @@
     animation: lp-pulse-blue 2s infinite;
   }
 
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 26px;
-  text-align: center;
-  }
+
 
   .lp-dash-header-left {
     max-width: 640px;
