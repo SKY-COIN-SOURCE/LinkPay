@@ -31,7 +31,8 @@ export const es = {
             },
             rpm: {
                 label: 'RPM medio',
-                sub: 'Ingreso por cada 1.000 visitas'
+                sub: 'Ingreso por cada 1.000 visitas',
+                help: 'Promedio de ingresos por cada 1000 visitas únicas.'
             }
         },
         recent: {

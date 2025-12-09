@@ -38,117 +38,37 @@
   }
 
   .lp-bg::before,
+  /* Dashboard Premium Styles */
+  .lp-bg {
+    min-height: 100dvh;
+    background:
+      radial-gradient(circle at 0% 0%, #1e3a8a 0, transparent 55%),
+      radial-gradient(circle at 100% 100%, #0f172a 0, #020617 55%, #000 100%);
+    background-color: #020617;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lp-bg::before,
   .lp-bg::after {
     content: "";
     position: absolute;
     inset: -40%;
     background:
-      radial-gradient(circle at 20% 0%, rgba(56, 189, 248, 0.14), transparent 60%),
+      radial-gradient(circle at 20% 0%, rgba(56, 189, 248, 0.15), transparent 60%),
       radial-gradient(circle at 80% 100%, rgba(129, 140, 248, 0.16), transparent 55%);
     opacity: 0.9;
     filter: blur(32px);
     pointer-events: none;
-    animation: lp-nebula 20s ease-in-out infinite alternate;
+    animation: lp-nebula 22s ease-in-out infinite alternate;
   }
 
   .lp-bg::after {
     background:
-      radial-gradient(circle at 0% 100%, rgba(34, 197, 94, 0.16), transparent 55%),
-      radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.18), transparent 55%);
+      radial-gradient(circle at 0% 100%, rgba(34, 197, 94, 0.18), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.16), transparent 55%);
     mix-blend-mode: screen;
-    animation: lp-orbit 30s linear infinite;
-  }
-
-  .lp-bg-grid {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(rgba(15, 23, 42, 0.65) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(15, 23, 42, 0.65) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.18;
-    mix-blend-mode: soft-light;
-    transform: translate3d(0, 0, 0);
-    animation: lp-grid-move 40s linear infinite;
-    z-index: 0;
-  }
-
-  @keyframes lp-grid-move {
-    0% {
-      transform: translate3d(0, 0, 0);
-    }
-
-    100% {
-      transform: translate3d(-40px, -40px, 0);
-    }
-  }
-
-  .lp-bg-orb {
-    position: fixed;
-    width: 420px;
-    height: 420px;
-    border-radius: 999px;
-    filter: blur(40px);
-    opacity: 0.75;
-    pointer-events: none;
-    z-index: 0;
-    mix-blend-mode: screen;
-  }
-
-  .lp-bg-orb.orb-left {
-    left: -120px;
-    top: 40%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.5), transparent 60%);
-    animation: lp-orb-float 22s ease-in-out infinite alternate;
-  }
-
-  .lp-bg-orb.orb-right {
-    right: -120px;
-    top: 12%;
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.45), transparent 60%);
-    animation: lp-orb-float 28s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes lp-orb-float {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-
-    100% {
-      transform: translate3d(40px, -40px, 0) scale(1.08);
-    }
-  }
-
-  .lp-bg-sparks {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      radial-gradient(circle at 10% 20%, rgba(248, 250, 252, 0.35) 1px, transparent 1px),
-      radial-gradient(circle at 80% 60%, rgba(248, 250, 252, 0.25) 1px, transparent 1px),
-      radial-gradient(circle at 30% 80%, rgba(248, 250, 252, 0.2) 1px, transparent 1px);
-    background-size: 220px 220px;
-    opacity: 0.35;
-    mix-blend-mode: screen;
-    animation: lp-sparks-move 26s linear infinite;
-    z-index: 0;
-  }
-
-  @keyframes lp-sparks-move {
-    0% {
-      transform: translate3d(0, 0, 0);
-      opacity: 0.25;
-    }
-
-    50% {
-      opacity: 0.45;
-    }
-
-    100% {
-      transform: translate3d(-60px, 20px, 0);
-      opacity: 0.25;
-    }
+    animation: lp-orbit 32s linear infinite;
   }
 
   @keyframes lp-nebula {
@@ -158,46 +78,51 @@
     }
 
     100% {
-      transform: translate3d(20px, 10px, 0) scale(1.08);
+      transform: translate3d(20px, 10px, 0) scale(1.1);
       opacity: 1;
     }
   }
 
   @keyframes lp-orbit {
     0% {
-      transform: rotate(0deg) scale(1.03);
+      transform: rotate(0deg) scale(1.05);
     }
 
     100% {
-      transform: rotate(360deg) scale(1.03);
+      transform: rotate(360deg) scale(1.05);
     }
   }
 
   .lp-dashboard-shell {
-    position: relative;
-    width: 100%;
-    min-height: 100dvh;
-    padding-top: env(safe-area-inset-top, 0);
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
     overflow-y: auto;
     overflow-x: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     -webkit-overflow-scrolling: touch;
-    display: block;
-    /* Ensure block flow */
-    background-color: #020617;
-    /* Ensure base color */
+    padding-top: env(safe-area-inset-top, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    z-index: 1;
+  }
+
+  /* Sidebar handling */
+  @media (min-width: 769px) {
+    .lp-dashboard-shell {
+      left: 260px;
+      /* Sidebar width */
+    }
   }
 
   .lp-dashboard-inner {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 1600px;
-    /* Much wider for premium feel */
-    padding: 40px 32px 120px 32px;
+    max-width: 1400px;
+    padding: 30px 24px 100px 24px;
     margin: 0 auto;
-    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    color: #e5e7eb;
   }
 
   /* HEADER CENTERED (Analytics Style) */

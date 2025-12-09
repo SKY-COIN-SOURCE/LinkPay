@@ -31,7 +31,8 @@ export const it = {
             },
             rpm: {
                 label: 'RPM Medio',
-                sub: 'Guadagno per 1.000 visite'
+                sub: 'Guadagno per 1.000 visite',
+                help: 'Entrate medie per 1.000 visite uniche.'
             }
         },
         recent: {

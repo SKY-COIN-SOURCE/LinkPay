@@ -31,7 +31,8 @@ export const fr = {
             },
             rpm: {
                 label: 'RPM Moyen',
-                sub: 'Revenu par 1 000 visites'
+                sub: 'Revenu par 1 000 visites',
+                help: 'Revenu moyen pour 1 000 visites uniques.'
             }
         },
         recent: {

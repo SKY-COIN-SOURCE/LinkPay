@@ -31,7 +31,8 @@ export const en = {
             },
             rpm: {
                 label: 'Average RPM',
-                sub: 'Income per 1,000 visits'
+                sub: 'Income per 1,000 visits',
+                help: 'Average revenue per 1,000 unique visits.'
             }
         },
         recent: {
