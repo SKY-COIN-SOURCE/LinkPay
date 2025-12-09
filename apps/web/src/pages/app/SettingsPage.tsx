@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, Shield, CreditCard, Camera, CheckCircle2, Mail, Loader2, Save, LogOut, Landmark, Wallet } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { QRCodeSVG } from 'qrcode.react';
+import { useTranslation } from '../../i18n';
 import './Settings.css';
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'billing'>('profile');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -95,12 +97,12 @@ export function SettingsPage() {
 
         <div className="lp-settings-header">
           <div className="lp-settings-title-block">
-            <h1>Ajustes</h1>
-            <p>Gestiona tu identidad, seguridad y métodos de cobro.</p>
+            <h1>{t('settings.header.title')}</h1>
+            <p>{t('settings.header.subtitle')}</p>
           </div>
           {profile.is_verified && (
             <div className="lp-verified-badge">
-              <CheckCircle2 size={14} /> VERIFICADO
+              <CheckCircle2 size={14} /> {t('settings.header.verified')}
             </div>
           )}
         </div>
@@ -109,16 +111,16 @@ export function SettingsPage() {
           {/* SIDEBAR */}
           <div className="lp-settings-sidebar">
             <button onClick={() => setActiveTab('profile')} className={`lp-settings-btn ${activeTab === 'profile' ? 'active' : ''}`}>
-              <User size={18} /> Perfil
+              <User size={18} /> {t('settings.nav.profile')}
             </button>
             <button onClick={() => setActiveTab('security')} className={`lp-settings-btn ${activeTab === 'security' ? 'active' : ''}`}>
-              <Shield size={18} /> Seguridad
+              <Shield size={18} /> {t('settings.nav.security')}
             </button>
             <button onClick={() => setActiveTab('billing')} className={`lp-settings-btn ${activeTab === 'billing' ? 'active' : ''}`}>
-              <Wallet size={18} /> Pagos
+              <Wallet size={18} /> {t('settings.nav.billing')}
             </button>
             <button onClick={handleLogout} className="lp-settings-btn logout">
-              <LogOut size={18} /> Cerrar Sesión
+              <LogOut size={18} /> {t('settings.nav.logout')}
             </button>
           </div>
 
@@ -148,7 +150,7 @@ export function SettingsPage() {
                 </div>
 
                 <div className="lp-form-group">
-                  <label className="lp-label">Nombre Completo</label>
+                  <label className="lp-label">{t('settings.profile.name_label')}</label>
                   <input
                     className="lp-input"
                     value={profile.full_name}
@@ -157,18 +159,18 @@ export function SettingsPage() {
                 </div>
 
                 <div className="lp-form-group">
-                  <label className="lp-label">Biografía</label>
+                  <label className="lp-label">{t('settings.profile.bio_label')}</label>
                   <textarea
                     className="lp-textarea"
                     value={profile.bio}
                     onChange={e => setProfile({ ...profile, bio: e.target.value })}
-                    placeholder="Cuéntanos sobre ti..."
+                    placeholder={t('settings.profile.bio_placeholder')}
                   />
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <button onClick={handleSave} disabled={saving} className="lp-save-btn">
-                    {saving ? <Loader2 className="spin" size={18} /> : <><Save size={18} /> Guardar Cambios</>}
+                    {saving ? <Loader2 className="spin" size={18} /> : <><Save size={18} /> {t('settings.common.save')}</>}
                   </button>
                 </div>
               </div>
@@ -178,29 +180,29 @@ export function SettingsPage() {
             {activeTab === 'security' && (
               <div className="lp-settings-card">
                 <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ color: 'white', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>Seguridad de la Cuenta</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>Protege tu cuenta con autenticación de dos factores.</p>
+                  <h3 style={{ color: 'white', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>{t('settings.security.title')}</h3>
+                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>{t('settings.security.desc')}</p>
                 </div>
 
                 <div className="lp-security-block">
                   <div className="lp-security-info">
-                    <h4>Autenticación 2FA</h4>
-                    <p>{profile.two_factor_enabled ? 'Tu cuenta está protegida.' : 'Recomendado para proteger tus ingresos.'}</p>
+                    <h4>{t('settings.security.2fa_title')}</h4>
+                    <p>{profile.two_factor_enabled ? t('settings.security.2fa_on') : t('settings.security.2fa_off')}</p>
                   </div>
                   <button
                     onClick={toggle2FA}
                     className={`lp-btn-outline ${profile.two_factor_enabled ? 'lp-btn-danger' : ''}`}
                   >
-                    {profile.two_factor_enabled ? 'Desactivar' : 'Activar'}
+                    {profile.two_factor_enabled ? t('settings.security.disable') : t('settings.security.enable')}
                   </button>
                 </div>
 
                 {showQR && (
                   <div style={{ marginTop: '24px', background: 'white', padding: '24px', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-                    <p style={{ color: '#0f172a', fontWeight: '600', fontSize: '14px' }}>Escanea con Google Authenticator</p>
+                    <p style={{ color: '#0f172a', fontWeight: '600', fontSize: '14px' }}>{t('settings.security.scan')}</p>
                     <QRCodeSVG value={`otpauth://totp/LinkPay:${profile.email}?secret=XYZ&issuer=LinkPay`} size={160} />
                     <button onClick={confirm2FA} className="lp-save-btn">
-                      Confirmar Escaneo
+                      {t('settings.security.confirm')}
                     </button>
                   </div>
                 )}
@@ -211,8 +213,8 @@ export function SettingsPage() {
             {activeTab === 'billing' && (
               <div className="lp-settings-card">
                 <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ color: 'white', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>Métodos de Cobro</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>Configura dónde quieres recibir tus ganancias.</p>
+                  <h3 style={{ color: 'white', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>{t('settings.billing.title')}</h3>
+                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>{t('settings.billing.desc')}</p>
                 </div>
 
                 <div className="lp-payment-card">
@@ -223,14 +225,14 @@ export function SettingsPage() {
                     <span className="lp-payment-title">PayPal</span>
                   </div>
                   <div className="lp-form-group" style={{ marginBottom: 0 }}>
-                    <label className="lp-label">Correo asociado a PayPal</label>
+                    <label className="lp-label">{t('settings.billing.paypal_label')}</label>
                     <input
                       className="lp-input"
                       value={profile.paypal_email}
                       onChange={e => setProfile({ ...profile, paypal_email: e.target.value })}
                       placeholder="tu@paypal.com"
                     />
-                    <p className="lp-helper-text">Usado para pagos automáticos mensuales.</p>
+                    <p className="lp-helper-text">{t('settings.billing.paypal_help')}</p>
                   </div>
                 </div>
 
@@ -239,23 +241,23 @@ export function SettingsPage() {
                     <div className="lp-payment-icon">
                       <Landmark size={18} color="#a78bfa" />
                     </div>
-                    <span className="lp-payment-title">Transferencia Bancaria</span>
+                    <span className="lp-payment-title">{t('settings.billing.bank_title')}</span>
                   </div>
                   <div className="lp-form-group" style={{ marginBottom: 0 }}>
-                    <label className="lp-label">IBAN / SWIFT / Cuenta</label>
+                    <label className="lp-label">{t('settings.billing.bank_label')}</label>
                     <input
                       className="lp-input"
                       value={profile.bank_details}
                       onChange={e => setProfile({ ...profile, bank_details: e.target.value })}
                       placeholder="ES91 0000..."
                     />
-                    <p className="lp-helper-text">Solo para retiros mayores a $500.</p>
+                    <p className="lp-helper-text">{t('settings.billing.bank_help')}</p>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <button onClick={handleSave} disabled={saving} className="lp-save-btn">
-                    {saving ? <Loader2 className="spin" size={18} /> : <><Save size={18} /> Guardar Métodos</>}
+                    {saving ? <Loader2 className="spin" size={18} /> : <><Save size={18} /> {t('settings.common.save')}</>}
                   </button>
                 </div>
               </div>

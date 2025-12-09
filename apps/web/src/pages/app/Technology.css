@@ -2,8 +2,10 @@
 /* Uses .lp-bg from Dashboard.css for main background */
 
 .lp-tech-shell {
-    min-height: 100vh;
+    width: 100%;
+    min-height: 100dvh;
     padding: 24px;
+    box-sizing: border-box;
 }
 
 .lp-tech-container {

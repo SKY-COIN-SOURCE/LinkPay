@@ -176,8 +176,6 @@
   .lp-dashboard-shell {
     position: relative;
     width: 100%;
-    /* display: flex; -> removed to allow normal flow */
-    /* justify-content: center; -> removed to respect margins */
     min-height: 100dvh;
     padding-top: env(safe-area-inset-top, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
@@ -185,25 +183,77 @@
     overflow-x: hidden;
     font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     -webkit-overflow-scrolling: touch;
+    display: block;
+    /* Ensure block flow */
   }
 
   .lp-dashboard-inner {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 1120px;
-    padding: 28px 16px 100px 16px;
+    max-width: 1200px;
+    /* Slightly wider to match Analytics */
+    padding: 32px 24px 120px 24px;
     margin: 0 auto;
+    box-sizing: border-box;
   }
 
-  .lp-dash-header {
+  /* HEADER CENTERED (Analytics Style) */
+  .lp-dashboard-header-center {
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* Center horizontally */
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 26px;
+    margin-bottom: 40px;
     text-align: center;
+    width: 100%;
+  }
+
+  .lp-dashboard-subtitle-center {
+    color: #94a3b8;
+    font-size: 15px;
+    margin-top: 12px;
+    max-width: 500px;
+    line-height: 1.5;
+  }
+
+  /* CHIP CENTERED */
+  .lp-chip-center {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(30, 41, 59, 0.5);
+    /* Slate-800/50 */
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #60a5fa;
+    /* Blue-400 */
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+    backdrop-filter: blur(8px);
+    margin-bottom: 4px;
+  }
+
+  .lp-chip-dot {
+    width: 6px;
+    height: 6px;
+    background: #3b82f6;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #3b82f6;
+    animation: lp-pulse-blue 2s infinite;
+  }
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 26px;
+  text-align: center;
   }
 
   .lp-dash-header-left {

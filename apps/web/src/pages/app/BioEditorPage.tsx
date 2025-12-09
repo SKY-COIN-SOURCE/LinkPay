@@ -65,13 +65,10 @@ export function BioEditorPage() {
     load();
   }, []);
 
-  // --- LOGICA DE GUARDADO (DEBOUNCE LIGERO) ---
   const handleUpdateProfile = async (field: string, value: any) => {
     if (!profile) return;
-    // Actualización optimista
     const updated = { ...profile, [field]: value };
     setProfile(updated);
-
     setSaving(true);
     await BioService.updateProfile(profile.id, { [field]: value });
     setTimeout(() => setSaving(false), 400);
@@ -79,7 +76,6 @@ export function BioEditorPage() {
 
   const handleAddLink = async () => {
     if (!profile) return;
-    // UI rápida
     const tempLink = {
       id: 'temp-' + Date.now(),
       title: 'Nuevo enlace',
@@ -91,19 +87,21 @@ export function BioEditorPage() {
       ...profile,
       links: [...(profile.links || []), tempLink],
     });
-
-    // Guardar en DB
     await BioService.addLink(profile.id, 'Nuevo enlace', '');
-
-    // Recargar para sincronizar IDs reales y orden
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const data = await BioService.getOrCreateProfile(user);
       setProfile(data);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#020617]">
+        <Loader2 className="animate-spin text-white" size={32} />
+      </div>
+    );
+  }
 
   const handleUpdateLink = async (id: string, field: string, value: any) => {
     if (!profile) return;
