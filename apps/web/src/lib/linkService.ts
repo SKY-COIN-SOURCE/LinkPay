@@ -113,12 +113,18 @@ export const LinkService = {
 
     // Call the secure RPC function (server-side logic)
     // We send IP and User-Agent for anti-fraud
-    const ipResponse = await fetch('https://api.ipify.org?format=json');
-    const ipData = await ipResponse.json().catch(() => ({ ip: '0.0.0.0' }));
+    let ip = '0.0.0.0';
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      if (ipData.ip) ip = ipData.ip;
+    } catch (e) {
+      console.warn('[LinkService] IP fallback', e);
+    }
 
     const { error } = await supabase.rpc('track_link_click', {
       p_link_id: link.id,
-      p_ip_address: ipData.ip || '0.0.0.0',
+      p_ip_address: ip,
       p_user_agent: navigator.userAgent,
       p_country: deviceInfo.country || 'Unknown'
     });

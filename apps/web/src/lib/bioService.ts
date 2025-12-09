@@ -121,12 +121,18 @@ export const BioService = {
     meta?: { country?: string; device?: string; referrer?: string }
   ) => {
     // SECURITY: We use the server-side RPC to track clicks and earnings
-    const ipResponse = await fetch('https://api.ipify.org?format=json');
-    const ipData = await ipResponse.json().catch(() => ({ ip: '0.0.0.0' }));
+    let ip = '0.0.0.0';
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      if (ipData.ip) ip = ipData.ip;
+    } catch (e) {
+      console.warn('[BioService] IP fallback', e);
+    }
 
     const { error } = await supabase.rpc('track_bio_click', {
       p_profile_id: profileId,
-      p_ip_address: ipData.ip || '0.0.0.0',
+      p_ip_address: ip,
       p_user_agent: navigator.userAgent,
       p_country: meta?.country || 'Unknown'
     });
