@@ -103,15 +103,15 @@ export function DashboardPage() {
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.revenue.label')}</div>
-              <div className="lp-stat-value">€{stats.totalRevenue.toFixed(4)}</div>
+              <div className="lp-stat-value">€{(stats?.totalRevenue || 0).toFixed(4)}</div>
               <div className="lp-substats">
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">{t('dashboard.stats.revenue.links')}</span>
-                  <span className="lp-substat-value">€{stats.linkRevenue.toFixed(4)}</span>
+                  <span className="lp-substat-value">€{(stats?.linkRevenue || 0).toFixed(4)}</span>
                 </div>
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">{t('dashboard.stats.revenue.bio')}</span>
-                  <span className="lp-substat-value">€{stats.bioRevenue.toFixed(4)}</span>
+                  <span className="lp-substat-value">€{(stats?.bioRevenue || 0).toFixed(4)}</span>
                 </div>
               </div>
             </div>
@@ -125,15 +125,15 @@ export function DashboardPage() {
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
-              <div className="lp-stat-value">{stats.totalClicks}</div>
+              <div className="lp-stat-value">{stats?.totalClicks || 0}</div>
               <div className="lp-substats">
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">LINKS</span>
-                  <span className="lp-substat-value">{stats.linkClicks}</span>
+                  <span className="lp-substat-value">{stats?.linkClicks || 0}</span>
                 </div>
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">BIO PAGE</span>
-                  <span className="lp-substat-value">{stats.bioClicks}</span>
+                  <span className="lp-substat-value">{stats?.bioClicks || 0}</span>
                 </div>
               </div>
             </div>
@@ -147,7 +147,7 @@ export function DashboardPage() {
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.referrals.label')}</div>
-              <div className="lp-stat-value">€{stats.referralEarnings.toFixed(2)}</div>
+              <div className="lp-stat-value">€{(stats?.referralEarnings || 0).toFixed(2)}</div>
               <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                 {t('dashboard.stats.referrals.text')}
               </p>
