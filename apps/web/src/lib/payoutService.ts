@@ -35,9 +35,13 @@ async function computeBalanceWithMovements(userId: string): Promise<number> {
     0
   );
 
-  // 2. BIO PAGE
-  const bioProfile = await BioService.getOrCreateProfile({ id: userId } as any);
-  const revenueBio = Number(bioProfile?.earnings || 0);
+  // 2. BIO PAGE (Sumar de TODOS los perfiles)
+  const { data: bioProfiles } = await supabase
+    .from('bio_profiles')
+    .select('earnings')
+    .eq('user_id', userId);
+
+  const revenueBio = bioProfiles?.reduce((acc, p) => acc + (Number(p.earnings) || 0), 0) || 0;
 
   // 3. REFERIDOS
   const { data: profileRow } = await supabase
@@ -153,8 +157,8 @@ export const PayoutService = {
       method === 'PayPal'
         ? 5
         : method === 'Bank'
-        ? 10
-        : 5;
+          ? 10
+          : 5;
 
     if (amount < min) {
       if (method === 'PayPal') {

@@ -149,13 +149,11 @@ export function DashboardPage() {
       if (linksData) {
         setLinks(linksData);
 
-        // Safe access with any cast since the service type might be inferred strictly
-        const safeDashData = dashData as any;
-
+        // Now AnalyticsService returns proper bio data
         setRealtimeStats(prev => ({
           ...prev,
-          bioRevenue: safeDashData?.bioRevenue || 0,
-          bioClicks: safeDashData?.bioClicks || 0,
+          bioRevenue: (dashData as any)?.bioRevenue || 0, // Keep cast if type not updated yet in IDE, but runtime is safe
+          bioClicks: (dashData as any)?.bioClicks || 0,
         }));
       }
 

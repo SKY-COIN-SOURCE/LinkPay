@@ -26,10 +26,20 @@ export const AnalyticsService = {
       console.warn('[AnalyticsService] error cargando clicks:', linksErr);
     }
 
-    // 2) CLICS DE BIO (tabla nueva)
+    // 3. OBTENER INFORMACIÓN DE PERFILES BIO (Earnings + Views)
+    const { data: bioProfiles, error: profErr } = await supabase
+      .from('bio_profiles')
+      .select('earnings, views, monetization_mode')
+      .eq('user_id', user.id);
+
+    if (profErr) {
+      console.warn('[AnalyticsService] error cargando bio_profiles:', profErr);
+    }
+
     const { data: bioClicks, error: bioErr } = await supabase
-      .from('bio_clicks')
+      .from('click_events')
       .select('created_at, country, device')
+      .not('bio_profile_id', 'is', null) // Filtrar solo eventos de bio
       .gte('created_at', since.toISOString());
 
     if (bioErr) {
@@ -45,11 +55,17 @@ export const AnalyticsService = {
     const devices = processDevices(allEvents);
     const countries = processCountries(allEvents);
 
+    // Calcular Totales Globales
+    const bioRevenue = bioProfiles?.reduce((acc, curr) => acc + (curr.earnings || 0), 0) || 0;
+    const bioViewsTotal = bioProfiles?.reduce((acc, curr) => acc + (curr.views || 0), 0) || 0;
+
     return {
       timeline,
       devices,
       countries,
       totalClicks: allEvents.length,
+      bioRevenue, // Total acumulado de Bios
+      bioClicks: bioViewsTotal, // Total acumulado de visitas a Bio
     };
   },
 };
