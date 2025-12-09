@@ -11,6 +11,8 @@ import {
   Zap,
   Rocket,
   Loader2,
+  Smartphone,
+  X
 } from 'lucide-react';
 import { BioService } from '../../lib/bioService';
 import { supabase } from '../../lib/supabase';
@@ -202,31 +204,110 @@ export function BioEditorPage() {
     );
   }
 
-  // ESTILOS CSS-IN-JS
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
+
+  // ESTILOS RESPONSIVOS
+  const css = `
+    .lp-bio-container {
+      display: flex;
+      height: calc(100vh - 80px);
+      background: #F3F4F6;
+      gap: 20px;
+      padding: 20px;
+    }
+    .lp-bio-editor {
+      flex: 1;
+      background: white;
+      border-radius: 20px;
+      border: 1px solid #E5E7EB;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .lp-bio-preview {
+      width: 450px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #F3F4F6;
+    }
+    .lp-preview-fab {
+      display: none;
+    }
+    .lp-preview-close {
+      display: none;
+    }
+
+    @media (max-width: 1024px) {
+      .lp-bio-container {
+        padding: 10px;
+        height: auto;
+        min-height: calc(100vh - 60px);
+        display: block;
+      }
+      .lp-bio-editor {
+        width: 100%;
+        height: calc(100vh - 85px); /* Fixed height for scroll */
+      }
+      .lp-bio-preview {
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        background: rgba(17, 24, 39, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+      }
+      .lp-bio-preview.show {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .lp-preview-fab {
+        display: flex;
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #4F46E5;
+        color: white;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+        z-index: 90;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .lp-preview-fab:active {
+        transform: scale(0.95);
+      }
+      .lp-preview-close {
+        display: flex;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-weight: 600;
+        font-size: 14px;
+        border: 1px solid rgba(255,255,255,0.2);
+        cursor: pointer;
+      }
+    }
+  `;
+
+  // ESTILOS CSS-IN-JS (Legacy que mantenemos para componentes internos)
   const styles = {
-    container: {
-      display: 'flex',
-      height: 'calc(100vh - 80px)',
-      background: '#F3F4F6',
-      gap: '20px',
-      padding: '20px',
-    },
-    editorColumn: {
-      flex: 1,
-      background: 'white',
-      borderRadius: '20px',
-      border: '1px solid #E5E7EB',
-      display: 'flex',
-      flexDirection: 'column' as const,
-      overflow: 'hidden',
-    },
-    previewColumn: {
-      width: '450px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      background: '#F3F4F6',
-    },
+    // container: ELIMINADO (usamos css class)
+    // editorColumn: ELIMINADO
+    // previewColumn: ELIMINADO
     header: {
       padding: '20px',
       borderBottom: '1px solid #F3F4F6',
@@ -238,6 +319,7 @@ export function BioEditorPage() {
       display: 'flex',
       borderBottom: '1px solid #E5E7EB',
       padding: '0 20px',
+      overflowX: 'auto' as 'auto', // Scroll horizontal en pestañas
     },
     tab: (isActive: boolean) => ({
       padding: '16px 20px',
@@ -251,6 +333,7 @@ export function BioEditorPage() {
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
+      whiteSpace: 'nowrap' as 'nowrap'
     }),
     content: {
       flex: 1,
@@ -259,8 +342,10 @@ export function BioEditorPage() {
       background: '#F9FAFB',
     },
     phone: {
-      width: '320px',
-      height: '650px',
+      width: '100%',
+      maxWidth: '320px',
+      height: '650px', // Altura fija
+      maxHeight: '90vh',
       background: '#111827',
       borderRadius: '45px',
       border: '10px solid #111827',
@@ -363,14 +448,20 @@ export function BioEditorPage() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="lp-bio-container animate-enter">
+      <style>{css}</style>
       <style>{`
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
       `}</style>
 
+      {/* FAB MOBILE */}
+      <button className="lp-preview-fab" onClick={() => setShowMobilePreview(true)}>
+        <Smartphone size={24} />
+      </button>
+
       {/* EDITOR */}
-      <div style={styles.editorColumn}>
+      <div className="lp-bio-editor">
         {/* Header */}
         <div style={styles.header}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -904,142 +995,137 @@ export function BioEditorPage() {
         </div>
       </div>
 
-      {/* PREVIEW MÓVIL */}
-      <div style={styles.previewColumn} className="hidden lg:flex">
+      {/* PREVIEW */}
+      <div className={`lp-bio-preview ${showMobilePreview ? "show" : ""}`}>
+        <button className="lp-preview-close" onClick={() => setShowMobilePreview(false)}>
+          <X size={14} /> Cerrar vista previa
+        </button>
         <div style={styles.phone}>
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '120px',
-              height: '24px',
-              background: '#111827',
-              borderBottomLeftRadius: '16px',
-              borderBottomRightRadius: '16px',
-              zIndex: 10,
-            }}
-          ></div>
-
-          <div
-            style={styles.phoneScreen(
-              profile.theme,
-              profile.background_url
-            )}
-          >
-            <div style={{ textAlign: 'center' }}>
+          <div style={styles.phoneScreen(profile.theme, profile.background_url)}>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
               <div
                 style={{
                   width: '80px',
                   height: '80px',
                   borderRadius: '50%',
-                  margin: '0 auto 16px',
+                  margin: '0 auto 12px',
                   overflow: 'hidden',
-                  border: '2px solid rgba(255,255,255,0.5)',
+                  border: '3px solid rgba(255,255,255,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background:
-                    'rgba(255,255,255,0.15)',
+                  background: 'rgba(255,255,255,0.1)',
+                  fontSize: '24px',
+                  fontWeight: 700,
                 }}
               >
                 {profile.avatar_url ? (
                   <img
                     src={profile.avatar_url}
-                    alt="Avatar"
                     style={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
                     }}
+                    alt=""
                   />
                 ) : (
-                  <span
-                    style={{
-                      fontSize: '32px',
-                      fontWeight: 700,
-                      color:
-                        profile.theme === 'light'
-                          ? '#CBD5E1'
-                          : 'white',
-                    }}
-                  >
-                    {profile.display_name?.[0]}
-                  </span>
+                  profile.display_name?.[0]
                 )}
               </div>
               <h3
                 style={{
-                  margin: '0 0 8px',
-                  fontSize: '20px',
-                  fontWeight: 800,
+                  margin: '0 0 4px',
+                  fontSize: '18px',
+                  fontWeight: 700,
                 }}
               >
                 @{profile.display_name}
               </h3>
               <p
                 style={{
+                  margin: 0,
                   fontSize: '13px',
-                  opacity: 0.85,
+                  opacity: 0.8,
                   lineHeight: 1.4,
-                  marginBottom: '32px',
+                  whiteSpace: 'pre-wrap',
                 }}
               >
                 {profile.description}
               </p>
+            </div>
 
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                }}
-              >
-                {profile.links?.map((link: any) => (
-                  <div
-                    key={link.id}
-                    style={{
-                      display: 'block',
-                      padding: '14px',
-                      borderRadius: '12px',
-                      textDecoration: 'none',
-                      fontWeight: 700,
-                      fontSize: '14px',
-                      background:
-                        profile.theme === 'light'
-                          ? 'white'
-                          : 'rgba(255,255,255,0.15)',
-                      color:
-                        profile.theme === 'light'
-                          ? '#1F2937'
-                          : 'white',
-                      border:
-                        profile.theme === 'light'
-                          ? '1px solid #E5E7EB'
-                          : '1px solid rgba(255,255,255,0.2)',
-                      boxShadow:
-                        '0 2px 4px rgba(0,0,0,0.05)',
-                      cursor: 'default',
-                    }}
-                  >
-                    {link.title}
-                  </div>
-                ))}
-              </div>
+            {/* Links Preview */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              {profile.links
+                ?.filter((l: any) => l.active !== false)
+                .map((link: any) => {
+                  let btnStyle: any = {
+                    padding: '14px',
+                    borderRadius: '100px',
+                    textAlign: 'center',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    textDecoration: 'none',
+                    display: 'block',
+                    transition: 'transform 0.1s',
+                    position: 'relative',
+                  };
 
-              <div
-                style={{
-                  marginTop: '40px',
-                  opacity: 0.5,
-                  fontSize: '10px',
-                  textTransform: 'uppercase',
-                  fontWeight: 900,
-                  letterSpacing: '1px',
-                }}
-              >
-                LinkPay
-              </div>
+                  // Estilos de botones
+                  if (profile.button_style === 'square') {
+                    btnStyle.borderRadius = '0px';
+                  } else if (profile.button_style === 'rounded') {
+                    btnStyle.borderRadius = '12px';
+                  } else if (profile.button_style === 'shadow') {
+                    btnStyle.background = 'white';
+                    btnStyle.color = 'black';
+                    btnStyle.border = '2px solid black';
+                    btnStyle.boxShadow = '4px 4px 0px 0px black';
+                    btnStyle.borderRadius = '12px';
+                  }
+
+                  // Color base si no es shadow
+                  if (profile.button_style !== 'shadow') {
+                    if (['light'].includes(profile.theme)) {
+                      btnStyle.background = 'white';
+                      btnStyle.color = '#1F2937';
+                      btnStyle.border = '1px solid #E5E7EB';
+                      btnStyle.boxShadow =
+                        '0 2px 4px rgba(0,0,0,0.05)';
+                    } else {
+                      btnStyle.background =
+                        'rgba(255,255,255,0.15)';
+                      btnStyle.color = 'white';
+                      btnStyle.border =
+                        '1px solid rgba(255,255,255,0.2)';
+                      btnStyle.backdropFilter =
+                        'blur(10px)';
+                    }
+                  }
+
+                  return (
+                    <div key={link.id} style={btnStyle}>
+                      {link.thumbnail_url && (
+                        <img
+                          src={link.thumbnail_url}
+                          style={{ width: '36px', height: '36px', borderRadius: '8px', position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)', objectFit: 'cover' }}
+                        />
+                      )}
+                      {link.title}
+                    </div>
+                  );
+                })}
+            </div>
+
+            <div style={{ marginTop: '40px', textAlign: 'center', opacity: 0.6, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <Zap size={10} style={{ display: 'inline', marginRight: '4px' }} /> LinkPay
             </div>
           </div>
         </div>

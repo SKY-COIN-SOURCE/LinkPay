@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../../i18n';
+import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 import {
   DollarSign,
@@ -55,7 +57,10 @@ function useCountTo(value: number, duration = 800) {
   return display;
 }
 
+
+
 export function DashboardPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [stats, setStats] = useState<DashboardStats>({
@@ -131,9 +136,8 @@ export function DashboardPage() {
 
   const copyReferral = () => {
     if (profile?.id) {
-      const refLink = `${window.location.origin}/register?ref=${
-        profile.referral_code || profile.id
-      }`;
+      const refLink = `${window.location.origin}/register?ref=${profile.referral_code || profile.id
+        }`;
       navigator.clipboard.writeText(refLink);
       alert('Link de referido copiado');
     }
@@ -164,14 +168,14 @@ export function DashboardPage() {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] },
+      transition: { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] as any },
     },
   };
 
   if (loading) {
     return (
       <div className="lp-dashboard-shell lp-bg">
-        <style>{dashboardStyles}</style>
+
         <div className="lp-bg-grid" />
         <div className="lp-bg-orb orb-left" />
         <div className="lp-bg-orb orb-right" />
@@ -195,7 +199,7 @@ export function DashboardPage() {
         exit={{ opacity: 0, y: -8 }}
         transition={{ duration: 0.25 }}
       >
-        <style>{dashboardStyles}</style>
+
 
         {/* Capas extra de fondo */}
         <div className="lp-bg-grid" />
@@ -214,14 +218,11 @@ export function DashboardPage() {
             >
               <div className="lp-chip lp-chip-dash">
                 <span className="lp-chip-dot" />
-                CREATOR DASHBOARD
+                {t('dashboard.chip')}
               </div>
-
+              <h2>{t('dashboard.title')}</h2>
               <div className="lp-dash-title-row">
-                <p>
-                  Tu centro de mando financiero. Mira cuánto dinero generan tus
-                  links y tu página bio en tiempo real.
-                </p>
+                <p>{t('dashboard.subtitle')}</p>
               </div>
             </motion.div>
           </header>
@@ -246,8 +247,8 @@ export function DashboardPage() {
                   <DollarSign size={18} />
                 </div>
                 <div className="lp-dash-card-label">
-                  <span>Ingresos totales</span>
-                  <small>Links + bio, combinados</small>
+                  <span>{t('dashboard.stats.revenue.label')}</span>
+                  <small>{t('dashboard.stats.revenue.sub')}</small>
                 </div>
               </div>
 
@@ -292,8 +293,8 @@ export function DashboardPage() {
                   <MousePointer2 size={18} />
                 </div>
                 <div className="lp-dash-card-label">
-                  <span>Clics totales</span>
-                  <small>Impacto real de tus links</small>
+                  <span>{t('dashboard.stats.clicks.label')}</span>
+                  <small>{t('dashboard.stats.clicks.sub')}</small>
                 </div>
               </div>
 
@@ -328,8 +329,8 @@ export function DashboardPage() {
                   <Users size={18} />
                 </div>
                 <div className="lp-dash-card-label">
-                  <span>Programa de referidos</span>
-                  <small>Invita creadores, cobra en automático</small>
+                  <span>{t('dashboard.stats.referrals.label')}</span>
+                  <small>{t('dashboard.stats.referrals.sub')}</small>
                 </div>
                 <button
                   type="button"
@@ -348,8 +349,7 @@ export function DashboardPage() {
               </div>
 
               <p className="lp-dash-ref-text">
-                Comparte tu link personal y genera ingresos adicionales por cada
-                creador que moneticemos.
+                {t('dashboard.stats.referrals.text')}
               </p>
 
               <div className="lp-dash-card-glow ref" />
@@ -368,8 +368,8 @@ export function DashboardPage() {
                   <BarChart3 size={18} />
                 </div>
                 <div className="lp-dash-card-label">
-                  <span>RPM medio</span>
-                  <small>Ingreso por cada 1.000 visitas</small>
+                  <span>{t('dashboard.stats.rpm.label')}</span>
+                  <small>{t('dashboard.stats.rpm.sub')}</small>
                 </div>
               </div>
 
@@ -380,7 +380,7 @@ export function DashboardPage() {
               </div>
 
               <p className="lp-dash-helper">
-                Sube tu RPM combinando enlaces de alto valor con tu Bio Page.
+                {t('dashboard.stats.rpm.helper')}
               </p>
             </motion.article>
           </motion.section>
@@ -394,27 +394,26 @@ export function DashboardPage() {
           >
             <div className="lp-dash-recent-header">
               <div>
-                <h2>Actividad reciente</h2>
-                <p>Últimos Smart Links creados y cuánto están generando.</p>
+                <h2>{t('dashboard.recent.title')}</h2>
+                <p>{t('dashboard.recent.subtitle')}</p>
               </div>
               <button
                 type="button"
                 className="lp-dash-link-btn"
                 onClick={() => navigate('/app/links')}
               >
-                Ver todos
-                <ArrowRight size={16} />
+                {t('dashboard.recent.view_all')} <ArrowRight size={14} />
               </button>
             </div>
 
             {links.length === 0 ? (
               <div className="lp-dash-empty">
-                <p>Aún no hay actividad.</p>
+                <p>{t('dashboard.recent.empty')}</p>
                 <button
                   type="button"
-                  onClick={() => navigate('/app/create')}
+                  onClick={() => navigate('/app/links/new')}
                 >
-                  Crear mi primer Smart Link
+                  {t('dashboard.recent.create_first')}
                 </button>
               </div>
             ) : (
@@ -424,10 +423,10 @@ export function DashboardPage() {
                   <table className="lp-dash-table">
                     <thead>
                       <tr>
-                        <th>Enlace</th>
-                        <th className="th-center">Modo</th>
-                        <th className="th-right">Visitas</th>
-                        <th className="th-right">Generado</th>
+                        <th>{t('dashboard.recent.table.link')}</th>
+                        <th className="th-center">{t('dashboard.recent.table.mode')}</th>
+                        <th className="th-right">{t('dashboard.recent.table.visits')}</th>
+                        <th className="th-right">{t('dashboard.recent.table.earned')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -501,807 +500,4 @@ export function DashboardPage() {
 }
 
 // ===================== ESTILOS DASHBOARD V2 =====================
-
-const dashboardStyles = `
-  .spin { animation: spin 1s linear infinite; }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
-
-  html, body, #root {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    background: #020617;
-    touch-action: pan-y;
-    -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
-  }
-
-  body {
-    overscroll-behavior-y: none;
-  }
-
-  .lp-bg {
-    min-height: 100dvh;
-    background:
-      radial-gradient(circle at 0% 0%, #1e3a8a 0, transparent 55%),
-      radial-gradient(circle at 100% 100%, #0f172a 0, #020617 55%, #000 100%);
-    background-color: #020617;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .lp-bg::before,
-  .lp-bg::after {
-    content: "";
-    position: absolute;
-    inset: -40%;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(56, 189, 248, 0.14), transparent 60%),
-      radial-gradient(circle at 80% 100%, rgba(129, 140, 248, 0.16), transparent 55%);
-    opacity: 0.9;
-    filter: blur(32px);
-    pointer-events: none;
-    animation: lp-nebula 20s ease-in-out infinite alternate;
-  }
-
-  .lp-bg::after {
-    background:
-      radial-gradient(circle at 0% 100%, rgba(34, 197, 94, 0.16), transparent 55%),
-      radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.18), transparent 55%);
-    mix-blend-mode: screen;
-    animation: lp-orbit 30s linear infinite;
-  }
-
-  .lp-bg-grid {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(rgba(15,23,42,0.65) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(15,23,42,0.65) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.18;
-    mix-blend-mode: soft-light;
-    transform: translate3d(0,0,0);
-    animation: lp-grid-move 40s linear infinite;
-    z-index: 0;
-  }
-
-  @keyframes lp-grid-move {
-    0% { transform: translate3d(0,0,0); }
-    100% { transform: translate3d(-40px,-40px,0); }
-  }
-
-  .lp-bg-orb {
-    position: fixed;
-    width: 420px;
-    height: 420px;
-    border-radius: 999px;
-    filter: blur(40px);
-    opacity: 0.75;
-    pointer-events: none;
-    z-index: 0;
-    mix-blend-mode: screen;
-  }
-
-  .lp-bg-orb.orb-left {
-    left: -120px;
-    top: 40%;
-    background: radial-gradient(circle, rgba(59,130,246,0.5), transparent 60%);
-    animation: lp-orb-float 22s ease-in-out infinite alternate;
-  }
-
-  .lp-bg-orb.orb-right {
-    right: -120px;
-    top: 12%;
-    background: radial-gradient(circle, rgba(236,72,153,0.45), transparent 60%);
-    animation: lp-orb-float 28s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes lp-orb-float {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    100% { transform: translate3d(40px, -40px, 0) scale(1.08); }
-  }
-
-  .lp-bg-sparks {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      radial-gradient(circle at 10% 20%, rgba(248, 250, 252, 0.35) 1px, transparent 1px),
-      radial-gradient(circle at 80% 60%, rgba(248, 250, 252, 0.25) 1px, transparent 1px),
-      radial-gradient(circle at 30% 80%, rgba(248, 250, 252, 0.2) 1px, transparent 1px);
-    background-size: 220px 220px;
-    opacity: 0.35;
-    mix-blend-mode: screen;
-    animation: lp-sparks-move 26s linear infinite;
-    z-index: 0;
-  }
-
-  @keyframes lp-sparks-move {
-    0% { transform: translate3d(0,0,0); opacity: 0.25; }
-    50% { opacity: 0.45; }
-    100% { transform: translate3d(-60px,20px,0); opacity: 0.25; }
-  }
-
-  @keyframes lp-nebula {
-    0% { transform: translate3d(-10px, -10px, 0) scale(1); opacity: 0.85; }
-    100% { transform: translate3d(20px, 10px, 0) scale(1.08); opacity: 1; }
-  }
-
-  @keyframes lp-orbit {
-    0% { transform: rotate(0deg) scale(1.03); }
-    100% { transform: rotate(360deg) scale(1.03); }
-  }
-
-  .lp-dashboard-shell {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    min-height: 100dvh;
-    padding-top: env(safe-area-inset-top, 0);
-    padding-bottom: env(safe-area-inset-bottom, 0);
-    overflow-y: auto;
-    overflow-x: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .lp-dashboard-inner {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 1120px;
-    padding: 28px 16px 100px 16px;
-    margin: 0 auto;
-  }
-
-  .lp-dash-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 26px;
-    text-align: center;
-  }
-
-  .lp-dash-header-left {
-    max-width: 640px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .lp-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(30, 64, 175, 0.75);
-    color: #e5e7eb;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.65);
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
-      0 0 18px rgba(59, 130, 246, 0.45);
-    animation: lp-chip-glow 4s ease-in-out infinite;
-  }
-
-  .lp-chip-dash {
-    background: rgba(15, 23, 42, 0.9);
-  }
-
-  .lp-chip-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
-  }
-
-  @keyframes lp-chip-glow {
-    0%, 100% {
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 0.8),
-        0 0 10px rgba(59, 130, 246, 0.35);
-    }
-    50% {
-      box-shadow:
-        0 0 0 1px rgba(129, 140, 248, 0.92),
-        0 0 22px rgba(96, 165, 250, 0.75);
-    }
-  }
-
-  .lp-dash-title-row p {
-    margin: 0;
-    font-size: 13px;
-    color: #9ca3af;
-    max-width: 520px;
-    text-align: center;
-  }
-
-  .lp-dash-stats-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    gap: 16px;
-    margin-bottom: 26px;
-    grid-auto-rows: minmax(0, 1fr);
-  }
-
-  .lp-dash-card {
-    position: relative;
-    border-radius: 22px;
-    padding: 16px;
-    background: radial-gradient(circle at top, rgba(15,23,42,0.98), rgba(15,23,42,0.92));
-    border: 1px solid rgba(148, 163, 184, 0.6);
-    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.95);
-    color: #e5e7eb;
-    overflow: hidden;
-    transform-style: preserve-3d;
-    transition:
-      box-shadow 0.25s ease,
-      border-color 0.25s ease,
-      filter 0.25s ease;
-  }
-
-  .lp-dash-card:hover {
-    box-shadow:
-      0 24px 80px rgba(15, 23, 42, 1),
-      0 0 0 1px rgba(191, 219, 254, 0.3);
-    border-color: rgba(191, 219, 254, 0.7);
-    filter: saturate(1.05);
-  }
-
-  .lp-dash-card-primary {
-    background:
-      radial-gradient(circle at 0% 0%, rgba(34, 197, 94, 0.2), rgba(15,23,42,0.96)),
-      radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.18), rgba(15,23,42,0.98));
-    border-color: rgba(74, 222, 128, 0.7);
-  }
-
-  .lp-dash-card-primary::after {
-    content: "";
-    position: absolute;
-    left: -40%;
-    top: -120%;
-    width: 80%;
-    height: 80%;
-    background: linear-gradient(
-      120deg,
-      transparent 0%,
-      rgba(248, 250, 252, 0.25) 45%,
-      rgba(248, 250, 252, 0.7) 50%,
-      rgba(248, 250, 252, 0.25) 55%,
-      transparent 100%
-    );
-    opacity: 0;
-    transform: translateY(0) rotate(22deg);
-    pointer-events: none;
-    mix-blend-mode: screen;
-    animation: lp-card-scan 7s ease-in-out infinite;
-  }
-
-  @keyframes lp-card-scan {
-    0% { opacity: 0; transform: translateY(0) rotate(22deg); }
-    8% { opacity: 1; }
-    35% { opacity: 0; transform: translateY(240%) rotate(22deg); }
-    100% { opacity: 0; transform: translateY(240%) rotate(22deg); }
-  }
-
-  .lp-dash-card-referrals {
-    background:
-      radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.2), rgba(15,23,42,0.96)),
-      radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.18), rgba(15,23,42,0.98));
-    border-color: rgba(129, 140, 248, 0.8);
-  }
-
-  .lp-dash-card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .lp-dash-card-header.ref-header {
-    align-items: flex-start;
-  }
-
-  .lp-dash-icon-pill {
-    width: 30px;
-    height: 30px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
-  }
-
-  .pill-green {
-    background: rgba(22, 163, 74, 0.2);
-    color: #bbf7d0;
-  }
-
-  .pill-blue {
-    background: rgba(59, 130, 246, 0.2);
-    color: #bfdbfe;
-  }
-
-  .pill-violet {
-    background: rgba(129, 140, 248, 0.28);
-    color: #e0e7ff;
-  }
-
-  .pill-amber {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fed7aa;
-  }
-
-  .lp-dash-card-label span {
-    font-size: 13px;
-    font-weight: 700;
-    color: #e5e7eb;
-  }
-
-  .lp-dash-card-label small {
-    display: block;
-    font-size: 11px;
-    color: #9ca3af;
-  }
-
-  .lp-dash-value-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-
-  .lp-dash-main-value {
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    color: #f9fafb;
-  }
-
-  .lp-dash-main-value.alt {
-    font-size: 24px;
-  }
-
-  .lp-value-glow {
-    position: relative;
-  }
-
-  .lp-value-glow::after {
-    content: "";
-    position: absolute;
-    inset: 40% -8px -30%;
-    background: radial-gradient(circle, rgba(34,197,94,0.4), transparent 60%);
-    opacity: 0.7;
-    filter: blur(6px);
-    z-index: -1;
-    animation: lp-value-pulse 3.2s ease-in-out infinite;
-  }
-
-  @keyframes lp-value-pulse {
-    0%, 100% { opacity: 0.4; transform: scale(0.96); }
-    50% { opacity: 0.85; transform: scale(1.04); }
-  }
-
-  .lp-dash-status-pill {
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(22, 163, 74, 0.2);
-    border: 1px solid rgba(34, 197, 94, 0.7);
-    font-size: 11px;
-    font-weight: 700;
-    color: #bbf7d0;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-  }
-
-  .lp-dash-split-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 6px;
-  }
-
-  .lp-dash-split-row .label {
-    display: block;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #9ca3af;
-    margin-bottom: 2px;
-  }
-
-  .lp-dash-split-row .value {
-    font-size: 13px;
-    font-weight: 600;
-    color: #e5e7eb;
-  }
-
-  .lp-dash-helper {
-    margin: 6px 0 0 0;
-    font-size: 11px;
-    color: #9ca3af;
-  }
-
-  .lp-dash-ref-text {
-    margin: 4px 0 0 0;
-    font-size: 11px;
-    color: #e5e7eb;
-    max-width: 260px;
-  }
-
-  .lp-dash-card-glow {
-    position: absolute;
-    inset: -60%;
-    background:
-      radial-gradient(circle at 0% 0%, rgba(34, 197, 94, 0.26), transparent 60%),
-      radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.26), transparent 55%);
-    opacity: 0.18;
-    mix-blend-mode: screen;
-    pointer-events: none;
-  }
-
-  .lp-dash-card-glow.ref {
-    background:
-      radial-gradient(circle at 0% 0%, rgba(236, 72, 153, 0.3), transparent 60%),
-      radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.3), transparent 55%);
-  }
-
-  .lp-ref-copy-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 6px;
-    background: rgba(15, 23, 42, 0.8);
-    color: #e5e7eb;
-    cursor: pointer;
-    margin-left: auto;
-    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.9);
-  }
-
-  .lp-ref-copy-btn:hover {
-    background: rgba(15, 23, 42, 1);
-    transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 10px 22px rgba(15, 23, 42, 1);
-  }
-
-  .lp-dashboard-loading {
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #e5e7eb;
-    font-size: 14px;
-  }
-
-  .lp-dash-recent {
-    margin-top: 10px;
-    border-radius: 24px;
-    border: 1px solid rgba(148, 163, 184, 0.6);
-    background: radial-gradient(circle at top, rgba(15,23,42,0.98), rgba(15,23,42,0.92));
-    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.95);
-    overflow: hidden;
-  }
-
-  .lp-dash-recent-header {
-    padding: 16px 16px 12px 16px;
-    border-bottom: 1px solid rgba(30, 64, 175, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .lp-dash-recent-header h2 {
-    margin: 0 0 2px 0;
-    font-size: 16px;
-    font-weight: 800;
-    color: #f9fafb;
-  }
-
-  .lp-dash-recent-header p {
-    margin: 0;
-    font-size: 12px;
-    color: #9ca3af;
-  }
-
-  .lp-dash-link-btn {
-    border: none;
-    background: transparent;
-    color: #a5b4fc;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-    position: relative;
-  }
-
-  .lp-dash-link-btn::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 -2px 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, #a5b4fc, transparent);
-    opacity: 0;
-    transform: scaleX(0.6);
-    transform-origin: center;
-    transition: opacity 0.25s, transform 0.25s;
-  }
-
-  .lp-dash-link-btn:hover::after {
-    opacity: 1;
-    transform: scaleX(1);
-  }
-
-  .lp-dash-table-wrapper {
-    padding: 2px 2px 14px 2px;
-    overflow-x: auto;
-  }
-
-  .lp-dash-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-
-  .lp-dash-table thead {
-    background: rgba(15, 23, 42, 0.9);
-  }
-
-  .lp-dash-table th,
-  .lp-dash-table td {
-    padding: 10px 14px;
-  }
-
-  .lp-dash-table th {
-    text-align: left;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #9ca3af;
-  }
-
-  .lp-dash-table th.th-right {
-    text-align: right;
-  }
-
-  .lp-dash-table th.th-center {
-    text-align: center;
-  }
-
-  .lp-dash-table tbody tr {
-    border-top: 1px solid rgba(30, 64, 175, 0.45);
-  }
-
-  .lp-dash-table tbody tr:last-child {
-    border-bottom: none;
-  }
-
-  .lp-dash-table td {
-    font-size: 12px;
-    color: #e5e7eb;
-  }
-
-  .lp-dash-table td.td-right {
-    text-align: right;
-  }
-
-  .lp-dash-table td.td-center {
-    text-align: center;
-  }
-
-  .lp-link-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .lp-link-main .slug {
-    font-weight: 700;
-    color: #e5e7eb;
-  }
-
-  .lp-link-main .url {
-    font-size: 11px;
-    color: #9ca3af;
-    max-width: 320px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .lp-mode-pill-table {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    background: rgba(15, 23, 42, 0.9);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #c7d2fe;
-  }
-
-  .lp-earn-pill {
-    display: inline-flex;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(22, 163, 74, 0.18);
-    color: #bbf7d0;
-    font-size: 12px;
-    font-weight: 700;
-    border: 1px solid rgba(34, 197, 94, 0.7);
-    box-shadow: 0 8px 24px rgba(22, 163, 74, 0.4);
-  }
-
-  .lp-dash-empty {
-    padding: 40px 18px 30px 18px;
-    text-align: center;
-    color: #9ca3af;
-    font-size: 13px;
-  }
-
-  .lp-dash-empty button {
-    margin-top: 10px;
-    border-radius: 999px;
-    border: none;
-    padding: 9px 18px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    background: linear-gradient(135deg, #4f46e5 0%, #22c55e 100%);
-    color: #f9fafb;
-  }
-
-  .lp-dash-empty button:hover {
-    filter: saturate(1.1);
-  }
-
-  .lp-dash-recent-list {
-    display: none;
-    padding: 10px 12px 14px 12px;
-  }
-
-  .lp-recent-card {
-    border-radius: 18px;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    background: rgba(15, 23, 42, 0.96);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .lp-recent-card .top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .lp-recent-card .info .slug {
-    font-weight: 700;
-    font-size: 13px;
-    color: #e5e7eb;
-  }
-
-  /* 🔥 Cambio: la URL en móvil ahora se parte dentro de la tarjeta y no se sale nunca */
-  .lp-recent-card .info .url {
-    font-size: 11px;
-    color: #9ca3af;
-    white-space: normal;
-    word-break: break-all;
-    hyphens: auto;
-  }
-
-  .lp-recent-card .earn {
-    background: rgba(22, 163, 74, 0.18);
-    color: #bbf7d0;
-    padding: 4px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-    border: 1px solid rgba(34, 197, 94, 0.7);
-    white-space: nowrap;
-  }
-
-  .lp-recent-card .bottom-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 3px;
-    font-size: 10px;
-    color: #9ca3af;
-  }
-
-  @media (min-width: 1024px) {
-    .lp-dashboard-inner {
-      max-width: 1180px;
-      padding: 32px 32px 110px 32px;
-      margin-left: 260px;
-      margin-right: 32px;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .lp-dash-stats-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 800px) {
-    .lp-dashboard-inner {
-      max-width: 520px;
-      padding: 20px 14px 100px 14px;
-      margin: 0 auto;
-    }
-
-    .lp-dash-header {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .lp-dash-title-row p {
-      font-size: 12px;
-    }
-
-    .lp-dash-stats-grid {
-      gap: 14px;
-    }
-
-    .lp-dash-card {
-      border-radius: 20px;
-      padding: 14px;
-    }
-
-    .lp-dash-main-value {
-      font-size: 22px;
-    }
-
-    .lp-dash-main-value.alt {
-      font-size: 20px;
-    }
-
-    .lp-dash-recent-header {
-      padding: 14px 14px 10px 14px;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .lp-dash-table-wrapper {
-      display: none;
-    }
-
-    .lp-dash-recent-list {
-      display: block;
-    }
-  }
-`;
+// Styles moved to ./Dashboard.css
