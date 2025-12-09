@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 import { useTranslation } from '../../i18n';
 import './Analytics.css';
 import {
@@ -28,9 +29,26 @@ export function AnalyticsPage() {
   const { t } = useTranslation();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  // ... (keep logic)
+  const [timeRange, setTimeRange] = useState('30d');
 
-  // ... (useEffect)
+  useEffect(() => {
+    loadData();
+  }, [timeRange]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const stats = await AnalyticsService.getDashboardData();
+      setData(stats);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setTimeout(() => setLoading(false), 500);
+    }
+  };
 
   const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
