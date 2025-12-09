@@ -134,38 +134,50 @@ export function RedirectPage() {
   // ========================
   // 3. TIMER & TRACKING (Prevent Bots)
   // ========================
-  useEffect(() => {
-    if (loading || error) return;
+  const [verifying, setVerifying] = useState(false);
+  const trackAttempted = useRef(false);
 
-    const timer = setInterval(() => {
+  useEffect(() => {
+    if (loading || error || trackAttempted.current) return;
+
+    const timer = setInterval(async () => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          setCanContinue(true);
 
-          // --- SECURE TRACKING TRIGGER ---
-          // Solo contamos la visita si el usuario esperó los 5 segundos.
-          const client = getClientInfo();
+          // Trigger verify and track
+          if (!trackAttempted.current) {
+            trackAttempted.current = true;
+            setVerifying(true);
 
-          if (slug === 'bio-redirect') {
-            // Tracking para Bio Page
-            const pid = searchParams.get('pid');
-            const mode = searchParams.get('m') || 'lite';
-            if (pid) {
-              BioService.trackLinkClick(pid, mode, {
-                country: client.country,
-                device: client.device,
-              }).catch(console.error);
-            }
-          } else if (slug) {
-            // Tracking para Smart Link normal
-            LinkService.trackClick(slug, {
-              device: client.device,
-              country: client.country,
-            }).catch(console.error);
+            const performTracking = async () => {
+              const client = getClientInfo();
+              try {
+                if (slug === 'bio-redirect') {
+                  const pid = searchParams.get('pid');
+                  const mode = searchParams.get('m') || 'lite';
+                  if (pid) {
+                    await BioService.trackLinkClick(pid, mode, {
+                      country: client.country,
+                      device: client.device,
+                    });
+                  }
+                } else if (slug) {
+                  await LinkService.trackClick(slug, {
+                    device: client.device,
+                    country: client.country,
+                  });
+                }
+              } catch (e) {
+                console.error("Tracking failed", e);
+              } finally {
+                setVerifying(false); // Stop spinner
+                setCanContinue(true); // Allow continue
+              }
+            };
+
+            performTracking();
           }
-          // -------------------------------
-
           return 0;
         }
         return prev - 1;
@@ -373,9 +385,18 @@ export function RedirectPage() {
         <div style={timeCircleWrapper}>
           {!canContinue ? (
             <div style={circleStyle}>
-              <Clock size={18} style={{ opacity: 0.9, marginBottom: 4 }} />
-              <div style={{ fontSize: 32, fontWeight: 900, lineHeight: 1 }}>{timeLeft}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.9 }}>segundos</div>
+              {verifying ? (
+                <>
+                  <Loader2 className="animate-spin" size={24} style={{ marginBottom: 8 }} />
+                  <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>SECURE</div>
+                </>
+              ) : (
+                <>
+                  <Clock size={18} style={{ opacity: 0.9, marginBottom: 4 }} />
+                  <div style={{ fontSize: 32, fontWeight: 900, lineHeight: 1 }}>{timeLeft}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.9 }}>segundos</div>
+                </>
+              )}
             </div>
           ) : (
             <button

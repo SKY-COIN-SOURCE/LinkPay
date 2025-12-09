@@ -109,9 +109,9 @@ export const BioService = {
   },
 
   trackView: async (profileId: string, mode: string) => {
-    // Mantenemos por compatibilidad, pero ya no inyectamos dinero aquí si no quieres
-    // const amount = BIO_RATES[mode as keyof typeof BIO_RATES] || 0.0001;
-    // await supabase.rpc('increment_bio_stats', { profile_row_id: profileId, amount });
+    // Registramos la visita visual (aunque pague 0, sirve para analytics)
+    const amount = 0;
+    await supabase.rpc('increment_bio_stats', { profile_row_id: profileId, amount });
   },
 
   // NUEVO: Pagar y loguear clic en enlace de Bio (se llama desde RedirectPage)
