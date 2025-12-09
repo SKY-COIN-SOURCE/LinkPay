@@ -26,8 +26,8 @@ export const LinkService = {
 
   // CREAR LINK (Ahora con opciones avanzadas)
   create: async (
-    originalUrl: string, 
-    customAlias?: string, 
+    originalUrl: string,
+    customAlias?: string,
     mode: 'lite' | 'standard' | 'turbo' = 'standard',
     advanced: { password?: string, expiresAt?: string, maxClicks?: number, isPrivate?: boolean } = {}
   ) => {
@@ -36,9 +36,9 @@ export const LinkService = {
 
     let slug = customAlias;
     if (!slug || slug.trim() === '') {
-       slug = Math.random().toString(36).substring(2, 8);
+      slug = Math.random().toString(36).substring(2, 8);
     } else {
-       slug = slug.trim().replace(/[^a-zA-Z0-9-_]/g, '');
+      slug = slug.trim().replace(/[^a-zA-Z0-9-_]/g, '');
     }
 
     const { data, error } = await supabase
@@ -65,7 +65,7 @@ export const LinkService = {
       if (error.code === '23505') throw new Error(`El alias "${slug}" ya está en uso.`);
       throw new Error("Error al guardar el enlace.");
     }
-    
+
     return data;
   },
 
@@ -77,50 +77,55 @@ export const LinkService = {
     return data;
   },
 
-// OBTENER LINK PÚBLICO (Con Validaciones de Seguridad)
-getLinkBySlug: async (slug: string) => {
-  const { data, error } = await supabase
-    .from('links')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .maybeSingle(); // 👈 importante
+  // OBTENER LINK PÚBLICO (Con Validaciones de Seguridad)
+  getLinkBySlug: async (slug: string) => {
+    const { data, error } = await supabase
+      .from('links')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .maybeSingle(); // 👈 importante
 
-  if (error) {
-    console.error('[getLinkBySlug] error', error);
-    throw error; // 👈 no lo ocultamos
-  }
+    if (error) {
+      console.error('[getLinkBySlug] error', error);
+      throw error; // 👈 no lo ocultamos
+    }
 
-  if (!data) {
-    return null; // slug realmente no existe
-  }
+    if (!data) {
+      return null; // slug realmente no existe
+    }
 
-  // 1. Validar Expiración por Fecha
-  if (data.expires_at && new Date(data.expires_at) < new Date()) {
-    return null; // Link caducado
-  }
+    // 1. Validar Expiración por Fecha
+    if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      return null; // Link caducado
+    }
 
-  // 2. Validar Expiración por Clics
-  if (data.max_clicks && data.views >= data.max_clicks) {
-    return null; // Link agotado
-  }
+    // 2. Validar Expiración por Clics
+    if (data.max_clicks && data.views >= data.max_clicks) {
+      return null; // Link agotado
+    }
 
-  return data;
-},
+    return data;
+  },
   trackClick: async (slug: string, deviceInfo: any) => {
-    const { data: link } = await supabase.from('links').select('id, monetization_mode').eq('slug', slug).single();
+    const { data: link } = await supabase.from('links').select('id').eq('slug', slug).single();
     if (!link) return;
 
-    const amountToPay = EARNING_RATES[link.monetization_mode as keyof typeof EARNING_RATES] || 0.0002;
+    // Call the secure RPC function (server-side logic)
+    // We send IP and User-Agent for anti-fraud
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json().catch(() => ({ ip: '0.0.0.0' }));
 
-    await supabase.from('clicks').insert({
-      link_id: link.id,
-      country: deviceInfo.country || 'Unknown',
-      device: deviceInfo.device || 'Desktop',
-      referrer: document.referrer || 'Direct'
+    const { error } = await supabase.rpc('track_link_click', {
+      p_link_id: link.id,
+      p_ip_address: ipData.ip || '0.0.0.0',
+      p_user_agent: navigator.userAgent,
+      p_country: deviceInfo.country || 'Unknown'
     });
 
-    await supabase.rpc('increment_stats', { link_row_id: link.id, amount: amountToPay });
+    if (error) {
+      console.error('[LinkService] Secure tracking error:', error);
+    }
   },
 
   deleteLink: async (id: string) => {

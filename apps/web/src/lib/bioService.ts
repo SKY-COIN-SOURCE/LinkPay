@@ -29,7 +29,7 @@ export interface BioProfile {
 const BIO_RATES = { lite: 0.0001, standard: 0.0005, turbo: 0.0015 };
 
 export const BioService = {
-  
+
   getOrCreateProfile: async (user: any) => {
     const { data: existing } = await supabase
       .from('bio_profiles')
@@ -70,7 +70,7 @@ export const BioService = {
       .select('*, links:bio_links(*)')
       .eq('username', username)
       .single();
-    
+
     if (data && data.links) data.links.sort((a: any, b: any) => a.order_index - b.order_index);
     return data;
   },
@@ -120,30 +120,19 @@ export const BioService = {
     mode: string,
     meta?: { country?: string; device?: string; referrer?: string }
   ) => {
-    const amount = BIO_RATES[mode as keyof typeof BIO_RATES] || 0.0001;
+    // SECURITY: We use the server-side RPC to track clicks and earnings
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json().catch(() => ({ ip: '0.0.0.0' }));
 
-    // 1) Actualizar earnings de la Bio
-    await supabase.rpc('increment_bio_stats', {
-      profile_row_id: profileId,
-      amount: amount
+    const { error } = await supabase.rpc('track_bio_click', {
+      p_profile_id: profileId,
+      p_ip_address: ipData.ip || '0.0.0.0',
+      p_user_agent: navigator.userAgent,
+      p_country: meta?.country || 'Unknown'
     });
 
-    // 2) Registrar clic detallado para Analytics
-    try {
-      const ref =
-        meta?.referrer ||
-        (typeof document !== 'undefined'
-          ? document.referrer || 'Direct'
-          : 'Direct');
-
-      await supabase.from('bio_clicks').insert({
-        profile_id: profileId,
-        country: meta?.country || 'Unknown',
-        device: meta?.device || 'Unknown',
-        referrer: ref
-      });
-    } catch (err) {
-      console.warn('[BioService.trackLinkClick] error logueando bio_click', err);
+    if (error) {
+      console.error('[BioService] Secure tracking error:', error);
     }
   }
 };

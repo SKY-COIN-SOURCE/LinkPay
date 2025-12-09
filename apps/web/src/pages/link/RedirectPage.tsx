@@ -63,15 +63,10 @@ export function RedirectPage() {
           });
           setLoading(false);
 
-          // Registrar click en Bio (dinero + analytics)
-          if (pid) {
-            BioService.trackLinkClick(pid, mode, {
-              country: client.country,
-              device: client.device,
-            }).catch(console.error);
-          }
+          // Registrar click en Bio (AHORA SE HACE EN EL TIMER)
+          // if (pid) BioService.trackLinkClick(...)
 
-        // ---- CASO B: Smart Link normal (tabla links) ----
+          // ---- CASO B: Smart Link normal (tabla links) ----
         } else if (slug) {
           try {
             const data = await LinkService.getLinkBySlug(slug);
@@ -80,13 +75,8 @@ export function RedirectPage() {
               setLinkData(data);
               setLoading(false);
 
-              const client = getClientInfo();
-
-              // Registrar click normal (tabla clicks)
-              LinkService.trackClick(slug, {
-                device: client.device,
-                country: client.country,
-              }).catch(console.error);
+              // Registrar click normal (AHORA SE HACE EN EL TIMER)
+              // LinkService.trackClick(...)
             } else {
               setError('Enlace no encontrado.');
               setLoading(false);
@@ -142,7 +132,7 @@ export function RedirectPage() {
   }, [loading, linkData]);
 
   // ========================
-  // 3. TIMER DE 5 SEGUNDOS
+  // 3. TIMER & TRACKING (Prevent Bots)
   // ========================
   useEffect(() => {
     if (loading || error) return;
@@ -152,6 +142,30 @@ export function RedirectPage() {
         if (prev <= 1) {
           clearInterval(timer);
           setCanContinue(true);
+
+          // --- SECURE TRACKING TRIGGER ---
+          // Solo contamos la visita si el usuario esperó los 5 segundos.
+          const client = getClientInfo();
+
+          if (slug === 'bio-redirect') {
+            // Tracking para Bio Page
+            const pid = searchParams.get('pid');
+            const mode = searchParams.get('m') || 'lite';
+            if (pid) {
+              BioService.trackLinkClick(pid, mode, {
+                country: client.country,
+                device: client.device,
+              }).catch(console.error);
+            }
+          } else if (slug) {
+            // Tracking para Smart Link normal
+            LinkService.trackClick(slug, {
+              device: client.device,
+              country: client.country,
+            }).catch(console.error);
+          }
+          // -------------------------------
+
           return 0;
         }
         return prev - 1;
@@ -159,7 +173,7 @@ export function RedirectPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loading, error]);
+  }, [loading, error, slug, searchParams]);
 
   const handleContinue = () => {
     if (linkData?.original_url) {
