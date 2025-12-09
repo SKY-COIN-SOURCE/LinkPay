@@ -3,34 +3,41 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Import languages
 import { es } from './es';
+import { en } from './en';
 
-type Language = 'es';
-type Translations = typeof es;
+export type Language = 'es' | 'en' | 'fr' | 'it'; // Add more as needed
+type Translations = typeof es; // Assume structure matches es
 
 // Helper to get nested properties
 function getNested(obj: any, path: string): string {
+    if (!obj) return path;
     return path.split('.').reduce((prev, curr) => {
         return prev ? prev[curr] : null;
     }, obj) || path;
 }
 
-interface I18nContextType {
+export interface I18nContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
     t: (key: string) => string;
 }
 
-const I18nContext = createContext<I18nContextType | undefined>(undefined);
+export const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
     const [language, setLanguage] = useState<Language>('es');
 
-    const translations: Record<Language, Translations> = {
+    const translations: Record<string, Translations> = {
         es,
+        en,
+        // Fallback for others to en or es
+        fr: en,
+        it: en
     };
 
     const t = (key: string) => {
-        const text = getNested(translations[language], key);
+        const langData = translations[language] || translations['es'];
+        const text = getNested(langData, key);
         return text;
     };
 

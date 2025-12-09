@@ -13,22 +13,24 @@ import {
   Cpu,
   Users,
 } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, setLanguage, language } = useTranslation();
 
   // NAV DEFINITIVA
   const navItems = [
-    { icon: LayoutDashboard, label: 'Resumen',          path: '/app' },
-    { icon: PlusSquare,      label: 'Crear Link',       path: '/app/create' },
-    { icon: Smartphone,      label: 'Bio Page',         path: '/app/bio-editor' },
-    { icon: BarChart2,       label: 'Analytics',        path: '/app/analytics' },
-    { icon: Link2,           label: 'Mis Enlaces',      path: '/app/links' },
-    { icon: Wallet,          label: 'Finanzas',         path: '/app/payouts' },
-    { icon: Users,           label: 'Red de Referidos', path: '/app/referrals' },
-    { icon: Settings,        label: 'Ajustes',          path: '/app/settings' },
-    { icon: Cpu,             label: 'Tecnología',       path: '/app/technology' },
+    { icon: LayoutDashboard, label: 'Resumen', path: '/app' },
+    { icon: PlusSquare, label: 'Crear Link', path: '/app/create' },
+    { icon: Smartphone, label: 'Bio Page', path: '/app/bio-editor' },
+    { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
+    { icon: Link2, label: 'Mis Enlaces', path: '/app/links' },
+    { icon: Wallet, label: 'Finanzas', path: '/app/payouts' },
+    { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
+    { icon: Settings, label: 'Ajustes', path: '/app/settings' },
+    { icon: Cpu, label: 'Tecnología', path: '/app/technology' },
   ];
 
   const mobileNavItems = navItems;
@@ -75,6 +77,32 @@ export function AppLayout() {
         </nav>
 
         <div className="lp-sidebar-footer">
+          <div className="lp-lang-switcher">
+            <button
+              className={`lp-lang-btn ${language === 'es' ? 'active' : ''}`}
+              onClick={() => setLanguage('es')}
+            >
+              ES
+            </button>
+            <button
+              className={`lp-lang-btn ${language === 'en' ? 'active' : ''}`}
+              onClick={() => setLanguage('en')}
+            >
+              EN
+            </button>
+            <button
+              className={`lp-lang-btn ${language === 'fr' ? 'active' : ''}`}
+              onClick={() => setLanguage('fr')}
+            >
+              FR
+            </button>
+            <button
+              className={`lp-lang-btn ${language === 'it' ? 'active' : ''}`}
+              onClick={() => setLanguage('it')}
+            >
+              IT
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => navigate('/login')}
@@ -130,6 +158,7 @@ const layoutStyles = `
     color: #e5e7eb;
     font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
+
 
   /* ===== SIDEBAR DESKTOP ===== */
   .lp-sidebar-desktop {
@@ -314,7 +343,41 @@ const layoutStyles = `
     border-top: 1px solid rgba(30, 64, 175, 0.7);
     padding-top: 12px;
     margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
+
+  .lp-lang-switcher {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+
+  .lp-lang-btn {
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    color: #9ca3af;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .lp-lang-btn:hover {
+    border-color: rgba(148, 163, 184, 0.8);
+    color: #e5e7eb;
+  }
+
+  .lp-lang-btn.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #60a5fa;
+  }
+
 
   .lp-logout-btn {
     width: 100%;

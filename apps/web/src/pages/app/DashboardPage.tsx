@@ -143,7 +143,7 @@ export function DashboardPage() {
     }
   };
 
-  // Números animados (solo visual)
+  // Números animados (solo visual) - HOOKS MUST BE BEFORE CONDITIONAL RETURNS
   const animatedRevenue = useCountTo(stats.revenue);
   const animatedClicks = useCountTo(stats.clicks);
   const animatedRPM = useCountTo(stats.rpm);
