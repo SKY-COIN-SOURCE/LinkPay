@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { LinkService, Link } from '../../lib/linkService';
 import { AnalyticsService } from '../../lib/analyticsService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 // Hook para animar números (Count Up)
 function useCountTo(end: number, duration = 2000) {
@@ -52,26 +53,82 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const [links, setLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
+
+  // Real-time calculated stats
+  const [realtimeStats, setRealtimeStats] = useState({
     totalRevenue: 0,
     linkRevenue: 0,
     bioRevenue: 0,
     totalClicks: 0,
     linkClicks: 0,
-    bioClicks: 0,
-    referralEarnings: 0,
-    activeLinks: 0
+    bioClicks: 0, // This might need separate handling if not in 'links'
   });
 
-  // Valores animados
-  const animatedRevenue = useCountTo(stats?.totalRevenue || 0, 2500);
-  const animatedClicks = useCountTo(stats?.totalClicks || 0, 2000);
-  const animatedReferrals = useCountTo(stats?.referralEarnings || 0, 2200);
-  const animatedRPM = 1.22; // Hardcoded en el diseño original, podrías animarlo si vienes de BD
+  // Historical data for charts
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  // Animated values
+  const animatedRevenue = useCountTo(realtimeStats.totalRevenue, 1500);
+  const animatedClicks = useCountTo(realtimeStats.totalClicks, 1500);
+  const animatedReferrals = useCountTo(0, 2000); // Placeholder for now
+
+  // Visual Trigger State
+  const [revenueIncreased, setRevenueIncreased] = useState(false);
 
   useEffect(() => {
     loadDashboard();
+
+    // REAL-TIME SUBSCRIPTION
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'links' },
+        (payload) => {
+          handleRealtimeEvent(payload);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
+  const handleRealtimeEvent = (payload: any) => {
+    if (payload.eventType === 'INSERT') {
+      setLinks(prev => [payload.new, ...prev]);
+    } else if (payload.eventType === 'UPDATE') {
+      setLinks(prev => prev.map(l => l.id === payload.new.id ? payload.new : l));
+      // Visual feedback if earnings increased
+      if (payload.new.earnings > (payload.old?.earnings || 0)) {
+        triggerRevenuePulse();
+      }
+    } else if (payload.eventType === 'DELETE') {
+      setLinks(prev => prev.filter(l => l.id !== payload.old.id));
+    }
+  };
+
+  const triggerRevenuePulse = () => {
+    setRevenueIncreased(true);
+    setTimeout(() => setRevenueIncreased(false), 2000);
+  };
+
+  // Recalculate stats whenever 'links' changes
+  useEffect(() => {
+    if (links.length > 0) {
+      const linkRev = links.reduce((acc, curr) => acc + (curr.earnings || 0), 0);
+      const linkClx = links.reduce((acc, curr) => acc + (curr.views || 0), 0);
+
+      setRealtimeStats(prev => ({
+        ...prev,
+        linkRevenue: linkRev,
+        totalRevenue: linkRev + prev.bioRevenue, // Bio revenue is additive
+        linkClicks: linkClx,
+        totalClicks: linkClx + prev.bioClicks
+      }));
+    }
+  }, [links]);
 
   const loadDashboard = async () => {
     try {
@@ -83,12 +140,29 @@ export function DashboardPage() {
         LinkService.getAll()
       ]);
 
-      setStats(dashData);
-      setLinks(linksData);
+      // Set historical chart data
+      if (dashData?.timeline) {
+        setChartData(dashData.timeline);
+      }
+
+      // Initial stats population
+      if (linksData) {
+        setLinks(linksData);
+
+        // Safe access with any cast since the service type might be inferred strictly
+        const safeDashData = dashData as any;
+
+        setRealtimeStats(prev => ({
+          ...prev,
+          bioRevenue: safeDashData?.bioRevenue || 0,
+          bioClicks: safeDashData?.bioClicks || 0,
+        }));
+      }
+
     } catch (e) {
       console.error(e);
     } finally {
-      setTimeout(() => setLoading(false), 800); // Un poco más para apreciar el loader
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
@@ -103,19 +177,15 @@ export function DashboardPage() {
 
   const visibleLinks = links.slice(0, 5);
 
-  // Variantes de animación para la Grid
-  const gridVariants = {
+  const gridVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
     }
   };
 
-  const cardVariants = {
+  const cardVariants: any = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
     visible: {
       opacity: 1,
@@ -168,33 +238,44 @@ export function DashboardPage() {
           animate="visible"
         >
 
-          {/* CARD 1: REVENUE (Primary High-Tech) */}
+          {/* CARD 1: REVENUE */}
           <motion.div
-            className="lp-dashboard-card lp-card-green"
+            className={`lp-dashboard-card lp-card-green ${revenueIncreased ? 'pulse-green' : ''}`}
             variants={cardVariants}
             whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.25)" }}
           >
             <div className="lp-stat-header">
               <div className="lp-stat-icon"><DollarSign size={24} /></div>
-              <div className="lp-trend-badge"><TrendingUp size={12} /> +12%</div>
+              <div className="lp-trend-badge"><TrendingUp size={12} /> LIVE</div>
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.revenue.label')}</div>
               <div className="lp-stat-value">€{animatedRevenue.toFixed(4)}</div>
+
+              {/* Mini Sparkline (Simulated presence for UI) */}
+              <div className="h-1 w-full bg-slate-800/50 rounded-full mt-2 mb-4 overflow-hidden">
+                <motion.div
+                  className="h-full bg-green-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2, ease: "circOut" }}
+                />
+              </div>
+
               <div className="lp-substats">
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">{t('dashboard.stats.revenue.links')}</span>
-                  <span className="lp-substat-value">€{(stats?.linkRevenue || 0).toFixed(4)}</span>
+                  <span className="lp-substat-value">€{realtimeStats.linkRevenue.toFixed(4)}</span>
                 </div>
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">{t('dashboard.stats.revenue.bio')}</span>
-                  <span className="lp-substat-value">€{(stats?.bioRevenue || 0).toFixed(4)}</span>
+                  <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* CARD 2: CLICKS */}
+          {/* CARD 2: CLICKS (With Chart) */}
           <motion.div
             className="lp-dashboard-card lp-card-blue"
             variants={cardVariants}
@@ -202,19 +283,41 @@ export function DashboardPage() {
           >
             <div className="lp-stat-header">
               <div className="lp-stat-icon"><MousePointer2 size={24} /></div>
-              <div className="lp-trend-badge" style={{ color: '#60a5fa', background: 'rgba(59, 130, 246, 0.1)' }}><Activity size={12} /> +5%</div>
+              <div className="lp-trend-badge" style={{ color: '#60a5fa', background: 'rgba(59, 130, 246, 0.1)' }}>
+                <Activity size={12} /> +5%
+              </div>
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
               <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
-              <div className="lp-substats">
+
+              {/* Tiny Chart */}
+              <div className="h-[30px] w-full mt-2 opacity-60">
+                {chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <Area type="monotone" dataKey="clicks" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorClicks)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full w-full bg-slate-800/30 rounded animate-pulse" />
+                )}
+              </div>
+
+              <div className="lp-substats mt-2">
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">LINKS</span>
-                  <span className="lp-substat-value">{stats?.linkClicks || 0}</span>
+                  <span className="lp-substat-value">{realtimeStats.linkClicks}</span>
                 </div>
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">BIO PAGE</span>
-                  <span className="lp-substat-value">{stats?.bioClicks || 0}</span>
+                  <span className="lp-substat-value">{realtimeStats.bioClicks}</span>
                 </div>
               </div>
             </div>
@@ -252,7 +355,7 @@ export function DashboardPage() {
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.rpm.label')}</div>
-              <div className="lp-stat-value">€{animatedRPM}</div>
+              <div className="lp-stat-value">€1.22</div>
               <p className="text-xs text-slate-400 mt-2 opacity-80">
                 {t('dashboard.stats.rpm.help') || 'Average revenue per 1k visits'}
               </p>
@@ -302,7 +405,7 @@ export function DashboardPage() {
                 </div>
                 <div className="text-right min-w-[80px]">
                   <div className="lp-link-money">€{(link.earnings || 0).toFixed(4)}</div>
-                  <div className="text-xs text-slate-500">{link.clicks || 0} clicks</div>
+                  <div className="text-xs text-slate-500">{link.views || 0} clicks</div>
                 </div>
               </motion.div>
             ))}
