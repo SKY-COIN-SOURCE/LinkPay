@@ -36,7 +36,14 @@ export const fr = {
         },
         recent: {
             title: 'Activité Récente',
-            subtitle: 'Derniers liens créés et leurs revenus.'
+            subtitle: 'Derniers liens créés et leurs revenus.',
+            view_all: 'Voir tout',
+            table: {
+                link: 'LIEN',
+                mode: 'MODE',
+                visits: 'VISITES',
+                revenue: 'REVENUS'
+            }
         },
         loading_text: 'Synchronisation des données financières...'
     },

@@ -36,7 +36,14 @@ export const es = {
         },
         recent: {
             title: 'Actividad reciente',
-            subtitle: 'Últimos Smart Links creados y cuánto están generando.'
+            subtitle: 'Últimos Smart Links creados y cuánto están generando.',
+            view_all: 'Ver todos',
+            table: {
+                link: 'ENLACE',
+                mode: 'MODO',
+                visits: 'VISITAS',
+                revenue: 'INGRESOS'
+            }
         },
         loading_text: 'Sincronizando datos financieros...'
     },

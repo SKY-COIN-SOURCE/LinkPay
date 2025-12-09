@@ -38,6 +38,7 @@ export function BioEditorPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'links' | 'appearance' | 'settings'>('links');
   const [saving, setSaving] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
 
   // Sensores de drag & drop
   const sensors = useSensors(
@@ -202,7 +203,7 @@ export function BioEditorPage() {
     );
   }
 
-  const [showMobilePreview, setShowMobilePreview] = useState(false);
+
 
   // ESTILOS RESPONSIVOS
   const css = `

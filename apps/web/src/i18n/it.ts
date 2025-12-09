@@ -36,7 +36,14 @@ export const it = {
         },
         recent: {
             title: 'Attività Recente',
-            subtitle: 'Ultimi Smart Links creati e i loro guadagni.'
+            subtitle: 'Ultimi Smart Links creati e i loro guadagni.',
+            view_all: 'Vedi tutti',
+            table: {
+                link: 'LINK',
+                mode: 'MODO',
+                visits: 'VISITE',
+                revenue: 'RICAVI'
+            }
         },
         loading_text: 'Sincronizzazione dati finanziari...'
     },
