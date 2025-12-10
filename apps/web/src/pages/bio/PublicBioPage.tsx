@@ -1,7 +1,38 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { BioService } from '../../lib/bioService';
-import { Loader2, Zap } from 'lucide-react';
+import {
+  Loader2,
+  Zap,
+  Instagram,
+  Twitter,
+  Youtube,
+  Twitch,
+  Github,
+  Linkedin,
+  Facebook,
+  Music,
+  ShoppingBag,
+  Mail,
+  Globe,
+  Link as LinkIcon
+} from 'lucide-react';
+
+// Social Icons Map
+const SOCIAL_ICONS: Record<string, { icon: any; color: string }> = {
+  instagram: { icon: Instagram, color: '#E4405F' },
+  twitter: { icon: Twitter, color: '#1DA1F2' },
+  youtube: { icon: Youtube, color: '#FF0000' },
+  twitch: { icon: Twitch, color: '#9146FF' },
+  github: { icon: Github, color: '#333' },
+  linkedin: { icon: Linkedin, color: '#0A66C2' },
+  facebook: { icon: Facebook, color: '#1877F2' },
+  tiktok: { icon: Music, color: '#000' },
+  shop: { icon: ShoppingBag, color: '#16a34a' },
+  email: { icon: Mail, color: '#EA4335' },
+  website: { icon: Globe, color: '#6366f1' },
+  link: { icon: LinkIcon, color: '#64748b' },
+};
 
 export function PublicBioPage() {
   const { username } = useParams<{ username: string }>();
@@ -21,6 +52,41 @@ export function PublicBioPage() {
     };
     load();
   }, [username]);
+
+  // SEO: Dynamic meta tags
+  useEffect(() => {
+    if (!profile) return;
+
+    // Title
+    document.title = `${profile.display_name} | LinkPay`;
+
+    // Meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', profile.description || `Visita los enlaces de ${profile.display_name}`);
+
+    // Open Graph
+    const setOG = (property: string, content: string) => {
+      let tag = document.querySelector(`meta[property="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    setOG('og:title', `${profile.display_name} | LinkPay`);
+    setOG('og:description', profile.description || `Visita los enlaces de ${profile.display_name}`);
+    setOG('og:type', 'profile');
+    if (profile.avatar_url) setOG('og:image', profile.avatar_url);
+    setOG('og:url', window.location.href);
+
+  }, [profile]);
 
   if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}><Loader2 className="animate-spin text-slate-400" /></div>;
 
@@ -71,10 +137,44 @@ export function PublicBioPage() {
     if (profile.button_style === 'square') shape = { borderRadius: '0px' };
     if (profile.button_style === 'pill') shape = { borderRadius: '100px' };
 
-    let color = {};
-    if (profile.button_style === 'shadow') {
+    let color: any = {};
+
+    if (profile.button_style === 'outline') {
+      // Outline - Solo borde, fondo transparente
+      const borderColor = profile.accent_color || 'white';
+      color = {
+        background: 'transparent',
+        color: borderColor,
+        border: `2px solid ${borderColor}`,
+        boxShadow: 'none'
+      };
+    } else if (profile.button_style === 'glass') {
+      // Glass - Semitransparente grisáceo
+      color = {
+        background: 'rgba(255,255,255,0.1)',
+        color: 'white',
+        border: '1px solid rgba(255,255,255,0.2)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+      };
+    } else if (profile.button_style === 'shadow') {
       shape = { borderRadius: '12px' };
-      color = { background: 'white', color: 'black', border: '2px solid black', boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' };
+      const accentBg = profile.accent_color || 'white';
+      const isDarkAccent = profile.accent_color && parseInt(profile.accent_color.replace('#', ''), 16) < 0x888888;
+      color = {
+        background: accentBg,
+        color: isDarkAccent ? 'white' : 'black',
+        border: '2px solid black',
+        boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)'
+      };
+    } else if (profile.accent_color) {
+      // Use accent color for button background
+      color = {
+        background: profile.accent_color,
+        color: 'white',
+        border: 'none',
+        boxShadow: `0 4px 14px ${profile.accent_color}40`
+      };
     } else {
       const isLight = ['light'].includes(profile.theme);
       color = isLight
@@ -100,7 +200,13 @@ export function PublicBioPage() {
 
   return (
     <div style={containerStyle}>
-      <style>{`.animate-spin { animation: spin 1s linear infinite; }`}</style>
+      <style>{`
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
 
       <div style={{ width: '100%', maxWidth: '600px', textAlign: 'center' }}>
 
@@ -120,28 +226,178 @@ export function PublicBioPage() {
         </p>
 
         <div style={{ width: '100%', paddingBottom: '80px' }}>
-          {profile.links?.filter((l: any) => l.active !== false).map((link: any) => (
+          {/* CTA Principal */}
+          {profile.cta_text && profile.cta_url && (
             <a
-              key={link.id}
-              href={link.url}
-              onClick={(e) => handleLinkClick(e, link)} // <--- INTERCEPTAMOS EL CLIC
-              style={getButtonStyle()}
-              onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
-              onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              href={profile.cta_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                padding: '18px 24px',
+                marginBottom: '24px',
+                textDecoration: 'none',
+                fontWeight: 800,
+                fontSize: '17px',
+                borderRadius: '100px',
+                background: profile.accent_color || 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                color: 'white',
+                border: 'none',
+                boxShadow: `0 4px 20px ${profile.accent_color || '#f59e0b'}60, 0 0 0 4px ${profile.accent_color || '#f59e0b'}20`,
+                cursor: 'pointer',
+                animation: 'fadeInUp 0.4s ease-out both',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                gap: '10px'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'scale(1.03)';
+                e.currentTarget.style.boxShadow = `0 6px 25px ${profile.accent_color || '#f59e0b'}80`;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = `0 4px 20px ${profile.accent_color || '#f59e0b'}60, 0 0 0 4px ${profile.accent_color || '#f59e0b'}20`;
+              }}
             >
-              {link.thumbnail_url && (
-                <img
-                  src={link.thumbnail_url}
-                  style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}
-                  alt=""
-                />
-              )}
-              <span style={{ flex: 1, textAlign: 'center', padding: link.thumbnail_url ? '0 40px' : '0' }}>
-                {link.title}
-              </span>
+              <Zap size={20} fill="currentColor" />
+              {profile.cta_text}
             </a>
-          ))}
+          )}
+
+          {profile.links?.filter((l: any) => l.active !== false).map((link: any, index: number) => {
+            const socialIcon = link.icon && SOCIAL_ICONS[link.icon];
+            const IconComponent = socialIcon?.icon;
+            const blockType = link.block_type || 'link';
+
+            // Header Block
+            if (blockType === 'header') {
+              return (
+                <div
+                  key={link.id}
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    color: ['light'].includes(profile.theme) ? '#1f2937' : 'white',
+                    opacity: 0.9,
+                    margin: '24px 0 16px',
+                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
+                  }}
+                >
+                  {link.title}
+                </div>
+              );
+            }
+
+            // Divider Block
+            if (blockType === 'divider') {
+              return (
+                <div
+                  key={link.id}
+                  style={{
+                    width: '100%',
+                    height: '1px',
+                    background: ['light'].includes(profile.theme) ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)',
+                    margin: '16px 0',
+                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
+                  }}
+                />
+              );
+            }
+
+            // Spotlight Block (highlighted link)
+            if (blockType === 'spotlight') {
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  onClick={(e) => handleLinkClick(e, link)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    padding: '20px 24px',
+                    marginBottom: '16px',
+                    textDecoration: 'none',
+                    fontWeight: 800,
+                    fontSize: '17px',
+                    borderRadius: '16px',
+                    background: `linear-gradient(135deg, ${profile.accent_color || '#f59e0b'} 0%, ${profile.accent_color ? profile.accent_color + 'cc' : '#fbbf24'} 100%)`,
+                    color: 'white',
+                    border: 'none',
+                    boxShadow: `0 8px 30px ${profile.accent_color || '#f59e0b'}40`,
+                    cursor: 'pointer',
+                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both, pulse 2s ease-in-out infinite`,
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    gap: '10px'
+                  }}
+                  onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+                  onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  ⭐ {link.title}
+                </a>
+              );
+            }
+
+            // Normal/Monetized/Paywall Link (default)
+            return (
+              <a
+                key={link.id}
+                href={link.url}
+                onClick={(e) => handleLinkClick(e, link)}
+                style={{
+                  ...getButtonStyle(),
+                  animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
+                }}
+                onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+                onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                {/* Social Icon con color de marca */}
+                {IconComponent && (
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    background: socialIcon.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                    left: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                  }}>
+                    <IconComponent size={20} />
+                  </div>
+                )}
+                {/* Thumbnail si no hay icono */}
+                {link.thumbnail_url && !link.icon && (
+                  <img
+                    src={link.thumbnail_url}
+                    style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}
+                    alt=""
+                  />
+                )}
+                {/* Indicador de tipo monetizado/paywall */}
+                {link.link_type === 'monetized' && (
+                  <span style={{ position: 'absolute', right: '10px', fontSize: '10px', background: '#22c55e', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>💰</span>
+                )}
+                {link.link_type === 'paywall' && (
+                  <span style={{ position: 'absolute', right: '10px', fontSize: '10px', background: '#f97316', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>⚡</span>
+                )}
+                <span style={{ flex: 1, textAlign: 'center', padding: (link.thumbnail_url || link.icon) ? '0 40px' : '0' }}>
+                  {link.title}
+                </span>
+              </a>
+            );
+          })}
         </div>
 
         <div style={{ position: 'fixed', bottom: '24px', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>

@@ -6,6 +6,9 @@ export interface BioLink {
   url: string;
   active: boolean;
   thumbnail_url?: string;
+  icon?: string;
+  link_type?: 'normal' | 'monetized' | 'paywall';
+  block_type?: 'link' | 'header' | 'divider' | 'spotlight';
   clicks: number;
   order_index: number;
 }
@@ -19,8 +22,11 @@ export interface BioProfile {
   avatar_url: string;
   background_url?: string;
   theme: 'light' | 'dark' | 'blue' | 'gradient' | 'custom';
-  button_style: 'rounded' | 'square' | 'pill' | 'shadow';
+  button_style: 'rounded' | 'square' | 'pill' | 'shadow' | 'outline' | 'glass';
   monetization_mode: 'lite' | 'standard' | 'turbo';
+  accent_color?: string;
+  cta_text?: string;
+  cta_url?: string;
   links: BioLink[];
   earnings?: number;
   views?: number;
