@@ -35,10 +35,14 @@ import {
   ShoppingBag,
   Mail,
   Globe,
-  Link as LinkIcon
+  Link as LinkIcon,
+  User,
+  Camera,
+  Sparkles
 } from 'lucide-react';
-import { BioService, BioProfile } from '../../lib/bioService';
+import { BioService, BioProfile, BioLink } from '../../lib/bioService';
 import { supabase } from '../../lib/supabase';
+import { useToast, useConfirm } from '../../components/ui/Toast';
 import './BioEditor.css'; // V3 Styles
 
 // Drag & Drop
@@ -58,12 +62,30 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+// === TYPESCRIPT INTERFACES ===
+interface LinkCardV3Props {
+  link: BioLink;
+  onUpdate: (id: string, field: string, value: any) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  onThumbnailUpload: (linkId: string, file: File) => Promise<void>;
+}
+
+interface LivePreviewProps {
+  profile: BioProfile;
+}
+
 export function BioEditorPage() {
   const [profile, setProfile] = useState<BioProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'links' | 'appearance' | 'earn' | 'settings'>('links');
   const [saving, setSaving] = useState(false);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
+
+  // Toast & Confirm hooks
+  const toast = useToast();
+  const { confirm, ConfirmDialog } = useConfirm();
 
   // Expanded card state
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
@@ -103,17 +125,26 @@ export function BioEditorPage() {
     const tempId = 'temp-' + Date.now();
     const newLink = {
       id: tempId,
-      title: '',
+      title: 'Nuevo enlace',
       url: '',
       active: true,
       clicks: 0,
       block_type: 'link' as const,
       order_index: (profile.links?.length || 0) + 1
     };
+    // Optimistic update
     setProfile({ ...profile, links: [...profile.links, newLink] });
-    setExpandedLinkId(tempId); // Auto expand new link
-    await BioService.addLink(profile.id, 'Nuevo enlace', '');
-    loadProfile();
+    setExpandedLinkId(tempId);
+
+    // Server call - replace temp with real ID
+    const created = await BioService.addLink(profile.id, 'Nuevo enlace', '');
+    if (created) {
+      setProfile(prev => prev ? {
+        ...prev,
+        links: prev.links.map(l => l.id === tempId ? { ...created } : l)
+      } : prev);
+      setExpandedLinkId(created.id);
+    }
   };
 
   const addSpecialBlock = async (blockType: 'header' | 'divider' | 'spotlight') => {
@@ -133,10 +164,19 @@ export function BioEditorPage() {
       block_type: blockType,
       order_index: (profile.links?.length || 0) + 1
     };
+    // Optimistic update
     setProfile({ ...profile, links: [...profile.links, newBlock] });
     if (blockType !== 'divider') setExpandedLinkId(tempId);
-    await BioService.addLink(profile.id, titles[blockType], blockType === 'divider' ? '' : '#');
-    loadProfile();
+
+    // Server call with options
+    const created = await BioService.addLink(profile.id, titles[blockType], blockType === 'divider' ? '' : '#', { block_type: blockType });
+    if (created) {
+      setProfile(prev => prev ? {
+        ...prev,
+        links: prev.links.map(l => l.id === tempId ? { ...created } : l)
+      } : prev);
+      if (blockType !== 'divider') setExpandedLinkId(created.id);
+    }
   };
 
   const updateLink = async (id: string, field: string, value: any) => {
@@ -152,9 +192,11 @@ export function BioEditorPage() {
 
   const deleteLink = async (id: string) => {
     if (!profile) return;
-    if (!confirm('¿Eliminar este enlace permanentemente?')) return;
+    const confirmed = await confirm('Eliminar enlace', '¿Estás seguro de que quieres eliminar este enlace permanentemente?', 'danger');
+    if (!confirmed) return;
     setProfile({ ...profile, links: profile.links.filter((l: any) => l.id !== id) });
     await BioService.deleteLink(id);
+    toast.success('Enlace eliminado');
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -179,7 +221,7 @@ export function BioEditorPage() {
         updateProfile('theme', 'custom');
       }
     } catch (err) {
-      alert('Error local: ' + err);
+      toast.error('Error al subir imagen');
     } finally {
       setSaving(false);
     }
@@ -193,7 +235,7 @@ export function BioEditorPage() {
       await updateLink(linkId, 'thumbnail_url', url);
     } catch (err) {
       console.error('Thumbnail upload failed:', err);
-      alert('Error al subir miniatura');
+      toast.error('Error al subir miniatura');
     }
   };
 
@@ -202,20 +244,26 @@ export function BioEditorPage() {
 
   return (
     <div className="lp-bio-shell-v3">
-      {/* MOBILE PREVIEW FAB */}
+      {/* MOBILE PREVIEW FAB - IMPROVED */}
       <button
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-2xl md:hidden text-black"
+        className="lp-preview-fab md:hidden"
         onClick={() => setShowMobilePreview(true)}
       >
-        <Eye size={24} />
+        <Eye size={18} />
+        <span>Vista Previa</span>
       </button>
 
-      {/* MOBILE PREVIEW MODAL */}
+      {/* MOBILE PREVIEW MODAL - IMPROVED */}
       {showMobilePreview && (
-        <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center backdrop-blur-sm p-4">
-          <button className="absolute top-4 right-4 text-white bg-white/10 px-4 py-2 rounded-full" onClick={() => setShowMobilePreview(false)}>Cerrar</button>
-          <div className="w-full h-full max-w-[360px] max-h-[700px] border-[8px] border-slate-800 rounded-[40px] overflow-hidden bg-white">
-            <iframe src={`/b/${profile.username}`} className="w-full h-full border-none" />
+        <div className="lp-preview-modal-overlay" onClick={() => setShowMobilePreview(false)}>
+          <div className="lp-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="lp-preview-modal-header">
+              <span>Vista Previa en Vivo</span>
+              <button onClick={() => setShowMobilePreview(false)}>✕</button>
+            </div>
+            <div className="lp-preview-modal-frame">
+              <LivePreview profile={profile} />
+            </div>
           </div>
         </div>
       )}
@@ -238,11 +286,39 @@ export function BioEditorPage() {
           </div>
 
           <div className="lp-tabs-container">
-            <div className="lp-tabs-list">
-              <div className={`lp-tab ${activeTab === 'links' ? 'active' : ''}`} onClick={() => setActiveTab('links')}>Enlaces</div>
-              <div className={`lp-tab ${activeTab === 'appearance' ? 'active' : ''}`} onClick={() => setActiveTab('appearance')}>Apariencia</div>
-              <div className={`lp-tab ${activeTab === 'earn' ? 'active' : ''}`} onClick={() => setActiveTab('earn')}>Earn</div>
-              <div className={`lp-tab ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>Ajustes</div>
+            <div className="lp-tabs-list" role="tablist" aria-label="Editor sections">
+              <button
+                role="tab"
+                aria-selected={activeTab === 'links'}
+                className={`lp-tab ${activeTab === 'links' ? 'active' : ''}`}
+                onClick={() => setActiveTab('links')}
+              >
+                Enlaces
+              </button>
+              <button
+                role="tab"
+                aria-selected={activeTab === 'appearance'}
+                className={`lp-tab ${activeTab === 'appearance' ? 'active' : ''}`}
+                onClick={() => setActiveTab('appearance')}
+              >
+                Apariencia
+              </button>
+              <button
+                role="tab"
+                aria-selected={activeTab === 'earn'}
+                className={`lp-tab ${activeTab === 'earn' ? 'active' : ''}`}
+                onClick={() => setActiveTab('earn')}
+              >
+                Earn
+              </button>
+              <button
+                role="tab"
+                aria-selected={activeTab === 'settings'}
+                className={`lp-tab ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('settings')}
+              >
+                Ajustes
+              </button>
             </div>
           </div>
 
@@ -293,240 +369,320 @@ export function BioEditorPage() {
                 </>
               )}
 
-              {/* --- APPEARANCE TAB --- */}
+              {/* --- APPEARANCE TAB - PREMIUM REDESIGN --- */}
               {activeTab === 'appearance' && (
-                <>
-                  <div className="lp-section-title">Perfil</div>
-                  <div className="lp-profile-edit">
-                    <label className="lp-avatar-upload">
-                      {profile.avatar_url ? (
-                        <img src={profile.avatar_url} />
-                      ) : (
-                        <div className="lp-avatar-placeholder">{profile.username[0]}</div>
-                      )}
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'avatar')} />
-                    </label>
+                <div className="lp-appearance-container">
 
-                    <div className="lp-form-group">
-                      <input
-                        className="lp-input-field"
-                        value={profile.display_name}
-                        onChange={(e) => updateProfile('display_name', e.target.value)}
-                        placeholder="Título del Perfil"
-                      />
+                  {/* PROFILE CARD */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box">
+                        <User size={18} />
+                      </div>
+                      <div>
+                        <h3>Perfil</h3>
+                        <p>Tu foto y datos principales</p>
+                      </div>
                     </div>
-                    <div className="lp-form-group">
-                      <textarea
-                        className="lp-textarea-field"
-                        value={profile.description}
-                        onChange={(e) => updateProfile('description', e.target.value)}
-                        placeholder="Biografía corta..."
-                      />
+
+                    <div className="lp-profile-row">
+                      <label className="lp-avatar-upload-v2">
+                        {profile.avatar_url ? (
+                          <img src={profile.avatar_url} alt="Avatar" />
+                        ) : (
+                          <div className="lp-avatar-placeholder-v2">{profile.username[0]?.toUpperCase()}</div>
+                        )}
+                        <div className="lp-avatar-edit-overlay">
+                          <Camera size={16} />
+                        </div>
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'avatar')} />
+                      </label>
+
+                      <div className="lp-settings-fields" style={{ flex: 1 }}>
+                        <div className="lp-input-group">
+                          <label>Nombre</label>
+                          <input
+                            value={profile.display_name}
+                            onChange={(e) => updateProfile('display_name', e.target.value)}
+                            placeholder="Tu nombre o marca"
+                          />
+                        </div>
+                        <div className="lp-input-group">
+                          <label>Bio</label>
+                          <textarea
+                            value={profile.description}
+                            onChange={(e) => updateProfile('description', e.target.value)}
+                            placeholder="Cuéntale al mundo quién eres..."
+                            rows={2}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="lp-section-title">Temas</div>
-                  <div className="lp-theme-grid">
-                    <div
-                      className={`lp-theme-opt ${profile.theme === 'light' ? 'selected' : ''}`}
-                      style={{ background: '#f8fafc' }}
-                      onClick={() => updateProfile('theme', 'light')}
-                    >
-                      <span style={{ color: '#334155', fontSize: '10px', fontWeight: 700 }}>Claro</span>
+                  {/* THEMES CARD */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box" style={{ background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)' }}>
+                        <Palette size={18} />
+                      </div>
+                      <div>
+                        <h3>Tema</h3>
+                        <p>Elige el look de tu página</p>
+                      </div>
                     </div>
-                    <div
-                      className={`lp-theme-opt ${profile.theme === 'dark' ? 'selected' : ''}`}
-                      style={{ background: '#0f172a' }}
-                      onClick={() => updateProfile('theme', 'dark')}
-                    >
-                      <span style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 700 }}>Oscuro</span>
-                    </div>
-                    <div
-                      className={`lp-theme-opt ${profile.theme === 'blue' ? 'selected' : ''}`}
-                      style={{ background: '#2563eb' }}
-                      onClick={() => updateProfile('theme', 'blue')}
-                    >
-                      <span style={{ color: 'white', fontSize: '10px', fontWeight: 700 }}>Azul</span>
-                    </div>
-                    <div
-                      className={`lp-theme-opt ${profile.theme === 'gradient' ? 'selected' : ''}`}
-                      style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
-                      onClick={() => updateProfile('theme', 'gradient')}
-                    >
-                      <span style={{ color: 'white', fontSize: '10px', fontWeight: 700 }}>Gradiente</span>
+
+                    <div className="lp-theme-selector">
+                      {[
+                        { id: 'light', name: 'Claro', bg: '#f8fafc', text: '#334155' },
+                        { id: 'dark', name: 'Oscuro', bg: '#0f172a', text: '#94a3b8' },
+                        { id: 'blue', name: 'Azul', bg: '#2563eb', text: 'white' },
+                        { id: 'gradient', name: 'Gradiente', bg: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', text: 'white' },
+                        { id: 'neon', name: 'Neon', bg: '#000', text: '#39ff14' },
+                        { id: 'pastel', name: 'Pastel', bg: 'linear-gradient(135deg, #fce7f3 0%, #ede9fe 100%)', text: '#6b21a8' },
+                      ].map(theme => (
+                        <div
+                          key={theme.id}
+                          className={`lp-theme-item ${profile.theme === theme.id ? 'active' : ''}`}
+                          style={{ background: theme.bg }}
+                          onClick={() => updateProfile('theme', theme.id)}
+                        >
+                          <span style={{ color: theme.text }}>{theme.name}</span>
+                          {profile.theme === theme.id && <div className="lp-theme-check">✓</div>}
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="lp-section-title">Estilo de Botones</div>
-                  <div className="lp-theme-grid">
-                    <div
-                      className={`lp-theme-opt ${profile.button_style === 'rounded' ? 'selected' : ''}`}
-                      style={{ background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => updateProfile('button_style', 'rounded')}
-                    >
-                      <div style={{ width: '80%', height: '24px', background: 'rgba(255,255,255,0.15)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)' }} />
+                  {/* BUTTON STYLES CARD */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box blue">
+                        <MousePointer2 size={18} />
+                      </div>
+                      <div>
+                        <h3>Estilo de Botones</h3>
+                        <p>Personaliza la forma de tus enlaces</p>
+                      </div>
                     </div>
-                    <div
-                      className={`lp-theme-opt ${profile.button_style === 'pill' ? 'selected' : ''}`}
-                      style={{ background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => updateProfile('button_style', 'pill')}
-                    >
-                      <div style={{ width: '80%', height: '24px', background: 'rgba(255,255,255,0.15)', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.2)' }} />
-                    </div>
-                    <div
-                      className={`lp-theme-opt ${profile.button_style === 'square' ? 'selected' : ''}`}
-                      style={{ background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => updateProfile('button_style', 'square')}
-                    >
-                      <div style={{ width: '80%', height: '24px', background: 'rgba(255,255,255,0.15)', borderRadius: '0px', border: '1px solid rgba(255,255,255,0.2)' }} />
-                    </div>
-                    <div
-                      className={`lp-theme-opt ${profile.button_style === 'shadow' ? 'selected' : ''}`}
-                      style={{ background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => updateProfile('button_style', 'shadow')}
-                    >
-                      <div style={{ width: '80%', height: '24px', background: 'white', borderRadius: '8px', border: '2px solid black', boxShadow: '3px 3px 0 black' }} />
-                    </div>
-                    {/* Outline - Solo borde, fondo transparente */}
-                    <div
-                      className={`lp-theme-opt ${profile.button_style === 'outline' ? 'selected' : ''}`}
-                      style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => updateProfile('button_style', 'outline')}
-                    >
-                      <div style={{ width: '80%', height: '24px', background: 'transparent', borderRadius: '8px', border: '2px solid white' }} />
-                    </div>
-                    {/* Glass - Semitransparente grisáceo */}
-                    <div
-                      className={`lp-theme-opt ${profile.button_style === 'glass' ? 'selected' : ''}`}
-                      style={{ background: 'linear-gradient(135deg, #334155 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => updateProfile('button_style', 'glass')}
-                    >
-                      <div style={{ width: '80%', height: '24px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)' }} />
+
+                    <div className="lp-button-style-grid">
+                      {[
+                        { id: 'rounded', label: 'Rounded', radius: '8px', fill: true },
+                        { id: 'pill', label: 'Pill', radius: '100px', fill: true },
+                        { id: 'square', label: 'Square', radius: '0px', fill: true },
+                        { id: 'shadow', label: 'Shadow', radius: '8px', shadow: true },
+                        { id: 'outline', label: 'Outline', radius: '8px', outline: true },
+                        { id: 'glass', label: 'Glass', radius: '8px', glass: true },
+                      ].map(style => (
+                        <div
+                          key={style.id}
+                          className={`lp-button-style-item ${profile.button_style === style.id ? 'active' : ''}`}
+                          onClick={() => updateProfile('button_style', style.id)}
+                        >
+                          <div
+                            className="lp-button-preview"
+                            style={{
+                              borderRadius: style.radius,
+                              background: style.fill ? 'rgba(255,255,255,0.12)' : 'transparent',
+                              border: style.outline ? '2px solid white' : style.shadow ? '2px solid black' : '1px solid rgba(255,255,255,0.2)',
+                              boxShadow: style.shadow ? '3px 3px 0 black' : 'none',
+                              backdropFilter: style.glass ? 'blur(4px)' : 'none',
+                            }}
+                          />
+                          <span>{style.label}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="lp-section-title">Fondo Personalizado</div>
-                  <div className="lp-theme-grid">
-                    {/* Sin fondo */}
-                    <div
-                      className={`lp-theme-opt ${!profile.background_url ? 'selected' : ''}`}
-                      style={{ background: '#0f172a', color: '#64748b', fontSize: '10px', fontWeight: 700 }}
-                      onClick={() => updateProfile('background_url', '')}
-                    >
-                      Sin fondo
+                  {/* BACKGROUND CARD */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                        <ImageIcon size={18} />
+                      </div>
+                      <div>
+                        <h3>Fondo</h3>
+                        <p>Imagen de fondo personalizada</p>
+                      </div>
                     </div>
-                    {/* Fondo actual si existe */}
-                    {profile.background_url && (
+
+                    <div className="lp-background-options">
                       <div
-                        className="lp-theme-opt selected"
-                        style={{
-                          backgroundImage: `url(${profile.background_url})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
-                        }}
-                        title="Fondo actual"
-                      />
-                    )}
-                    {/* Subir nuevo */}
-                    <label className="lp-theme-opt lp-upload-label">
-                      <span>+ Subir</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(e) => handleImageUpload(e, 'background')}
-                      />
-                    </label>
+                        className={`lp-bg-option ${!profile.background_url ? 'active' : ''}`}
+                        onClick={() => updateProfile('background_url', '')}
+                      >
+                        <div className="lp-bg-preview none">✕</div>
+                        <span>Sin fondo</span>
+                      </div>
+
+                      {profile.background_url && (
+                        <div className="lp-bg-option active">
+                          <div
+                            className="lp-bg-preview"
+                            style={{ backgroundImage: `url(${profile.background_url})` }}
+                          />
+                          <span>Actual</span>
+                        </div>
+                      )}
+
+                      <label className="lp-bg-option upload">
+                        <div className="lp-bg-preview upload-icon">
+                          <Plus size={20} />
+                        </div>
+                        <span>Subir</span>
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'background')} />
+                      </label>
+                    </div>
                   </div>
 
-                  <div className="lp-section-title">Color de Acento</div>
-                  <div className="lp-accent-picker">
-                    <input
-                      type="color"
-                      value={profile.accent_color || '#6366f1'}
-                      onChange={(e) => updateProfile('accent_color', e.target.value)}
-                      className="lp-color-input"
-                    />
-                    <div className="lp-accent-presets">
-                      {['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#3b82f6', '#f59e0b', '#06b6d4'].map(color => (
+                  {/* ACCENT COLOR CARD */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box" style={{ background: profile.accent_color || '#6366f1' }}>
+                        <Sparkles size={18} />
+                      </div>
+                      <div>
+                        <h3>Color de Acento</h3>
+                        <p>Define el color principal de tu página</p>
+                      </div>
+                    </div>
+
+                    <div className="lp-accent-colors">
+                      {['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#3b82f6', '#f59e0b', '#06b6d4', '#ef4444', '#84cc16'].map(color => (
                         <button
                           key={color}
                           type="button"
-                          className={`lp-accent-preset ${profile.accent_color === color ? 'selected' : ''}`}
+                          className={`lp-accent-btn ${profile.accent_color === color ? 'active' : ''}`}
                           style={{ background: color }}
                           onClick={() => updateProfile('accent_color', color)}
                         />
                       ))}
+                      <label className="lp-accent-custom">
+                        <input
+                          type="color"
+                          value={profile.accent_color || '#6366f1'}
+                          onChange={(e) => updateProfile('accent_color', e.target.value)}
+                        />
+                        <span>Custom</span>
+                      </label>
                     </div>
                   </div>
-                </>
+
+                </div>
               )}
 
-              {/* --- EARN TAB --- */}
+              {/* --- EARN TAB - PREMIUM REDESIGN --- */}
               {activeTab === 'earn' && (
-                <div className="lp-earn-row">
-                  <div className={`lp-earn-item ${profile.monetization_mode === 'lite' ? 'active' : ''}`} onClick={() => updateProfile('monetization_mode', 'lite')}>
-                    <TrendingUp size={32} className="text-emerald-400" />
-                    <div>
-                      <h3 className="font-bold text-white">Lite Mode</h3>
-                      <p className="text-sm text-slate-400">Anuncios discretos. RPM $0.30</p>
+                <div className="lp-earn-container">
+                  <p className="lp-earn-subtitle">Elige el modo de monetización que mejor se adapte a tu audiencia</p>
+
+                  <div className="lp-earn-cards">
+                    {/* STANDARD MODE */}
+                    <div
+                      className={`lp-earn-card ${profile.monetization_mode === 'standard' ? 'active' : ''}`}
+                      onClick={() => updateProfile('monetization_mode', 'standard')}
+                    >
+                      <div className="lp-earn-card-icon" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' }}>
+                        <DollarSign size={24} />
+                      </div>
+                      <div className="lp-earn-card-content">
+                        <h3>Standard</h3>
+                        <p>Equilibrio perfecto entre experiencia de usuario y ganancias.</p>
+                        <div className="lp-earn-rpm">
+                          <span className="lp-rpm-value">$1.50</span>
+                          <span className="lp-rpm-label">RPM</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* TURBO MODE - DESTACADO */}
+                    <div
+                      className={`lp-earn-card turbo ${profile.monetization_mode === 'turbo' ? 'active' : ''}`}
+                      onClick={() => updateProfile('monetization_mode', 'turbo')}
+                    >
+                      <div className="lp-earn-badge">⚡ Recomendado</div>
+                      <div className="lp-earn-card-icon" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}>
+                        <Zap size={24} />
+                      </div>
+                      <div className="lp-earn-card-content">
+                        <h3>Turbo</h3>
+                        <p>Máximas ganancias. Ideal para creadores con audiencia comprometida.</p>
+                        <div className="lp-earn-rpm">
+                          <span className="lp-rpm-value">$5.00+</span>
+                          <span className="lp-rpm-label">RPM</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className={`lp-earn-item ${profile.monetization_mode === 'standard' ? 'active' : ''}`} onClick={() => updateProfile('monetization_mode', 'standard')}>
-                    <DollarSign size={32} className="text-blue-400" />
-                    <div>
-                      <h3 className="font-bold text-white">Standard Mode</h3>
-                      <p className="text-sm text-slate-400">Balanceado. RPM $1.50</p>
-                    </div>
-                  </div>
-                  <div className={`lp-earn-item ${profile.monetization_mode === 'turbo' ? 'active' : ''}`} onClick={() => updateProfile('monetization_mode', 'turbo')}>
-                    <Zap size={32} className="text-amber-400" />
-                    <div>
-                      <h3 className="font-bold text-white">Turbo Mode</h3>
-                      <p className="text-sm text-slate-400">Max Ingresos. RPM $5.00+</p>
-                    </div>
+
+                  <div className="lp-earn-tip">
+                    <span className="lp-tip-icon">💡</span>
+                    <p>Turbo Mode puede generar hasta <strong>3x más ingresos</strong> con la misma audiencia.</p>
                   </div>
                 </div>
               )}
 
-              {/* --- SETTINGS TAB (SEO) --- */}
+              {/* --- SETTINGS TAB - IMPROVED --- */}
               {activeTab === 'settings' && (
-                <>
-                  <div className="lp-section-title">SEO & Metadatos</div>
-                  <div className="lp-profile-edit">
-                    <div className="w-full text-left">
-                      <label className="text-xs font-bold text-slate-400 mb-1 block">Meta Page Title</label>
-                      <input
-                        className="lp-input-field text-left"
-                        value={profile.display_name}
-                        onChange={(e) => updateProfile('display_name', e.target.value)}
-                        placeholder="Ej. Mis Enlaces Oficiales"
-                      />
-                      <p className="text-[10px] text-slate-500 mt-1">Se usará como título en Google.</p>
+                <div className="lp-settings-container">
+
+                  {/* SEO SECTION */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box">
+                        <Globe size={18} />
+                      </div>
+                      <div>
+                        <h3>SEO & Metadatos</h3>
+                        <p>Optimiza cómo apareces en buscadores</p>
+                      </div>
                     </div>
 
-                    <div className="w-full text-left">
-                      <label className="text-xs font-bold text-slate-400 mb-1 block">Meta Description</label>
-                      <textarea
-                        className="lp-textarea-field text-left"
-                        value={profile.description}
-                        onChange={(e) => updateProfile('description', e.target.value)}
-                        placeholder="Descripción para buscadores..."
-                      />
+                    <div className="lp-settings-fields">
+                      <div className="lp-input-group">
+                        <label>Meta Título</label>
+                        <input
+                          value={profile.display_name}
+                          onChange={(e) => updateProfile('display_name', e.target.value)}
+                          placeholder="Ej. Mis Enlaces Oficiales"
+                        />
+                        <span className="lp-input-hint">Se mostrará como título en Google</span>
+                      </div>
+
+                      <div className="lp-input-group">
+                        <label>Meta Descripción</label>
+                        <textarea
+                          value={profile.description}
+                          onChange={(e) => updateProfile('description', e.target.value)}
+                          placeholder="Descripción breve para buscadores..."
+                          rows={2}
+                        />
+                        <span className="lp-input-hint">Máximo 160 caracteres recomendado</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="lp-section-title">Estadísticas</div>
-                  <div className="p-4 rounded-xl border border-slate-700 bg-slate-900/50 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <BarChart2 size={20} className="text-blue-500" />
-                      <span className="text-sm">Mostrar conteo de vistas</span>
-                    </div>
-                    <div className="lp-switch active">
-                      <div className="lp-switch-dot"></div>
+                  {/* STATS SECTION */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-row">
+                      <div className="lp-settings-info">
+                        <div className="lp-settings-icon-box blue">
+                          <BarChart2 size={18} />
+                        </div>
+                        <div>
+                          <h4>Mostrar estadísticas</h4>
+                          <p>Muestra el contador de visitas en tu Bio</p>
+                        </div>
+                      </div>
+                      <div className="lp-switch active">
+                        <div className="lp-switch-dot"></div>
+                      </div>
                     </div>
                   </div>
-                </>
+
+                </div>
               )}
 
             </div>
@@ -547,6 +703,9 @@ export function BioEditorPage() {
         </div>
 
       </div>
+
+      {/* Confirm Dialog for deletions */}
+      <ConfirmDialog />
     </div>
   );
 }
@@ -568,8 +727,8 @@ const SOCIAL_ICONS: Record<string, { icon: any; label: string; color: string }> 
   link: { icon: LinkIcon, label: 'Enlace', color: '#64748b' },
 };
 
-// === SUBCOMPONENT: LinkCardV3 ===
-function LinkCardV3({ link, onUpdate, onDelete, isExpanded, onToggleExpand, onThumbnailUpload }: any) {
+// === SUBCOMPONENT: LinkCardV3 (MEMOIZED) ===
+const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, isExpanded, onToggleExpand, onThumbnailUpload }: LinkCardV3Props) {
   const {
     attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: link.id });
@@ -748,9 +907,7 @@ function LinkCardV3({ link, onUpdate, onDelete, isExpanded, onToggleExpand, onTh
                 {uploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
                 {uploading ? 'Subiendo...' : link.thumbnail_url ? 'Cambiar' : 'Miniatura'}
               </button>
-              <button className="lp-action-btn" onClick={() => alert('Función Pro: Programación de enlaces')}>
-                <Calendar size={16} /> Programar
-              </button>
+              {/* Programar - Próximamente */}
             </div>
             <button className="lp-action-btn danger" onClick={() => onDelete(link.id)}>
               <Trash2 size={16} /> Eliminar
@@ -760,11 +917,11 @@ function LinkCardV3({ link, onUpdate, onDelete, isExpanded, onToggleExpand, onTh
       )}
     </div >
   );
-}
+});
 
 
-// === LIVE PREVIEW COMPONENT ===
-function LivePreview({ profile }: { profile: any }) {
+// === LIVE PREVIEW COMPONENT (MEMOIZED) ===
+const LivePreview = React.memo(function LivePreview({ profile }: LivePreviewProps) {
   const getBackground = () => {
     if (profile.background_url) return { backgroundImage: `url(${profile.background_url})`, backgroundSize: 'cover', backgroundPosition: 'center' };
     const themes: Record<string, string> = {
@@ -844,8 +1001,6 @@ function LivePreview({ profile }: { profile: any }) {
                   <img src={link.thumbnail_url} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover', marginRight: '10px' }} alt="" />
                 )}
                 <span style={{ flex: 1, textAlign: 'center' }}>{link.title || 'Sin título'}</span>
-                {link.link_type === 'monetized' && <span className="lp-badge green">💰</span>}
-                {link.link_type === 'paywall' && <span className="lp-badge orange">⚡</span>}
               </div>
             );
           })}
@@ -858,4 +1013,4 @@ function LivePreview({ profile }: { profile: any }) {
       </div>
     </div>
   );
-}
+});

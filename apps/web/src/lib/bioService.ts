@@ -21,7 +21,7 @@ export interface BioProfile {
   description: string;
   avatar_url: string;
   background_url?: string;
-  theme: 'light' | 'dark' | 'blue' | 'gradient' | 'custom';
+  theme: 'light' | 'dark' | 'blue' | 'gradient' | 'neon' | 'pastel' | 'brutalist' | 'custom';
   button_style: 'rounded' | 'square' | 'pill' | 'shadow' | 'outline' | 'glass';
   monetization_mode: 'lite' | 'standard' | 'turbo';
   accent_color?: string;
@@ -85,9 +85,25 @@ export const BioService = {
     await supabase.from('bio_profiles').update(updates).eq('id', id);
   },
 
-  addLink: async (profileId: string, title: string, url: string) => {
+  addLink: async (profileId: string, title: string, url: string, options?: { block_type?: string; link_type?: string }): Promise<BioLink | null> => {
     const { count } = await supabase.from('bio_links').select('*', { count: 'exact', head: true }).eq('profile_id', profileId);
-    await supabase.from('bio_links').insert([{ profile_id: profileId, title, url, order_index: (count || 0) + 1 }]);
+
+    const { data, error } = await supabase.from('bio_links').insert([{
+      profile_id: profileId,
+      title,
+      url,
+      order_index: (count || 0) + 1,
+      block_type: options?.block_type || 'link',
+      link_type: options?.link_type || 'normal',
+      active: true,
+      clicks: 0
+    }]).select().single();
+
+    if (error) {
+      console.error('[BioService] addLink failed:', error);
+      return null;
+    }
+    return data as BioLink;
   },
 
   updateLink: async (linkId: string, updates: Partial<BioLink>) => {
@@ -98,10 +114,21 @@ export const BioService = {
     await supabase.from('bio_links').delete().eq('id', linkId);
   },
 
-  // Reordenar enlaces (Intercambiar índices)
+  // Reordenar enlaces - BATCH OPTIMIZADO (1 request vs N)
   reorderLinks: async (links: BioLink[]) => {
-    for (let i = 0; i < links.length; i++) {
-      await supabase.from('bio_links').update({ order_index: i }).eq('id', links[i].id);
+    const updates = links.map((link, index) => ({
+      id: link.id,
+      order_index: index
+    }));
+
+    // Batch update usando upsert
+    const { error } = await supabase
+      .from('bio_links')
+      .upsert(updates, { onConflict: 'id', ignoreDuplicates: false });
+
+    if (error) {
+      console.error('[BioService] Batch reorder failed:', error);
+      throw error;
     }
   },
 

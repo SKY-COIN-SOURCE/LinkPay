@@ -110,19 +110,33 @@ export function PublicBioPage() {
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    color: ['light'].includes(profile.theme) ? '#1F2937' : '#FFFFFF'
+    color: ['light', 'pastel'].includes(profile.theme) ? '#1F2937' : '#FFFFFF'
   };
+
+  // Theme backgrounds - includes all premium themes
+  const isLightTheme = ['light', 'pastel'].includes(profile.theme);
 
   if (profile.theme === 'custom' && profile.background_url) {
     containerStyle.backgroundImage = `url(${profile.background_url})`;
   } else {
-    const themes = {
+    const themes: Record<string, React.CSSProperties> = {
       light: { backgroundColor: '#F8FAFC' },
       dark: { backgroundColor: '#111827' },
       blue: { backgroundColor: '#2563EB' },
-      gradient: { background: 'linear-gradient(135deg, #6366F1 0%, #A855F7 100%)' }
+      gradient: { background: 'linear-gradient(135deg, #6366F1 0%, #A855F7 100%)' },
+      neon: {
+        backgroundColor: '#000000',
+        boxShadow: 'inset 0 0 100px rgba(57, 255, 20, 0.1)'
+      },
+      pastel: {
+        background: 'linear-gradient(135deg, #fce7f3 0%, #ede9fe 50%, #dbeafe 100%)'
+      },
+      brutalist: {
+        backgroundColor: '#FFFFFF',
+        border: '4px solid #000000'
+      }
     };
-    Object.assign(containerStyle, themes[profile.theme as keyof typeof themes] || themes.light);
+    Object.assign(containerStyle, themes[profile.theme] || themes.light);
   }
 
   const getButtonStyle = () => {
@@ -176,8 +190,8 @@ export function PublicBioPage() {
         boxShadow: `0 4px 14px ${profile.accent_color}40`
       };
     } else {
-      const isLight = ['light'].includes(profile.theme);
-      color = isLight
+      // Use the isLightTheme variable defined above
+      color = isLightTheme
         ? { background: 'white', color: '#1F2937', border: '1px solid #E5E7EB', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }
         : { background: 'rgba(255,255,255,0.15)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)' };
     }
@@ -280,7 +294,7 @@ export function PublicBioPage() {
                     textAlign: 'center',
                     fontSize: '18px',
                     fontWeight: 700,
-                    color: ['light'].includes(profile.theme) ? '#1f2937' : 'white',
+                    color: isLightTheme ? '#1f2937' : 'white',
                     opacity: 0.9,
                     margin: '24px 0 16px',
                     animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
@@ -299,7 +313,7 @@ export function PublicBioPage() {
                   style={{
                     width: '100%',
                     height: '1px',
-                    background: ['light'].includes(profile.theme) ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)',
+                    background: isLightTheme ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)',
                     margin: '16px 0',
                     animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
                   }}
@@ -385,13 +399,6 @@ export function PublicBioPage() {
                     alt=""
                   />
                 )}
-                {/* Indicador de tipo monetizado/paywall */}
-                {link.link_type === 'monetized' && (
-                  <span style={{ position: 'absolute', right: '10px', fontSize: '10px', background: '#22c55e', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>💰</span>
-                )}
-                {link.link_type === 'paywall' && (
-                  <span style={{ position: 'absolute', right: '10px', fontSize: '10px', background: '#f97316', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>⚡</span>
-                )}
                 <span style={{ flex: 1, textAlign: 'center', padding: (link.thumbnail_url || link.icon) ? '0 40px' : '0' }}>
                   {link.title}
                 </span>
@@ -402,7 +409,7 @@ export function PublicBioPage() {
 
         <div style={{ position: 'fixed', bottom: '24px', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
           <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', textDecoration: 'none', opacity: 0.6, color: 'inherit', pointerEvents: 'auto', background: 'rgba(0,0,0,0.05)', padding: '6px 12px', borderRadius: '100px', backdropFilter: 'blur(4px)' }}>
-            <div style={{ padding: '2px', background: 'currentColor', borderRadius: '4px', color: ['light'].includes(profile.theme) ? 'white' : 'black' }}>
+            <div style={{ padding: '2px', background: 'currentColor', borderRadius: '4px', color: isLightTheme ? 'white' : 'black' }}>
               <Zap size={10} fill="currentColor" />
             </div>
             LinkPay
