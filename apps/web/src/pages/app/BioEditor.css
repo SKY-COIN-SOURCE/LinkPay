@@ -197,7 +197,74 @@
     gap: 24px;
 }
 
-/* --- COMPONENTS: ADD BUTTON --- */
+/* --- COMPONENTS: ADD BUTTONS - HIERARCHY --- */
+
+/* Botón primario grande */
+.lp-btn-add-primary {
+    width: 100%;
+    height: 52px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+}
+
+.lp-btn-add-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+}
+
+.lp-btn-add-primary:active {
+    transform: scale(0.98);
+}
+
+/* Fila de bloques especiales */
+.lp-add-special-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.lp-add-special-label {
+    font-size: 12px;
+    color: var(--lp-text-muted);
+    font-weight: 500;
+}
+
+.lp-btn-special {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid var(--lp-border);
+    border-radius: 8px;
+    color: var(--lp-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.lp-btn-special:hover {
+    background: var(--lp-bg-card);
+    border-color: var(--lp-text-muted);
+    color: var(--lp-text-main);
+}
+
+/* Legacy - mantener por compatibilidad */
 .lp-add-buttons-row {
     display: flex;
     gap: 8px;
@@ -224,18 +291,6 @@
 .lp-btn-add:hover {
     filter: brightness(1.1);
     transform: scale(1.02);
-}
-
-.lp-btn-header {
-    background: #7c3aed;
-}
-
-.lp-btn-divider {
-    background: #64748b;
-}
-
-.lp-btn-spotlight {
-    background: #f59e0b;
 }
 
 /* --- COMPONENTS: LINK CARD (COLLAPSIBLE) --- */
@@ -2058,7 +2113,7 @@
 
 .lp-preview-fab {
     position: fixed;
-    bottom: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     right: 24px;
     z-index: 50;
     display: flex;
@@ -3181,6 +3236,80 @@
 .lp-schedule-clear:hover {
     background: rgba(239, 68, 68, 0.1);
     border-color: #ef4444;
+}
+
+/* Schedule Badge - indica programación activa */
+.lp-schedule-badge {
+    padding: 2px 8px;
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 99px;
+    color: #22c55e;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Empty State Premium */
+.lp-empty-state-premium {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.lp-empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.lp-empty-icon svg {
+    color: #6366f1;
+    opacity: 0.8;
+}
+
+.lp-empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--lp-text-main);
+    margin-bottom: 8px;
+}
+
+.lp-empty-desc {
+    font-size: 14px;
+    color: var(--lp-text-muted);
+    margin-bottom: 24px;
+    max-width: 280px;
+}
+
+.lp-empty-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lp-empty-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
 /* =============================================================================

@@ -244,6 +244,7 @@ export function BioEditorPage() {
     const newLinks = arrayMove(profile.links, oldIndex, newIndex).map((l, idx) => ({ ...l, order_index: idx }));
     setProfile({ ...profile, links: newLinks });
     await BioService.reorderLinks(newLinks);
+    toast.success('Orden actualizado');
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'background') => {
@@ -328,7 +329,20 @@ export function BioEditorPage() {
             </div>
 
             <div className="lp-nav-actions">
-              <button className="lp-btn-basic lp-btn-primary" onClick={() => window.open(`/b/${profile.username}`, '_blank')}>
+              {saving && (
+                <div className="lp-saving-indicator">
+                  <Loader2 size={12} className="animate-spin" />
+                  <span>Guardando</span>
+                </div>
+              )}
+              <button
+                className="lp-btn-basic lp-btn-primary"
+                onClick={async () => {
+                  const url = `${window.location.origin}/b/${profile.username}`;
+                  await navigator.clipboard.writeText(url);
+                  toast.success('URL copiada al portapapeles');
+                }}
+              >
                 <Share2 size={14} /> Compartir
               </button>
             </div>
@@ -377,18 +391,22 @@ export function BioEditorPage() {
               {/* --- LINKS TAB --- */}
               {activeTab === 'links' && (
                 <>
-                  <div className="lp-add-buttons-row">
-                    <button className="lp-btn-add" onClick={addLink}>
-                      <Plus size={18} /> Enlace
+                  {/* Botón principal de añadir */}
+                  <button className="lp-btn-add-primary" onClick={addLink}>
+                    <Plus size={20} /> Añadir enlace
+                  </button>
+
+                  {/* Bloques especiales - secundarios */}
+                  <div className="lp-add-special-row">
+                    <span className="lp-add-special-label">Añadir bloque:</span>
+                    <button className="lp-btn-special" onClick={() => addSpecialBlock('header')}>
+                      <Type size={14} /> Header
                     </button>
-                    <button className="lp-btn-add lp-btn-header" onClick={() => addSpecialBlock('header')}>
-                      <Type size={18} /> Header
+                    <button className="lp-btn-special" onClick={() => addSpecialBlock('divider')}>
+                      <Minus size={14} /> Divisor
                     </button>
-                    <button className="lp-btn-add lp-btn-divider" onClick={() => addSpecialBlock('divider')}>
-                      <Minus size={18} /> Divisor
-                    </button>
-                    <button className="lp-btn-add lp-btn-spotlight" onClick={() => addSpecialBlock('spotlight')}>
-                      <Star size={18} /> Spotlight
+                    <button className="lp-btn-special" onClick={() => addSpecialBlock('spotlight')}>
+                      <Star size={14} /> Spotlight
                     </button>
                   </div>
 
@@ -411,8 +429,17 @@ export function BioEditorPage() {
                   </DndContext>
 
                   {profile.links.length === 0 && (
-                    <div className="text-center py-10 opacity-40">
-                      <p>No tienes enlaces. Añade uno para empezar.</p>
+                    <div className="lp-empty-state-premium">
+                      <div className="lp-empty-icon">
+                        <LinkIcon size={32} />
+                      </div>
+                      <h3 className="lp-empty-title">Tu página está vacía</h3>
+                      <p className="lp-empty-desc">
+                        Añade tu primer enlace y empieza a compartir tu contenido con el mundo
+                      </p>
+                      <button className="lp-empty-cta" onClick={addLink}>
+                        <Plus size={18} /> Crear mi primer enlace
+                      </button>
                     </div>
                   )}
                 </>
@@ -866,6 +893,7 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = React.useState(false);
+  const [showScheduling, setShowScheduling] = React.useState(Boolean(link.visible_from || link.visible_until));
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -932,16 +960,19 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
             className="lp-input-main"
             value={link.title}
             onChange={(e) => onUpdate(link.id, 'title', e.target.value)}
-            placeholder="Título del enlace"
+            placeholder={blockType === 'header' ? 'Título de sección' : blockType === 'divider' ? 'Divisor' : 'Título del enlace'}
             onClick={(e) => e.stopPropagation()}
           />
-          <input
-            className="lp-input-sub"
-            value={link.url}
-            onChange={(e) => onUpdate(link.id, 'url', e.target.value)}
-            placeholder="URL"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {/* Solo mostrar URL para links normales y spotlight */}
+          {!isSpecialBlock && (
+            <input
+              className="lp-input-sub"
+              value={link.url}
+              onChange={(e) => onUpdate(link.id, 'url', e.target.value)}
+              placeholder="https://..."
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
         </div>
 
         {/* Stats Badge - Always visible for analytics */}
@@ -1053,40 +1084,59 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
                   </button>
                 </div>
 
-                {/* SCHEDULING UI */}
-                <div className="lp-scheduling-section">
-                  <div className="lp-scheduling-header">
+                {/* SCHEDULING UI - COLLAPSIBLE */}
+                <div className={`lp-scheduling-section ${showScheduling ? 'expanded' : ''}`}>
+                  <div
+                    className="lp-scheduling-header"
+                    onClick={() => setShowScheduling(!showScheduling)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Clock size={14} />
                     <span>Programar visibilidad</span>
-                  </div>
-                  <div className="lp-scheduling-inputs">
-                    <div className="lp-schedule-field">
-                      <label>Desde:</label>
-                      <input
-                        type="datetime-local"
-                        value={link.visible_from ? link.visible_from.slice(0, 16) : ''}
-                        onChange={(e) => onUpdate(link.id, 'visible_from', e.target.value ? new Date(e.target.value).toISOString() : null)}
-                      />
-                    </div>
-                    <div className="lp-schedule-field">
-                      <label>Hasta:</label>
-                      <input
-                        type="datetime-local"
-                        value={link.visible_until ? link.visible_until.slice(0, 16) : ''}
-                        onChange={(e) => onUpdate(link.id, 'visible_until', e.target.value ? new Date(e.target.value).toISOString() : null)}
-                      />
-                    </div>
-                  </div>
-                  {(link.visible_from || link.visible_until) && (
-                    <button
-                      className="lp-schedule-clear"
-                      onClick={() => {
-                        onUpdate(link.id, 'visible_from', null);
-                        onUpdate(link.id, 'visible_until', null);
+                    {(link.visible_from || link.visible_until) && (
+                      <span className="lp-schedule-badge">Activo</span>
+                    )}
+                    <ChevronDown
+                      size={14}
+                      style={{
+                        marginLeft: 'auto',
+                        transform: showScheduling ? 'rotate(180deg)' : 'rotate(0)',
+                        transition: 'transform 0.2s'
                       }}
-                    >
-                      Quitar programación
-                    </button>
+                    />
+                  </div>
+                  {showScheduling && (
+                    <>
+                      <div className="lp-scheduling-inputs">
+                        <div className="lp-schedule-field">
+                          <label>Desde:</label>
+                          <input
+                            type="datetime-local"
+                            value={link.visible_from ? link.visible_from.slice(0, 16) : ''}
+                            onChange={(e) => onUpdate(link.id, 'visible_from', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                          />
+                        </div>
+                        <div className="lp-schedule-field">
+                          <label>Hasta:</label>
+                          <input
+                            type="datetime-local"
+                            value={link.visible_until ? link.visible_until.slice(0, 16) : ''}
+                            onChange={(e) => onUpdate(link.id, 'visible_until', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                          />
+                        </div>
+                      </div>
+                      {(link.visible_from || link.visible_until) && (
+                        <button
+                          className="lp-schedule-clear"
+                          onClick={() => {
+                            onUpdate(link.id, 'visible_from', null);
+                            onUpdate(link.id, 'visible_until', null);
+                          }}
+                        >
+                          Quitar programación
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
 
