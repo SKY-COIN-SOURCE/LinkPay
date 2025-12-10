@@ -38,11 +38,15 @@ import {
   Link as LinkIcon,
   User,
   Camera,
-  Sparkles
+  Sparkles,
+  QrCode
 } from 'lucide-react';
-import { BioService, BioProfile, BioLink } from '../../lib/bioService';
+import { BioService, BioProfile, BioLink, BioAchievement } from '../../lib/bioService';
 import { supabase } from '../../lib/supabase';
 import { useToast, useConfirm } from '../../components/ui/Toast';
+import { QRCodeGenerator } from '../../components/QRCodeGenerator';
+import { ProfileCompletion, AchievementsBadges, XPBar } from '../../components/Gamification';
+import { Award, Clock } from 'lucide-react';
 import './BioEditor.css'; // V3 Styles
 
 // Drag & Drop
@@ -90,6 +94,9 @@ export function BioEditorPage() {
   // Expanded card state
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
 
+  // Achievements from DB
+  const [achievements, setAchievements] = useState<BioAchievement[]>([]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
@@ -111,6 +118,35 @@ export function BioEditorPage() {
       setLoading(false);
     }
   };
+
+  // Load achievements when profile loads
+  useEffect(() => {
+    if (profile?.id) {
+      BioService.getAchievements(profile.id).then(setAchievements);
+    }
+  }, [profile?.id]);
+
+  // Keyboard shortcuts for power users
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + S = Show save confirmation
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        toast.success('✓ Cambios guardados automáticamente');
+      }
+      // Ctrl/Cmd + K = Add new link
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        addLink();
+      }
+      // Escape = Close expanded card
+      if (e.key === 'Escape' && expandedLinkId) {
+        setExpandedLinkId(null);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [expandedLinkId, profile]);
 
   const updateProfile = async (field: keyof BioProfile, value: any) => {
     if (!profile) return;
@@ -278,6 +314,19 @@ export function BioEditorPage() {
               <Layout size={20} className="text-blue-500" />
               LinkPay
             </div>
+
+            {/* Global Stats */}
+            <div className="lp-global-stats">
+              <div className="lp-stat-pill">
+                <Eye size={14} />
+                <span>{profile.views || 0}</span>
+              </div>
+              <div className="lp-stat-pill">
+                <MousePointer2 size={14} />
+                <span>{profile.links?.reduce((sum: number, l: any) => sum + (l.clicks || 0), 0) || 0}</span>
+              </div>
+            </div>
+
             <div className="lp-nav-actions">
               <button className="lp-btn-basic lp-btn-primary" onClick={() => window.open(`/b/${profile.username}`, '_blank')}>
                 <Share2 size={14} /> Compartir
@@ -718,6 +767,52 @@ export function BioEditorPage() {
                     </div>
                   </div>
 
+                  {/* QR CODE SECTION */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                        <QrCode size={18} />
+                      </div>
+                      <div>
+                        <h3>Código QR</h3>
+                        <p>Comparte tu BioPage fácilmente</p>
+                      </div>
+                    </div>
+
+                    <QRCodeGenerator
+                      url={`https://linkpay.me/b/${profile.username}`}
+                      username={profile.username}
+                      accentColor={profile.accent_color}
+                    />
+                  </div>
+
+                  {/* GAMIFICATION SECTION */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box" style={{ background: 'linear-gradient(135deg, #eab308 0%, #f59e0b 100%)' }}>
+                        <Award size={18} />
+                      </div>
+                      <div>
+                        <h3>Progreso y Logros</h3>
+                        <p>Completa tu perfil y desbloquea badges</p>
+                      </div>
+                    </div>
+
+                    {/* Profile Completion */}
+                    <ProfileCompletion profile={profile} />
+
+                    {/* XP Bar */}
+                    <div style={{ marginTop: '16px' }}>
+                      <XPBar level={profile.level || 1} xp={profile.xp || 0} />
+                    </div>
+
+                    {/* Achievements */}
+                    <div className="lp-gamification-section">
+                      <h4><Star size={16} /> Logros Desbloqueados</h4>
+                      <AchievementsBadges achievements={achievements} />
+                    </div>
+                  </div>
+
                 </div>
               )}
 
@@ -797,10 +892,16 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
     }
   };
 
-  const blockClass = link.block_type && link.block_type !== 'link' ? `block-${link.block_type}` : '';
+  const blockType = link.block_type || 'link';
+  const isSpecialBlock = blockType === 'header' || blockType === 'divider';
+  const isActive = link.active !== false; // undefined = true
 
   return (
-    <div ref={setNodeRef} style={style} className={`lp-card ${isDragging ? 'dragging' : ''} ${blockClass}`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`lp-card ${isDragging ? 'dragging' : ''} ${isSpecialBlock ? 'lp-card-special' : ''} ${blockType === 'header' ? 'lp-card-header-block' : ''} ${blockType === 'divider' ? 'lp-card-divider-block' : ''} ${!isActive ? 'lp-card-disabled' : ''}`}
+    >
 
       {/* HEADER: Always Visible */}
       <div className="lp-card-header" onClick={onToggleExpand}>
@@ -843,16 +944,20 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
           />
         </div>
 
-        {/* Stats Badge */}
-        {typeof link.clicks === 'number' && link.clicks > 0 && (
+        {/* Stats Badge - Always visible for analytics */}
+        {link.block_type === 'link' || !link.block_type ? (
           <div className="lp-link-stats" onClick={(e) => e.stopPropagation()}>
-            <BarChart2 size={12} />
-            <span>{link.clicks}</span>
+            <MousePointer2 size={12} />
+            <span>{link.clicks || 0}</span>
           </div>
-        )}
+        ) : null}
 
         <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-          <div className={`lp-switch ${link.active ? 'active' : ''}`} onClick={() => onUpdate(link.id, 'active', !link.active)}>
+          <div
+            className={`lp-switch ${isActive ? 'active' : ''}`}
+            onClick={() => onUpdate(link.id, 'active', !isActive)}
+            title={isActive ? 'Desactivar enlace' : 'Activar enlace'}
+          >
             <div className="lp-switch-dot"></div>
           </div>
         </div>
@@ -866,89 +971,144 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
       {/* BODY: Collapsible */}
       {isExpanded && (
         <div className="lp-card-body">
-          {/* Icon Selector */}
-          <div className="lp-icon-selector">
-            <label className="lp-icon-label">Icono</label>
-            <div className="lp-icon-grid">
-              {Object.entries(SOCIAL_ICONS).map(([key, { icon: Icon, label, color }]) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={`lp-icon-opt ${link.icon === key ? 'selected' : ''}`}
-                  onClick={() => onUpdate(link.id, 'icon', key)}
-                  title={label}
-                  style={{ '--icon-color': color } as React.CSSProperties}
-                >
-                  <Icon size={18} />
-                </button>
-              ))}
-              {link.icon && (
-                <button
-                  type="button"
-                  className="lp-icon-opt lp-icon-clear"
-                  onClick={() => onUpdate(link.id, 'icon', null)}
-                  title="Sin icono"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
+          {/* Solo mostrar opciones avanzadas para links normales */}
+          {!isSpecialBlock && (
+            <>
+              {/* Icon Selector */}
+              <div className="lp-icon-selector">
+                <label className="lp-icon-label">Icono</label>
+                <div className="lp-icon-grid">
+                  {Object.entries(SOCIAL_ICONS).map(([key, { icon: Icon, label, color }]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`lp-icon-opt ${link.icon === key ? 'selected' : ''}`}
+                      onClick={() => onUpdate(link.id, 'icon', key)}
+                      title={label}
+                      style={{ '--icon-color': color } as React.CSSProperties}
+                    >
+                      <Icon size={18} />
+                    </button>
+                  ))}
+                  {link.icon && (
+                    <button
+                      type="button"
+                      className="lp-icon-opt lp-icon-clear"
+                      onClick={() => onUpdate(link.id, 'icon', null)}
+                      title="Sin icono"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
 
-          {/* Link Type Selector */}
-          <div className="lp-link-type-selector">
-            <label className="lp-icon-label">Tipo de Enlace</label>
-            <div className="lp-link-type-grid">
-              <button
-                type="button"
-                className={`lp-link-type-opt ${(!link.link_type || link.link_type === 'normal') ? 'selected' : ''}`}
-                onClick={() => onUpdate(link.id, 'link_type', 'normal')}
-              >
-                <LinkIcon size={14} />
-                Normal
-              </button>
-              <button
-                type="button"
-                className={`lp-link-type-opt monetized ${link.link_type === 'monetized' ? 'selected' : ''}`}
-                onClick={() => onUpdate(link.id, 'link_type', 'monetized')}
-              >
-                <DollarSign size={14} />
-                Monetizado
-              </button>
-              <button
-                type="button"
-                className={`lp-link-type-opt paywall ${link.link_type === 'paywall' ? 'selected' : ''}`}
-                onClick={() => onUpdate(link.id, 'link_type', 'paywall')}
-              >
-                <Zap size={14} />
-                Paywall
-              </button>
-            </div>
-          </div>
+              {/* Link Type Selector */}
+              <div className="lp-link-type-selector">
+                <label className="lp-icon-label">Tipo de Enlace</label>
+                <div className="lp-link-type-grid">
+                  <button
+                    type="button"
+                    className={`lp-link-type-opt ${(!link.link_type || link.link_type === 'normal') ? 'selected' : ''}`}
+                    onClick={() => onUpdate(link.id, 'link_type', 'normal')}
+                  >
+                    <LinkIcon size={14} />
+                    Normal
+                  </button>
+                  <button
+                    type="button"
+                    className={`lp-link-type-opt monetized ${link.link_type === 'monetized' ? 'selected' : ''}`}
+                    onClick={() => onUpdate(link.id, 'link_type', 'monetized')}
+                  >
+                    <DollarSign size={14} />
+                    Monetizado
+                  </button>
+                  <button
+                    type="button"
+                    className={`lp-link-type-opt paywall ${link.link_type === 'paywall' ? 'selected' : ''}`}
+                    onClick={() => onUpdate(link.id, 'link_type', 'paywall')}
+                  >
+                    <Zap size={14} />
+                    Paywall
+                  </button>
+                </div>
+              </div>
 
-          <div className="lp-card-actions">
-            <div className="lp-action-row">
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <button
-                className="lp-action-btn"
-                onClick={handleThumbnailClick}
-                disabled={uploading}
-              >
-                {uploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
-                {uploading ? 'Subiendo...' : link.thumbnail_url ? 'Cambiar' : 'Miniatura'}
+              <div className="lp-card-actions">
+                <div className="lp-action-row">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <button
+                    className="lp-action-btn"
+                    onClick={handleThumbnailClick}
+                    disabled={uploading}
+                  >
+                    {uploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                    {uploading ? 'Subiendo...' : link.thumbnail_url ? 'Cambiar' : 'Miniatura'}
+                  </button>
+                </div>
+
+                {/* SCHEDULING UI */}
+                <div className="lp-scheduling-section">
+                  <div className="lp-scheduling-header">
+                    <Clock size={14} />
+                    <span>Programar visibilidad</span>
+                  </div>
+                  <div className="lp-scheduling-inputs">
+                    <div className="lp-schedule-field">
+                      <label>Desde:</label>
+                      <input
+                        type="datetime-local"
+                        value={link.visible_from ? link.visible_from.slice(0, 16) : ''}
+                        onChange={(e) => onUpdate(link.id, 'visible_from', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                      />
+                    </div>
+                    <div className="lp-schedule-field">
+                      <label>Hasta:</label>
+                      <input
+                        type="datetime-local"
+                        value={link.visible_until ? link.visible_until.slice(0, 16) : ''}
+                        onChange={(e) => onUpdate(link.id, 'visible_until', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                      />
+                    </div>
+                  </div>
+                  {(link.visible_from || link.visible_until) && (
+                    <button
+                      className="lp-schedule-clear"
+                      onClick={() => {
+                        onUpdate(link.id, 'visible_from', null);
+                        onUpdate(link.id, 'visible_until', null);
+                      }}
+                    >
+                      Quitar programación
+                    </button>
+                  )}
+                </div>
+
+                <button className="lp-action-btn danger" onClick={() => onDelete(link.id)}>
+                  <Trash2 size={16} /> Eliminar
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* Para bloques especiales, solo mostrar eliminar */}
+          {isSpecialBlock && (
+            <div className="lp-special-block-actions">
+              <div className="lp-special-block-info">
+                {blockType === 'header' && <><Type size={16} /> Este es un encabezado de sección</>}
+                {blockType === 'divider' && <><Minus size={16} /> Este es un divisor visual</>}
+              </div>
+              <button className="lp-action-btn danger" onClick={() => onDelete(link.id)}>
+                <Trash2 size={16} /> Eliminar
               </button>
-              {/* Programar - Próximamente */}
             </div>
-            <button className="lp-action-btn danger" onClick={() => onDelete(link.id)}>
-              <Trash2 size={16} /> Eliminar
-            </button>
-          </div>
+          )}
         </div>
       )}
     </div >

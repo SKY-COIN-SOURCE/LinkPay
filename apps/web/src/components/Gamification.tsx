@@ -1,162 +1,164 @@
-import React, { useState, useEffect } from 'react';
-import { X, Zap, Link as LinkIcon, Palette, TrendingUp } from 'lucide-react';
+import React from 'react';
+import {
+    Award,
+    Link as LinkIcon,
+    MousePointer2,
+    DollarSign,
+    Zap,
+    Star,
+    Trophy,
+    Target
+} from 'lucide-react';
 
-interface OnboardingProps {
-    onComplete: () => void;
-    username?: string;
+// Badge definitions
+const BADGES = {
+    first_link: {
+        icon: LinkIcon,
+        label: 'Primer Enlace',
+        description: 'Añadiste tu primer enlace',
+        color: '#3b82f6'
+    },
+    link_builder: {
+        icon: Target,
+        label: 'Constructor',
+        description: '5 enlaces creados',
+        color: '#8b5cf6'
+    },
+    first_100_clicks: {
+        icon: MousePointer2,
+        label: '100 Clicks',
+        description: 'Alcanzaste 100 clicks',
+        color: '#10b981'
+    },
+    viral: {
+        icon: Zap,
+        label: 'Viral',
+        description: '1000+ clicks totales',
+        color: '#f59e0b'
+    },
+    first_dollar: {
+        icon: DollarSign,
+        label: 'Primer Dólar',
+        description: 'Ganaste tu primer dólar',
+        color: '#22c55e'
+    },
+    earning_machine: {
+        icon: Trophy,
+        label: 'Máquina de Dinero',
+        description: 'Ganaste $10+',
+        color: '#eab308'
+    }
+};
+
+interface ProfileCompletionProps {
+    profile: {
+        avatar_url?: string;
+        display_name?: string;
+        description?: string;
+        links?: any[];
+        theme?: string;
+    };
 }
 
-export function OnboardingModal({ onComplete, username }: OnboardingProps) {
-    const [step, setStep] = useState(0);
-
+export function ProfileCompletion({ profile }: ProfileCompletionProps) {
     const steps = [
-        {
-            emoji: '🚀',
-            title: '¡Bienvenido a LinkPay!',
-            subtitle: 'Tu página de enlaces profesional en segundos. Vamos a configurar tu perfil.',
-            content: [
-                { num: 1, text: 'Añade tus <strong>enlaces</strong> más importantes' },
-                { num: 2, text: 'Personaliza tu <strong>apariencia</strong>' },
-                { num: 3, text: 'Comparte tu URL: <strong>linkpay.com/' + (username || 'tu-usuario') + '</strong>' }
-            ]
-        },
-        {
-            emoji: '🔗',
-            title: 'Tipos de Enlaces',
-            subtitle: 'Cada enlace puede ser diferente según tu objetivo.',
-            content: [
-                { num: 1, text: '<strong>Normal</strong> — Link estándar gratuito' },
-                { num: 2, text: '<strong>Monetizado</strong> — Gana con cada click' },
-                { num: 3, text: '<strong>Paywall</strong> — Contenido exclusivo de pago' }
-            ]
-        },
-        {
-            emoji: '🎨',
-            title: 'Personalización',
-            subtitle: 'Haz que tu página destaque con estilos únicos.',
-            content: [
-                { num: 1, text: '7 <strong>temas</strong> disponibles (incluye Premium)' },
-                { num: 2, text: '6 <strong>estilos de botón</strong> diferentes' },
-                { num: 3, text: '<strong>Bloques especiales</strong>: Headers, Divisores, Spotlights' }
-            ]
-        }
+        { key: 'avatar', label: 'Avatar', done: !!profile.avatar_url },
+        { key: 'name', label: 'Nombre', done: !!profile.display_name && profile.display_name.length > 2 },
+        { key: 'bio', label: 'Bio', done: !!profile.description && profile.description.length > 10 },
+        { key: 'links', label: '3+ Enlaces', done: (profile.links?.length || 0) >= 3 },
+        { key: 'theme', label: 'Tema', done: profile.theme !== 'light' },
     ];
 
-    const currentStep = steps[step];
-    const isLastStep = step === steps.length - 1;
+    const completed = steps.filter(s => s.done).length;
+    const percentage = Math.round((completed / steps.length) * 100);
 
-    const handleNext = () => {
-        if (isLastStep) {
-            localStorage.setItem('linkpay_onboarding_complete', 'true');
-            onComplete();
-        } else {
-            setStep(step + 1);
-        }
-    };
+    if (percentage === 100) return null; // Don't show when complete
 
     return (
-        <div className="lp-onboarding-overlay" onClick={(e) => e.target === e.currentTarget && onComplete()}>
-            <div className="lp-onboarding-modal">
-                <div className="lp-onboarding-header">
-                    <span className="lp-onboarding-emoji">{currentStep.emoji}</span>
-                    <h2 className="lp-onboarding-title">{currentStep.title}</h2>
-                    <p className="lp-onboarding-subtitle">{currentStep.subtitle}</p>
-                </div>
-
-                <div className="lp-onboarding-steps">
-                    {currentStep.content.map((item, i) => (
-                        <div key={i} className="lp-onboarding-step">
-                            <div className="lp-onboarding-step-num">{item.num}</div>
-                            <div className="lp-onboarding-step-text" dangerouslySetInnerHTML={{ __html: item.text }} />
-                        </div>
-                    ))}
-                </div>
-
-                <div className="lp-onboarding-actions">
-                    <button className="lp-onboarding-btn secondary" onClick={onComplete}>
-                        Saltar
-                    </button>
-                    <button className="lp-onboarding-btn primary" onClick={handleNext}>
-                        {isLastStep ? '¡Empezar!' : 'Siguiente'}
-                    </button>
-                </div>
-
-                <div className="lp-progress-dots">
-                    {steps.map((_, i) => (
-                        <div key={i} className={`lp-progress-dot ${i === step ? 'active' : ''}`} />
-                    ))}
-                </div>
+        <div className="lp-completion-card">
+            <div className="lp-completion-header">
+                <Star size={18} />
+                <span>Completa tu perfil</span>
+                <span className="lp-completion-pct">{percentage}%</span>
+            </div>
+            <div className="lp-completion-bar">
+                <div
+                    className="lp-completion-fill"
+                    style={{ width: `${percentage}%` }}
+                />
+            </div>
+            <div className="lp-completion-steps">
+                {steps.map(step => (
+                    <div
+                        key={step.key}
+                        className={`lp-completion-step ${step.done ? 'done' : ''}`}
+                    >
+                        {step.done ? '✓' : '○'} {step.label}
+                    </div>
+                ))}
             </div>
         </div>
     );
 }
 
-// Sparkline component for link analytics
-interface SparklineProps {
-    data: number[];
-    height?: number;
+interface AchievementsBadgesProps {
+    achievements: Array<{ badge_type: string; earned_at: string }>;
 }
 
-export function Sparkline({ data, height = 20 }: SparklineProps) {
-    const max = Math.max(...data, 1);
+export function AchievementsBadges({ achievements }: AchievementsBadgesProps) {
+    if (!achievements || achievements.length === 0) {
+        return (
+            <div className="lp-achievements-empty">
+                <Award size={32} />
+                <p>Consigue logros para desbloquear badges</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="lp-sparkline" style={{ height }}>
-            {data.map((value, i) => {
-                const h = Math.max((value / max) * height, 2);
-                const isLast = i === data.length - 1;
+        <div className="lp-achievements-grid">
+            {achievements.map(ach => {
+                const badge = BADGES[ach.badge_type as keyof typeof BADGES];
+                if (!badge) return null;
+                const Icon = badge.icon;
+
                 return (
                     <div
-                        key={i}
-                        className={`lp-sparkline-bar ${isLast ? 'accent' : ''} ${value < max * 0.3 ? 'low' : ''}`}
-                        style={{ height: h }}
-                    />
+                        key={ach.badge_type}
+                        className="lp-badge"
+                        title={badge.description}
+                    >
+                        <div
+                            className="lp-badge-icon"
+                            style={{ background: badge.color }}
+                        >
+                            <Icon size={20} />
+                        </div>
+                        <span className="lp-badge-label">{badge.label}</span>
+                    </div>
                 );
             })}
         </div>
     );
 }
 
-// Trending badge component
-interface TrendingBadgeProps {
-    change: number; // Percentage change
-    isHot?: boolean;
+// Mini XP bar for nav
+interface XPBarProps {
+    level: number;
+    xp: number;
 }
 
-export function TrendingBadge({ change, isHot }: TrendingBadgeProps) {
-    if (isHot) {
-        return (
-            <span className="lp-trending-badge hot">
-                🔥 Hot
-            </span>
-        );
-    }
+export function XPBar({ level = 1, xp = 0 }: XPBarProps) {
+    const xpForNextLevel = level * 100;
+    const progress = Math.min((xp / xpForNextLevel) * 100, 100);
 
-    if (change === 0) return null;
-
-    const isUp = change > 0;
     return (
-        <span className={`lp-trending-badge ${isUp ? 'up' : 'down'}`}>
-            <TrendingUp size={10} style={{ transform: isUp ? 'none' : 'rotate(180deg)' }} />
-            {Math.abs(change)}%
-        </span>
+        <div className="lp-xp-container">
+            <div className="lp-level-badge">Lv. {level}</div>
+            <div className="lp-xp-bar">
+                <div className="lp-xp-fill" style={{ width: `${progress}%` }} />
+            </div>
+            <span className="lp-xp-text">{xp}/{xpForNextLevel} XP</span>
+        </div>
     );
-}
-
-// Check if user needs onboarding
-export function useOnboarding(): [boolean, () => void] {
-    const [show, setShow] = useState(false);
-
-    useEffect(() => {
-        const completed = localStorage.getItem('linkpay_onboarding_complete');
-        if (!completed) {
-            // Small delay for better UX
-            const timer = setTimeout(() => setShow(true), 500);
-            return () => clearTimeout(timer);
-        }
-    }, []);
-
-    const complete = () => setShow(false);
-
-    return [show, complete];
 }

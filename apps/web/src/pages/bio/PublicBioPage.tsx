@@ -198,6 +198,46 @@ export function PublicBioPage() {
     return { ...base, ...shape, ...color };
   };
 
+  // Helper: Check if link is visible based on scheduling
+  const isLinkVisible = (link: any): boolean => {
+    if (!link.active) return false;
+    const now = new Date();
+    if (link.visible_from && new Date(link.visible_from) > now) return false;
+    if (link.visible_until && new Date(link.visible_until) < now) return false;
+    return true;
+  };
+
+  // Helper: Detect embed type from URL
+  const getEmbedType = (url: string): 'youtube' | 'spotify' | 'tiktok' | null => {
+    if (!url) return null;
+    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+    if (url.includes('spotify.com')) return 'spotify';
+    if (url.includes('tiktok.com')) return 'tiktok';
+    return null;
+  };
+
+  // Helper: Get embed URL
+  const getEmbedUrl = (url: string, type: string): string | null => {
+    try {
+      if (type === 'youtube') {
+        const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+      }
+      if (type === 'spotify') {
+        // Convert open.spotify.com/track/xxx to embed
+        const match = url.match(/spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/);
+        return match ? `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0` : null;
+      }
+      if (type === 'tiktok') {
+        // TikTok embeds require their own embed script - return null for now
+        return null;
+      }
+    } catch (e) {
+      console.error('Embed URL error:', e);
+    }
+    return null;
+  };
+
   // --- LA MAGIA: REDIRECCIÓN AL TÚNEL ---
   const handleLinkClick = (e: React.MouseEvent, link: any) => {
     e.preventDefault();
@@ -280,10 +320,53 @@ export function PublicBioPage() {
             </a>
           )}
 
-          {profile.links?.filter((l: any) => l.active !== false).map((link: any, index: number) => {
+          {profile.links?.filter((l: any) => isLinkVisible(l)).map((link: any, index: number) => {
             const socialIcon = link.icon && SOCIAL_ICONS[link.icon];
             const IconComponent = socialIcon?.icon;
             const blockType = link.block_type || 'link';
+
+            // Check for embeddable content
+            const embedType = getEmbedType(link.url);
+            const embedUrl = embedType ? getEmbedUrl(link.url, embedType) : null;
+
+            // YouTube/Spotify Embed
+            if (embedUrl && (embedType === 'youtube' || embedType === 'spotify')) {
+              return (
+                <div
+                  key={link.id}
+                  style={{
+                    width: '100%',
+                    marginBottom: '16px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
+                  }}
+                >
+                  {link.title && (
+                    <div style={{
+                      padding: '12px 16px',
+                      background: isLightTheme ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)',
+                      fontWeight: 600,
+                      fontSize: '14px',
+                      color: isLightTheme ? '#1f2937' : 'white'
+                    }}>
+                      {embedType === 'youtube' ? '🎬' : '🎵'} {link.title}
+                    </div>
+                  )}
+                  <iframe
+                    src={embedUrl}
+                    style={{
+                      width: '100%',
+                      height: embedType === 'youtube' ? '215px' : '152px',
+                      border: 'none'
+                    }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                </div>
+              );
+            }
 
             // Header Block
             if (blockType === 'header') {

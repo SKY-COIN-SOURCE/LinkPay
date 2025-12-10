@@ -11,6 +11,8 @@ export interface BioLink {
   block_type?: 'link' | 'header' | 'divider' | 'spotlight';
   clicks: number;
   order_index: number;
+  visible_from?: string;
+  visible_until?: string;
 }
 
 export interface BioProfile {
@@ -28,9 +30,18 @@ export interface BioProfile {
   cta_text?: string;
   cta_url?: string;
   show_views?: boolean;
+  level?: number;
+  xp?: number;
   links: BioLink[];
   earnings?: number;
   views?: number;
+}
+
+export interface BioAchievement {
+  id: string;
+  profile_id: string;
+  badge_type: string;
+  earned_at: string;
 }
 
 const BIO_RATES = { lite: 0.0001, standard: 0.0005, turbo: 0.0015 };
@@ -174,5 +185,19 @@ export const BioService = {
     if (error) {
       console.error('[BioService] Secure tracking error:', error);
     }
+  },
+
+  getAchievements: async (profileId: string): Promise<BioAchievement[]> => {
+    const { data, error } = await supabase
+      .from('bio_achievements')
+      .select('*')
+      .eq('profile_id', profileId)
+      .order('earned_at', { ascending: false });
+
+    if (error) {
+      console.error('[BioService] Get achievements error:', error);
+      return [];
+    }
+    return data || [];
   }
 };
