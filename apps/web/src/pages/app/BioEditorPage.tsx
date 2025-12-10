@@ -628,6 +628,38 @@ export function BioEditorPage() {
               {activeTab === 'settings' && (
                 <div className="lp-settings-container">
 
+                  {/* URL & USERNAME SECTION */}
+                  <div className="lp-settings-card">
+                    <div className="lp-settings-card-header">
+                      <div className="lp-settings-icon-box" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
+                        <LinkIcon size={18} />
+                      </div>
+                      <div>
+                        <h3>Tu URL</h3>
+                        <p>La dirección única de tu BioPage</p>
+                      </div>
+                    </div>
+
+                    <div className="lp-settings-fields">
+                      <div className="lp-input-group">
+                        <label>Username</label>
+                        <div className="lp-input-with-prefix">
+                          <span className="lp-input-prefix">linkpay.me/b/</span>
+                          <input
+                            value={profile.username}
+                            onChange={(e) => {
+                              const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+                              if (val.length <= 30) updateProfile('username', val);
+                            }}
+                            placeholder="tu-username"
+                            maxLength={30}
+                          />
+                        </div>
+                        <span className="lp-input-hint">Solo letras, números y guión bajo. Máx 30 caracteres.</span>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* SEO SECTION */}
                   <div className="lp-settings-card">
                     <div className="lp-settings-card-header">
@@ -676,9 +708,13 @@ export function BioEditorPage() {
                           <p>Muestra el contador de visitas en tu Bio</p>
                         </div>
                       </div>
-                      <div className="lp-switch active">
+                      <button
+                        type="button"
+                        className={`lp-switch ${profile.show_views !== false ? 'active' : ''}`}
+                        onClick={() => updateProfile('show_views', !(profile.show_views !== false))}
+                      >
                         <div className="lp-switch-dot"></div>
-                      </div>
+                      </button>
                     </div>
                   </div>
 

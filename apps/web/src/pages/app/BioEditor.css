@@ -2160,6 +2160,42 @@
     opacity: 0.6;
 }
 
+.lp-input-with-prefix {
+    display: flex;
+    align-items: center;
+    background: var(--lp-bg-card);
+    border: 1px solid var(--lp-border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.lp-input-with-prefix:focus-within {
+    border-color: var(--lp-primary);
+}
+
+.lp-input-prefix {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--lp-text-muted);
+    font-size: 13px;
+    white-space: nowrap;
+    border-right: 1px solid var(--lp-border);
+}
+
+.lp-input-with-prefix input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--lp-text-main);
+}
+
+.lp-input-with-prefix input:focus {
+    outline: none;
+}
+
 .lp-input-hint {
     font-size: 11px;
     color: var(--lp-text-muted);

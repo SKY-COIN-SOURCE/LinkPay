@@ -27,6 +27,7 @@ export interface BioProfile {
   accent_color?: string;
   cta_text?: string;
   cta_url?: string;
+  show_views?: boolean;
   links: BioLink[];
   earnings?: number;
   views?: number;
