@@ -74,6 +74,7 @@ interface LinkCardV3Props {
   isExpanded: boolean;
   onToggleExpand: () => void;
   onThumbnailUpload: (linkId: string, file: File) => Promise<void>;
+  onToggleActive: (id: string, newState: boolean) => void;
 }
 
 interface LivePreviewProps {
@@ -245,6 +246,11 @@ export function BioEditorPage() {
     setProfile({ ...profile, links: newLinks });
     await BioService.reorderLinks(newLinks);
     toast.success('Orden actualizado');
+  };
+
+  const toggleActive = async (id: string, newState: boolean) => {
+    await updateLink(id, 'active', newState);
+    toast.success(newState ? 'Enlace activado' : 'Enlace desactivado');
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'background') => {
@@ -422,6 +428,7 @@ export function BioEditorPage() {
                             isExpanded={expandedLinkId === link.id}
                             onToggleExpand={() => setExpandedLinkId(expandedLinkId === link.id ? null : link.id)}
                             onThumbnailUpload={handleThumbnailUpload}
+                            onToggleActive={toggleActive}
                           />
                         ))}
                       </div>
@@ -886,7 +893,7 @@ const SOCIAL_ICONS: Record<string, { icon: any; label: string; color: string }> 
 };
 
 // === SUBCOMPONENT: LinkCardV3 (MEMOIZED) ===
-const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, isExpanded, onToggleExpand, onThumbnailUpload }: LinkCardV3Props) {
+const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, isExpanded, onToggleExpand, onThumbnailUpload, onToggleActive }: LinkCardV3Props) {
   const {
     attributes, listeners, setNodeRef, transform, transition, isDragging
   } = useSortable({ id: link.id });
@@ -986,7 +993,7 @@ const LinkCardV3 = React.memo(function LinkCardV3({ link, onUpdate, onDelete, is
         <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
           <div
             className={`lp-switch ${isActive ? 'active' : ''}`}
-            onClick={() => onUpdate(link.id, 'active', !isActive)}
+            onClick={() => onToggleActive(link.id, !isActive)}
             title={isActive ? 'Desactivar enlace' : 'Activar enlace'}
           >
             <div className="lp-switch-dot"></div>

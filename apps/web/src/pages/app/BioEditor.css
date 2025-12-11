@@ -132,6 +132,27 @@
     padding: 0 24px;
     border-bottom: 1px solid var(--lp-border);
     background: #0f172a;
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.lp-tabs-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Fade indicators for scroll */
+.lp-tabs-container::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, #0f172a 0%, transparent 100%);
+    pointer-events: none;
 }
 
 .lp-tabs-list {
@@ -3469,5 +3490,55 @@
     100% {
         box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
         transform: scale(1);
+    }
+}
+
+/* --- FADE IN UP ANIMATION --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cards animate in on load */
+.lp-card {
+    animation: fadeInUp 0.3s ease-out backwards;
+}
+
+/* Staggered delay based on position */
+.lp-card:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.lp-card:nth-child(2) {
+    animation-delay: 50ms;
+}
+
+.lp-card:nth-child(3) {
+    animation-delay: 100ms;
+}
+
+.lp-card:nth-child(4) {
+    animation-delay: 150ms;
+}
+
+.lp-card:nth-child(5) {
+    animation-delay: 200ms;
+}
+
+.lp-card:nth-child(n+6) {
+    animation-delay: 250ms;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .lp-card {
+        animation: none;
     }
 }
