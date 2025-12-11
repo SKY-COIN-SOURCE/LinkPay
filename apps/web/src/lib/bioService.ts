@@ -93,26 +93,36 @@ export const BioService = {
     return data;
   },
 
+
   updateProfile: async (id: string, updates: Partial<BioProfile>) => {
-    await supabase.from('bio_profiles').update(updates).eq('id', id);
+    const { error } = await supabase.from('bio_profiles').update(updates).eq('id', id);
+    if (error) console.error('[BioService] updateProfile failed:', error);
   },
 
   addLink: async (profileId: string, title: string, url: string, options?: { block_type?: string; link_type?: string }): Promise<BioLink | null> => {
     const { count } = await supabase.from('bio_links').select('*', { count: 'exact', head: true }).eq('profile_id', profileId);
 
-    const { data, error } = await supabase.from('bio_links').insert([{
+    // Payload básico - solo columnas que definitivamente existen
+    const payload: Record<string, any> = {
       profile_id: profileId,
       title,
       url,
       order_index: (count || 0) + 1,
-      block_type: options?.block_type || 'link',
-      link_type: options?.link_type || 'normal',
       active: true,
       clicks: 0
-    }]).select().single();
+    };
+
+    // Añadir block_type solo si se especifica (columna puede no existir en DBs antiguas)
+    if (options?.block_type) {
+      payload.block_type = options.block_type;
+    }
+
+    console.log('[BioService] addLink payload:', payload);
+
+    const { data, error } = await supabase.from('bio_links').insert([payload]).select().single();
 
     if (error) {
-      console.error('[BioService] addLink failed:', error);
+      console.error('[BioService] addLink failed:', error.message, error.details, error.hint);
       return null;
     }
     return data as BioLink;

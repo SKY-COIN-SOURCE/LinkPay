@@ -80,6 +80,7 @@ export const router = createBrowserRouter([
   // 2. RUTAS CRÍTICAS DE MONETIZACIÓN (Públicas - carga estática)
   { path: "/l/:slug", element: <RedirectPage /> },
   { path: "/b/:username", element: <PublicBioPage /> },
+  { path: "/@:username", element: <PublicBioPage /> },  // Ruta alternativa con @
 
   // 3. Panel de Administración (Staff - lazy)
   { path: "/admin", element: withSuspense(AdminPage) },
