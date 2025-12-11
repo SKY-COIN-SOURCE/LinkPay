@@ -106,6 +106,52 @@ export function BioEditorPage() {
     loadProfile();
   }, []);
 
+  // Ref para trackear cambios pendientes en el debounce
+  const pendingDbSavesRef = React.useRef<Map<string, { field: string; value: any }>>(new Map());
+
+  // Cleanup: guardar todos los cambios pendientes al desmontar
+  useEffect(() => {
+    const flushPendingChanges = async () => {
+      const pending = pendingDbSavesRef.current;
+      if (pending.size === 0) return;
+
+      // Agrupar por ID
+      const byId = new Map<string, Record<string, any>>();
+      pending.forEach(({ field, value }, key) => {
+        const id = key.split('-')[0];
+        if (!id.startsWith('temp')) {
+          const existing = byId.get(id) || {};
+          byId.set(id, { ...existing, [field]: value });
+        }
+      });
+
+      // Guardar cada uno
+      for (const [id, updates] of byId.entries()) {
+        try {
+          await BioService.updateLink(id, updates);
+        } catch (e) {
+          console.error('Error flushing pending save:', e);
+        }
+      }
+      pending.clear();
+    };
+
+    // Manejar cierre de ventana/pestaña
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (pendingDbSavesRef.current.size > 0) {
+        flushPendingChanges();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Flush al desmontar componente
+      flushPendingChanges();
+    };
+  }, []);
+
   const loadProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -288,16 +334,26 @@ export function BioEditorPage() {
       clearTimeout(existingTimeout);
     }
 
-    // Nuevo timeout para guardar
+    // Trackear este cambio como pendiente (para flush en cleanup)
+    pendingDbSavesRef.current.set(key, { field, value });
+    setSaving(true);
+
+    // Nuevo timeout para guardar (reducido a 300ms para respuesta más rápida)
     const timeout = setTimeout(async () => {
       try {
         await BioService.updateLink(id, { [field]: value });
+        pendingDbSavesRef.current.delete(key);
         updateTimeoutsRef.current.delete(key);
       } catch (e) {
         console.error('Error updating link:', e);
         toast.error('Error al guardar enlace');
+      } finally {
+        // Solo quitar saving si no hay más pendientes
+        if (pendingDbSavesRef.current.size === 0) {
+          setSaving(false);
+        }
       }
-    }, 500); // Esperar 500ms después del último cambio
+    }, 300);
 
     updateTimeoutsRef.current.set(key, timeout);
   };
