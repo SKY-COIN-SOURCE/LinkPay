@@ -2097,36 +2097,7 @@
     color: var(--lp-text-muted);
 }
 
-/* Improved switch */
-.lp-switch {
-    width: 48px;
-    height: 26px;
-    background: var(--lp-border);
-    border-radius: 13px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.lp-switch.active {
-    background: #22c55e;
-}
-
-.lp-switch-dot {
-    width: 22px;
-    height: 22px;
-    background: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.lp-switch.active .lp-switch-dot {
-    left: 24px;
-}
+/* Switch styles defined in main section - no duplicates here */
 
 /* =============================================================================
    MOBILE PREVIEW FAB & MODAL
