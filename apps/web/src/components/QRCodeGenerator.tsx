@@ -12,6 +12,16 @@ export function QRCodeGenerator({ url, username, accentColor = '#6366f1' }: QRCo
     const safeColor = (accentColor || '#6366f1').replace('#', '');
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&color=${safeColor}&bgcolor=FFFFFF&margin=10`;
 
+    // Extract display URL from the actual URL passed
+    const displayUrl = (() => {
+        try {
+            const urlObj = new URL(url);
+            return `${urlObj.host}${urlObj.pathname}`;
+        } catch {
+            return url;
+        }
+    })();
+
     const downloadQR = async () => {
         try {
             const response = await fetch(qrApiUrl);
@@ -37,7 +47,7 @@ export function QRCodeGenerator({ url, username, accentColor = '#6366f1' }: QRCo
                 />
             </div>
             <div className="lp-qr-info">
-                <p className="lp-qr-url">linkpay.me/b/{username}</p>
+                <p className="lp-qr-url">{displayUrl}</p>
                 <button className="lp-btn-basic lp-btn-secondary" onClick={downloadQR}>
                     <Download size={14} />
                     Descargar PNG
@@ -46,3 +56,4 @@ export function QRCodeGenerator({ url, username, accentColor = '#6366f1' }: QRCo
         </div>
     );
 }
+

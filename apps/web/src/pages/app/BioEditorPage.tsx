@@ -149,13 +149,24 @@ export function BioEditorPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [expandedLinkId, profile]);
 
+
   const updateProfile = async (field: keyof BioProfile, value: any) => {
     if (!profile) return;
     setProfile({ ...profile, [field]: value });
     setSaving(true);
-    await BioService.updateProfile(profile.id, { [field]: value });
+    try {
+      await BioService.updateProfile(profile.id, { [field]: value });
+    } catch (e) {
+      console.error('Error saving profile:', e);
+      toast.error('Error al guardar el perfil');
+    }
     setTimeout(() => setSaving(false), 500);
   };
+
+  // Cola de actualizaciones pendientes para IDs temporales
+  const pendingUpdatesRef = React.useRef<Map<string, Record<string, any>>>(new Map());
+  // Mapa de IDs temporales a IDs reales
+  const tempToRealIdRef = React.useRef<Map<string, string>>(new Map());
 
   const addLink = async () => {
     if (!profile) return;
@@ -174,13 +185,35 @@ export function BioEditorPage() {
     setExpandedLinkId(tempId);
 
     // Server call - replace temp with real ID
-    const created = await BioService.addLink(profile.id, 'Nuevo enlace', '');
-    if (created) {
-      setProfile(prev => prev ? {
-        ...prev,
-        links: prev.links.map(l => l.id === tempId ? { ...created } : l)
-      } : prev);
-      setExpandedLinkId(created.id);
+    try {
+      const created = await BioService.addLink(profile.id, 'Nuevo enlace', '');
+      if (created) {
+        // Guardar mapeo de ID temporal a real
+        tempToRealIdRef.current.set(tempId, created.id);
+
+        // Aplicar cualquier cambio pendiente que se hizo mientras se creaba
+        const pendingUpdates = pendingUpdatesRef.current.get(tempId);
+        if (pendingUpdates) {
+          // Guardar los cambios pendientes al servidor
+          await BioService.updateLink(created.id, pendingUpdates);
+          pendingUpdatesRef.current.delete(tempId);
+        }
+
+        setProfile(prev => prev ? {
+          ...prev,
+          links: prev.links.map(l => l.id === tempId ? {
+            ...created,
+            ...(pendingUpdates || {}) // Mantener cambios locales
+          } : l)
+        } : prev);
+        setExpandedLinkId(created.id);
+        toast.success('Enlace creado');
+      } else {
+        toast.error('Error al crear enlace');
+      }
+    } catch (e) {
+      console.error('Error creating link:', e);
+      toast.error('Error al crear enlace');
     }
   };
 
@@ -206,25 +239,67 @@ export function BioEditorPage() {
     if (blockType !== 'divider') setExpandedLinkId(tempId);
 
     // Server call with options
-    const created = await BioService.addLink(profile.id, titles[blockType], blockType === 'divider' ? '' : '#', { block_type: blockType });
-    if (created) {
-      setProfile(prev => prev ? {
-        ...prev,
-        links: prev.links.map(l => l.id === tempId ? { ...created } : l)
-      } : prev);
-      if (blockType !== 'divider') setExpandedLinkId(created.id);
+    try {
+      const created = await BioService.addLink(profile.id, titles[blockType], blockType === 'divider' ? '' : '#', { block_type: blockType });
+      if (created) {
+        tempToRealIdRef.current.set(tempId, created.id);
+
+        const pendingUpdates = pendingUpdatesRef.current.get(tempId);
+        if (pendingUpdates) {
+          await BioService.updateLink(created.id, pendingUpdates);
+          pendingUpdatesRef.current.delete(tempId);
+        }
+
+        setProfile(prev => prev ? {
+          ...prev,
+          links: prev.links.map(l => l.id === tempId ? { ...created, ...(pendingUpdates || {}) } : l)
+        } : prev);
+        if (blockType !== 'divider') setExpandedLinkId(created.id);
+      }
+    } catch (e) {
+      console.error('Error creating block:', e);
+      toast.error('Error al crear bloque');
     }
   };
 
+  // Debounce para updateLink
+  const updateTimeoutsRef = React.useRef<Map<string, NodeJS.Timeout>>(new Map());
+
   const updateLink = async (id: string, field: string, value: any) => {
     if (!profile) return;
+
+    // Update UI immediately
     const updatedLinks = profile.links.map((l: any) =>
       l.id === id ? { ...l, [field]: value } : l
     );
     setProfile({ ...profile, links: updatedLinks });
-    if (!id.startsWith('temp-')) {
-      await BioService.updateLink(id, { [field]: value });
+
+    // Si es un ID temporal, guardamos los cambios pendientes
+    if (id.startsWith('temp-')) {
+      const pending = pendingUpdatesRef.current.get(id) || {};
+      pendingUpdatesRef.current.set(id, { ...pending, [field]: value });
+      return; // Se guardará cuando llegue el ID real
     }
+
+    // Debounce: cancelar timeout anterior para esta key
+    const key = `${id}-${field}`;
+    const existingTimeout = updateTimeoutsRef.current.get(key);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+
+    // Nuevo timeout para guardar
+    const timeout = setTimeout(async () => {
+      try {
+        await BioService.updateLink(id, { [field]: value });
+        updateTimeoutsRef.current.delete(key);
+      } catch (e) {
+        console.error('Error updating link:', e);
+        toast.error('Error al guardar enlace');
+      }
+    }, 500); // Esperar 500ms después del último cambio
+
+    updateTimeoutsRef.current.set(key, timeout);
   };
 
   const deleteLink = async (id: string) => {
@@ -727,7 +802,7 @@ export function BioEditorPage() {
                       <div className="lp-input-group">
                         <label>Username</label>
                         <div className="lp-input-with-prefix">
-                          <span className="lp-input-prefix">linkpay.me/b/</span>
+                          <span className="lp-input-prefix">{window.location.host}/@</span>
                           <input
                             value={profile.username}
                             onChange={(e) => {
@@ -814,7 +889,7 @@ export function BioEditorPage() {
                     </div>
 
                     <QRCodeGenerator
-                      url={`https://linkpay.me/b/${profile.username}`}
+                      url={`${window.location.origin}/@${profile.username}`}
                       username={profile.username}
                       accentColor={profile.accent_color}
                     />

@@ -42,11 +42,17 @@ export function PublicBioPage() {
   useEffect(() => {
     const load = async () => {
       if (username) {
+        console.log('[PublicBioPage] Loading profile for:', username);
         const data = await BioService.getPublicProfile(username);
+        console.log('[PublicBioPage] Profile data:', data);
+        console.log('[PublicBioPage] Links count:', data?.links?.length || 0);
+        console.log('[PublicBioPage] Active links:', data?.links?.filter((l: any) => l.active !== false)?.length || 0);
         setProfile(data);
         // NOTA: Ya NO cobramos por la visita visual. Cobramos en el clic.
         // Pero registramos la vista para estadísticas
-        BioService.trackView(data.id, data.monetization_mode).catch(err => console.error("View track error", err));
+        if (data?.id) {
+          BioService.trackView(data.id, data.monetization_mode).catch(err => console.error("View track error", err));
+        }
       }
       setLoading(false);
     };
@@ -200,7 +206,8 @@ export function PublicBioPage() {
 
   // Helper: Check if link is visible based on scheduling
   const isLinkVisible = (link: any): boolean => {
-    if (!link.active) return false;
+    // active undefined/null = true, solo false explícito lo oculta
+    if (link.active === false) return false;
     const now = new Date();
     if (link.visible_from && new Date(link.visible_from) > now) return false;
     if (link.visible_until && new Date(link.visible_until) < now) return false;
