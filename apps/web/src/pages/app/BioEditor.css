@@ -127,6 +127,18 @@
     background: #e2e8f0;
 }
 
+.lp-btn-publish {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.lp-btn-publish:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
 /* TABS */
 .lp-tabs-container {
     padding: 0 24px;

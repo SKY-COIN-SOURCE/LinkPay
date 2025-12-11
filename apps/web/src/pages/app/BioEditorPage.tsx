@@ -473,6 +473,36 @@ export function BioEditorPage() {
                 </div>
               )}
               <button
+                className="lp-btn-basic lp-btn-publish"
+                onClick={async () => {
+                  setSaving(true);
+                  // Forzar flush de todos los cambios pendientes
+                  const pending = pendingDbSavesRef.current;
+                  if (pending.size > 0) {
+                    const byId = new Map<string, Record<string, any>>();
+                    pending.forEach(({ field, value }, key) => {
+                      const id = key.split('-')[0];
+                      if (!id.startsWith('temp')) {
+                        const existing = byId.get(id) || {};
+                        byId.set(id, { ...existing, [field]: value });
+                      }
+                    });
+                    for (const [id, updates] of byId.entries()) {
+                      await BioService.updateLink(id, updates);
+                    }
+                    pending.clear();
+                  }
+                  // Esperar un momento para asegurar que todo se guarde
+                  await new Promise(r => setTimeout(r, 300));
+                  setSaving(false);
+                  toast.success('¡Cambios publicados!');
+                  // Abrir la página pública
+                  window.open(`${window.location.origin}/b/${profile.username}`, '_blank');
+                }}
+              >
+                <Zap size={14} /> Publicar
+              </button>
+              <button
                 className="lp-btn-basic lp-btn-primary"
                 onClick={async () => {
                   const url = `${window.location.origin}/b/${profile.username}`;
