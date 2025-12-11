@@ -128,15 +128,13 @@
 }
 
 .lp-btn-publish {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     color: white;
     border: none;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .lp-btn-publish:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 }
 
 /* TABS */

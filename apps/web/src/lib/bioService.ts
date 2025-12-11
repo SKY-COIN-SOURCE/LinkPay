@@ -126,19 +126,26 @@ export const BioService = {
     await supabase.from('bio_links').delete().eq('id', linkId);
   },
 
-  // Reordenar enlaces - BATCH OPTIMIZADO (1 request vs N)
+  // Reordenar enlaces - usando updates individuales (más robusto que upsert parcial)
   reorderLinks: async (links: BioLink[]) => {
-    const updates = links.map((link, index) => ({
-      id: link.id,
-      order_index: index
-    }));
+    try {
+      // Usar updates individuales en paralelo - más robusto que upsert con datos parciales
+      const updatePromises = links.map((link, index) =>
+        supabase
+          .from('bio_links')
+          .update({ order_index: index })
+          .eq('id', link.id)
+      );
 
-    // Batch update usando upsert
-    const { error } = await supabase
-      .from('bio_links')
-      .upsert(updates, { onConflict: 'id', ignoreDuplicates: false });
+      const results = await Promise.all(updatePromises);
 
-    if (error) {
+      // Verificar si alguno falló
+      const errors = results.filter(r => r.error);
+      if (errors.length > 0) {
+        console.error('[BioService] Some reorder updates failed:', errors.map(e => e.error));
+        throw new Error('Error al reordenar algunos enlaces');
+      }
+    } catch (error) {
       console.error('[BioService] Batch reorder failed:', error);
       throw error;
     }
