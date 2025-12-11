@@ -1,10 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Zap, Shield, BarChart3, Smartphone, Rocket, CreditCard, CheckCircle2, Play, MousePointer2, DollarSign } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 export function LandingPage() {
   const navigate = useNavigate();
   const [activeFeature, setActiveFeature] = useState(0);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // =====================================================
+  // DETECCIÓN DE SESIÓN ACTIVA
+  // Si el usuario ya está autenticado → Dashboard directo
+  // =====================================================
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Usuario autenticado, redirigir al Dashboard
+          navigate('/app', { replace: true });
+          return;
+        }
+      } catch (e) {
+        console.warn('[LandingPage] Error checking session:', e);
+      }
+      setCheckingAuth(false);
+    };
+    checkSession();
+  }, [navigate]);
 
   // Rotación automática de features
   useEffect(() => {
@@ -97,6 +120,33 @@ export function LandingPage() {
     })
   };
 
+  // --- LOADING MIENTRAS VERIFICA SESIÓN ---
+  if (checkingAuth) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: '#030014',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+          animation: 'pulse 1.5s ease-in-out infinite'
+        }} />
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.wrapper}>
       <style>{`
@@ -127,19 +177,19 @@ export function LandingPage() {
 
       {/* HERO SECTION */}
       <div style={styles.hero} className="hero-grid">
-        
+
         {/* Left Content */}
         <div className="hero-content">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', color: '#818CF8', padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: 600, marginBottom: '32px' }}>
             <span style={{ width: '8px', height: '8px', background: '#818CF8', borderRadius: '50%', boxShadow: '0 0 10px #818CF8' }}></span>
             Nueva Plataforma de Monetización v2.0
           </div>
-          
+
           <h1 style={styles.h1}>
-            Monetiza cada <br/>
+            Monetiza cada <br />
             <span style={{ color: '#818CF8', WebkitTextFillColor: '#818CF8' }}>Enlace y Visita.</span>
           </h1>
-          
+
           <p style={{ fontSize: '18px', color: '#94A3B8', lineHeight: '1.6', marginBottom: '40px', maxWidth: '500px' }}>
             LinkPay transforma tu tráfico en ingresos. Crea Bio Pages impresionantes, acorta enlaces y gana dinero automáticamente. Sin complicaciones.
           </p>
@@ -154,32 +204,32 @@ export function LandingPage() {
           </div>
 
           <div style={{ marginTop: '48px', display: 'flex', gap: '32px', color: '#64748B', fontSize: '14px', fontWeight: 600 }}>
-             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}><CheckCircle2 size={18} color="#10B981" /> Pagos Diarios</div>
-             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}><CheckCircle2 size={18} color="#10B981" /> Sin Comisiones Ocultas</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="#10B981" /> Pagos Diarios</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="#10B981" /> Sin Comisiones Ocultas</div>
           </div>
         </div>
 
         {/* Right Mockup (Interactive) */}
         <div className="mockup-container" style={{ position: 'relative' }}>
           <div className="animate-float" style={{ ...styles.glassCard, padding: '32px', maxWidth: '500px', position: 'relative', zIndex: 20, boxShadow: '0 40px 100px -20px rgba(79, 70, 229, 0.3)' }}>
-            
+
             {/* Header Mockup */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-               <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-                 <div style={{width:'40px', height:'40px', borderRadius:'12px', background:'#1E293B'}}></div>
-                 <div>
-                   <div style={{width:'100px', height:'12px', background:'#334155', borderRadius:'4px', marginBottom:'6px'}}></div>
-                   <div style={{width:'60px', height:'8px', background:'#1E293B', borderRadius:'4px'}}></div>
-                 </div>
-               </div>
-               <div style={{padding:'8px 16px', background:'#10B981', borderRadius:'8px', color:'white', fontSize:'12px', fontWeight:700}}>+ €124.50</div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#1E293B' }}></div>
+                <div>
+                  <div style={{ width: '100px', height: '12px', background: '#334155', borderRadius: '4px', marginBottom: '6px' }}></div>
+                  <div style={{ width: '60px', height: '8px', background: '#1E293B', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+              <div style={{ padding: '8px 16px', background: '#10B981', borderRadius: '8px', color: 'white', fontSize: '12px', fontWeight: 700 }}>+ €124.50</div>
             </div>
 
             {/* Feature List (Interactive) */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {features.map((f, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   style={styles.featureCard(activeFeature === i)}
                   onClick={() => setActiveFeature(i)}
                 >
@@ -197,10 +247,10 @@ export function LandingPage() {
             </div>
 
             {/* Cursor Simulation */}
-            <div style={{ 
-              position: 'absolute', 
-              top: activeFeature === 0 ? '35%' : activeFeature === 1 ? '60%' : '85%', 
-              left: '80%', 
+            <div style={{
+              position: 'absolute',
+              top: activeFeature === 0 ? '35%' : activeFeature === 1 ? '60%' : '85%',
+              left: '80%',
               transition: 'all 0.5s ease',
               filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
             }}>

@@ -42,7 +42,7 @@ import {
   QrCode
 } from 'lucide-react';
 import { BioService, BioProfile, BioLink, BioAchievement } from '../../lib/bioService';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { useToast, useConfirm } from '../../components/ui/Toast';
 import { QRCodeGenerator } from '../../components/QRCodeGenerator';
 import { ProfileCompletion, AchievementsBadges, XPBar } from '../../components/Gamification';

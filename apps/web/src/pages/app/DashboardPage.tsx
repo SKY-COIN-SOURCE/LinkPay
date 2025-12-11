@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { useTranslation } from '../../i18n';
 import './Dashboard.css';
 import {
@@ -160,7 +160,8 @@ export function DashboardPage() {
     } catch (e) {
       console.error(e);
     } finally {
-      setTimeout(() => setLoading(false), 800);
+      // Carga instantánea - sin delay artificial
+      setLoading(false);
     }
   };
 

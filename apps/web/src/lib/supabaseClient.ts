@@ -7,4 +7,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('❌ Faltan VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en .env');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Cliente Supabase con persistencia de sesión configurada
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,           // Mantener sesión en localStorage
+    storageKey: 'linkpay-auth',     // Key única para evitar conflictos
+    autoRefreshToken: true,         // Refrescar tokens automáticamente
+    detectSessionInUrl: true,       // Para magic links y OAuth
+  }
+});

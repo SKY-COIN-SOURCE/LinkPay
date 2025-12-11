@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from './supabaseClient';
 
 export const NotificationService = {
   // Obtener notificaciones no leídas
@@ -12,7 +12,7 @@ export const NotificationService = {
       .eq('user_id', user.id)
       .eq('is_read', false)
       .order('created_at', { ascending: false });
-    
+
     return data || [];
   },
 
@@ -23,7 +23,7 @@ export const NotificationService = {
 
   // SISTEMA AUTOMÁTICO DE EVENTOS
   // Esto normalmente iría en un Edge Function (Backend), pero lo haremos aquí para que funcione YA sin configurar servidores externos.
-  
+
   // 1. Check de Logros (Se llama cada vez que hay una acción importante)
   checkAchievements: async (userId: string) => {
     // Obtener stats del usuario
@@ -45,15 +45,15 @@ export const NotificationService = {
 
     // LOGRO: PRIMER LINK
     if (links && links.length === 1) {
-       const { data: exists } = await supabase.from('notifications').select('*').eq('user_id', userId).eq('type', 'first_link').single();
-       if (!exists) {
-         await supabase.from('notifications').insert({
-           user_id: userId,
-           type: 'first_link',
-           title: '🚀 Primer Enlace Creado',
-           message: 'Felicidades por dar el primer paso. ¡Comparte tu enlace para empezar a ganar!'
-         });
-       }
+      const { data: exists } = await supabase.from('notifications').select('*').eq('user_id', userId).eq('type', 'first_link').single();
+      if (!exists) {
+        await supabase.from('notifications').insert({
+          user_id: userId,
+          type: 'first_link',
+          title: '🚀 Primer Enlace Creado',
+          message: 'Felicidades por dar el primer paso. ¡Comparte tu enlace para empezar a ganar!'
+        });
+      }
     }
   },
 

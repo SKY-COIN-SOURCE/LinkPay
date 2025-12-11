@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, Loader2, CheckCircle } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -30,7 +30,7 @@ export function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
       <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl">
-        
+
         <Link to="/login" className="flex items-center gap-2 text-slate-500 text-sm font-bold mb-6 hover:text-indigo-600 transition-colors">
           <ArrowLeft size={16} /> Volver
         </Link>
@@ -49,21 +49,21 @@ export function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleReset} className="space-y-4">
             {error && <div className="text-red-500 text-xs font-bold bg-red-50 p-3 rounded-lg">{error}</div>}
-            
+
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-3.5 text-slate-400" size={18} />
-                <input 
-                  type="email" 
-                  required 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                   className="w-full pl-12 p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:border-indigo-500 transition-colors"
                 />
               </div>
             </div>
-            
+
             <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors flex justify-center shadow-lg shadow-indigo-200 disabled:opacity-50">
               {loading ? <Loader2 className="animate-spin" /> : 'Enviar Enlace'}
             </button>

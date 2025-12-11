@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Mail, Lock, User, Loader2, AlertCircle, Users, Briefcase, Gift } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { ReferralService } from '../../lib/referralService';
 
 export function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({ email: '', password: '', fullName: '', role: 'user' });
-  
+
   // Código de referido (Autodetectado)
   const [referralCode, setReferralCode] = useState('');
 
@@ -36,12 +36,12 @@ export function RegisterPage() {
       });
 
       if (authError) throw authError;
-      
+
       // 2. Registrar Referido (Si existe código)
       if (referralCode && data.user) {
         await ReferralService.registerReferral(referralCode);
       }
-      
+
       alert(`Cuenta creada con éxito. Revisa tu email.`);
       navigate('/login');
 
@@ -59,7 +59,7 @@ export function RegisterPage() {
   return (
     <div style={containerStyle}>
       <div className="animate-enter" style={cardStyle}>
-        
+
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Únete a LinkPay</h1>
           <p style={{ color: '#64748B', fontSize: '14px' }}>Crea tu cuenta y empieza a monetizar hoy.</p>
@@ -92,17 +92,17 @@ export function RegisterPage() {
         <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ position: 'relative' }}>
             <User size={18} style={{ position: 'absolute', left: '16px', top: '14px', color: '#94A3B8' }} />
-            <input type="text" required placeholder="Nombre Completo" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} style={{ width: '100%', padding: '14px 14px 14px 48px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '15px', outline: 'none', fontWeight: 500 }} />
+            <input type="text" required placeholder="Nombre Completo" value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} style={{ width: '100%', padding: '14px 14px 14px 48px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '15px', outline: 'none', fontWeight: 500 }} />
           </div>
           <div style={{ position: 'relative' }}>
             <Mail size={18} style={{ position: 'absolute', left: '16px', top: '14px', color: '#94A3B8' }} />
-            <input type="email" required placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', padding: '14px 14px 14px 48px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '15px', outline: 'none', fontWeight: 500 }} />
+            <input type="email" required placeholder="Email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} style={{ width: '100%', padding: '14px 14px 14px 48px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '15px', outline: 'none', fontWeight: 500 }} />
           </div>
           <div style={{ position: 'relative' }}>
             <Lock size={18} style={{ position: 'absolute', left: '16px', top: '14px', color: '#94A3B8' }} />
-            <input type="password" required placeholder="Contraseña" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} style={{ width: '100%', padding: '14px 14px 14px 48px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '15px', outline: 'none', fontWeight: 500 }} />
+            <input type="password" required placeholder="Contraseña" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} style={{ width: '100%', padding: '14px 14px 14px 48px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '15px', outline: 'none', fontWeight: 500 }} />
           </div>
-          
+
           {/* Input Opcional de Código (si no vino por URL) */}
           {!searchParams.get('ref') && (
             <div style={{ position: 'relative' }}>

@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from './supabaseClient';
 
 export interface ReferralNode {
   id: string;
@@ -10,18 +10,18 @@ export interface ReferralNode {
 }
 
 export const ReferralService = {
-  
+
   // Obtener el código de referido del usuario actual
   getMyReferralCode: async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
-    
+
     const { data } = await supabase
       .from('profiles')
       .select('referral_code, username')
       .eq('id', user.id)
       .single();
-      
+
     // Si no tiene código, usar el username, o generar uno
     return data?.referral_code || data?.username || user.id.slice(0, 8);
   },
@@ -56,7 +56,7 @@ export const ReferralService = {
           .from('profiles')
           .select('id, username, avatar_url, total_earnings')
           .eq('referred_by', child.id);
-          
+
         return {
           ...child,
           level: 1,
@@ -80,7 +80,7 @@ export const ReferralService = {
       .select('id')
       .eq('referral_code', referralCode)
       .single();
-      
+
     if (referrer) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {

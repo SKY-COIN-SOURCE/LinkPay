@@ -4,7 +4,7 @@ import {
   Landmark, Palette, Bell, Lock, Plug, HelpCircle, Eye, DollarSign,
   ExternalLink, Copy, Zap, Moon, Sun, Smartphone, Globe, Key, Trash2, AlertTriangle, Plus, X
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTranslation } from '../../i18n';
 import { useToast } from '../../components/ui/Toast';

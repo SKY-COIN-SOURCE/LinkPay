@@ -14,11 +14,19 @@ import {
   Users,
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { useAuth } from '../../context/AuthContext';
 
 export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, setLanguage, language } = useTranslation();
+  const { signOut } = useAuth();
+
+  // Función de logout real que cierra sesión de Supabase
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login', { replace: true });
+  };
 
   // NAV DEFINITIVA
   const navItems = [
@@ -105,7 +113,7 @@ export function AppLayout() {
           </div>
           <button
             type="button"
-            onClick={() => navigate('/login')}
+            onClick={handleLogout}
             className="lp-logout-btn"
           >
             <span className="lp-logout-icon-wrap">
