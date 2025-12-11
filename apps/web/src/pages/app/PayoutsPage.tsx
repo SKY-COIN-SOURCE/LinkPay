@@ -6,17 +6,17 @@ import {
   AlertCircle,
   History,
   Loader2,
-  Wallet2,
-  Banknote,
-  ArrowUpRight,
-  TrendingUp,
+  Plus,
+  ArrowRightLeft,
+  MoreHorizontal,
+  Clock,
   CreditCard,
   Building2,
   Mail,
   User,
   MessageSquare,
-  Clock,
-  XCircle,
+  X,
+  ChevronDown,
 } from 'lucide-react';
 import { PayoutService, Transaction } from '../../lib/payoutService';
 import { Validators } from '../../lib/validators';
@@ -24,6 +24,7 @@ import { supabase } from '../../lib/supabaseClient';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FINANCE PAGE - REVOLUT-STYLE MOBILE BANKING UX
+   Diseño inspirado en Revolut con estilo LinkPay
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export function PayoutsPage() {
@@ -31,6 +32,10 @@ export function PayoutsPage() {
   const [balance, setBalance] = useState(0);
   const [history, setHistory] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal states
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showSend, setShowSend] = useState(false);
 
   // Withdraw form
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -55,15 +60,10 @@ export function PayoutsPage() {
     bank: '',
   });
 
-  // Refs for scrolling
-  const withdrawRef = useRef<HTMLDivElement>(null);
-  const sendRef = useRef<HTMLDivElement>(null);
-
   // Constants
   const MIN_PAYPAL = 5;
   const MIN_BANK = 10;
   const minWithdraw = withdrawMethod === 'PayPal' ? MIN_PAYPAL : MIN_BANK;
-  const isReadyToWithdraw = balance >= MIN_PAYPAL;
 
   // ─── LIFECYCLE ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -111,15 +111,6 @@ export function PayoutsPage() {
     }
   };
 
-  // ─── SCROLL HANDLERS ─────────────────────────────────────────────────────
-  const scrollToWithdraw = () => {
-    withdrawRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
-  const scrollToSend = () => {
-    sendRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
   // ─── WITHDRAW HANDLER ────────────────────────────────────────────────────
   const handleWithdraw = async () => {
     setWithdrawError('');
@@ -127,7 +118,6 @@ export function PayoutsPage() {
 
     const amount = parseFloat(withdrawAmount);
 
-    // Validations
     if (!withdrawAmount || isNaN(amount) || amount <= 0) {
       return setWithdrawError('Introduce una cantidad válida.');
     }
@@ -154,7 +144,10 @@ export function PayoutsPage() {
       setWithdrawSuccess(true);
       setWithdrawAmount('');
       loadData();
-      setTimeout(() => setWithdrawSuccess(false), 4000);
+      setTimeout(() => {
+        setWithdrawSuccess(false);
+        setShowWithdraw(false);
+      }, 2000);
     } catch (err: any) {
       setWithdrawError(err.message || 'Error al procesar el retiro.');
     } finally {
@@ -187,7 +180,10 @@ export function PayoutsPage() {
       setSendEmail('');
       setSendNote('');
       loadData();
-      setTimeout(() => setSendSuccess(false), 4000);
+      setTimeout(() => {
+        setSendSuccess(false);
+        setShowSend(false);
+      }, 2000);
     } catch (err: any) {
       setSendError(err.message || 'Error al enviar.');
     } finally {
@@ -198,11 +194,11 @@ export function PayoutsPage() {
   // ─── LOADING STATE ───────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="fin-shell fin-bg">
-        <style>{finStyles}</style>
-        <div className="fin-loading">
-          <Loader2 className="fin-spin" size={40} />
-          <span>Cargando finanzas...</span>
+      <div className="rev-shell">
+        <style>{revStyles}</style>
+        <div className="rev-loading">
+          <Loader2 className="rev-spin" size={40} />
+          <span>Cargando...</span>
         </div>
       </div>
     );
@@ -210,778 +206,846 @@ export function PayoutsPage() {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
   return (
-    <div className="fin-shell fin-bg">
-      <style>{finStyles}</style>
-      <div className="fin-container">
+    <div className="rev-shell">
+      <style>{revStyles}</style>
+
+      {/* BACKGROUND */}
+      <div className="rev-bg">
+        <div className="rev-bg-gradient" />
+        <div className="rev-bg-glow" />
+      </div>
+
+      <div className="rev-container">
 
         {/* ═══════════════════════════════════════════════════════════════════
-            HERO WALLET CARD
+            BALANCE CARD - REVOLUT STYLE
         ═══════════════════════════════════════════════════════════════════ */}
-        <section className="fin-hero">
-          <div className="fin-hero-glow" />
-
-          <div className="fin-hero-badges">
-            <span className="fin-badge fin-badge-primary">
-              <Wallet2 size={14} />
-              Billetera global
-            </span>
-            {isReadyToWithdraw && (
-              <span className="fin-badge fin-badge-success">
-                <Banknote size={12} />
-                Listo para retirar
-              </span>
-            )}
-          </div>
-
-          <div className="fin-hero-balance">
-            <span className="fin-balance-label">Saldo disponible</span>
-            <div className="fin-balance-row">
-              <span className="fin-balance-currency">€</span>
-              <span className="fin-balance-amount">{balance.toFixed(2)}</span>
+        <section className="rev-balance-section">
+          <div className="rev-balance-card">
+            <span className="rev-balance-label">LinkPay · EUR</span>
+            <div className="rev-balance-amount">
+              <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
+              <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
             </div>
-            <p className="fin-balance-sub">
-              Todo lo que has generado con Smart Links y Bio Page, listo para moverse.
-            </p>
+            <button className="rev-accounts-btn">
+              <span>Billetera</span>
+              <ChevronDown size={16} />
+            </button>
           </div>
 
-          <div className="fin-hero-actions">
-            <button
-              type="button"
-              className="fin-action-btn fin-action-withdraw"
-              onClick={scrollToWithdraw}
-            >
-              <ArrowDownLeft size={18} />
-              Retirar
-            </button>
-            <button
-              type="button"
-              className="fin-action-btn fin-action-send"
-              onClick={scrollToSend}
-            >
-              <Send size={18} />
-              Enviar
-            </button>
+          {/* Dots indicator */}
+          <div className="rev-dots">
+            <span className="rev-dot active" />
+            <span className="rev-dot" />
+            <span className="rev-dot" />
           </div>
         </section>
 
-        {/* MAIN GRID: Forms + Activity */}
-        <div className="fin-grid">
+        {/* ═══════════════════════════════════════════════════════════════════
+            QUICK ACTIONS - CIRCULAR BUTTONS
+        ═══════════════════════════════════════════════════════════════════ */}
+        <section className="rev-actions">
+          <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
+            <div className="rev-action-circle">
+              <ArrowDownLeft size={22} />
+            </div>
+            <span>Retirar</span>
+          </button>
 
-          {/* LEFT COLUMN: Forms */}
-          <div className="fin-forms">
+          <button className="rev-action-item" onClick={() => setShowSend(true)}>
+            <div className="rev-action-circle">
+              <Send size={22} />
+            </div>
+            <span>Enviar</span>
+          </button>
 
-            {/* ═══════════════════════════════════════════════════════════════
-                WITHDRAW SECTION
-            ═══════════════════════════════════════════════════════════════ */}
-            <section ref={withdrawRef} className="fin-card fin-card-form">
-              <div className="fin-card-header">
-                <div className="fin-card-icon fin-icon-withdraw">
-                  <ArrowDownLeft size={20} />
-                </div>
-                <div>
-                  <h3>Solicitar retiro</h3>
-                  <span className="fin-card-tag">Salida hacia tu cuenta</span>
-                </div>
-              </div>
+          <button className="rev-action-item">
+            <div className="rev-action-circle">
+              <ArrowRightLeft size={22} />
+            </div>
+            <span>Mover</span>
+          </button>
 
+          <button className="rev-action-item">
+            <div className="rev-action-circle">
+              <MoreHorizontal size={22} />
+            </div>
+            <span>Más</span>
+          </button>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            TRANSACTIONS LIST
+        ═══════════════════════════════════════════════════════════════════ */}
+        <section className="rev-transactions">
+          <h3 className="rev-section-title">Actividad reciente</h3>
+
+          {history.length === 0 ? (
+            <div className="rev-empty">
+              <History size={32} />
+              <p>Sin movimientos aún</p>
+              <span>Tus transacciones aparecerán aquí</span>
+            </div>
+          ) : (
+            <div className="rev-tx-list">
+              {history.map((tx) => {
+                const isOut = tx.is_negative;
+                const label = tx.type === 'withdrawal'
+                  ? 'Retiro'
+                  : isOut ? 'Envío' : 'Recibido';
+
+                // Random color for avatar
+                const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+                const colorIndex = tx.id.charCodeAt(0) % colors.length;
+                const avatarColor = colors[colorIndex];
+
+                const statusLabel = tx.status === 'pending' ? 'Pendiente' :
+                  tx.status === 'failed' ? 'Rechazado' : '';
+
+                return (
+                  <div key={tx.id} className="rev-tx-item">
+                    <div className="rev-tx-left">
+                      <div
+                        className="rev-tx-avatar"
+                        style={{ background: avatarColor }}
+                      >
+                        {tx.type === 'withdrawal' ? (
+                          <ArrowDownLeft size={18} color="#fff" />
+                        ) : (
+                          <Send size={18} color="#fff" />
+                        )}
+                      </div>
+                      <div className="rev-tx-info">
+                        <span className="rev-tx-name">{label}</span>
+                        <span className="rev-tx-date">{tx.date}</span>
+                      </div>
+                    </div>
+                    <div className="rev-tx-right">
+                      <span className={`rev-tx-amount ${isOut ? 'negative' : 'positive'}`}>
+                        {isOut ? '-' : '+'}{Number(tx.amount).toFixed(2)} €
+                      </span>
+                      {statusLabel && (
+                        <span className={`rev-tx-status ${tx.status}`}>{statusLabel}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          WITHDRAW MODAL
+      ═══════════════════════════════════════════════════════════════════════ */}
+      {showWithdraw && (
+        <div className="rev-modal-overlay" onClick={() => setShowWithdraw(false)}>
+          <div className="rev-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="rev-modal-header">
+              <h3>Retirar fondos</h3>
+              <button className="rev-modal-close" onClick={() => setShowWithdraw(false)}>
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="rev-modal-body">
               {/* Amount */}
-              <div className="fin-field">
+              <div className="rev-field">
                 <label>Cantidad</label>
-                <div className="fin-input-wrap">
-                  <span className="fin-input-prefix">€</span>
+                <div className="rev-amount-input">
                   <input
                     type="number"
                     inputMode="decimal"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    placeholder="0.00"
-                    className="fin-input fin-input-amount"
+                    placeholder="0"
+                    className="rev-big-input"
                   />
+                  <span className="rev-currency">€</span>
                 </div>
-                <p className="fin-hint">
-                  Mínimo PayPal: <strong>€{MIN_PAYPAL}</strong> · Transferencia: <strong>€{MIN_BANK}</strong>
+                <p className="rev-hint">
+                  Mín. PayPal: €{MIN_PAYPAL} · Transferencia: €{MIN_BANK}
                 </p>
               </div>
 
-              {/* Method Toggle */}
-              <div className="fin-field">
-                <label>Método de retiro</label>
-                <div className="fin-toggle-group">
+              {/* Method */}
+              <div className="rev-field">
+                <label>Método</label>
+                <div className="rev-method-toggle">
                   <button
-                    type="button"
-                    className={`fin-toggle ${withdrawMethod === 'PayPal' ? 'is-active' : ''}`}
+                    className={`rev-method ${withdrawMethod === 'PayPal' ? 'active' : ''}`}
                     onClick={() => setWithdrawMethod('PayPal')}
                   >
-                    <CreditCard size={16} />
+                    <CreditCard size={18} />
                     PayPal
                   </button>
                   <button
-                    type="button"
-                    className={`fin-toggle ${withdrawMethod === 'Bank' ? 'is-active' : ''}`}
+                    className={`rev-method ${withdrawMethod === 'Bank' ? 'active' : ''}`}
                     onClick={() => setWithdrawMethod('Bank')}
                   >
-                    <Building2 size={16} />
-                    Transferencia
+                    <Building2 size={18} />
+                    Banco
                   </button>
                 </div>
               </div>
 
-              {/* Account Details */}
-              {withdrawMethod === 'PayPal' ? (
-                <div className="fin-field">
-                  <label>Email de PayPal</label>
-                  <div className="fin-input-wrap">
-                    <span className="fin-input-prefix"><Mail size={16} /></span>
-                    <input
-                      type="email"
-                      value={withdrawAccount}
-                      onChange={(e) => setWithdrawAccount(e.target.value)}
-                      placeholder="tu@email.com"
-                      className="fin-input fin-input-icon"
-                    />
-                  </div>
-                  {savedMethods.paypal && (
-                    <p className="fin-hint fin-hint-ok">✓ Autocompletado desde Ajustes</p>
-                  )}
+              {/* Account */}
+              <div className="rev-field">
+                <label>{withdrawMethod === 'PayPal' ? 'Email PayPal' : 'IBAN'}</label>
+                <input
+                  type={withdrawMethod === 'PayPal' ? 'email' : 'text'}
+                  value={withdrawAccount}
+                  onChange={(e) => setWithdrawAccount(e.target.value.toUpperCase())}
+                  placeholder={withdrawMethod === 'PayPal' ? 'tu@email.com' : 'ES91...'}
+                  className="rev-input"
+                />
+              </div>
+
+              {withdrawMethod === 'Bank' && (
+                <div className="rev-field">
+                  <label>Titular</label>
+                  <input
+                    type="text"
+                    value={withdrawIbanHolder}
+                    onChange={(e) => setWithdrawIbanHolder(e.target.value)}
+                    placeholder="Nombre completo"
+                    className="rev-input"
+                  />
                 </div>
-              ) : (
-                <>
-                  <div className="fin-field">
-                    <label>IBAN</label>
-                    <div className="fin-input-wrap">
-                      <span className="fin-input-prefix"><Building2 size={16} /></span>
-                      <input
-                        type="text"
-                        value={withdrawAccount}
-                        onChange={(e) => setWithdrawAccount(e.target.value.toUpperCase())}
-                        placeholder="ES91 2100 0418 4502 0005 1332"
-                        className="fin-input fin-input-icon"
-                      />
-                    </div>
-                    {savedMethods.bank && (
-                      <p className="fin-hint fin-hint-ok">✓ Autocompletado desde Ajustes</p>
-                    )}
-                  </div>
-                  <div className="fin-field">
-                    <label>Titular de la cuenta</label>
-                    <div className="fin-input-wrap">
-                      <span className="fin-input-prefix"><User size={16} /></span>
-                      <input
-                        type="text"
-                        value={withdrawIbanHolder}
-                        onChange={(e) => setWithdrawIbanHolder(e.target.value)}
-                        placeholder="Nombre completo"
-                        className="fin-input fin-input-icon"
-                      />
-                    </div>
-                  </div>
-                </>
               )}
 
-              {/* Error / Success */}
+              {/* Error/Success */}
               {withdrawError && (
-                <div className="fin-alert fin-alert-error">
+                <div className="rev-alert error">
                   <AlertCircle size={16} />
                   {withdrawError}
                 </div>
               )}
               {withdrawSuccess && (
-                <div className="fin-alert fin-alert-success">
+                <div className="rev-alert success">
                   <CheckCircle2 size={16} />
-                  ¡Retiro solicitado correctamente!
+                  ¡Retiro solicitado!
                 </div>
               )}
+            </div>
 
-              {/* Submit */}
-              <button
-                type="button"
-                onClick={handleWithdraw}
-                disabled={withdrawLoading}
-                className="fin-btn-primary"
-              >
-                {withdrawLoading ? (
-                  <><Loader2 className="fin-spin" size={18} /> Procesando...</>
-                ) : (
-                  'Confirmar retiro'
-                )}
+            <button
+              className="rev-submit-btn"
+              onClick={handleWithdraw}
+              disabled={withdrawLoading}
+            >
+              {withdrawLoading ? <Loader2 className="rev-spin" size={20} /> : 'Confirmar retiro'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          SEND MODAL
+      ═══════════════════════════════════════════════════════════════════════ */}
+      {showSend && (
+        <div className="rev-modal-overlay" onClick={() => setShowSend(false)}>
+          <div className="rev-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="rev-modal-header">
+              <h3>Enviar dinero</h3>
+              <button className="rev-modal-close" onClick={() => setShowSend(false)}>
+                <X size={24} />
               </button>
-            </section>
+            </div>
 
-            {/* ═══════════════════════════════════════════════════════════════
-                SEND MONEY SECTION
-            ═══════════════════════════════════════════════════════════════ */}
-            <section ref={sendRef} className="fin-card fin-card-form">
-              <div className="fin-card-header">
-                <div className="fin-card-icon fin-icon-send">
-                  <Send size={20} />
-                </div>
-                <div>
-                  <h3>Enviar a otro usuario</h3>
-                  <span className="fin-card-tag">Transferencia interna</span>
-                </div>
-              </div>
-
+            <div className="rev-modal-body">
               {/* Recipient */}
-              <div className="fin-field">
-                <label>Email del destinatario</label>
-                <div className="fin-input-wrap">
-                  <span className="fin-input-prefix"><Mail size={16} /></span>
-                  <input
-                    type="email"
-                    value={sendEmail}
-                    onChange={(e) => setSendEmail(e.target.value)}
-                    placeholder="amigo@linkpay.io"
-                    className="fin-input fin-input-icon"
-                  />
-                </div>
+              <div className="rev-field">
+                <label>Destinatario</label>
+                <input
+                  type="email"
+                  value={sendEmail}
+                  onChange={(e) => setSendEmail(e.target.value)}
+                  placeholder="email@ejemplo.com"
+                  className="rev-input"
+                />
               </div>
 
               {/* Amount */}
-              <div className="fin-field">
+              <div className="rev-field">
                 <label>Cantidad</label>
-                <div className="fin-input-wrap">
-                  <span className="fin-input-prefix">€</span>
+                <div className="rev-amount-input">
                   <input
                     type="number"
                     inputMode="decimal"
                     value={sendAmount}
                     onChange={(e) => setSendAmount(e.target.value)}
-                    placeholder="0.00"
-                    className="fin-input fin-input-amount"
+                    placeholder="0"
+                    className="rev-big-input"
                   />
+                  <span className="rev-currency">€</span>
                 </div>
               </div>
 
-              {/* Note (optional) */}
-              <div className="fin-field">
+              {/* Note */}
+              <div className="rev-field">
                 <label>Nota (opcional)</label>
-                <div className="fin-input-wrap">
-                  <span className="fin-input-prefix"><MessageSquare size={16} /></span>
-                  <input
-                    type="text"
-                    value={sendNote}
-                    onChange={(e) => setSendNote(e.target.value)}
-                    placeholder="¡Gracias por tu ayuda!"
-                    className="fin-input fin-input-icon"
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={sendNote}
+                  onChange={(e) => setSendNote(e.target.value)}
+                  placeholder="¿Para qué es?"
+                  className="rev-input"
+                />
               </div>
 
-              {/* Error / Success */}
+              {/* Error/Success */}
               {sendError && (
-                <div className="fin-alert fin-alert-error">
+                <div className="rev-alert error">
                   <AlertCircle size={16} />
                   {sendError}
                 </div>
               )}
               {sendSuccess && (
-                <div className="fin-alert fin-alert-success">
+                <div className="rev-alert success">
                   <CheckCircle2 size={16} />
                   ¡Envío completado!
                 </div>
               )}
-
-              {/* Submit */}
-              <button
-                type="button"
-                onClick={handleSend}
-                disabled={sendLoading}
-                className="fin-btn-primary fin-btn-send"
-              >
-                {sendLoading ? (
-                  <><Loader2 className="fin-spin" size={18} /> Enviando...</>
-                ) : (
-                  <>
-                    <Send size={16} />
-                    Enviar dinero
-                  </>
-                )}
-              </button>
-            </section>
-          </div>
-
-          {/* ═══════════════════════════════════════════════════════════════════
-              ACTIVITY TIMELINE
-          ═══════════════════════════════════════════════════════════════════ */}
-          <section className="fin-card fin-card-activity">
-            <div className="fin-card-header">
-              <div className="fin-card-icon fin-icon-history">
-                <History size={20} />
-              </div>
-              <div>
-                <h3>Actividad financiera</h3>
-                <span className="fin-card-tag">Historial de movimientos</span>
-              </div>
             </div>
 
-            {history.length === 0 ? (
-              <div className="fin-empty">
-                <TrendingUp size={32} className="fin-empty-icon" />
-                <p className="fin-empty-title">Sin movimientos aún</p>
-                <p className="fin-empty-sub">
-                  Cuando realices tu primer retiro o envío, aparecerá aquí.
-                </p>
-              </div>
-            ) : (
-              <div className="fin-timeline">
-                {history.map((tx) => {
-                  const isOut = tx.is_negative;
-                  const iconBg = tx.type === 'transfer' ? 'fin-tx-send' : 'fin-tx-withdraw';
-                  const Icon = tx.type === 'transfer' ? ArrowUpRight : ArrowDownLeft;
-                  const label = tx.type === 'withdrawal'
-                    ? 'Retiro'
-                    : isOut
-                      ? 'Envío'
-                      : 'Recibido';
-
-                  const statusClass =
-                    tx.status === 'pending'
-                      ? 'fin-status-pending'
-                      : tx.status === 'failed'
-                        ? 'fin-status-failed'
-                        : 'fin-status-ok';
-
-                  const statusLabel =
-                    tx.status === 'pending'
-                      ? 'Pendiente'
-                      : tx.status === 'failed'
-                        ? 'Rechazado'
-                        : 'Completado';
-
-                  return (
-                    <div key={tx.id} className="fin-tx-item">
-                      <div className="fin-tx-left">
-                        <div className={`fin-tx-avatar ${iconBg}`}>
-                          <Icon size={16} />
-                        </div>
-                        <div className="fin-tx-info">
-                          <span className="fin-tx-label">{label}</span>
-                          <span className="fin-tx-date">
-                            <Clock size={10} /> {tx.date}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="fin-tx-right">
-                        <span className={`fin-tx-amount ${isOut ? 'is-out' : 'is-in'}`}>
-                          {isOut ? '-' : '+'}€{Number(tx.amount).toFixed(2)}
-                        </span>
-                        <span className={`fin-status-pill ${statusClass}`}>
-                          {statusLabel}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </section>
+            <button
+              className="rev-submit-btn send"
+              onClick={handleSend}
+              disabled={sendLoading}
+            >
+              {sendLoading ? <Loader2 className="rev-spin" size={20} /> : 'Enviar'}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   STYLES - MOBILE-FIRST REVOLUT-STYLE DESIGN
+   STYLES - REVOLUT AUTHENTIC DESIGN
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-const finStyles = `
+const revStyles = `
   /* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
-  .fin-spin { animation: fin-spin 1s linear infinite; }
-  @keyframes fin-spin { 100% { transform: rotate(360deg); } }
+  .rev-spin { animation: rev-spin 1s linear infinite; }
+  @keyframes rev-spin { 100% { transform: rotate(360deg); } }
 
-  @keyframes fin-glow-pulse {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
-  }
-
-  @keyframes fin-fade-in {
-    from { opacity: 0; transform: translateY(12px); }
+  @keyframes rev-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ─── SHELL & BACKGROUND ─────────────────────────────────────────────────── */
-  .fin-bg {
-    min-height: 100dvh;
-    background: 
-      radial-gradient(ellipse at 0% 0%, rgba(30, 58, 138, 0.4) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
-      #020617;
-    position: relative;
+  @keyframes rev-scale-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
   }
 
-  .fin-shell {
+  /* ─── SHELL ──────────────────────────────────────────────────────────────── */
+  .rev-shell {
     position: fixed;
     inset: 0;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    z-index: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    color: #fff;
   }
 
   @media (min-width: 769px) {
-    .fin-shell { left: 260px; }
+    .rev-shell { left: 260px; }
   }
 
-  .fin-container {
+  /* ─── BACKGROUND ─────────────────────────────────────────────────────────── */
+  .rev-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(180deg, 
+      #0a1628 0%, 
+      #0d1f3c 30%,
+      #0f172a 100%
+    );
+  }
+
+  .rev-bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(6, 78, 125, 0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 40% 10%, rgba(14, 116, 144, 0.3) 0%, transparent 40%);
+    animation: rev-fade-up 1s ease-out;
+  }
+
+  .rev-bg-glow {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .rev-container {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 1100px;
+    max-width: 500px;
     margin: 0 auto;
     padding: 20px 16px 100px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
-    color: #e5e7eb;
-    animation: fin-fade-in 0.4s ease-out;
+    animation: rev-fade-up 0.5s ease-out;
   }
 
-  .fin-loading {
+  .rev-loading {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;
+    min-height: 80vh;
     gap: 16px;
-    color: #818cf8;
+    color: #94a3b8;
     font-size: 14px;
+  }
+
+  /* ─── BALANCE SECTION ────────────────────────────────────────────────────── */
+  .rev-balance-section {
+    padding: 40px 0 30px;
+    text-align: center;
+  }
+
+  .rev-balance-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rev-balance-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
   }
 
-  /* ─── HERO WALLET CARD ───────────────────────────────────────────────────── */
-  .fin-hero {
-    position: relative;
-    background: linear-gradient(135deg, rgba(30, 58, 138, 0.6) 0%, rgba(15, 23, 42, 0.95) 100%);
-    border: 1px solid rgba(129, 140, 248, 0.3);
-    border-radius: 24px;
-    padding: 28px 24px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    box-shadow: 
-      0 20px 50px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  }
-
-  .fin-hero-glow {
-    position: absolute;
-    top: -50%;
-    right: -30%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(79, 70, 229, 0.4) 0%, transparent 70%);
-    pointer-events: none;
-    animation: fin-glow-pulse 6s ease-in-out infinite;
-  }
-
-  .fin-hero-badges {
+  .rev-balance-amount {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 16px;
-    position: relative;
-    z-index: 1;
+    align-items: baseline;
+    justify-content: center;
   }
 
-  .fin-badge {
+  .rev-amount-value {
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: -2px;
+    color: #fff;
+  }
+
+  .rev-amount-decimal {
+    font-size: 32px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 2px;
+  }
+
+  .rev-accounts-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 12px;
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
     border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.2s;
   }
 
-  .fin-badge-primary {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(129, 140, 248, 0.5);
-    color: #c7d2fe;
+  .rev-accounts-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
-  .fin-badge-success {
-    background: rgba(22, 163, 74, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.5);
-    color: #86efac;
-  }
-
-  .fin-hero-balance {
-    position: relative;
-    z-index: 1;
-  }
-
-  .fin-balance-label {
-    display: block;
-    font-size: 13px;
-    color: #94a3b8;
-    margin-bottom: 4px;
-  }
-
-  .fin-balance-row {
+  .rev-dots {
     display: flex;
-    align-items: baseline;
-    gap: 4px;
-  }
-
-  .fin-balance-currency {
-    font-size: 28px;
-    font-weight: 600;
-    color: #a5b4fc;
-  }
-
-  .fin-balance-amount {
-    font-size: 48px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: #f9fafb;
-    text-shadow: 0 0 40px rgba(129, 140, 248, 0.3);
-  }
-
-  .fin-balance-sub {
-    margin: 8px 0 0;
-    font-size: 13px;
-    color: #94a3b8;
-    max-width: 320px;
-  }
-
-  .fin-hero-actions {
-    display: flex;
-    gap: 12px;
+    justify-content: center;
+    gap: 6px;
     margin-top: 24px;
-    position: relative;
-    z-index: 1;
   }
 
-  .fin-action-btn {
-    flex: 1;
+  .rev-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: background 0.2s;
+  }
+
+  .rev-dot.active {
+    background: #fff;
+  }
+
+  /* ─── QUICK ACTIONS ──────────────────────────────────────────────────────── */
+  .rev-actions {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px 0 30px;
+  }
+
+  .rev-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .rev-action-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 14px 20px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-  }
-
-  .fin-action-withdraw {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.9) 0%, rgba(99, 102, 241, 0.9) 100%);
     color: #fff;
-    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
-  .fin-action-withdraw:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(79, 70, 229, 0.5);
+  .rev-action-item:hover .rev-action-circle {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
   }
 
-  .fin-action-send {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(129, 140, 248, 0.4);
-    color: #c7d2fe;
+  .rev-action-item:active .rev-action-circle {
+    transform: scale(0.95);
   }
 
-  .fin-action-send:hover {
-    background: rgba(79, 70, 229, 0.2);
-    border-color: rgba(129, 140, 248, 0.6);
-    transform: translateY(-2px);
+  .rev-action-item span {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
   }
 
-  /* ─── GRID LAYOUT ────────────────────────────────────────────────────────── */
-  .fin-grid {
+  /* ─── TRANSACTIONS ───────────────────────────────────────────────────────── */
+  .rev-transactions {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px;
+    margin: 0 -16px;
+    min-height: 300px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .rev-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 16px 4px;
+  }
+
+  .rev-empty {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 50px 20px;
+    color: rgba(255, 255, 255, 0.4);
   }
 
-  .fin-forms {
+  .rev-empty p {
+    margin: 16px 0 4px;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .rev-empty span {
+    font-size: 13px;
+  }
+
+  .rev-tx-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
   }
 
-  @media (min-width: 900px) {
-    .fin-grid {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 24px;
+  .rev-tx-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.15s;
+    border-radius: 12px;
+    margin: 0 -4px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .rev-tx-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .rev-tx-item:last-child {
+    border-bottom: none;
+  }
+
+  .rev-tx-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .rev-tx-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rev-tx-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rev-tx-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .rev-tx-date {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .rev-tx-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .rev-tx-amount {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .rev-tx-amount.positive { color: #22c55e; }
+  .rev-tx-amount.negative { color: #fff; }
+
+  .rev-tx-status {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .rev-tx-status.pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+  }
+
+  .rev-tx-status.failed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+
+  /* ─── MODAL ──────────────────────────────────────────────────────────────── */
+  .rev-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: rev-fade-up 0.2s ease-out;
+  }
+
+  @media (min-width: 769px) {
+    .rev-modal-overlay {
+      left: 260px;
+      align-items: center;
     }
   }
 
-  /* ─── CARDS ──────────────────────────────────────────────────────────────── */
-  .fin-card {
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid rgba(100, 116, 139, 0.25);
-    border-radius: 20px;
-    padding: 24px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  .rev-modal {
+    width: 100%;
+    max-width: 420px;
+    background: #0f172a;
+    border-radius: 24px 24px 0 0;
+    padding: 0 0 34px;
+    animation: rev-scale-in 0.25s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
-  .fin-card:hover {
-    border-color: rgba(129, 140, 248, 0.3);
+  @media (min-width: 769px) {
+    .rev-modal {
+      border-radius: 24px;
+      margin-bottom: 0;
+    }
   }
 
-  .fin-card-header {
+  .rev-modal-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .rev-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .rev-modal-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    transition: color 0.15s;
+  }
+
+  .rev-modal-close:hover {
+    color: #fff;
+  }
+
+  .rev-modal-body {
+    padding: 20px;
+  }
+
+  .rev-field {
     margin-bottom: 20px;
   }
 
-  .fin-card-header h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: #f1f5f9;
-  }
-
-  .fin-card-tag {
+  .rev-field label {
     display: block;
-    font-size: 11px;
-    color: #64748b;
-    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
   }
 
-  .fin-card-icon {
-    width: 40px;
-    height: 40px;
+  .rev-input {
+    width: 100%;
+    padding: 14px 16px;
     border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .rev-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .rev-input:focus {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .rev-amount-input {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .fin-icon-withdraw {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.3) 0%, rgba(99, 102, 241, 0.2) 100%);
-    color: #a5b4fc;
-    border: 1px solid rgba(129, 140, 248, 0.3);
-  }
-
-  .fin-icon-send {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(96, 165, 250, 0.2) 100%);
-    color: #93c5fd;
-    border: 1px solid rgba(96, 165, 250, 0.3);
-  }
-
-  .fin-icon-history {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(192, 132, 252, 0.2) 100%);
-    color: #d8b4fe;
-    border: 1px solid rgba(168, 85, 247, 0.3);
-  }
-
-  /* ─── FORM FIELDS ────────────────────────────────────────────────────────── */
-  .fin-field {
-    margin-bottom: 16px;
-  }
-
-  .fin-field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: #94a3b8;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .fin-input-wrap {
-    position: relative;
-  }
-
-  .fin-input-prefix {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    color: #64748b;
-    pointer-events: none;
-  }
-
-  .fin-input {
-    width: 100%;
-    padding: 14px 14px 14px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(100, 116, 139, 0.3);
-    background: rgba(2, 6, 23, 0.6);
-    color: #e5e7eb;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .fin-input-amount {
-    padding-left: 32px;
-    font-size: 20px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .fin-input-icon {
-    padding-left: 44px;
-  }
-
-  .fin-input::placeholder {
-    color: #475569;
-  }
-
-  .fin-input:focus {
-    border-color: rgba(129, 140, 248, 0.6);
-    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
-  }
-
-  .fin-hint {
-    margin: 6px 0 0;
-    font-size: 12px;
-    color: #64748b;
-  }
-
-  .fin-hint-ok {
-    color: #4ade80;
-  }
-
-  /* ─── TOGGLE GROUP ───────────────────────────────────────────────────────── */
-  .fin-toggle-group {
-    display: flex;
     gap: 8px;
+    padding: 20px 0;
   }
 
-  .fin-toggle {
+  .rev-big-input {
+    width: 120px;
+    background: none;
+    border: none;
+    font-size: 48px;
+    font-weight: 300;
+    color: #fff;
+    text-align: right;
+    outline: none;
+  }
+
+  .rev-big-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .rev-currency {
+    font-size: 32px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .rev-hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+  }
+
+  .rev-method-toggle {
+    display: flex;
+    gap: 10px;
+  }
+
+  .rev-method {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 16px;
+    padding: 14px;
     border-radius: 12px;
-    border: 1px solid rgba(100, 116, 139, 0.3);
-    background: rgba(2, 6, 23, 0.6);
-    color: #94a3b8;
-    font-size: 13px;
-    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
   }
 
-  .fin-toggle:hover {
-    background: rgba(79, 70, 229, 0.1);
-    border-color: rgba(129, 140, 248, 0.4);
+  .rev-method:hover {
+    background: rgba(255, 255, 255, 0.08);
   }
 
-  .fin-toggle.is-active {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.3) 0%, rgba(99, 102, 241, 0.2) 100%);
-    border-color: rgba(129, 140, 248, 0.6);
-    color: #e0e7ff;
-    box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.3);
+  .rev-method.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
   }
 
-  /* ─── ALERTS ─────────────────────────────────────────────────────────────── */
-  .fin-alert {
+  .rev-alert {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -990,249 +1054,71 @@ const finStyles = `
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 16px;
-    animation: fin-fade-in 0.3s ease-out;
   }
 
-  .fin-alert-error {
+  .rev-alert.error {
     background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #fca5a5;
+    color: #f87171;
   }
 
-  .fin-alert-success {
+  .rev-alert.success {
     background: rgba(34, 197, 94, 0.12);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    color: #86efac;
+    color: #4ade80;
   }
 
-  /* ─── BUTTONS ────────────────────────────────────────────────────────────── */
-  .fin-btn-primary {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 16px 24px;
+  .rev-submit-btn {
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    padding: 16px;
     border-radius: 14px;
     border: none;
     background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     color: #fff;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 
-      0 8px 24px rgba(79, 70, 229, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease;
+    transition: opacity 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .fin-btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 12px 32px rgba(79, 70, 229, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  .rev-submit-btn:hover:not(:disabled) {
+    opacity: 0.9;
   }
 
-  .fin-btn-primary:disabled {
+  .rev-submit-btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .rev-submit-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 
-  .fin-btn-send {
+  .rev-submit-btn.send {
     background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-    box-shadow: 
-      0 8px 24px rgba(59, 130, 246, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-
-  .fin-btn-send:hover:not(:disabled) {
-    box-shadow: 
-      0 12px 32px rgba(59, 130, 246, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-
-  /* ─── ACTIVITY TIMELINE ──────────────────────────────────────────────────── */
-  .fin-card-activity {
-    min-height: 300px;
-  }
-
-  .fin-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 20px;
-    border: 1px dashed rgba(100, 116, 139, 0.3);
-    border-radius: 16px;
-    background: rgba(2, 6, 23, 0.4);
-  }
-
-  .fin-empty-icon {
-    color: #475569;
-    margin-bottom: 12px;
-  }
-
-  .fin-empty-title {
-    margin: 0 0 4px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #94a3b8;
-  }
-
-  .fin-empty-sub {
-    margin: 0;
-    font-size: 12px;
-    color: #64748b;
-  }
-
-  .fin-timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .fin-tx-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 12px;
-    border-radius: 14px;
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(51, 65, 85, 0.4);
-    transition: background 0.2s, border-color 0.2s;
-  }
-
-  .fin-tx-item:hover {
-    background: rgba(51, 65, 85, 0.4);
-    border-color: rgba(100, 116, 139, 0.4);
-  }
-
-  .fin-tx-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-  }
-
-  .fin-tx-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .fin-tx-withdraw {
-    background: rgba(100, 116, 139, 0.2);
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    color: #cbd5e1;
-  }
-
-  .fin-tx-send {
-    background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(96, 165, 250, 0.3);
-    color: #93c5fd;
-  }
-
-  .fin-tx-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .fin-tx-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #e2e8f0;
-  }
-
-  .fin-tx-date {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    color: #64748b;
-  }
-
-  .fin-tx-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-  }
-
-  .fin-tx-amount {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  .fin-tx-amount.is-out { color: #f87171; }
-  .fin-tx-amount.is-in { color: #4ade80; }
-
-  .fin-status-pill {
-    padding: 3px 8px;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .fin-status-pending {
-    background: rgba(245, 158, 11, 0.15);
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    color: #fbbf24;
-  }
-
-  .fin-status-ok {
-    background: rgba(34, 197, 94, 0.12);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    color: #4ade80;
-  }
-
-  .fin-status-failed {
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #f87171;
   }
 
   /* ─── MOBILE ADJUSTMENTS ─────────────────────────────────────────────────── */
   @media (max-width: 768px) {
-    .fin-shell { left: 0; }
+    .rev-shell { left: 0; }
     
-    .fin-container {
-      padding: 16px 12px 100px;
+    .rev-amount-value {
+      font-size: 48px;
     }
 
-    .fin-hero {
-      padding: 24px 20px;
-      border-radius: 20px;
+    .rev-amount-decimal {
+      font-size: 28px;
     }
 
-    .fin-balance-amount {
-      font-size: 42px;
+    .rev-actions {
+      gap: 20px;
     }
 
-    .fin-hero-actions {
-      flex-direction: column;
-    }
-
-    .fin-action-btn {
-      padding: 16px 20px;
-    }
-
-    .fin-card {
-      padding: 20px 16px;
-      border-radius: 16px;
-    }
-
-    .fin-tx-item {
-      padding: 12px 10px;
+    .rev-action-circle {
+      width: 52px;
+      height: 52px;
     }
   }
 `;
