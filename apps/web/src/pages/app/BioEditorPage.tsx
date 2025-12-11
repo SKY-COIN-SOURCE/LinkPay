@@ -45,7 +45,7 @@ import { BioService, BioProfile, BioLink, BioAchievement } from '../../lib/bioSe
 import { supabase } from '../../lib/supabaseClient';
 import { useToast, useConfirm } from '../../components/ui/Toast';
 import { QRCodeGenerator } from '../../components/QRCodeGenerator';
-import { ProfileCompletion, AchievementsBadges, XPBar } from '../../components/Gamification';
+import { ProfileCompletion, AchievementsList } from '../../components/Gamification';
 import { Award, Clock } from 'lucide-react';
 import './BioEditor.css'; // V3 Styles
 
@@ -835,15 +835,10 @@ export function BioEditorPage() {
                     {/* Profile Completion */}
                     <ProfileCompletion profile={profile} />
 
-                    {/* XP Bar */}
-                    <div style={{ marginTop: '16px' }}>
-                      <XPBar level={profile.level || 1} xp={profile.xp || 0} />
-                    </div>
-
-                    {/* Achievements */}
-                    <div className="lp-gamification-section">
-                      <h4><Star size={16} /> Logros Desbloqueados</h4>
-                      <AchievementsBadges achievements={achievements} />
+                    {/* Lista de Logros */}
+                    <div className="lp-gamification-section" style={{ marginTop: '16px' }}>
+                      <h4><Star size={16} /> Tus Logros</h4>
+                      <AchievementsList profile={profile} />
                     </div>
                   </div>
 

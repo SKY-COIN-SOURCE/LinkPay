@@ -1,63 +1,111 @@
 import React from 'react';
 import {
-    Award,
+    Star,
     Link as LinkIcon,
     MousePointer2,
     DollarSign,
-    Zap,
-    Star,
-    Trophy,
-    Target
+    Eye,
+    Users,
+    Palette,
+    Image as ImageIcon,
+    FileText,
+    Share2,
+    CheckCircle2,
+    Circle
 } from 'lucide-react';
 
-// Badge definitions
-const BADGES = {
-    first_link: {
+// Logros con progreso - más motivadores
+const ACHIEVEMENTS = [
+    {
+        id: 'first_link',
         icon: LinkIcon,
         label: 'Primer Enlace',
-        description: 'Añadiste tu primer enlace',
-        color: '#3b82f6'
+        description: 'Añade tu primer enlace',
+        color: '#3b82f6',
+        check: (p: any) => (p.links?.length || 0) >= 1
     },
-    link_builder: {
-        icon: Target,
-        label: 'Constructor',
-        description: '5 enlaces creados',
-        color: '#8b5cf6'
+    {
+        id: 'link_collector',
+        icon: LinkIcon,
+        label: 'Coleccionista',
+        description: 'Añade 5 enlaces',
+        color: '#8b5cf6',
+        check: (p: any) => (p.links?.length || 0) >= 5
     },
-    first_100_clicks: {
+    {
+        id: 'profile_pic',
+        icon: ImageIcon,
+        label: 'Con Cara',
+        description: 'Sube tu foto de perfil',
+        color: '#f59e0b',
+        check: (p: any) => !!p.avatar_url
+    },
+    {
+        id: 'bio_writer',
+        icon: FileText,
+        label: 'Escritor',
+        description: 'Añade una bio de +10 caracteres',
+        color: '#10b981',
+        check: (p: any) => (p.description?.length || 0) >= 10
+    },
+    {
+        id: 'theme_changer',
+        icon: Palette,
+        label: 'Diseñador',
+        description: 'Personaliza tu tema',
+        color: '#ec4899',
+        check: (p: any) => p.theme && p.theme !== 'light'
+    },
+    {
+        id: 'first_view',
+        icon: Eye,
+        label: 'Primera Visita',
+        description: 'Recibe tu primera visita',
+        color: '#6366f1',
+        check: (p: any) => (p.views || 0) >= 1
+    },
+    {
+        id: 'popular',
+        icon: Users,
+        label: 'Popular',
+        description: 'Alcanza 100 visitas',
+        color: '#14b8a6',
+        check: (p: any) => (p.views || 0) >= 100
+    },
+    {
+        id: 'first_click',
         icon: MousePointer2,
-        label: '100 Clicks',
-        description: 'Alcanzaste 100 clicks',
-        color: '#10b981'
+        label: 'Primer Click',
+        description: 'Alguien hizo click en tu enlace',
+        color: '#22c55e',
+        check: (p: any) => {
+            const totalClicks = p.links?.reduce((sum: number, l: any) => sum + (l.clicks || 0), 0) || 0;
+            return totalClicks >= 1;
+        }
     },
-    viral: {
-        icon: Zap,
+    {
+        id: 'viral',
+        icon: Share2,
         label: 'Viral',
-        description: '1000+ clicks totales',
-        color: '#f59e0b'
+        description: 'Consigue 100 clicks',
+        color: '#eab308',
+        check: (p: any) => {
+            const totalClicks = p.links?.reduce((sum: number, l: any) => sum + (l.clicks || 0), 0) || 0;
+            return totalClicks >= 100;
+        }
     },
-    first_dollar: {
+    {
+        id: 'money_maker',
         icon: DollarSign,
-        label: 'Primer Dólar',
-        description: 'Ganaste tu primer dólar',
-        color: '#22c55e'
-    },
-    earning_machine: {
-        icon: Trophy,
-        label: 'Máquina de Dinero',
-        description: 'Ganaste $10+',
-        color: '#eab308'
+        label: 'Monetizado',
+        description: 'Activa la monetización',
+        color: '#22c55e',
+        check: (p: any) => p.monetization_mode && p.monetization_mode !== 'none'
     }
-};
+];
 
 interface ProfileCompletionProps {
-    profile: {
-        avatar_url?: string;
-        display_name?: string;
-        description?: string;
-        links?: any[];
-        theme?: string;
-    };
+    profile: any;
 }
 
 export function ProfileCompletion({ profile }: ProfileCompletionProps) {
@@ -72,7 +120,7 @@ export function ProfileCompletion({ profile }: ProfileCompletionProps) {
     const completed = steps.filter(s => s.done).length;
     const percentage = Math.round((completed / steps.length) * 100);
 
-    if (percentage === 100) return null; // Don't show when complete
+    if (percentage === 100) return null;
 
     return (
         <div className="lp-completion-card">
@@ -82,17 +130,11 @@ export function ProfileCompletion({ profile }: ProfileCompletionProps) {
                 <span className="lp-completion-pct">{percentage}%</span>
             </div>
             <div className="lp-completion-bar">
-                <div
-                    className="lp-completion-fill"
-                    style={{ width: `${percentage}%` }}
-                />
+                <div className="lp-completion-fill" style={{ width: `${percentage}%` }} />
             </div>
             <div className="lp-completion-steps">
                 {steps.map(step => (
-                    <div
-                        key={step.key}
-                        className={`lp-completion-step ${step.done ? 'done' : ''}`}
-                    >
+                    <div key={step.key} className={`lp-completion-step ${step.done ? 'done' : ''}`}>
                         {step.done ? '✓' : '○'} {step.label}
                     </div>
                 ))}
@@ -101,64 +143,75 @@ export function ProfileCompletion({ profile }: ProfileCompletionProps) {
     );
 }
 
+// Nuevo: Lista de logros con progreso visual
+interface AchievementsListProps {
+    profile: any;
+}
+
+export function AchievementsList({ profile }: AchievementsListProps) {
+    const completedCount = ACHIEVEMENTS.filter(a => a.check(profile)).length;
+
+    return (
+        <div className="lp-achievements-list">
+            <div className="lp-achievements-header">
+                <span className="lp-achievements-count">
+                    {completedCount}/{ACHIEVEMENTS.length} logros
+                </span>
+            </div>
+            <div className="lp-achievements-items">
+                {ACHIEVEMENTS.map(achievement => {
+                    const isComplete = achievement.check(profile);
+                    const Icon = achievement.icon;
+
+                    return (
+                        <div
+                            key={achievement.id}
+                            className={`lp-achievement-item ${isComplete ? 'complete' : ''}`}
+                        >
+                            <div
+                                className="lp-achievement-icon"
+                                style={{
+                                    background: isComplete ? achievement.color : 'rgba(255,255,255,0.1)',
+                                    opacity: isComplete ? 1 : 0.5
+                                }}
+                            >
+                                <Icon size={16} />
+                            </div>
+                            <div className="lp-achievement-info">
+                                <span className="lp-achievement-label">{achievement.label}</span>
+                                <span className="lp-achievement-desc">{achievement.description}</span>
+                            </div>
+                            <div className="lp-achievement-status">
+                                {isComplete ? (
+                                    <CheckCircle2 size={18} style={{ color: '#22c55e' }} />
+                                ) : (
+                                    <Circle size={18} style={{ color: 'rgba(255,255,255,0.3)' }} />
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// Legacy exports for compatibility (pueden eliminarse después)
 interface AchievementsBadgesProps {
     achievements: Array<{ badge_type: string; earned_at: string }>;
 }
 
 export function AchievementsBadges({ achievements }: AchievementsBadgesProps) {
-    if (!achievements || achievements.length === 0) {
-        return (
-            <div className="lp-achievements-empty">
-                <Award size={32} />
-                <p>Consigue logros para desbloquear badges</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="lp-achievements-grid">
-            {achievements.map(ach => {
-                const badge = BADGES[ach.badge_type as keyof typeof BADGES];
-                if (!badge) return null;
-                const Icon = badge.icon;
-
-                return (
-                    <div
-                        key={ach.badge_type}
-                        className="lp-badge"
-                        title={badge.description}
-                    >
-                        <div
-                            className="lp-badge-icon"
-                            style={{ background: badge.color }}
-                        >
-                            <Icon size={20} />
-                        </div>
-                        <span className="lp-badge-label">{badge.label}</span>
-                    </div>
-                );
-            })}
-        </div>
-    );
+    // Deprecated - use AchievementsList instead
+    return null;
 }
 
-// Mini XP bar for nav
 interface XPBarProps {
     level: number;
     xp: number;
 }
 
 export function XPBar({ level = 1, xp = 0 }: XPBarProps) {
-    const xpForNextLevel = level * 100;
-    const progress = Math.min((xp / xpForNextLevel) * 100, 100);
-
-    return (
-        <div className="lp-xp-container">
-            <div className="lp-level-badge">Lv. {level}</div>
-            <div className="lp-xp-bar">
-                <div className="lp-xp-fill" style={{ width: `${progress}%` }} />
-            </div>
-            <span className="lp-xp-text">{xp}/{xpForNextLevel} XP</span>
-        </div>
-    );
+    // Deprecated - removed by user request
+    return null;
 }
