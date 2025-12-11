@@ -325,7 +325,47 @@ export function PublicBioPage() {
             const IconComponent = socialIcon?.icon;
             const blockType = link.block_type || 'link';
 
-            // Check for embeddable content
+            // DEBUG: Log block types to verify data
+            console.log(`[PublicBioPage] Link: "${link.title}", block_type: ${link.block_type}, resolved: ${blockType}`);
+
+            // IMPORTANT: Check special blocks FIRST (before embeds)
+            // Header Block
+            if (blockType === 'header') {
+              return (
+                <div
+                  key={link.id}
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    color: isLightTheme ? '#1f2937' : 'white',
+                    opacity: 0.9,
+                    margin: '24px 0 16px',
+                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
+                  }}
+                >
+                  {link.title}
+                </div>
+              );
+            }
+
+            // Divider Block
+            if (blockType === 'divider') {
+              return (
+                <div
+                  key={link.id}
+                  style={{
+                    width: '100%',
+                    height: '1px',
+                    background: isLightTheme ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)',
+                    margin: '16px 0',
+                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
+                  }}
+                />
+              );
+            }
+
+            // Check for embeddable content (only for regular links)
             const embedType = getEmbedType(link.url);
             const embedUrl = embedType ? getEmbedUrl(link.url, embedType) : null;
 
@@ -365,42 +405,6 @@ export function PublicBioPage() {
                     loading="lazy"
                   />
                 </div>
-              );
-            }
-
-            // Header Block
-            if (blockType === 'header') {
-              return (
-                <div
-                  key={link.id}
-                  style={{
-                    textAlign: 'center',
-                    fontSize: '18px',
-                    fontWeight: 700,
-                    color: isLightTheme ? '#1f2937' : 'white',
-                    opacity: 0.9,
-                    margin: '24px 0 16px',
-                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
-                  }}
-                >
-                  {link.title}
-                </div>
-              );
-            }
-
-            // Divider Block
-            if (blockType === 'divider') {
-              return (
-                <div
-                  key={link.id}
-                  style={{
-                    width: '100%',
-                    height: '1px',
-                    background: isLightTheme ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)',
-                    margin: '16px 0',
-                    animation: `fadeInUp 0.4s ease-out ${index * 0.08}s both`
-                  }}
-                />
               );
             }
 
