@@ -9,7 +9,8 @@ interface QRCodeGeneratorProps {
 
 export function QRCodeGenerator({ url, username, accentColor = '#6366f1' }: QRCodeGeneratorProps) {
     // Use QR Server API for real, scannable QR codes
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&color=${accentColor.replace('#', '')}&bgcolor=FFFFFF&margin=10`;
+    const safeColor = (accentColor || '#6366f1').replace('#', '');
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&color=${safeColor}&bgcolor=FFFFFF&margin=10`;
 
     const downloadQR = async () => {
         try {
