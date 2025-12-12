@@ -1,20 +1,70 @@
 {
-  "name": "LinkPay",
+  "name": "LinkPay - Smart Links & Bio Pages",
   "short_name": "LinkPay",
-  "start_url": "/",
+  "description": "Crea Smart Links monetizados y Bio Pages profesionales. Gana dinero con cada clic.",
+  "start_url": "/app",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0A66FF",
+  "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#6366f1",
+  "categories": [
+    "finance",
+    "business",
+    "social"
+  ],
+  "lang": "es",
   "icons": [
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Crear Smart Link",
+      "short_name": "Crear",
+      "description": "Crea un nuevo enlace monetizado",
+      "url": "/app/create",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Bio Editor",
+      "short_name": "Bio",
+      "description": "Edita tu página Bio",
+      "url": "/app/bio-editor",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
