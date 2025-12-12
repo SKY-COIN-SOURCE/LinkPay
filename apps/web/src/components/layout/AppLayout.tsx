@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
+import { PWAInstallButton } from '../PWAInstall';
 
 export function AppLayout() {
   const navigate = useNavigate();
@@ -227,6 +228,9 @@ export function AppLayout() {
       <main className="lp-main-shell">
         <Outlet />
       </main>
+
+      {/* PWA Install Button for iOS Safari */}
+      <PWAInstallButton />
     </div>
   );
 }

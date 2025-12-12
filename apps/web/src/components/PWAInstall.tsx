@@ -12,14 +12,33 @@ declare global {
     }
 }
 
-// Detect iOS Safari
+// Detect iOS Safari (more robust detection)
 function isIOSSafari(): boolean {
-    const ua = window.navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
-    const webkit = /WebKit/.test(ua);
-    const notChrome = !/CriOS/.test(ua);
-    const notFirefox = !/FxiOS/.test(ua);
-    return iOS && webkit && notChrome && notFirefox;
+    const ua = window.navigator.userAgent.toLowerCase();
+    const platform = (window.navigator as any).platform?.toLowerCase() || '';
+
+    // Check for iOS devices
+    const isIOS = /iphone|ipad|ipod/.test(ua) ||
+        (platform === 'macintel' && navigator.maxTouchPoints > 1) || // iPadOS 13+
+        /\(ip/.test(ua);
+
+    // Check if it's Safari (not Chrome, Firefox, or other browsers on iOS)
+    const isSafari = /safari/.test(ua) && !/crios|fxios|opios|mercury|focus/.test(ua);
+
+    // Also detect if user is on iOS but NOT in standalone mode (can still install)
+    const notStandalone = !(window.navigator as any).standalone &&
+        !window.matchMedia('(display-mode: standalone)').matches;
+
+    return isIOS && isSafari && notStandalone;
+}
+
+// Detect any iOS device (Safari or other browsers)
+function isAnyiOS(): boolean {
+    const ua = window.navigator.userAgent.toLowerCase();
+    const platform = (window.navigator as any).platform?.toLowerCase() || '';
+
+    return /iphone|ipad|ipod/.test(ua) ||
+        (platform === 'macintel' && navigator.maxTouchPoints > 1);
 }
 
 // Check if running in standalone mode (already installed)
@@ -92,13 +111,13 @@ export function PWAInstallButton() {
     const [dismissed, setDismissed] = useState(false);
     const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
-    // Check if user dismissed before
+    // Check if user dismissed before (shows again after 1 day)
     useEffect(() => {
         const wasDismissed = localStorage.getItem('pwa-install-dismissed');
         if (wasDismissed) {
             const dismissedTime = parseInt(wasDismissed);
-            // Show again after 7 days
-            if (Date.now() - dismissedTime < 7 * 24 * 60 * 60 * 1000) {
+            // Show again after 1 day instead of 7 days
+            if (Date.now() - dismissedTime < 24 * 60 * 60 * 1000) {
                 setDismissed(true);
             }
         }
@@ -425,5 +444,248 @@ export function PWAInstallNavButton() {
             <Download size={14} />
             Instalar App
         </button>
+    );
+}
+
+// Settings Row for iOS Safari installation - Always visible on iOS
+export function PWAInstallSettingsRow() {
+    const [showInstructions, setShowInstructions] = useState(false);
+    const { isInstalled, isIOS } = usePWAInstall();
+
+    // Check if we're on any iOS device
+    const ua = typeof window !== 'undefined' ? window.navigator.userAgent.toLowerCase() : '';
+    const platform = typeof window !== 'undefined' ? ((window.navigator as any).platform?.toLowerCase() || '') : '';
+    const isIOSDevice = /iphone|ipad|ipod/.test(ua) ||
+        (platform === 'macintel' && typeof navigator !== 'undefined' && navigator.maxTouchPoints > 1);
+
+    // Don't show if already installed as PWA
+    if (isInstalled) return null;
+
+    // Only show on iOS devices
+    if (!isIOSDevice && !isIOS) return null;
+
+    return (
+        <>
+            <div style={{
+                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
+                borderRadius: '16px',
+                padding: '20px',
+                marginBottom: '20px'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                    flexWrap: 'wrap'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div style={{
+                            width: '48px',
+                            height: '48px',
+                            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <Smartphone size={24} color="white" />
+                        </div>
+                        <div>
+                            <h4 style={{
+                                fontSize: '15px',
+                                fontWeight: 700,
+                                color: 'white',
+                                marginBottom: '4px'
+                            }}>
+                                Instalar LinkPay
+                            </h4>
+                            <p style={{
+                                fontSize: '13px',
+                                color: '#94a3b8',
+                                margin: 0
+                            }}>
+                                Añade la app a tu pantalla de inicio
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setShowInstructions(true)}
+                        style={{
+                            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '12px',
+                            padding: '12px 20px',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            minHeight: '44px'
+                        }}
+                    >
+                        <Download size={16} />
+                        Instalar
+                    </button>
+                </div>
+            </div>
+
+            {/* iOS Instructions Modal */}
+            {showInstructions && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(0, 0, 0, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px',
+                    zIndex: 10000
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
+                        borderRadius: '24px',
+                        padding: '28px 24px',
+                        maxWidth: '360px',
+                        width: '100%',
+                        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+                    }}>
+                        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                            <div style={{
+                                width: '64px',
+                                height: '64px',
+                                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                                borderRadius: '16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: '0 auto 16px'
+                            }}>
+                                <Smartphone size={32} color="white" />
+                            </div>
+                            <h3 style={{
+                                color: 'white',
+                                fontSize: '20px',
+                                fontWeight: 700,
+                                marginBottom: '8px'
+                            }}>
+                                Instalar LinkPay
+                            </h3>
+                            <p style={{
+                                color: '#a5b4fc',
+                                fontSize: '14px',
+                                margin: 0
+                            }}>
+                                Sigue estos 2 sencillos pasos
+                            </p>
+                        </div>
+
+                        <div style={{
+                            background: 'rgba(99, 102, 241, 0.15)',
+                            borderRadius: '16px',
+                            padding: '20px',
+                            marginBottom: '20px'
+                        }}>
+                            {/* Step 1 */}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '14px',
+                                marginBottom: '18px'
+                            }}>
+                                <div style={{
+                                    width: '48px',
+                                    height: '48px',
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0
+                                }}>
+                                    <Share size={24} color="white" />
+                                </div>
+                                <div>
+                                    <p style={{
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        fontSize: '15px',
+                                        marginBottom: '4px'
+                                    }}>
+                                        1. Toca el botón Compartir
+                                    </p>
+                                    <p style={{
+                                        color: '#94a3b8',
+                                        fontSize: '13px',
+                                        margin: 0
+                                    }}>
+                                        El icono <span style={{ fontSize: '16px' }}>↑</span> en la barra de Safari
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Step 2 */}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '14px'
+                            }}>
+                                <div style={{
+                                    width: '48px',
+                                    height: '48px',
+                                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0
+                                }}>
+                                    <PlusSquare size={24} color="white" />
+                                </div>
+                                <div>
+                                    <p style={{
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        fontSize: '15px',
+                                        marginBottom: '4px'
+                                    }}>
+                                        2. "Añadir a inicio"
+                                    </p>
+                                    <p style={{
+                                        color: '#94a3b8',
+                                        fontSize: '13px',
+                                        margin: 0
+                                    }}>
+                                        Busca y pulsa esta opción
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setShowInstructions(false)}
+                            style={{
+                                width: '100%',
+                                background: 'white',
+                                color: '#1e1b4b',
+                                border: 'none',
+                                borderRadius: '12px',
+                                padding: '16px',
+                                fontWeight: 700,
+                                fontSize: '15px',
+                                cursor: 'pointer',
+                                minHeight: '52px'
+                            }}
+                        >
+                            ¡Entendido!
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
