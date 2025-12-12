@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
+import { UpdateNotification } from './components/UpdateNotification';
 import { router } from './router';
 import './index.css';
 
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <ThemeProvider>
         <AuthProvider>
           <ToastProvider>
+            <UpdateNotification />
             <RouterProvider router={router} />
           </ToastProvider>
         </AuthProvider>
@@ -22,4 +24,3 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     </I18nProvider>
   </React.StrictMode>,
 );
-

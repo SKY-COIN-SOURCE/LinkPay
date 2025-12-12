@@ -1,4 +1,7 @@
-const CACHE_NAME = 'linkpay-v2';
+// Auto-incrementing version based on build timestamp
+const CACHE_VERSION = 'linkpay-v' + Date.now();
+const CACHE_NAME = CACHE_VERSION;
+
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,20 +11,25 @@ const STATIC_ASSETS = [
   '/icons/apple-touch-icon.png'
 ];
 
-// Install: Cache static assets
+// Install: Cache static assets and skip waiting
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing new version:', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[SW] Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        // Skip waiting - activate immediately
+        return self.skipWaiting();
+      })
   );
 });
 
-// Activate: Clean old caches
+// Activate: Clean ALL old caches and claim clients
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating new version:', CACHE_NAME);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -32,7 +40,22 @@ self.addEventListener('activate', (event) => {
             return caches.delete(name);
           })
       );
-    }).then(() => self.clients.claim())
+    })
+      .then(() => {
+        console.log('[SW] Claiming clients');
+        return self.clients.claim();
+      })
+      .then(() => {
+        // Notify all clients about the update
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'SW_UPDATED',
+              version: CACHE_NAME
+            });
+          });
+        });
+      })
   );
 });
 
@@ -44,18 +67,37 @@ self.addEventListener('fetch', (event) => {
   // Skip external requests (API, analytics, etc.)
   if (!event.request.url.startsWith(self.location.origin)) return;
 
-  // Skip API and Supabase calls
+  // Skip API and Supabase calls - always go to network
   if (event.request.url.includes('/api/') ||
     event.request.url.includes('supabase') ||
     event.request.url.includes('netlify')) {
     return;
   }
 
+  // For HTML navigation requests, always try network first
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Cache the new version
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Offline - return cached index.html
+          return caches.match('/index.html');
+        })
+    );
+    return;
+  }
+
+  // For other assets: network-first with cache fallback
   event.respondWith(
-    // Try network first
     fetch(event.request)
       .then((response) => {
-        // Cache successful responses
         if (response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -65,14 +107,9 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Fallback to cache if offline
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
-          }
-          // For navigation requests, return cached index.html
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
           }
           return new Response('Offline', { status: 503 });
         });
@@ -80,7 +117,15 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Handle push notifications (future feature)
+// Listen for skip waiting message from the app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Skip waiting requested');
+    self.skipWaiting();
+  }
+});
+
+// Handle push notifications
 self.addEventListener('push', (event) => {
   if (!event.data) return;
 
@@ -105,13 +150,11 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientList) => {
-      // Focus existing window if available
       for (const client of clientList) {
         if (client.url === url && 'focus' in client) {
           return client.focus();
         }
       }
-      // Open new window
       if (clients.openWindow) {
         return clients.openWindow(url);
       }
@@ -119,4 +162,4 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-console.log('[SW] LinkPay Service Worker loaded');
+console.log('[SW] LinkPay Service Worker loaded - Version:', CACHE_NAME);
