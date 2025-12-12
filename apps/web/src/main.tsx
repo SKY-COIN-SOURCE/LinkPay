@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
 import { UpdateNotification } from './components/UpdateNotification';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { router } from './router';
 import './index.css';
 
@@ -12,15 +13,17 @@ import { I18nProvider } from './i18n';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <I18nProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <UpdateNotification />
-            <RouterProvider router={router} />
-          </ToastProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </I18nProvider>
+    <ErrorBoundary>
+      <I18nProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <UpdateNotification />
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </I18nProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );

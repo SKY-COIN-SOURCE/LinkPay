@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
 
 export function UpdateNotification() {
     const [showUpdate, setShowUpdate] = useState(false);
@@ -34,18 +34,16 @@ export function UpdateNotification() {
         }
     }, []);
 
-    const handleUpdate = () => {
-        // Tell the waiting SW to skip waiting
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then((registration) => {
-                if (registration.waiting) {
-                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                }
-            });
-        }
-        // Reload the page
-        window.location.reload();
+    const handleDismiss = () => {
+        setShowUpdate(false);
+        sessionStorage.setItem('update-dismissed', 'true');
     };
+
+    useEffect(() => {
+        if (sessionStorage.getItem('update-dismissed')) {
+            setShowUpdate(false);
+        }
+    }, []);
 
     if (!showUpdate) return null;
 
@@ -57,13 +55,14 @@ export function UpdateNotification() {
             transform: 'translateX(-50%)',
             background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
             color: 'white',
-            padding: '12px 20px',
-            borderRadius: '12px',
+            padding: '14px 20px',
+            borderRadius: '14px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             boxShadow: '0 10px 40px rgba(99, 102, 241, 0.4)',
             zIndex: 10001,
+            maxWidth: '340px',
             animation: 'slideDown 0.3s ease-out'
         }}>
             <style>{`
@@ -72,25 +71,30 @@ export function UpdateNotification() {
           to { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
       `}</style>
-            <RefreshCw size={18} />
-            <span style={{ fontWeight: 600, fontSize: '14px' }}>
-                Nueva versión disponible
-            </span>
+            <RefreshCw size={20} />
+            <div style={{ flex: 1 }}>
+                <p style={{ fontWeight: 700, fontSize: '14px', marginBottom: '2px' }}>
+                    Nueva actualización
+                </p>
+                <p style={{ fontSize: '12px', opacity: 0.9, margin: 0 }}>
+                    Cierra la app y vuelve a abrirla
+                </p>
+            </div>
             <button
-                onClick={handleUpdate}
+                onClick={handleDismiss}
                 style={{
-                    background: 'white',
-                    color: '#6366f1',
+                    background: 'rgba(255,255,255,0.2)',
                     border: 'none',
                     borderRadius: '8px',
-                    padding: '8px 14px',
-                    fontWeight: 700,
-                    fontSize: '13px',
+                    padding: '6px',
+                    color: 'white',
                     cursor: 'pointer',
-                    marginLeft: '4px'
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
             >
-                Actualizar
+                <X size={16} />
             </button>
         </div>
     );
