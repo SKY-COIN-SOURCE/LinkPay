@@ -77,9 +77,12 @@ export function AppLayout() {
       <aside className="lp-sidebar-desktop">
         <div className="lp-sidebar-header">
           <div className="lp-sidebar-logo-orb">
-            <div className="lp-sidebar-logo-inner">
-              <Zap size={16} color="#e5f2ff" />
-            </div>
+            <img
+              src="/icons/icon-192.png"
+              alt="LinkPay"
+              className="lp-sidebar-logo-img"
+              style={{ width: '100%', height: '100%', borderRadius: '10px', objectFit: 'cover' }}
+            />
           </div>
           <div className="lp-sidebar-brand">
             <div className="lp-sidebar-title-row">
