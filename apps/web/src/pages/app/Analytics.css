@@ -654,17 +654,26 @@
       }
 
       .lp-analytics-inner {
-          max-width: 520px;
-          padding: 20px 12px 110px 12px;
+          max-width: 100%;
+          padding: 20px 16px 140px 16px;
       }
 
       .lp-analytics-header {
           flex-direction: column;
           align-items: flex-start;
-          gap: 10px;
+          gap: 12px;
       }
 
       .lp-card-chart {
           height: 260px;
+      }
+
+      .lp-analytics-card {
+          padding: 16px;
+          border-radius: 20px;
+      }
+
+      .lp-card-header {
+          gap: 10px;
       }
   }

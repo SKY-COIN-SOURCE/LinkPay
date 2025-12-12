@@ -128,24 +128,28 @@ export function LoginPage() {
   };
 
   // --- ESTILOS EN LÍNEA (Diseño Glassmorphism) ---
-  const containerStyle = {
-    minHeight: '100vh',
+  const containerStyle: React.CSSProperties = {
+    minHeight: '100dvh',
     width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#020617',
-    fontFamily: 'sans-serif'
+    fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+    padding: '20px',
+    paddingTop: 'max(20px, env(safe-area-inset-top))',
+    paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+    boxSizing: 'border-box'
   };
 
-  const cardStyle = {
+  const cardStyle: React.CSSProperties = {
     backgroundColor: '#ffffff',
     width: '100%',
     maxWidth: '420px',
-    padding: '48px',
+    padding: 'clamp(24px, 6vw, 48px)',
     borderRadius: '24px',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    position: 'relative' as 'relative',
+    position: 'relative',
     zIndex: 10
   };
 

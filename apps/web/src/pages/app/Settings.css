@@ -53,7 +53,7 @@
 
 /* ===== LOADING STATE ===== */
 .lp-settings-loading {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -76,7 +76,7 @@
 
 /* ===== SHELL ===== */
 .lp-settings-shell-v2 {
-    min-height: 100vh;
+    min-height: 100dvh;
     background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
     padding: 24px;
 }

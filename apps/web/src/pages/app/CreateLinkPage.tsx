@@ -1439,7 +1439,7 @@ const baseStyles = `
     .lp-create-inner {
       max-width: 480px;
       margin: 0 auto;
-      padding: 20px 12px 80px 12px;
+      padding: 20px 16px 140px 16px;
     }
 
     .lp-header-v2 {

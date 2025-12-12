@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -12,6 +12,9 @@ import {
   BarChart2,
   Cpu,
   Users,
+  Menu,
+  X,
+  ChevronRight,
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
@@ -21,14 +24,16 @@ export function AppLayout() {
   const location = useLocation();
   const { t, setLanguage, language } = useTranslation();
   const { signOut } = useAuth();
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   // Función de logout real que cierra sesión de Supabase
   const handleLogout = async () => {
+    setMoreMenuOpen(false);
     await signOut();
     navigate('/login', { replace: true });
   };
 
-  // NAV DEFINITIVA
+  // NAV DEFINITIVA - DESKTOP (all items)
   const navItems = [
     { icon: LayoutDashboard, label: 'Resumen', path: '/app' },
     { icon: PlusSquare, label: 'Crear Link', path: '/app/create' },
@@ -41,7 +46,27 @@ export function AppLayout() {
     { icon: Cpu, label: 'Tecnología', path: '/app/technology' },
   ];
 
-  const mobileNavItems = navItems;
+  // MOBILE PRIMARY NAV - 5 items (Wallet ALWAYS visible - bank-grade)
+  const primaryMobileNav = [
+    { icon: LayoutDashboard, label: 'Inicio', path: '/app' },
+    { icon: PlusSquare, label: 'Crear', path: '/app/create' },
+    { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
+    { icon: Smartphone, label: 'Bio', path: '/app/bio-editor' },
+  ];
+
+  // MOBILE MORE MENU - Secondary items
+  const secondaryMobileNav = [
+    { icon: Link2, label: 'Mis Enlaces', path: '/app/links' },
+    { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
+    { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
+    { icon: Settings, label: 'Ajustes', path: '/app/settings' },
+    { icon: Cpu, label: 'Tecnología', path: '/app/technology' },
+  ];
+
+  const handleMoreNavClick = (path: string) => {
+    setMoreMenuOpen(false);
+    navigate(path);
+  };
 
   return (
     <div className="lp-app-shell">
@@ -124,10 +149,10 @@ export function AppLayout() {
         </div>
       </aside>
 
-      {/* NAV INFERIOR MÓVIL */}
+      {/* NAV INFERIOR MÓVIL - BANK GRADE */}
       <nav className="lp-mobile-nav">
         <div className="lp-mobile-nav-inner">
-          {mobileNavItems.map((item) => (
+          {primaryMobileNav.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -137,15 +162,66 @@ export function AppLayout() {
               }
             >
               <div className="lp-mobile-icon-pill">
-                <item.icon className="lp-mobile-icon" size={20} strokeWidth={2.1} />
+                <item.icon className="lp-mobile-icon" size={22} strokeWidth={2} />
               </div>
-              <span className="lp-mobile-label">
-                {item.label === 'Red de Referidos' ? 'Referidos' : item.label}
-              </span>
+              <span className="lp-mobile-label">{item.label}</span>
             </NavLink>
           ))}
+
+          {/* MORE BUTTON */}
+          <button
+            className={`lp-mobile-item lp-more-btn ${moreMenuOpen ? 'active' : ''}`}
+            onClick={() => setMoreMenuOpen(true)}
+          >
+            <div className="lp-mobile-icon-pill">
+              <Menu className="lp-mobile-icon" size={22} strokeWidth={2} />
+            </div>
+            <span className="lp-mobile-label">Más</span>
+          </button>
         </div>
       </nav>
+
+      {/* MORE MENU OVERLAY - BANK GRADE SHEET */}
+      {moreMenuOpen && (
+        <>
+          <div
+            className="lp-more-backdrop"
+            onClick={() => setMoreMenuOpen(false)}
+          />
+          <div className="lp-more-sheet">
+            <div className="lp-more-header">
+              <span className="lp-more-title">Más opciones</span>
+              <button
+                className="lp-more-close"
+                onClick={() => setMoreMenuOpen(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="lp-more-list">
+              {secondaryMobileNav.map((item) => (
+                <button
+                  key={item.path}
+                  className={`lp-more-item ${location.pathname === item.path ? 'active' : ''}`}
+                  onClick={() => handleMoreNavClick(item.path)}
+                >
+                  <div className="lp-more-icon">
+                    <item.icon size={20} />
+                  </div>
+                  <span className="lp-more-label">{item.label}</span>
+                  <ChevronRight size={16} className="lp-more-chevron" />
+                </button>
+              ))}
+            </div>
+            <div className="lp-more-footer">
+              <button className="lp-more-logout" onClick={handleLogout}>
+                <LogOut size={18} />
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* CONTENIDO */}
       <main className="lp-main-shell">
@@ -160,7 +236,7 @@ export function AppLayout() {
 const layoutStyles = `
   .lp-app-shell {
     display: flex;
-    min-height: 100vh;
+    min-height: 100dvh;
     background: #020617;
     position: relative;
     color: #e5e7eb;
@@ -183,7 +259,7 @@ const layoutStyles = `
       0 18px 60px rgba(0, 0, 0, 0.9);
     position: sticky;
     top: 0;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     z-index: 40;
@@ -444,13 +520,13 @@ const layoutStyles = `
     z-index: 1;
   }
 
-  /* ===== MOBILE NAV ===== */
+  /* ===== MOBILE NAV - BANK GRADE ===== */
   .lp-mobile-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 10px 12px 14px 12px;
+    padding: 8px 16px calc(env(safe-area-inset-bottom, 8px) + 8px) 16px;
     display: none;
     z-index: 60;
     pointer-events: none;
@@ -460,73 +536,245 @@ const layoutStyles = `
     pointer-events: auto;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px;
-    border-radius: 999px;
-    background: radial-gradient(circle at 50% 0%, rgba(15,23,42,0.94), rgba(15,23,42,0.96));
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(30, 64, 175, 0.9);
+    justify-content: space-around;
+    padding: 8px 4px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(2, 6, 23, 0.98) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
     box-shadow:
-      0 0 0 1px rgba(15, 23, 42, 0.95),
-      0 -8px 40px rgba(0, 0, 0, 0.9);
-    overflow-x: auto;
+      0 -4px 24px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(15, 23, 42, 0.9);
   }
 
   .lp-mobile-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    justify-content: center;
+    gap: 4px;
     text-decoration: none;
-    color: #9ca3af;
-    font-size: 9px;
+    color: #64748b;
+    font-size: 10px;
     font-weight: 600;
-    min-width: 64px;
-    padding: 2px 4px;
+    letter-spacing: 0.02em;
+    min-width: 56px;
+    min-height: 56px;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
     position: relative;
-    transition: color 0.18s ease, transform 0.18s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lp-mobile-item:active {
+    transform: scale(0.95);
   }
 
   .lp-mobile-item.active {
-    color: #e5e7eb;
-    transform: translateY(-1px);
+    color: #f1f5f9;
   }
 
   .lp-mobile-icon-pill {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 23, 42, 0.96);
-    box-shadow: inset 0 0 0 1px rgba(51, 65, 85, 0.9);
-    transition:
-      background 0.18s ease,
-      box-shadow 0.18s ease,
-      transform 0.18s ease;
+    background: transparent;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .lp-mobile-item.active .lp-mobile-icon-pill {
-    background: radial-gradient(circle at 30% 0%, #4f46e5, #1e293b);
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     box-shadow:
-      0 0 0 1px rgba(191, 219, 254, 0.65),
-      0 10px 20px rgba(15, 23, 42, 1);
-    transform: translateY(-1px);
+      0 4px 16px rgba(99, 102, 241, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
   }
 
   .lp-mobile-icon {
-    color: #9ca3af;
-    transition: color 0.18s ease;
+    color: #64748b;
+    transition: color 0.2s ease;
   }
 
   .lp-mobile-item.active .lp-mobile-icon {
-    color: #e5f2ff;
+    color: #ffffff;
   }
 
   .lp-mobile-label {
     white-space: nowrap;
+  }
+
+  /* More Button specific */
+  .lp-more-btn {
+    border: none;
+    background: transparent;
+  }
+
+  /* ===== MORE MENU OVERLAY - BANK GRADE SHEET ===== */
+  .lp-more-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .lp-more-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 0 0 calc(env(safe-area-inset-bottom, 16px) + 16px) 0;
+    z-index: 101;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .lp-more-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px 20px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .lp-more-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: -0.02em;
+  }
+
+  .lp-more-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.1);
+    border: none;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .lp-more-close:hover {
+    background: rgba(148, 163, 184, 0.2);
+    color: #f1f5f9;
+  }
+
+  .lp-more-list {
+    padding: 8px 12px;
+  }
+
+  .lp-more-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 12px;
+    border-radius: 14px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+  }
+
+  .lp-more-item:hover {
+    background: rgba(59, 130, 246, 0.08);
+    color: #f1f5f9;
+  }
+
+  .lp-more-item.active {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+  }
+
+  .lp-more-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(148, 163, 184, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .lp-more-item:hover .lp-more-icon {
+    background: rgba(59, 130, 246, 0.15);
+  }
+
+  .lp-more-item.active .lp-more-icon {
+    background: rgba(99, 102, 241, 0.2);
+  }
+
+  .lp-more-label {
+    flex: 1;
+  }
+
+  .lp-more-chevron {
+    color: #475569;
+    transition: transform 0.2s ease;
+  }
+
+  .lp-more-item:hover .lp-more-chevron {
+    transform: translateX(2px);
+    color: #94a3b8;
+  }
+
+  .lp-more-footer {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+    margin-top: 8px;
+  }
+
+  .lp-more-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.08);
+    color: #f87171;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .lp-more-logout:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
   }
 
   /* ===== RESPONSIVE ===== */
@@ -535,8 +783,8 @@ const layoutStyles = `
       display: none;
     }
     .lp-main-shell {
-      padding: 18px 14px 110px 14px;
-      max-width: 520px;
+      padding: 16px 16px 120px 16px;
+      max-width: 100%;
     }
     .lp-mobile-nav {
       display: block;

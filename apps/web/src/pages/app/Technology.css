@@ -28,6 +28,7 @@
     letter-spacing: -0.03em;
     background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
 }
@@ -236,6 +237,10 @@
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
+    .lp-tech-shell {
+        padding: 20px 16px 140px 16px;
+    }
+
     .lp-metrics-grid {
         grid-template-columns: 1fr;
         gap: 12px;
@@ -243,9 +248,43 @@
 
     .lp-tech-cards-row {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .lp-tech-title {
         font-size: 28px;
+    }
+
+    .lp-tech-desc {
+        font-size: 14px;
+    }
+
+    .lp-tech-blackbox {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .lp-blackbox-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .lp-metric-card {
+        padding: 16px;
+    }
+
+    .lp-metric-value {
+        font-size: 22px;
+    }
+
+    .lp-tech-feature-card {
+        padding: 20px;
+    }
+
+    .lp-security-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
     }
 }

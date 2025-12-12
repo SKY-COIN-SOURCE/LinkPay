@@ -1094,8 +1094,8 @@ const linksStyles = `
 
   @media (max-width: 900px) {
     .lp-links-inner {
-      max-width: 520px;
-      padding: 20px 12px 110px 12px;
+      max-width: 100%;
+      padding: 20px 16px 140px 16px;
     }
   }
 
@@ -1109,22 +1109,54 @@ const linksStyles = `
     .lp-links-filters-row {
       flex-direction: column;
       align-items: stretch;
+      gap: 12px;
+    }
+
+    .lp-links-search {
+      max-width: 100%;
+    }
+
+    .lp-links-search input {
+      padding: 14px 14px 14px 38px;
+      font-size: 16px;
+      border-radius: 14px;
     }
 
     .lp-links-refresh {
       justify-content: center;
       width: 100%;
+      padding: 14px;
+      border-radius: 14px;
     }
 
     .lp-links-meta {
-      font-size: 10px;
+      font-size: 11px;
       align-items: flex-start;
       flex-direction: column;
+      gap: 10px;
     }
 
     .lp-links-meta-pill {
       width: 100%;
       justify-content: center;
+      padding: 8px 12px;
+    }
+
+    .lp-link-card {
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .lp-btn-ghost,
+    .lp-btn-danger {
+      width: 40px;
+      height: 40px;
+    }
+
+    .lp-chip-stat,
+    .lp-chip-money {
+      padding: 6px 10px;
+      font-size: 11px;
     }
   }
 `;

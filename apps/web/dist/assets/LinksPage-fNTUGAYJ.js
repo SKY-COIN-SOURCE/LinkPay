@@ -1,4 +1,4 @@
-import{d as C,r as l,j as e,Z as k,i as o,b as Y,E as D,h as j,k as y,L as w,g as B}from"./index-CS-3ZyHu.js";import{E as v}from"./eye-off-izqDPu5T.js";import{C as N}from"./copy-DUcRbJ6Y.js";import{T as z}from"./trash-2-DdbveJ1I.js";import{S as O}from"./shield-BX_TEywt.js";/**
+import{d as C,r as l,j as e,Z as k,i as o,b as Y,E as D,h as j,k as y,L as w,g as B}from"./index-CsCFP9VZ.js";import{E as v}from"./eye-off-CMjI6Y7B.js";import{C as N}from"./copy-B7XwjtbL.js";import{T as z}from"./trash-2-2on_wrIA.js";import{S as O}from"./shield-B5mpRq-M.js";/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
@@ -8,7 +8,7 @@ import{d as C,r as l,j as e,Z as k,i as o,b as Y,E as D,h as j,k as y,L as w,g a
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const H=[["path",{d:"m21 21-4.34-4.34",key:"14j7rj"}],["circle",{cx:"11",cy:"11",r:"8",key:"4ej97u"}]],P=C("search",H);function J(){const[L,p]=l.useState([]),[E,c]=l.useState(!0),[d,S]=l.useState(""),[A,R]=l.useState(0),x=l.useRef(0),g=async()=>{c(!0);try{const a=await w.getAll();p(a)}catch(a){console.error(a)}finally{c(!1)}};l.useEffect(()=>{g()},[]);const b=async a=>{if(window.confirm("¿Eliminar enlace?"))try{await w.deleteLink(a),p(s=>s.filter(i=>i.id!==a))}catch{alert("Error al eliminar.")}},m=a=>{navigator.clipboard.writeText(`${window.location.origin}/l/${a}`),alert("Copiado")},n=L.filter(a=>{var i;const s=d.toLowerCase();return((i=a.slug)==null?void 0:i.toLowerCase().includes(s))||a.original_url.toLowerCase().includes(s)}),f=n.length;l.useEffect(()=>{const a=x.current,s=f;if(a===s)return;const i=s-a,T=480,F=performance.now();let t;const u=M=>{const r=Math.min((M-F)/T,1),_=r<.5?2*r*r:-1+(4-2*r)*r,I=Math.round(a+i*_);R(I),r<1?t=requestAnimationFrame(u):x.current=s};return t=requestAnimationFrame(u),()=>cancelAnimationFrame(t)},[f]);const h=a=>{const s={lite:{bg:"rgba(16,185,129,0.16)",color:"#6EE7B7",border:"rgba(16,185,129,0.7)",icon:e.jsx(O,{size:12})},standard:{bg:"rgba(59,130,246,0.18)",color:"#BFDBFE",border:"rgba(59,130,246,0.7)",icon:e.jsx(k,{size:12})},turbo:{bg:"rgba(249,115,22,0.16)",color:"#FED7AA",border:"rgba(249,115,22,0.7)",icon:e.jsx(B,{size:12})}},i=s[a]||s.standard;return e.jsxs("span",{className:"lp-links-mode",style:{background:i.bg,color:i.color,borderColor:i.border},children:[i.icon,a]})};return e.jsxs("div",{className:"lp-links-shell lp-bg",children:[e.jsx("style",{children:V}),e.jsxs("div",{className:"lp-links-inner",children:[e.jsxs("header",{className:"lp-links-header",children:[e.jsxs("div",{className:"lp-chip lp-chip-center",children:[e.jsx("span",{className:"lp-chip-dot"}),"SMART LINKS"]}),e.jsx("p",{children:"Gestiona todos tus enlaces monetizados desde un solo panel. Copia, borra y filtra al vuelo."})]}),e.jsxs("section",{className:"lp-links-card lp-links-card-filters",children:[e.jsxs("div",{className:"lp-links-filters-row",children:[e.jsxs("div",{className:"lp-links-search",children:[e.jsx(P,{className:"lp-links-search-icon",size:16}),e.jsx("input",{placeholder:"Buscar por slug o URL…",value:d,onChange:a=>S(a.target.value)})]}),e.jsxs("button",{type:"button",onClick:g,className:"lp-links-refresh",children:[e.jsx(k,{size:16}),"Refrescar"]})]}),e.jsxs("div",{className:"lp-links-meta",children:[e.jsxs("span",{className:"lp-links-count",children:[e.jsx("span",{className:"lp-links-count-glow"}),e.jsx("strong",{children:A}),e.jsx("span",{className:"lp-links-count-label",children:"enlaces visibles"})]}),e.jsxs("span",{className:"lp-links-meta-pill",children:[e.jsx(q,{size:12}),"Filtro instantáneo"]})]})]}),e.jsxs("section",{className:"lp-links-card lp-links-card-main",children:[e.jsxs("div",{className:"lp-links-card-header",children:[e.jsx("div",{className:"lp-links-card-icon",children:e.jsx(o,{size:18})}),e.jsxs("div",{className:"lp-links-card-title",children:[e.jsx("h3",{children:"Todos tus enlaces"}),e.jsx("p",{children:"Vista avanzada con visitas, revenue y modo de monetización de cada Smart Link."})]})]}),E?e.jsxs("div",{className:"lp-links-loading",children:[e.jsx("div",{className:"lp-links-orb",children:e.jsx(Y,{size:22,className:"spin"})}),e.jsx("p",{children:"Cargando enlaces…"})]}):n.length===0?e.jsxs("div",{className:"lp-links-empty",children:[e.jsx("div",{className:"lp-links-empty-icon",children:e.jsx(D,{size:24})}),e.jsx("p",{className:"lp-links-empty-title",children:"No hay enlaces aún."}),e.jsxs("p",{className:"lp-links-empty-sub",children:["Crea tu primer Smart Link desde la pestaña ",e.jsx("strong",{children:"Crear Link"}),"."]})]}):e.jsxs("div",{className:"lp-links-table-wrapper",children:[e.jsxs("table",{className:"lp-links-table lp-desktop-only",children:[e.jsx("thead",{children:e.jsxs("tr",{children:[e.jsx("th",{children:"Enlace"}),e.jsx("th",{children:"Modo"}),e.jsx("th",{children:"Visitas"}),e.jsx("th",{children:"Revenue"}),e.jsx("th",{className:"lp-th-right",children:"Acciones"})]})}),e.jsx("tbody",{children:n.map(a=>e.jsxs("tr",{children:[e.jsx("td",{children:e.jsxs("div",{className:"lp-link-main",children:[e.jsxs("div",{className:"lp-link-slug-row",children:[e.jsxs("span",{className:"lp-link-slug",children:["/",a.slug]}),a.password&&e.jsx(j,{size:12,className:"lp-link-flag lp-link-flag-orange"}),a.expires_at&&e.jsx(y,{size:12,className:"lp-link-flag lp-link-flag-red"}),a.is_private&&e.jsx(v,{size:12,className:"lp-link-flag lp-link-flag-purple"})]}),e.jsx("span",{className:"lp-link-url",children:a.original_url})]})}),e.jsx("td",{children:h(a.monetization_mode||"standard")}),e.jsx("td",{children:e.jsxs("div",{className:"lp-link-visits",children:[e.jsx(o,{size:15}),a.views]})}),e.jsx("td",{children:e.jsxs("div",{className:"lp-link-revenue",children:["€",(a.earnings||0).toFixed(4)]})}),e.jsx("td",{className:"lp-td-right",children:e.jsxs("div",{className:"lp-link-actions",children:[e.jsx("button",{type:"button",onClick:()=>m(a.slug),className:"lp-btn-ghost",children:e.jsx(N,{size:15})}),e.jsx("button",{type:"button",onClick:()=>b(a.id),className:"lp-btn-danger",children:e.jsx(z,{size:15})})]})})]},a.id))})]}),e.jsx("div",{className:"lp-links-list lp-mobile-only",children:n.map(a=>e.jsxs("div",{className:"lp-link-card",children:[e.jsxs("div",{className:"lp-link-card-top",children:[e.jsxs("div",{className:"lp-link-card-main",children:[e.jsxs("div",{className:"lp-link-slug-row",children:[e.jsxs("span",{className:"lp-link-slug",children:["/",a.slug]}),a.password&&e.jsx(j,{size:11,className:"lp-link-flag lp-link-flag-orange"}),a.expires_at&&e.jsx(y,{size:11,className:"lp-link-flag lp-link-flag-red"}),a.is_private&&e.jsx(v,{size:11,className:"lp-link-flag lp-link-flag-purple"})]}),e.jsx("span",{className:"lp-link-url lp-link-url-mobile",children:a.original_url})]}),e.jsx("div",{className:"lp-link-card-mode",children:h(a.monetization_mode||"standard")})]}),e.jsxs("div",{className:"lp-link-card-bottom",children:[e.jsxs("div",{className:"lp-link-card-stats",children:[e.jsxs("span",{className:"lp-chip-stat",children:[e.jsx(o,{size:12}),a.views," visitas"]}),e.jsxs("span",{className:"lp-chip-money",children:["€",(a.earnings||0).toFixed(4)]})]}),e.jsxs("div",{className:"lp-link-card-actions",children:[e.jsx("button",{type:"button",onClick:()=>m(a.slug),className:"lp-btn-ghost",children:e.jsx(N,{size:14})}),e.jsx("button",{type:"button",onClick:()=>b(a.id),className:"lp-btn-danger",children:e.jsx(z,{size:14})})]})]})]},a.id))})]})]})]})]})}const V=`
+ */const H=[["path",{d:"m21 21-4.34-4.34",key:"14j7rj"}],["circle",{cx:"11",cy:"11",r:"8",key:"4ej97u"}]],P=C("search",H);function J(){const[L,p]=l.useState([]),[E,c]=l.useState(!0),[d,S]=l.useState(""),[A,R]=l.useState(0),x=l.useRef(0),g=async()=>{c(!0);try{const a=await w.getAll();p(a)}catch(a){console.error(a)}finally{c(!1)}};l.useEffect(()=>{g()},[]);const b=async a=>{if(window.confirm("¿Eliminar enlace?"))try{await w.deleteLink(a),p(i=>i.filter(s=>s.id!==a))}catch{alert("Error al eliminar.")}},m=a=>{navigator.clipboard.writeText(`${window.location.origin}/l/${a}`),alert("Copiado")},r=L.filter(a=>{var s;const i=d.toLowerCase();return((s=a.slug)==null?void 0:s.toLowerCase().includes(i))||a.original_url.toLowerCase().includes(i)}),h=r.length;l.useEffect(()=>{const a=x.current,i=h;if(a===i)return;const s=i-a,T=480,F=performance.now();let t;const u=M=>{const n=Math.min((M-F)/T,1),_=n<.5?2*n*n:-1+(4-2*n)*n,I=Math.round(a+s*_);R(I),n<1?t=requestAnimationFrame(u):x.current=i};return t=requestAnimationFrame(u),()=>cancelAnimationFrame(t)},[h]);const f=a=>{const i={lite:{bg:"rgba(16,185,129,0.16)",color:"#6EE7B7",border:"rgba(16,185,129,0.7)",icon:e.jsx(O,{size:12})},standard:{bg:"rgba(59,130,246,0.18)",color:"#BFDBFE",border:"rgba(59,130,246,0.7)",icon:e.jsx(k,{size:12})},turbo:{bg:"rgba(249,115,22,0.16)",color:"#FED7AA",border:"rgba(249,115,22,0.7)",icon:e.jsx(B,{size:12})}},s=i[a]||i.standard;return e.jsxs("span",{className:"lp-links-mode",style:{background:s.bg,color:s.color,borderColor:s.border},children:[s.icon,a]})};return e.jsxs("div",{className:"lp-links-shell lp-bg",children:[e.jsx("style",{children:V}),e.jsxs("div",{className:"lp-links-inner",children:[e.jsxs("header",{className:"lp-links-header",children:[e.jsxs("div",{className:"lp-chip lp-chip-center",children:[e.jsx("span",{className:"lp-chip-dot"}),"SMART LINKS"]}),e.jsx("p",{children:"Gestiona todos tus enlaces monetizados desde un solo panel. Copia, borra y filtra al vuelo."})]}),e.jsxs("section",{className:"lp-links-card lp-links-card-filters",children:[e.jsxs("div",{className:"lp-links-filters-row",children:[e.jsxs("div",{className:"lp-links-search",children:[e.jsx(P,{className:"lp-links-search-icon",size:16}),e.jsx("input",{placeholder:"Buscar por slug o URL…",value:d,onChange:a=>S(a.target.value)})]}),e.jsxs("button",{type:"button",onClick:g,className:"lp-links-refresh",children:[e.jsx(k,{size:16}),"Refrescar"]})]}),e.jsxs("div",{className:"lp-links-meta",children:[e.jsxs("span",{className:"lp-links-count",children:[e.jsx("span",{className:"lp-links-count-glow"}),e.jsx("strong",{children:A}),e.jsx("span",{className:"lp-links-count-label",children:"enlaces visibles"})]}),e.jsxs("span",{className:"lp-links-meta-pill",children:[e.jsx(q,{size:12}),"Filtro instantáneo"]})]})]}),e.jsxs("section",{className:"lp-links-card lp-links-card-main",children:[e.jsxs("div",{className:"lp-links-card-header",children:[e.jsx("div",{className:"lp-links-card-icon",children:e.jsx(o,{size:18})}),e.jsxs("div",{className:"lp-links-card-title",children:[e.jsx("h3",{children:"Todos tus enlaces"}),e.jsx("p",{children:"Vista avanzada con visitas, revenue y modo de monetización de cada Smart Link."})]})]}),E?e.jsxs("div",{className:"lp-links-loading",children:[e.jsx("div",{className:"lp-links-orb",children:e.jsx(Y,{size:22,className:"spin"})}),e.jsx("p",{children:"Cargando enlaces…"})]}):r.length===0?e.jsxs("div",{className:"lp-links-empty",children:[e.jsx("div",{className:"lp-links-empty-icon",children:e.jsx(D,{size:24})}),e.jsx("p",{className:"lp-links-empty-title",children:"No hay enlaces aún."}),e.jsxs("p",{className:"lp-links-empty-sub",children:["Crea tu primer Smart Link desde la pestaña ",e.jsx("strong",{children:"Crear Link"}),"."]})]}):e.jsxs("div",{className:"lp-links-table-wrapper",children:[e.jsxs("table",{className:"lp-links-table lp-desktop-only",children:[e.jsx("thead",{children:e.jsxs("tr",{children:[e.jsx("th",{children:"Enlace"}),e.jsx("th",{children:"Modo"}),e.jsx("th",{children:"Visitas"}),e.jsx("th",{children:"Revenue"}),e.jsx("th",{className:"lp-th-right",children:"Acciones"})]})}),e.jsx("tbody",{children:r.map(a=>e.jsxs("tr",{children:[e.jsx("td",{children:e.jsxs("div",{className:"lp-link-main",children:[e.jsxs("div",{className:"lp-link-slug-row",children:[e.jsxs("span",{className:"lp-link-slug",children:["/",a.slug]}),a.password&&e.jsx(j,{size:12,className:"lp-link-flag lp-link-flag-orange"}),a.expires_at&&e.jsx(y,{size:12,className:"lp-link-flag lp-link-flag-red"}),a.is_private&&e.jsx(v,{size:12,className:"lp-link-flag lp-link-flag-purple"})]}),e.jsx("span",{className:"lp-link-url",children:a.original_url})]})}),e.jsx("td",{children:f(a.monetization_mode||"standard")}),e.jsx("td",{children:e.jsxs("div",{className:"lp-link-visits",children:[e.jsx(o,{size:15}),a.views]})}),e.jsx("td",{children:e.jsxs("div",{className:"lp-link-revenue",children:["€",(a.earnings||0).toFixed(4)]})}),e.jsx("td",{className:"lp-td-right",children:e.jsxs("div",{className:"lp-link-actions",children:[e.jsx("button",{type:"button",onClick:()=>m(a.slug),className:"lp-btn-ghost",children:e.jsx(N,{size:15})}),e.jsx("button",{type:"button",onClick:()=>b(a.id),className:"lp-btn-danger",children:e.jsx(z,{size:15})})]})})]},a.id))})]}),e.jsx("div",{className:"lp-links-list lp-mobile-only",children:r.map(a=>e.jsxs("div",{className:"lp-link-card",children:[e.jsxs("div",{className:"lp-link-card-top",children:[e.jsxs("div",{className:"lp-link-card-main",children:[e.jsxs("div",{className:"lp-link-slug-row",children:[e.jsxs("span",{className:"lp-link-slug",children:["/",a.slug]}),a.password&&e.jsx(j,{size:11,className:"lp-link-flag lp-link-flag-orange"}),a.expires_at&&e.jsx(y,{size:11,className:"lp-link-flag lp-link-flag-red"}),a.is_private&&e.jsx(v,{size:11,className:"lp-link-flag lp-link-flag-purple"})]}),e.jsx("span",{className:"lp-link-url lp-link-url-mobile",children:a.original_url})]}),e.jsx("div",{className:"lp-link-card-mode",children:f(a.monetization_mode||"standard")})]}),e.jsxs("div",{className:"lp-link-card-bottom",children:[e.jsxs("div",{className:"lp-link-card-stats",children:[e.jsxs("span",{className:"lp-chip-stat",children:[e.jsx(o,{size:12}),a.views," visitas"]}),e.jsxs("span",{className:"lp-chip-money",children:["€",(a.earnings||0).toFixed(4)]})]}),e.jsxs("div",{className:"lp-link-card-actions",children:[e.jsx("button",{type:"button",onClick:()=>m(a.slug),className:"lp-btn-ghost",children:e.jsx(N,{size:14})}),e.jsx("button",{type:"button",onClick:()=>b(a.id),className:"lp-btn-danger",children:e.jsx(z,{size:14})})]})]})]},a.id))})]})]})]})]})}const V=`
   .spin {
     animation: spin 1s linear infinite;
   }
@@ -729,8 +729,8 @@ import{d as C,r as l,j as e,Z as k,i as o,b as Y,E as D,h as j,k as y,L as w,g a
 
   @media (max-width: 900px) {
     .lp-links-inner {
-      max-width: 520px;
-      padding: 20px 12px 110px 12px;
+      max-width: 100%;
+      padding: 20px 16px 140px 16px;
     }
   }
 
@@ -744,22 +744,54 @@ import{d as C,r as l,j as e,Z as k,i as o,b as Y,E as D,h as j,k as y,L as w,g a
     .lp-links-filters-row {
       flex-direction: column;
       align-items: stretch;
+      gap: 12px;
+    }
+
+    .lp-links-search {
+      max-width: 100%;
+    }
+
+    .lp-links-search input {
+      padding: 14px 14px 14px 38px;
+      font-size: 16px;
+      border-radius: 14px;
     }
 
     .lp-links-refresh {
       justify-content: center;
       width: 100%;
+      padding: 14px;
+      border-radius: 14px;
     }
 
     .lp-links-meta {
-      font-size: 10px;
+      font-size: 11px;
       align-items: flex-start;
       flex-direction: column;
+      gap: 10px;
     }
 
     .lp-links-meta-pill {
       width: 100%;
       justify-content: center;
+      padding: 8px 12px;
+    }
+
+    .lp-link-card {
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .lp-btn-ghost,
+    .lp-btn-danger {
+      width: 40px;
+      height: 40px;
+    }
+
+    .lp-chip-stat,
+    .lp-chip-money {
+      padding: 6px 10px;
+      font-size: 11px;
     }
   }
 `;export{J as LinksPage};

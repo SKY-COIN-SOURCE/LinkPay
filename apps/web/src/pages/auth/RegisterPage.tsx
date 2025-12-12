@@ -53,8 +53,26 @@ export function RegisterPage() {
   };
 
   // ESTILOS BLINDADOS
-  const containerStyle = { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020617', padding: '20px', fontFamily: 'sans-serif' };
-  const cardStyle = { width: '100%', maxWidth: '480px', background: 'white', borderRadius: '24px', padding: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' };
+  const containerStyle: React.CSSProperties = {
+    minHeight: '100dvh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#020617',
+    padding: '20px',
+    paddingTop: 'max(20px, env(safe-area-inset-top))',
+    paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+    fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+    boxSizing: 'border-box'
+  };
+  const cardStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: '480px',
+    background: 'white',
+    borderRadius: '24px',
+    padding: 'clamp(24px, 5vw, 40px)',
+    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+  };
 
   return (
     <div style={containerStyle}>

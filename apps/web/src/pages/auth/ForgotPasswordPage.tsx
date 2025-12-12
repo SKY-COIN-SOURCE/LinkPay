@@ -16,7 +16,7 @@ export function ForgotPasswordPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/update-password`, // Importante: Esta ruta debe existir en el router
+        redirectTo: `${window.location.origin}/update-password`,
       });
       if (error) throw error;
       setSent(true);
@@ -27,49 +27,164 @@ export function ForgotPasswordPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
-      <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl">
+  const containerStyle: React.CSSProperties = {
+    minHeight: '100dvh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#0f172a',
+    padding: '20px',
+    paddingTop: 'max(20px, env(safe-area-inset-top))',
+    paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+    fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+    boxSizing: 'border-box'
+  };
 
-        <Link to="/login" className="flex items-center gap-2 text-slate-500 text-sm font-bold mb-6 hover:text-indigo-600 transition-colors">
+  const cardStyle: React.CSSProperties = {
+    background: 'white',
+    width: '100%',
+    maxWidth: '420px',
+    padding: 'clamp(24px, 6vw, 32px)',
+    borderRadius: '20px',
+    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+  };
+
+  return (
+    <div style={containerStyle}>
+      <div style={cardStyle}>
+        <Link
+          to="/login"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: '#64748b',
+            fontSize: '14px',
+            fontWeight: 700,
+            marginBottom: '24px',
+            textDecoration: 'none'
+          }}
+        >
           <ArrowLeft size={16} /> Volver
         </Link>
 
-        <h1 className="text-2xl font-black text-slate-900 mb-2">Recuperar Acceso</h1>
-        <p className="text-slate-500 mb-8 text-sm">Te enviaremos un enlace seguro para restablecer tu contraseña.</p>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', marginBottom: '8px' }}>
+          Recuperar Acceso
+        </h1>
+        <p style={{ color: '#64748b', marginBottom: '32px', fontSize: '14px' }}>
+          Te enviaremos un enlace seguro para restablecer tu contraseña.
+        </p>
 
         {sent ? (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="text-green-600" size={24} />
+          <div style={{
+            background: '#f0fdf4',
+            border: '1px solid #bbf7d0',
+            borderRadius: '16px',
+            padding: '24px',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: '#dcfce7',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px'
+            }}>
+              <CheckCircle color="#16a34a" size={24} />
             </div>
-            <h3 className="font-bold text-green-800 mb-1">¡Correo Enviado!</h3>
-            <p className="text-green-700 text-sm">Revisa tu bandeja de entrada (y spam).</p>
+            <h3 style={{ fontWeight: 700, color: '#166534', marginBottom: '4px' }}>¡Correo Enviado!</h3>
+            <p style={{ color: '#15803d', fontSize: '14px' }}>Revisa tu bandeja de entrada (y spam).</p>
           </div>
         ) : (
-          <form onSubmit={handleReset} className="space-y-4">
-            {error && <div className="text-red-500 text-xs font-bold bg-red-50 p-3 rounded-lg">{error}</div>}
+          <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {error && (
+              <div style={{
+                color: '#dc2626',
+                fontSize: '13px',
+                fontWeight: 700,
+                background: '#fef2f2',
+                padding: '12px',
+                borderRadius: '10px'
+              }}>
+                {error}
+              </div>
+            )}
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-3.5 text-slate-400" size={18} />
+              <label style={{
+                display: 'block',
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#64748b',
+                textTransform: 'uppercase',
+                marginBottom: '8px'
+              }}>
+                Email
+              </label>
+              <div style={{ position: 'relative' }}>
+                <Mail
+                  size={18}
+                  style={{
+                    position: 'absolute',
+                    left: '16px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#94a3b8'
+                  }}
+                />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full pl-12 p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:border-indigo-500 transition-colors"
+                  style={{
+                    width: '100%',
+                    paddingLeft: '48px',
+                    padding: '14px 14px 14px 48px',
+                    background: '#f8fafc',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    outline: 'none',
+                    color: '#0f172a',
+                    transition: 'border-color 0.2s',
+                    boxSizing: 'border-box'
+                  }}
                 />
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors flex justify-center shadow-lg shadow-indigo-200 disabled:opacity-50">
-              {loading ? <Loader2 className="animate-spin" /> : 'Enviar Enlace'}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                color: 'white',
+                padding: '16px',
+                borderRadius: '12px',
+                fontWeight: 700,
+                fontSize: '16px',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                boxShadow: '0 4px 14px rgba(79, 70, 229, 0.3)',
+                opacity: loading ? 0.7 : 1,
+                minHeight: '52px'
+              }}
+            >
+              {loading ? <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} /> : 'Enviar Enlace'}
             </button>
           </form>
         )}
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

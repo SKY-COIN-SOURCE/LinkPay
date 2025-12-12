@@ -764,14 +764,23 @@ const refStyles = `
   @media (max-width: 768px) {
     .lp-ref-shell { left: 0; }
     .lp-ref-inner {
-      max-width: 540px;
-      padding: 20px 12px 120px 12px;
+      max-width: 100%;
+      padding: 20px 16px 140px 16px;
     }
     .lp-ref-invite {
       align-items: flex-start;
     }
     .lp-ref-link-box {
       border-radius: 16px;
+      padding: 10px 10px 10px 14px;
+    }
+    .lp-ref-copy-btn {
+      padding: 10px 14px;
+      font-size: 12px;
+      min-height: 44px;
+    }
+    .lp-ref-card {
+      padding: 16px 14px;
     }
   }
 `;

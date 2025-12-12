@@ -198,15 +198,16 @@ export function RedirectPage() {
   // =====================
 
   const containerStyle: React.CSSProperties = {
-    minHeight: '100vh',
+    minHeight: '100dvh',
     width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '16px',
+    padding: 'max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)) 16px',
     background: 'radial-gradient(circle at top, #0F172A 0%, #020617 55%, #020617 100%)',
     fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
     color: '#E5E7EB',
+    boxSizing: 'border-box'
   };
 
   const cardStyle: React.CSSProperties = {

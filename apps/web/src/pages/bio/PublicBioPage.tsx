@@ -88,10 +88,10 @@ export function PublicBioPage() {
 
   }, [profile]);
 
-  if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}><Loader2 className="animate-spin text-slate-400" /></div>;
+  if (loading) return <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}><Loader2 className="animate-spin text-slate-400" /></div>;
 
   if (!profile) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', padding: '20px', textAlign: 'center' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', padding: '20px', textAlign: 'center' }}>
       <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1E293B', marginBottom: '8px' }}>Perfil no encontrado</h1>
       <p style={{ color: '#64748B', marginBottom: '24px' }}>El usuario @{username} no existe.</p>
       <a href="/" style={{ background: '#000', color: '#fff', padding: '12px 24px', borderRadius: '100px', textDecoration: 'none', fontWeight: 'bold' }}>Crear mi LinkPay</a>
@@ -100,8 +100,8 @@ export function PublicBioPage() {
 
   // --- ESTILOS ---
   const containerStyle: React.CSSProperties = {
-    minHeight: '100vh',
-    padding: '60px 20px',
+    minHeight: '100dvh',
+    padding: 'max(40px, env(safe-area-inset-top)) 16px max(60px, env(safe-area-inset-bottom)) 16px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -110,7 +110,8 @@ export function PublicBioPage() {
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    color: ['light', 'pastel'].includes(profile.theme) ? '#1F2937' : '#FFFFFF'
+    color: ['light', 'pastel'].includes(profile.theme) ? '#1F2937' : '#FFFFFF',
+    boxSizing: 'border-box'
   };
 
   // Theme backgrounds - includes all premium themes

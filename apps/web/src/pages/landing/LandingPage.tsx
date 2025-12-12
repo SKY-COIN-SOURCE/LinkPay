@@ -44,11 +44,11 @@ export function LandingPage() {
     { title: "Pagos Globales", desc: "Recibe tus ganancias en cualquier lugar del mundo. Rápido y seguro.", icon: CreditCard, color: "#22C55E" }
   ];
 
-  // --- ESTILOS PREMIUM ---
+  // --- ESTILOS PREMIUM - MOBILE FIRST ---
   const styles = {
     wrapper: {
       background: '#030014',
-      minHeight: '100vh',
+      minHeight: '100dvh',
       color: '#FFFFFF',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif',
       overflowX: 'hidden' as 'hidden',
@@ -57,7 +57,7 @@ export function LandingPage() {
     nav: {
       maxWidth: '1200px',
       margin: '0 auto',
-      padding: '24px',
+      padding: '16px 20px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -66,39 +66,43 @@ export function LandingPage() {
     },
     hero: {
       maxWidth: '1200px',
-      margin: '60px auto 100px',
-      padding: '0 24px',
+      margin: '40px auto 60px',
+      padding: '0 20px',
       display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '60px',
+      gridTemplateColumns: '1fr',
+      gap: '40px',
       alignItems: 'center',
       position: 'relative' as 'relative',
       zIndex: 10
     },
     h1: {
-      fontSize: 'clamp(48px, 6vw, 72px)',
+      fontSize: 'clamp(32px, 9vw, 72px)',
       fontWeight: 900,
-      lineHeight: '1.1',
-      letterSpacing: '-0.02em',
-      marginBottom: '24px',
+      lineHeight: '1.15',
+      letterSpacing: '-0.03em',
+      marginBottom: '20px',
       background: 'linear-gradient(180deg, #FFFFFF 0%, #94A3B8 100%)',
       WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent'
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text'
     },
     ctaButton: {
       background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
       color: 'white',
-      padding: '18px 40px',
-      borderRadius: '100px',
-      fontSize: '18px',
+      padding: '16px 32px',
+      borderRadius: '16px',
+      fontSize: '16px',
       fontWeight: 700,
       border: 'none',
       cursor: 'pointer',
-      boxShadow: '0 0 40px rgba(79, 70, 229, 0.4)',
+      boxShadow: '0 8px 32px rgba(79, 70, 229, 0.4)',
       transition: 'all 0.3s ease',
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '10px'
+      justifyContent: 'center',
+      gap: '10px',
+      minHeight: '56px',
+      width: '100%'
     },
     glassCard: {
       background: 'rgba(255, 255, 255, 0.03)',
@@ -109,14 +113,14 @@ export function LandingPage() {
       transition: 'transform 0.3s ease'
     },
     featureCard: (isActive: boolean) => ({
-      padding: '24px',
+      padding: '20px',
       borderRadius: '16px',
       background: isActive ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
       border: isActive ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
       display: 'flex',
-      gap: '16px',
+      gap: '14px',
       alignItems: 'start'
     })
   };
@@ -125,7 +129,7 @@ export function LandingPage() {
   if (checkingAuth) {
     return (
       <div style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         background: '#030014',
         display: 'flex',
         alignItems: 'center',
@@ -155,7 +159,84 @@ export function LandingPage() {
         @keyframes pulse-ring { 0% { transform: scale(0.33); opacity: 1; } 80%, 100% { transform: scale(1); opacity: 0; } }
         .animate-float { animation: float 6s ease-in-out infinite; }
         .hover-glow:hover { box-shadow: 0 0 30px rgba(79, 70, 229, 0.2); border-color: rgba(79, 70, 229, 0.4); transform: translateY(-5px); }
-        @media (max-width: 1024px) { .hero-grid { grid-template-columns: 1fr !important; text-align: center; } .hero-content { margin: 0 auto; } .mockup-container { display: none; } }
+        
+        /* MOBILE FIRST - Base styles ARE mobile */
+        .hero-grid { 
+          text-align: center; 
+        }
+        .hero-content { 
+          margin: 0 auto; 
+          max-width: 600px;
+        }
+        .mockup-container { 
+          display: none; 
+        }
+        .cta-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+        }
+        .nav-buttons {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+        .nav-login {
+          display: none;
+        }
+        .hero-badge {
+          font-size: 11px !important;
+          padding: 6px 12px !important;
+        }
+        .hero-subtitle {
+          font-size: 15px !important;
+          line-height: 1.6 !important;
+        }
+        .hero-checks {
+          flex-direction: column !important;
+          gap: 12px !important;
+          align-items: center !important;
+        }
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+        }
+        .stat-value {
+          font-size: 28px !important;
+        }
+        .cta-section-title {
+          font-size: 28px !important;
+        }
+        .footer-grid {
+          flex-direction: column !important;
+          text-align: center !important;
+          gap: 32px !important;
+        }
+        .footer-links {
+          gap: 40px !important;
+        }
+        
+        /* DESKTOP BREAKPOINT */
+        @media (min-width: 768px) {
+          .nav-login { display: block; }
+          .hero-badge { font-size: 13px !important; padding: 8px 16px !important; }
+          .hero-subtitle { font-size: 18px !important; }
+          .hero-checks { flex-direction: row !important; gap: 32px !important; }
+          .cta-buttons { flex-direction: row; width: auto; }
+          .stat-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .stat-value { font-size: 40px !important; }
+          .cta-section-title { font-size: 40px !important; }
+          .footer-grid { flex-direction: row !important; text-align: left !important; }
+        }
+        
+        @media (min-width: 1024px) {
+          .hero-grid { 
+            grid-template-columns: 1fr 1fr !important; 
+            text-align: left !important; 
+          }
+          .hero-content { margin: 0; }
+          .mockup-container { display: block; }
+        }
       `}</style>
 
       {/* Background Glows */}
@@ -164,16 +245,16 @@ export function LandingPage() {
 
       {/* NAVBAR */}
       <nav style={styles.nav}>
-        <div style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)' }}>
-            <Zap size={22} color="white" fill="white" />
+        <div style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '-1px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '32px', height: '32px', background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)' }}>
+            <Zap size={18} color="white" fill="white" />
           </div>
           LinkPay
         </div>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <div className="nav-buttons">
           <PWAInstallNavButton />
-          <button onClick={() => navigate('/login')} style={{ background: 'transparent', color: '#94A3B8', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '15px' }}>Login</button>
-          <button onClick={() => navigate('/register')} style={{ background: 'white', color: '#0F172A', padding: '10px 24px', borderRadius: '100px', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '14px', transition: 'transform 0.2s' }} className="hover:scale-105">Empezar Gratis</button>
+          <button onClick={() => navigate('/login')} className="nav-login" style={{ background: 'transparent', color: '#94A3B8', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '15px', padding: '8px 12px' }}>Login</button>
+          <button onClick={() => navigate('/register')} style={{ background: 'white', color: '#0F172A', padding: '12px 20px', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '14px', transition: 'transform 0.2s', minHeight: '44px' }}>Empezar</button>
         </div>
       </nav>
 
@@ -182,9 +263,9 @@ export function LandingPage() {
 
         {/* Left Content */}
         <div className="hero-content">
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', color: '#818CF8', padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: 600, marginBottom: '32px' }}>
-            <span style={{ width: '8px', height: '8px', background: '#818CF8', borderRadius: '50%', boxShadow: '0 0 10px #818CF8' }}></span>
-            Nueva Plataforma de Monetización v2.0
+          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', color: '#818CF8', padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: 600, marginBottom: '24px' }}>
+            <span style={{ width: '6px', height: '6px', background: '#818CF8', borderRadius: '50%', boxShadow: '0 0 10px #818CF8' }}></span>
+            Plataforma de Monetización v2.0
           </div>
 
           <h1 style={styles.h1}>
@@ -192,22 +273,22 @@ export function LandingPage() {
             <span style={{ color: '#818CF8', WebkitTextFillColor: '#818CF8' }}>Enlace y Visita.</span>
           </h1>
 
-          <p style={{ fontSize: '18px', color: '#94A3B8', lineHeight: '1.6', marginBottom: '40px', maxWidth: '500px' }}>
-            LinkPay transforma tu tráfico en ingresos. Crea Bio Pages impresionantes, acorta enlaces y gana dinero automáticamente. Sin complicaciones.
+          <p className="hero-subtitle" style={{ fontSize: '18px', color: '#94A3B8', lineHeight: '1.6', marginBottom: '32px', maxWidth: '500px' }}>
+            Crea Bio Pages, acorta enlaces y gana dinero automáticamente. Sin complicaciones.
           </p>
 
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/register')} style={styles.ctaButton} className="hover:scale-105">
+          <div className="cta-buttons">
+            <button onClick={() => navigate('/register')} style={styles.ctaButton}>
               Crear cuenta gratis <ArrowRight size={20} />
             </button>
-            <button style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '18px 32px', borderRadius: '100px', fontSize: '16px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '16px 24px', borderRadius: '16px', fontSize: '16px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', minHeight: '56px', width: '100%' }}>
               <Play size={18} fill="currentColor" /> Ver Demo
             </button>
           </div>
 
-          <div style={{ marginTop: '48px', display: 'flex', gap: '32px', color: '#64748B', fontSize: '14px', fontWeight: 600 }}>
+          <div className="hero-checks" style={{ marginTop: '32px', display: 'flex', gap: '32px', color: '#64748B', fontSize: '14px', fontWeight: 600 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="#10B981" /> Pagos Diarios</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="#10B981" /> Sin Comisiones Ocultas</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="#10B981" /> Sin Comisiones</div>
           </div>
         </div>
 
@@ -269,7 +350,7 @@ export function LandingPage() {
 
       {/* --- STATS SECTION --- */}
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px', textAlign: 'center' }}>
+        <div className="stat-grid" style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 20px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', textAlign: 'center' }}>
           {[
             { label: "Usuarios Activos", val: "10K+" },
             { label: "Pagos Procesados", val: "€500K+" },
@@ -277,43 +358,43 @@ export function LandingPage() {
             { label: "Países", val: "150+" }
           ].map((s, i) => (
             <div key={i}>
-              <div style={{ fontSize: '40px', fontWeight: 900, color: 'white', marginBottom: '8px' }}>{s.val}</div>
-              <div style={{ fontSize: '14px', color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.label}</div>
+              <div className="stat-value" style={{ fontSize: '40px', fontWeight: 900, color: 'white', marginBottom: '8px' }}>{s.val}</div>
+              <div style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* --- CTA FINAL --- */}
-      <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-        <h2 style={{ fontSize: '40px', fontWeight: 900, marginBottom: '24px' }}>¿Listo para monetizar tu influencia?</h2>
-        <p style={{ fontSize: '18px', color: '#94A3B8', marginBottom: '40px' }}>Únete a los creadores que ya están ganando con LinkPay.</p>
-        <button onClick={() => navigate('/register')} style={styles.ctaButton} className="hover:scale-105">
+      <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+        <h2 className="cta-section-title" style={{ fontSize: '40px', fontWeight: 900, marginBottom: '20px', lineHeight: '1.2' }}>¿Listo para monetizar<br />tu influencia?</h2>
+        <p style={{ fontSize: '16px', color: '#94A3B8', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>Únete a los creadores que ya están ganando con LinkPay.</p>
+        <button onClick={() => navigate('/register')} style={{ ...styles.ctaButton, maxWidth: '320px', margin: '0 auto' }}>
           Comenzar Ahora <Rocket size={20} />
         </button>
       </div>
 
       {/* --- FOOTER --- */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.1)', padding: '80px 24px', background: '#020617' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '40px' }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.1)', padding: '60px 20px 40px', background: '#020617' }}>
+        <div className="footer-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '40px' }}>
           <div>
-            <div style={{ fontSize: '24px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ width: '32px', height: '32px', background: '#4F46E5', borderRadius: '8px' }}></div> LinkPay
+            <div style={{ fontSize: '22px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', justifyContent: 'inherit' }}>
+              <div style={{ width: '28px', height: '28px', background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', borderRadius: '8px' }}></div> LinkPay
             </div>
-            <p style={{ color: '#64748B', maxWidth: '300px', fontSize: '14px' }}>La plataforma definitiva para creadores de contenido.</p>
+            <p style={{ color: '#64748B', maxWidth: '280px', fontSize: '14px', lineHeight: '1.6' }}>La plataforma definitiva para creadores de contenido.</p>
           </div>
-          <div style={{ display: 'flex', gap: '80px', flexWrap: 'wrap' }}>
+          <div className="footer-links" style={{ display: 'flex', gap: '60px', flexWrap: 'wrap' }}>
             <div>
-              <h4 style={{ fontWeight: 700, marginBottom: '20px', color: 'white' }}>Producto</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', color: '#94A3B8', fontSize: '14px' }}>
+              <h4 style={{ fontWeight: 700, marginBottom: '16px', color: 'white', fontSize: '14px' }}>Producto</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', color: '#94A3B8', fontSize: '14px' }}>
                 <span>Bio Pages</span>
                 <span>Smart Links</span>
                 <span>Analytics</span>
               </div>
             </div>
             <div>
-              <h4 style={{ fontWeight: 700, marginBottom: '20px', color: 'white' }}>Legal</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', color: '#94A3B8', fontSize: '14px' }}>
+              <h4 style={{ fontWeight: 700, marginBottom: '16px', color: 'white', fontSize: '14px' }}>Legal</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', color: '#94A3B8', fontSize: '14px' }}>
                 <span>Términos</span>
                 <span>Privacidad</span>
                 <span>Contacto</span>
@@ -321,7 +402,7 @@ export function LandingPage() {
             </div>
           </div>
         </div>
-        <div style={{ maxWidth: '1200px', margin: '80px auto 0', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', color: '#475569', fontSize: '13px' }}>
+        <div style={{ maxWidth: '1200px', margin: '48px auto 0', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', color: '#475569', fontSize: '12px' }}>
           © 2025 LinkPay Inc. Todos los derechos reservados.
         </div>
       </footer>
