@@ -107,16 +107,24 @@ export function usePWAInstall() {
 
 // Floating Install Button Component
 export function PWAInstallButton() {
-    const { isInstallable, promptInstall, isIOS } = usePWAInstall();
+    const { isInstallable, isInstalled, promptInstall, isIOS } = usePWAInstall();
     const [dismissed, setDismissed] = useState(false);
     const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+
+    // Inline iOS check for reliability at click time
+    const checkIsIOSDevice = (): boolean => {
+        if (typeof window === 'undefined') return false;
+        const ua = window.navigator.userAgent.toLowerCase();
+        const platform = ((window.navigator as any).platform || '').toLowerCase();
+        return /iphone|ipad|ipod/.test(ua) ||
+            (platform === 'macintel' && navigator.maxTouchPoints > 1);
+    };
 
     // Check if user dismissed before (shows again after 1 day)
     useEffect(() => {
         const wasDismissed = localStorage.getItem('pwa-install-dismissed');
         if (wasDismissed) {
             const dismissedTime = parseInt(wasDismissed);
-            // Show again after 1 day instead of 7 days
             if (Date.now() - dismissedTime < 24 * 60 * 60 * 1000) {
                 setDismissed(true);
             }
@@ -130,22 +138,28 @@ export function PWAInstallButton() {
     };
 
     const handleInstallClick = () => {
-        if (isIOS) {
+        // Check iOS at click time for maximum reliability
+        const isIOSDevice = isIOS || checkIsIOSDevice();
+        if (isIOSDevice) {
             setShowIOSInstructions(true);
         } else {
             promptInstall();
         }
     };
 
-    if (!isInstallable || dismissed) return null;
+    // Don't show if already installed or dismissed
+    if (isInstalled || !isInstallable || dismissed) return null;
 
-    // iOS Instructions Modal
-    if (showIOSInstructions && isIOS) {
+    // Is this an iOS device? (for button display)
+    const showIOSButton = isIOS || checkIsIOSDevice();
+
+    // iOS Instructions Modal - ALWAYS show if showIOSInstructions is true
+    if (showIOSInstructions) {
         return (
             <div style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0, 0, 0, 0.8)',
+                background: 'rgba(0, 0, 0, 0.85)',
                 backdropFilter: 'blur(8px)',
                 display: 'flex',
                 alignItems: 'center',
@@ -199,7 +213,7 @@ export function PWAInstallButton() {
                             fontSize: '14px',
                             margin: 0
                         }}>
-                            Sigue estos pasos para añadir la app
+                            Sigue estos 2 pasos en Safari
                         </p>
                     </div>
 
@@ -217,8 +231,8 @@ export function PWAInstallButton() {
                             marginBottom: '18px'
                         }}>
                             <div style={{
-                                width: '44px',
-                                height: '44px',
+                                width: '48px',
+                                height: '48px',
                                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                                 borderRadius: '12px',
                                 display: 'flex',
@@ -226,23 +240,23 @@ export function PWAInstallButton() {
                                 justifyContent: 'center',
                                 flexShrink: 0
                             }}>
-                                <Share size={22} color="white" />
+                                <Share size={24} color="white" />
                             </div>
                             <div>
                                 <p style={{
                                     color: 'white',
                                     fontWeight: 600,
                                     fontSize: '15px',
-                                    marginBottom: '2px'
+                                    marginBottom: '4px'
                                 }}>
-                                    1. Toca el botón Compartir
+                                    1. Toca Compartir
                                 </p>
                                 <p style={{
                                     color: '#94a3b8',
                                     fontSize: '13px',
                                     margin: 0
                                 }}>
-                                    El icono con la flecha hacia arriba ↑
+                                    El icono <span style={{ fontSize: '18px' }}>↑</span> en la barra de Safari
                                 </p>
                             </div>
                         </div>
@@ -254,8 +268,8 @@ export function PWAInstallButton() {
                             gap: '14px'
                         }}>
                             <div style={{
-                                width: '44px',
-                                height: '44px',
+                                width: '48px',
+                                height: '48px',
                                 background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
                                 borderRadius: '12px',
                                 display: 'flex',
@@ -263,16 +277,16 @@ export function PWAInstallButton() {
                                 justifyContent: 'center',
                                 flexShrink: 0
                             }}>
-                                <PlusSquare size={22} color="white" />
+                                <PlusSquare size={24} color="white" />
                             </div>
                             <div>
                                 <p style={{
                                     color: 'white',
                                     fontWeight: 600,
                                     fontSize: '15px',
-                                    marginBottom: '2px'
+                                    marginBottom: '4px'
                                 }}>
-                                    2. "Añadir a pantalla de inicio"
+                                    2. "Añadir a inicio"
                                 </p>
                                 <p style={{
                                     color: '#94a3b8',
@@ -293,13 +307,14 @@ export function PWAInstallButton() {
                             color: '#1e1b4b',
                             border: 'none',
                             borderRadius: '12px',
-                            padding: '14px',
+                            padding: '16px',
                             fontWeight: 700,
                             fontSize: '15px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            minHeight: '52px'
                         }}
                     >
-                        Entendido
+                        ¡Entendido!
                     </button>
                 </div>
             </div>
@@ -309,17 +324,18 @@ export function PWAInstallButton() {
     return (
         <div style={{
             position: 'fixed',
-            bottom: '24px',
-            left: '24px',
-            right: '24px',
+            bottom: '160px',
+            left: '16px',
+            right: '16px',
             maxWidth: '400px',
+            margin: '0 auto',
             background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
             borderRadius: '16px',
             padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.2)',
+            gap: '14px',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.3)',
             zIndex: 9999,
             animation: 'slideUp 0.4s ease-out'
         }}>
@@ -360,45 +376,50 @@ export function PWAInstallButton() {
                     fontSize: '13px',
                     margin: 0
                 }}>
-                    {isIOS ? 'Añade a tu pantalla de inicio' : 'Añade a tu pantalla de inicio'}
+                    {showIOSButton ? 'Usa Safari para añadir' : 'Añade a pantalla de inicio'}
                 </p>
             </div>
 
             <button
                 onClick={handleInstallClick}
                 style={{
-                    background: 'white',
-                    color: '#1e1b4b',
+                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                    color: 'white',
                     border: 'none',
                     borderRadius: '10px',
-                    padding: '10px 16px',
+                    padding: '12px 16px',
                     fontWeight: 700,
-                    fontSize: '13px',
+                    fontSize: '14px',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
                     flexShrink: 0,
-                    transition: 'transform 0.2s'
+                    transition: 'transform 0.2s',
+                    minHeight: '44px',
+                    boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)'
                 }}
                 onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                 onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-                {isIOS ? <Share size={16} /> : <Download size={16} />}
-                {isIOS ? 'Cómo instalar' : 'Instalar'}
+                {showIOSButton ? <Share size={16} /> : <Download size={16} />}
+                {showIOSButton ? 'Ver pasos' : 'Instalar'}
             </button>
 
             <button
                 onClick={handleDismiss}
                 style={{
-                    background: 'transparent',
+                    background: 'rgba(255,255,255,0.1)',
                     border: 'none',
-                    color: '#64748b',
+                    color: '#94a3b8',
                     cursor: 'pointer',
-                    padding: '4px',
+                    padding: '8px',
+                    borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    minWidth: '32px',
+                    minHeight: '32px'
                 }}
                 title="Cerrar"
             >
