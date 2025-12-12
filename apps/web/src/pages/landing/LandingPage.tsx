@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Zap, Shield, BarChart3, Smartphone, Rocket, CreditCard, CheckCircle2, Play, MousePointer2, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
+import { PWAInstallButton, PWAInstallNavButton } from '../../components/PWAInstall';
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -169,7 +170,8 @@ export function LandingPage() {
           </div>
           LinkPay
         </div>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <PWAInstallNavButton />
           <button onClick={() => navigate('/login')} style={{ background: 'transparent', color: '#94A3B8', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '15px' }}>Login</button>
           <button onClick={() => navigate('/register')} style={{ background: 'white', color: '#0F172A', padding: '10px 24px', borderRadius: '100px', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '14px', transition: 'transform 0.2s' }} className="hover:scale-105">Empezar Gratis</button>
         </div>
@@ -323,6 +325,9 @@ export function LandingPage() {
           © 2025 LinkPay Inc. Todos los derechos reservados.
         </div>
       </footer>
+
+      {/* PWA Install Floating Banner */}
+      <PWAInstallButton />
 
     </div>
   );
