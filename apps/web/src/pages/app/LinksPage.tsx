@@ -142,17 +142,6 @@ export function LinksPage() {
     <div className="lp-links-shell lp-premium-bg">
       <style>{linksStyles}</style>
       <div className="lp-links-inner lp-premium-inner">
-        {/* HEADER */}
-        <header className="lp-links-header">
-          <div className="lp-chip lp-chip-center">
-            <span className="lp-chip-dot" />
-            SMART LINKS
-          </div>
-          <p>
-            Gestiona todos tus enlaces monetizados desde un solo panel. Copia,
-            borra y filtra al vuelo.
-          </p>
-        </header>
 
         {/* FILTROS / BUSCADOR */}
         <section className="lp-links-card lp-links-card-filters">

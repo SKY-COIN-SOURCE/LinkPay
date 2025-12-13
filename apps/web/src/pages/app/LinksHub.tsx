@@ -48,12 +48,20 @@ const linksHubStyles = `
     min-height: 100dvh;
     background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000000 100%);
     position: relative;
+    /* Mobile: start below header */
+    padding-top: calc(56px + env(safe-area-inset-top, 0px));
+  }
+
+  @media (min-width: 769px) {
+    .lp-links-hub-shell {
+      padding-top: 0;
+    }
   }
 
   /* Tabs Bar - sticky at top */
   .lp-links-tabs-bar {
     position: sticky;
-    top: calc(56px + env(safe-area-inset-top, 0px));
+    top: 0;
     z-index: 50;
     display: flex;
     gap: 8px;

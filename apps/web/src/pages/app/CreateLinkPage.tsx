@@ -254,23 +254,6 @@ export function CreateLinkPage() {
       <style>{baseStyles}</style>
 
       <div className="lp-create-inner">
-        {/* Header muy simple */}
-        <header className="lp-header-v2">
-          <div className="lp-header-left">
-            <div className="lp-chip">
-              <span className="lp-chip-dot" />
-              SMART LINK
-            </div>
-
-            <div className="lp-title-row">
-              {/* Título eliminado para limpiar */}
-            </div>
-
-            <p>
-              Pega tu enlace, añade nuestra tecnología y gana dinero con cada clic.
-            </p>
-          </div>
-        </header>
 
         <form className="lp-flow" onSubmit={handleCreate}>
           {/* 1. URL DESTINO */}
