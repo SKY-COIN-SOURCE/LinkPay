@@ -508,7 +508,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   6. MOBILE RESPONSIVE
+   6. MOBILE RESPONSIVE - PREMIUM EXPERIENCE
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
@@ -517,34 +517,252 @@
     }
 
     .lp-create-inner {
-        padding: 20px 16px 120px 16px;
+        padding: 16px 16px 140px 16px;
         padding-top: calc(env(safe-area-inset-top, 0) + 16px);
+        max-width: 480px;
     }
 
+    /* === CARDS ELEVATED BY DEFAULT ON MOBILE === */
     .lp-card-v2 {
-        padding: 16px;
-        border-radius: 18px;
-        /* Keep elevated on mobile too */
+        padding: 18px;
+        border-radius: 20px;
+        border-width: 2px;
+
+        /* ALWAYS ELEVATED - active/touched look */
         transform: translateY(-2px);
         box-shadow:
-            0 0 50px rgba(99, 102, 241, 0.1),
-            0 15px 30px -10px rgba(0, 0, 0, 0.7),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            0 0 50px rgba(99, 102, 241, 0.15),
+            0 18px 36px -10px rgba(0, 0, 0, 0.75),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
+    /* URL Card - Blue glow visible */
+    .lp-card-url {
+        border-top: 3px solid rgba(59, 130, 246, 0.9);
+        box-shadow:
+            0 0 50px rgba(59, 130, 246, 0.18),
+            0 18px 36px -10px rgba(0, 0, 0, 0.75),
+            inset 0 1px 0 rgba(59, 130, 246, 0.2);
+    }
+
+    /* Alias Card - Orange glow visible */
+    .lp-card-alias {
+        border-top: 3px solid rgba(249, 115, 22, 0.9);
+        box-shadow:
+            0 0 50px rgba(249, 115, 22, 0.18),
+            0 18px 36px -10px rgba(0, 0, 0, 0.75),
+            inset 0 1px 0 rgba(249, 115, 22, 0.2);
+    }
+
+    /* Active state on mobile - press effect */
+    .lp-card-v2:active {
+        transform: scale(0.98) translateY(0);
+        box-shadow:
+            0 0 30px rgba(99, 102, 241, 0.1),
+            0 8px 20px -8px rgba(0, 0, 0, 0.7);
+    }
+
+    /* === ENGINE CARD - PREMIUM ON MOBILE === */
     .lp-engine-card {
-        border-radius: 20px;
-        padding: 14px;
+        padding: 16px;
+        border-radius: 22px;
+        border-width: 2px;
+        border-color: rgba(34, 197, 94, 0.6);
+
+        transform: translateY(-3px);
+        box-shadow:
+            0 0 60px rgba(34, 197, 94, 0.15),
+            0 20px 40px -12px rgba(0, 0, 0, 0.8),
+            inset 0 1px 0 rgba(34, 197, 94, 0.2);
     }
 
+    .lp-engine-card:active {
+        transform: scale(0.99) translateY(0);
+    }
+
+    /* === INPUTS - LARGER TOUCH TARGETS === */
+    .lp-input-v2 {
+        padding: 16px 18px;
+        font-size: 16px;
+        border-radius: 16px;
+        min-height: 54px;
+        border-width: 1.5px;
+    }
+
+    .lp-input-with-icon {
+        padding-left: 50px;
+    }
+
+    .lp-input-icon {
+        left: 18px;
+    }
+
+    .lp-input-v2:focus {
+        box-shadow:
+            0 0 0 3px rgba(99, 102, 241, 0.25),
+            0 0 30px rgba(99, 102, 241, 0.35);
+    }
+
+    /* === BUTTON - FULL WIDTH WITH GLOW === */
     .lp-btn-primary-gradient {
         width: 100%;
-        padding: 18px;
+        padding: 18px 24px;
+        font-size: 17px;
+        border-radius: 18px;
+        min-height: 58px;
+
+        box-shadow:
+            0 0 50px rgba(99, 102, 241, 0.35),
+            0 12px 32px -8px rgba(139, 92, 246, 0.5);
+    }
+
+    .lp-btn-primary-gradient:active {
+        transform: scale(0.97);
+    }
+
+    /* === LABELS & TEXT === */
+    .lp-label-v2 {
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .lp-label-sub {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .lp-help-v2 {
+        font-size: 11px;
+        margin-top: 6px;
+    }
+
+    /* === HEADER CHIP === */
+    .lp-chip {
+        padding: 8px 16px;
+        font-size: 10px;
+    }
+
+    .lp-chip-dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    /* === SUCCESS CARD === */
+    .lp-success-card-v2 {
+        padding: 28px 20px;
+        border-radius: 22px;
+
+        transform: translateY(-4px);
+        box-shadow:
+            0 0 80px rgba(34, 197, 94, 0.2),
+            0 25px 50px -15px rgba(0, 0, 0, 0.8);
+    }
+
+    /* === MODE PILLS - BETTER TOUCH === */
+    .lp-mode-pill-v2 {
+        padding: 14px 16px;
+        border-radius: 16px;
+        min-height: 70px;
+        border-width: 1.5px;
+    }
+
+    .lp-mode-pill-v2.active {
+        border-width: 2px;
+        box-shadow:
+            0 0 40px rgba(99, 102, 241, 0.2),
+            0 12px 24px -8px rgba(0, 0, 0, 0.7);
+    }
+
+    /* === ALIAS ROW === */
+    .lp-alias-row-v2 {
+        border-radius: 16px;
+        min-height: 54px;
+    }
+
+    .lp-alias-prefix-v2 {
+        padding: 14px 12px;
+        font-size: 12px;
+    }
+
+    .lp-alias-input-v2 {
+        padding: 14px 12px;
+    }
+
+    /* === ENGINE ELEMENTS === */
+    .lp-engine-title {
+        font-size: 15px;
+    }
+
+    .lp-engine-sub {
+        font-size: 11px;
+    }
+
+    .lp-engine-chip {
+        padding: 5px 12px;
+        font-size: 10px;
+    }
+
+    /* === ADVANCED OPTIONS BUTTON === */
+    .lp-advanced-toggle-v2 button {
+        padding: 14px 18px;
+        min-height: 48px;
+        font-size: 13px;
+        border-radius: 14px;
+    }
+
+    /* === ERROR MESSAGE === */
+    .lp-error-v2 {
+        padding: 12px 16px;
+        font-size: 13px;
+        border-radius: 14px;
+    }
+
+    /* === FOOTER === */
+    .lp-footer-row {
+        margin-top: 12px;
+        gap: 12px;
     }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   7. CONFETTI LAYER
+   7. VERY SMALL SCREENS (iPhone SE, etc)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 380px) {
+    .lp-create-inner {
+        padding: 12px 12px 130px 12px;
+    }
+
+    .lp-card-v2 {
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .lp-engine-card {
+        padding: 12px;
+        border-radius: 18px;
+    }
+
+    .lp-input-v2 {
+        padding: 14px 16px;
+        min-height: 50px;
+    }
+
+    .lp-btn-primary-gradient {
+        padding: 16px 20px;
+        min-height: 54px;
+        font-size: 16px;
+    }
+
+    .lp-mode-pill-v2 {
+        padding: 12px 14px;
+        min-height: 64px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. CONFETTI LAYER
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .lp-confetti-layer {
@@ -562,5 +780,24 @@
 @keyframes spin {
     100% {
         transform: rotate(360deg);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. SMOOTH SCROLL & TOUCH BEHAVIOR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lp-create-shell {
+    scroll-behavior: smooth;
+    overscroll-behavior-y: contain;
+}
+
+/* Disable hover effects on touch devices for better performance */
+@media (hover: none) and (pointer: coarse) {
+
+    .lp-card-v2:hover,
+    .lp-engine-card:hover,
+    .lp-btn-primary-gradient:hover {
+        transform: translateY(-2px);
     }
 }
