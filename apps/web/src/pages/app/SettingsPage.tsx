@@ -13,6 +13,7 @@ import { SettingsSection, SettingsItem, SettingsInput } from '../../components/u
 import { ProfilePreview } from '../../components/ui/ProfilePreview';
 import { useTheme, ACCENT_COLORS } from '../../context/ThemeContext';
 import { sessionsService, apiKeysService, accountService, preferencesService, UserSession, ApiKey } from '../../lib/settingsService';
+import { PremiumLoader } from '../../components/PremiumLoader';
 import './Settings.css';
 
 // Tipos de sección para navegación
@@ -297,14 +298,7 @@ export function SettingsPage() {
     }
   }, [activeTab]);
 
-  if (loading) return (
-    <div className="lp-settings-loading">
-      <div className="lp-settings-loading-inner">
-        <Loader2 className="spin" size={32} />
-        <span>Cargando configuración...</span>
-      </div>
-    </div>
-  );
+  if (loading) return <PremiumLoader size="medium" text="AJUSTES" subtext="Cargando configuración..." />;
 
   return (
     <div className="lp-settings-shell-v2">

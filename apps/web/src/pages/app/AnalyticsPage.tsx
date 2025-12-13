@@ -7,11 +7,11 @@ import {
   Globe,
   Smartphone,
   Calendar,
-  Loader2,
   Map,
   TrendingUp,
 } from 'lucide-react';
 import { AnalyticsService } from '../../lib/analyticsService';
+import { PremiumLoader } from '../../components/PremiumLoader';
 import {
   AreaChart,
   Area,
@@ -53,18 +53,7 @@ export function AnalyticsPage() {
   const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
   if (loading) {
-    return (
-      <div className="lp-analytics-shell lp-bg">
-        <div className="lp-analytics-loading">
-          <div className="lp-analytics-loading-orb">
-            <Loader2 size={26} className="spin" />
-          </div>
-          <div className="lp-analytics-loading-text">
-            <span>{t('analytics.loading')}</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <PremiumLoader size="medium" text="ANALYTICS" subtext="Cargando estadísticas..." />;
   }
 
   return (

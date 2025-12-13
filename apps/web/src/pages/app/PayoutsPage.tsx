@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Send,
   ArrowDownLeft,
@@ -6,21 +6,17 @@ import {
   AlertCircle,
   History,
   Loader2,
-  Plus,
   ArrowRightLeft,
   MoreHorizontal,
-  Clock,
   CreditCard,
   Building2,
-  Mail,
-  User,
-  MessageSquare,
   X,
   ChevronDown,
 } from 'lucide-react';
 import { PayoutService, Transaction } from '../../lib/payoutService';
 import { Validators } from '../../lib/validators';
 import { supabase } from '../../lib/supabaseClient';
+import { PremiumLoader } from '../../components/PremiumLoader';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FINANCE PAGE - REVOLUT-STYLE MOBILE BANKING UX
@@ -193,15 +189,7 @@ export function PayoutsPage() {
 
   // ─── LOADING STATE ───────────────────────────────────────────────────────
   if (loading) {
-    return (
-      <div className="rev-shell">
-        <style>{revStyles}</style>
-        <div className="rev-loading">
-          <Loader2 className="rev-spin" size={40} />
-          <span>Cargando...</span>
-        </div>
-      </div>
-    );
+    return <PremiumLoader size="medium" text="FINANZAS" subtext="Cargando tu billetera..." />;
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────

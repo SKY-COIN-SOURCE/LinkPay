@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Copy, Share2, Network, Loader2 } from 'lucide-react';
+import { Users, Copy, Share2, Network } from 'lucide-react';
 import { ReferralService, ReferralNode } from '../../lib/referralService';
 import { supabase } from '../../lib/supabaseClient';
+import { PremiumLoader } from '../../components/PremiumLoader';
 
 export function ReferralsPage() {
   const [network, setNetwork] = useState<ReferralNode | null>(null);
@@ -111,14 +112,7 @@ export function ReferralsPage() {
   );
 
   if (loading) {
-    return (
-      <div className="lp-ref-shell lp-ref-bg">
-        <style>{refStyles}</style>
-        <div className="lp-ref-loading">
-          <Loader2 className="lp-ref-spin" size={32} />
-        </div>
-      </div>
-    );
+    return <PremiumLoader size="medium" text="REFERIDOS" subtext="Cargando tu red..." />;
   }
 
   return (

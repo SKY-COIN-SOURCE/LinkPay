@@ -23,7 +23,6 @@ import {
   Type,
   Minus,
   Star,
-  // Social Icons
   Instagram,
   Twitter,
   Youtube,
@@ -47,7 +46,8 @@ import { useToast, useConfirm } from '../../components/ui/Toast';
 import { QRCodeGenerator } from '../../components/QRCodeGenerator';
 import { ProfileCompletion, AchievementsList } from '../../components/Gamification';
 import { Award, Clock } from 'lucide-react';
-import './BioEditor.css'; // V3 Styles
+import { PremiumLoader } from '../../components/PremiumLoader';
+import './BioEditor.css';
 
 // Drag & Drop
 import {
@@ -357,7 +357,7 @@ export function BioEditorPage() {
     }
   };
 
-  if (loading) return <div className="h-screen w-full bg-slate-950 flex items-center justify-center"><Loader2 className="animate-spin text-blue-500" /></div>;
+  if (loading) return <PremiumLoader size="medium" text="BIO PAGE" subtext="Cargando editor..." />;
   if (!profile) return null;
 
   return (
