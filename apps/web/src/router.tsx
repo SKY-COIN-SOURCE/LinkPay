@@ -96,9 +96,10 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: withSuspense(DashboardPage) },
       { path: "create", element: <Navigate to="/app/links" replace /> },
-      { path: "links", element: withSuspense(LinksHub) },
-      { path: "finance", element: withSuspense(PayoutsPage) },
+      { path: "links", element: withSuspense(CreateLinkPage) },
+      { path: "my-links", element: withSuspense(LinksPage) },
       { path: "payouts", element: withSuspense(PayoutsPage) },
+      { path: "finance", element: withSuspense(PayoutsPage) },
       { path: "analytics", element: withSuspense(AnalyticsPage) },
       { path: "technology", element: withSuspense(TechnologyPage) },
       { path: "developers", element: withSuspense(DevelopersPage) },

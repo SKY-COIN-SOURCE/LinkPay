@@ -74,13 +74,11 @@ export function MobileHeader() {
 
         {/* Notifications / Alerts */}
         <button
-          className="lp-header-icon-btn lp-header-notif-btn"
+          className="lp-header-icon-btn"
           onClick={() => {/* TODO: Open notifications */ }}
           aria-label="Notificaciones"
         >
           <Bell size={20} />
-          {/* Notification dot - show when there are unread notifications */}
-          {/* <span className="lp-notif-dot" /> */}
         </button>
       </div>
 
@@ -122,8 +120,8 @@ const mobileHeaderStyles = `
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: 12px;
     padding-right: 12px;
-    background: #020617;
-    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    /* TRANSPARENT - se integra con el fondo de cada página */
+    background: transparent;
     align-items: center;
     justify-content: space-between;
   }
@@ -235,7 +233,7 @@ const mobileHeaderStyles = `
     height: 38px;
     border-radius: 10px;
     border: none;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.05);
     color: #94a3b8;
     cursor: pointer;
     display: flex;
@@ -246,28 +244,11 @@ const mobileHeaderStyles = `
   }
 
   .lp-header-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.12);
     color: #f9fafb;
   }
 
   .lp-header-icon-btn:active {
     transform: scale(0.95);
-  }
-
-  /* Notification Button - slightly different style */
-  .lp-header-notif-btn {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  /* Notification dot */
-  .lp-notif-dot {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #ef4444;
-    border: 2px solid #020617;
   }
 `;
