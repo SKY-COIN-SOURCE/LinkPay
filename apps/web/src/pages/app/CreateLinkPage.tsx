@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import Confetti from 'react-confetti';
+import './CreateLink.css';
 
 export function CreateLinkPage() {
   const navigate = useNavigate();
@@ -169,7 +170,7 @@ export function CreateLinkPage() {
     return (
       <motion.div
         key="success"
-        className="lp-create-shell lp-bg"
+        className="lp-create-shell lp-create-bg"
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
@@ -244,7 +245,7 @@ export function CreateLinkPage() {
   const renderFormView = () => (
     <motion.div
       key="form"
-      className="lp-create-shell lp-bg"
+      className="lp-create-shell lp-create-bg"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
