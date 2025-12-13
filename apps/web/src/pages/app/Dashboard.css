@@ -406,14 +406,32 @@
     padding: 0 8px;
   }
 
-  /* --- METRICS GRID - CARD STACK --- */
+  /* --- METRICS GRID - SMART MOBILE LAYOUT --- */
   .lp-dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Revenue card - full width at top */
+  .lp-card-green {
+    grid-column: span 2;
+  }
+
+  /* Clicks and RPM - side by side */
+  .lp-card-blue,
+  .lp-card-orange {
+    grid-column: span 1;
+  }
+
+  /* Referrals - full width */
+  .lp-card-purple {
+    grid-column: span 2;
   }
 
   .lp-recent-card {
-    grid-column: span 1;
+    grid-column: span 2;
+    margin-top: 6px;
   }
 
   /* --- STAT CARDS - PREMIUM GLASS --- */
@@ -454,6 +472,60 @@
   .lp-card-orange {
     border-top: 2px solid rgba(249, 115, 22, 0.5);
     background: linear-gradient(180deg, rgba(249, 115, 22, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+  }
+
+  /* Half-width cards need compact styling */
+  .lp-card-blue,
+  .lp-card-orange {
+    padding: 16px;
+  }
+
+  .lp-card-blue .lp-stat-icon,
+  .lp-card-orange .lp-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .lp-card-blue .lp-stat-icon svg,
+  .lp-card-orange .lp-stat-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .lp-card-blue .lp-stat-value,
+  .lp-card-orange .lp-stat-value {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .lp-card-blue .lp-stat-label,
+  .lp-card-orange .lp-stat-label {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .lp-card-blue .lp-substats,
+  .lp-card-orange .lp-substats {
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 10px;
+  }
+
+  .lp-card-blue .lp-substat-value,
+  .lp-card-orange .lp-substat-value {
+    font-size: 13px;
+  }
+
+  /* Hide chart on half-width cards */
+  .lp-card-blue .h-\[30px\] {
+    display: none;
+  }
+
+  /* Hide trend badge on compact cards */
+  .lp-card-blue .lp-trend-badge,
+  .lp-card-orange .lp-trend-badge {
+    display: none;
   }
 
   /* --- STAT HEADER --- */
