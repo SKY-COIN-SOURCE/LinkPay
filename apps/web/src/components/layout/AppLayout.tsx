@@ -10,11 +10,11 @@ import {
   Smartphone,
   Zap,
   BarChart2,
-  Cpu,
   Users,
   Menu,
   X,
   ChevronRight,
+  Home,
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
@@ -34,7 +34,7 @@ export function AppLayout() {
     navigate('/login', { replace: true });
   };
 
-  // NAV DEFINITIVA - DESKTOP (all items)
+  // NAV DEFINITIVA - DESKTOP (sin Technology)
   const navItems = [
     { icon: LayoutDashboard, label: 'Resumen', path: '/app' },
     { icon: PlusSquare, label: 'Crear Link', path: '/app/create' },
@@ -44,24 +44,25 @@ export function AppLayout() {
     { icon: Wallet, label: 'Finanzas', path: '/app/payouts' },
     { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
-    { icon: Cpu, label: 'Tecnología', path: '/app/technology' },
   ];
 
-  // MOBILE PRIMARY NAV - 5 items (Wallet ALWAYS visible - bank-grade)
-  const primaryMobileNav = [
-    { icon: LayoutDashboard, label: 'Inicio', path: '/app' },
-    { icon: PlusSquare, label: 'Crear', path: '/app/create' },
-    { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
+  // MOBILE NAV - NUEVO DISEÑO: Dashboard en centro elevado
+  // Izquierda: Bio, Create, Links | Centro: Dashboard | Derecha: Referidos, Wallet, Más
+  const mobileNavLeft = [
     { icon: Smartphone, label: 'Bio', path: '/app/bio-editor' },
+    { icon: PlusSquare, label: 'Crear', path: '/app/create' },
   ];
 
-  // MOBILE MORE MENU - Secondary items
+  const mobileNavRight = [
+    { icon: Users, label: 'Red', path: '/app/referrals' },
+    { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
+  ];
+
+  // MOBILE MORE MENU - elementos secundarios
   const secondaryMobileNav = [
     { icon: Link2, label: 'Mis Enlaces', path: '/app/links' },
     { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
-    { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
-    { icon: Cpu, label: 'Tecnología', path: '/app/technology' },
   ];
 
   const handleMoreNavClick = (path: string) => {
@@ -153,14 +154,44 @@ export function AppLayout() {
         </div>
       </aside>
 
-      {/* NAV INFERIOR MÓVIL - BANK GRADE */}
+      {/* NAV INFERIOR MÓVIL - PREMIUM CENTERED DASHBOARD */}
       <nav className="lp-mobile-nav">
         <div className="lp-mobile-nav-inner">
-          {primaryMobileNav.map((item) => (
+          {/* LEFT SIDE: Bio, Create */}
+          {mobileNavLeft.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/app'}
+              className={({ isActive }) =>
+                'lp-mobile-item' + (isActive ? ' active' : '')
+              }
+            >
+              <div className="lp-mobile-icon-pill">
+                <item.icon className="lp-mobile-icon" size={22} strokeWidth={2} />
+              </div>
+              <span className="lp-mobile-label">{item.label}</span>
+            </NavLink>
+          ))}
+
+          {/* CENTER: DASHBOARD - ELEVATED & GLOWING */}
+          <NavLink
+            to="/app"
+            end
+            className={({ isActive }) =>
+              'lp-mobile-item lp-mobile-center' + (isActive ? ' active' : '')
+            }
+          >
+            <div className="lp-mobile-center-orb">
+              <Home className="lp-mobile-center-icon" size={26} strokeWidth={2.2} />
+            </div>
+            <span className="lp-mobile-label">Home</span>
+          </NavLink>
+
+          {/* RIGHT SIDE: Referidos, Wallet */}
+          {mobileNavRight.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
               className={({ isActive }) =>
                 'lp-mobile-item' + (isActive ? ' active' : '')
               }
@@ -621,6 +652,70 @@ const layoutStyles = `
   
   .lp-mobile-item.active .lp-mobile-label {
     font-weight: 700;
+  }
+
+  /* ===== CENTER DASHBOARD ORB - HERO BUTTON ===== */
+  .lp-mobile-center {
+    position: relative;
+    z-index: 10;
+  }
+
+  .lp-mobile-center-orb {
+    width: 56px;
+    height: 56px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    box-shadow:
+      0 0 40px rgba(99, 102, 241, 0.5),
+      0 8px 24px -4px rgba(139, 92, 246, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    transform: translateY(-8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: lp-center-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes lp-center-pulse {
+    0%, 100% {
+      box-shadow:
+        0 0 40px rgba(99, 102, 241, 0.5),
+        0 8px 24px -4px rgba(139, 92, 246, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    }
+    50% {
+      box-shadow:
+        0 0 60px rgba(99, 102, 241, 0.7),
+        0 12px 32px -4px rgba(139, 92, 246, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+  }
+
+  .lp-mobile-center:active .lp-mobile-center-orb {
+    transform: translateY(-4px) scale(0.95);
+  }
+
+  .lp-mobile-center.active .lp-mobile-center-orb {
+    background: linear-gradient(135deg, #22c55e 0%, #10b981 50%, #059669 100%);
+    box-shadow:
+      0 0 50px rgba(34, 197, 94, 0.6),
+      0 10px 28px -4px rgba(16, 185, 129, 0.7),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transform: translateY(-10px) scale(1.05);
+  }
+
+  .lp-mobile-center-icon {
+    color: #ffffff;
+  }
+
+  .lp-mobile-center .lp-mobile-label {
+    font-weight: 700;
+    color: #e5e7eb;
+  }
+
+  .lp-mobile-center.active .lp-mobile-label {
+    color: #4ade80;
   }
 
   /* More Button specific */
