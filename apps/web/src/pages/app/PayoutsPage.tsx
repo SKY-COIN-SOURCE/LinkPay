@@ -17,6 +17,7 @@ import { PayoutService, Transaction } from '../../lib/payoutService';
 import { Validators } from '../../lib/validators';
 import { supabase } from '../../lib/supabaseClient';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import '../../styles/PremiumBackground.css';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FINANCE PAGE - REVOLUT-STYLE MOBILE BANKING UX
@@ -194,7 +195,7 @@ export function PayoutsPage() {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
   return (
-    <div className="rev-shell">
+    <div className="rev-shell lp-premium-bg">
       <style>{revStyles}</style>
 
       {/* BACKGROUND */}

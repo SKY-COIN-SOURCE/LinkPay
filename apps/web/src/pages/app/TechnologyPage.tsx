@@ -2,13 +2,14 @@ import React from 'react';
 import { Cpu, Zap, Activity, Network, ShieldCheck, Server, Globe, Lock } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import './Technology.css';
+import '../../styles/PremiumBackground.css';
 
 export function TechnologyPage() {
    const { t } = useTranslation();
 
    return (
-      <div className="lp-bg lp-tech-shell">
-         <div className="animate-enter lp-tech-container">
+      <div className="lp-premium-bg lp-tech-shell">
+         <div className="animate-enter lp-tech-container lp-premium-inner">
 
             <div className="lp-tech-header">
                <h1 className="lp-tech-title">{t('tech.title')}</h1>

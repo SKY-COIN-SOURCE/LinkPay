@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useTranslation } from '../../i18n';
 import './Analytics.css';
+import '../../styles/PremiumBackground.css';
 import {
   BarChart3,
   Globe,
@@ -57,10 +58,10 @@ export function AnalyticsPage() {
   }
 
   return (
-    <div className="lp-analytics-shell lp-bg">
+    <div className="lp-analytics-shell lp-premium-bg">
 
 
-      <div className="lp-analytics-inner">
+      <div className="lp-analytics-inner lp-premium-inner">
         {/* HEADER CENTRADO */}
         <header className="lp-analytics-header lp-analytics-header--center">
           <div className="lp-analytics-header-left">

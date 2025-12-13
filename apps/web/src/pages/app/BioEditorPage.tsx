@@ -47,6 +47,7 @@ import { QRCodeGenerator } from '../../components/QRCodeGenerator';
 import { ProfileCompletion, AchievementsList } from '../../components/Gamification';
 import { Award, Clock } from 'lucide-react';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import '../../styles/PremiumBackground.css';
 import './BioEditor.css';
 
 // Drag & Drop
@@ -361,7 +362,7 @@ export function BioEditorPage() {
   if (!profile) return null;
 
   return (
-    <div className="lp-bio-shell-v3">
+    <div className="lp-bio-shell-v3 lp-premium-bg">
       {/* MOBILE PREVIEW FAB - IMPROVED */}
       <button
         className="lp-preview-fab md:hidden"

@@ -14,6 +14,7 @@ import { ProfilePreview } from '../../components/ui/ProfilePreview';
 import { useTheme, ACCENT_COLORS } from '../../context/ThemeContext';
 import { sessionsService, apiKeysService, accountService, preferencesService, UserSession, ApiKey } from '../../lib/settingsService';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import '../../styles/PremiumBackground.css';
 import './Settings.css';
 
 // Tipos de sección para navegación
@@ -301,7 +302,7 @@ export function SettingsPage() {
   if (loading) return <PremiumLoader size="medium" text="AJUSTES" subtext="Cargando configuración..." />;
 
   return (
-    <div className="lp-settings-shell-v2">
+    <div className="lp-settings-shell-v2 lp-premium-bg">
       <div className="lp-settings-container-v2">
 
         {/* HEADER */}

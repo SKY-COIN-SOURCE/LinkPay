@@ -3,6 +3,7 @@ import { Users, Copy, Share2, Network } from 'lucide-react';
 import { ReferralService, ReferralNode } from '../../lib/referralService';
 import { supabase } from '../../lib/supabaseClient';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import '../../styles/PremiumBackground.css';
 
 export function ReferralsPage() {
   const [network, setNetwork] = useState<ReferralNode | null>(null);
@@ -116,7 +117,7 @@ export function ReferralsPage() {
   }
 
   return (
-    <div className="lp-ref-shell lp-ref-bg">
+    <div className="lp-ref-shell lp-premium-bg">
       <style>{refStyles}</style>
       <div className="lp-ref-inner animate-enter">
         {/* HEADER */}

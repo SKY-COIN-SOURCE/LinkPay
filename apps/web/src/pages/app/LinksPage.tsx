@@ -15,6 +15,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { LinkService, Link } from '../../lib/linkService';
+import '../../styles/PremiumBackground.css';
 
 export function LinksPage() {
   const [links, setLinks] = useState<Link[]>([]);
@@ -138,9 +139,9 @@ export function LinksPage() {
   };
 
   return (
-    <div className="lp-links-shell lp-bg">
+    <div className="lp-links-shell lp-premium-bg">
       <style>{linksStyles}</style>
-      <div className="lp-links-inner">
+      <div className="lp-links-inner lp-premium-inner">
         {/* HEADER */}
         <header className="lp-links-header">
           <div className="lp-chip lp-chip-center">
