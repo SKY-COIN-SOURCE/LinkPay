@@ -88,7 +88,7 @@ const mobileHeaderStyles = `
     left: 0;
     right: 0;
     z-index: 100;
-    height: calc(56px + env(safe-area-inset-top, 0px));
+    height: calc(48px + env(safe-area-inset-top, 0px));
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: 12px;
     padding-right: 12px;

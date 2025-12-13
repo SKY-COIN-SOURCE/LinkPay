@@ -52,8 +52,8 @@ const linksHubStyles = `
 
   @media (max-width: 768px) {
     .lp-links-hub-shell {
-      /* Mobile: content starts right after header */
-      padding-top: calc(56px + env(safe-area-inset-top, 0px));
+      /* Mobile: content starts right after header - header is 48px content + safe area */
+      padding-top: calc(48px + env(safe-area-inset-top, 0px));
     }
   }
 
