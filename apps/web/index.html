@@ -50,8 +50,7 @@
       min-height: 100dvh;
     }
 
-    /* Mobile nav critical styles - prevents black border flash */
-    /* 34px fallback = iPhone notch standard safe area */
+    /* Mobile nav critical styles - BULLETPROOF bottom coverage */
     @media (max-width: 768px) {
       .lp-mobile-nav {
         position: fixed !important;
@@ -59,8 +58,19 @@
         right: 0 !important;
         bottom: 0 !important;
         background: #020617 !important;
-        padding-bottom: env(safe-area-inset-bottom, 34px) !important;
         z-index: 60 !important;
+      }
+
+      /* Extend background 200px below to cover any home indicator gap */
+      .lp-mobile-nav::after {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -200px !important;
+        height: 200px !important;
+        background: #020617 !important;
+        z-index: -1 !important;
       }
     }
   </style>

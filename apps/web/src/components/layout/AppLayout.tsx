@@ -565,17 +565,28 @@ const layoutStyles = `
     bottom: 0;
     display: none;
     z-index: 60;
-    /* Solid background extending to bottom of screen */
+    /* Solid background */
     background: #020617;
-    /* 34px fallback = iPhone notch standard, prevents layout shift */
-    padding-bottom: env(safe-area-inset-bottom, 34px);
+  }
+
+  /* BULLETPROOF: Extend background beyond screen bottom to cover home indicator */
+  .lp-mobile-nav::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -200px;
+    height: 200px;
+    background: #020617;
+    z-index: -1;
   }
 
   .lp-mobile-nav-inner {
     display: flex;
     align-items: flex-end;
     justify-content: space-evenly;
-    padding: 10px 8px 12px 8px;
+    /* Content padding includes safe area for proper spacing */
+    padding: 10px 8px calc(env(safe-area-inset-bottom, 34px) + 10px) 8px;
     background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
     border-top: 1px solid rgba(99, 102, 241, 0.25);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
