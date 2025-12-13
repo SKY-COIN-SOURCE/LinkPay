@@ -924,7 +924,8 @@ const layoutStyles = `
       display: none;
     }
     .lp-main-shell {
-      padding: 16px 16px 130px 16px;
+      /* No horizontal padding - pages control their own edge-to-edge layout */
+      padding: 0 0 100px 0;
       max-width: 100%;
     }
     .lp-mobile-nav {
