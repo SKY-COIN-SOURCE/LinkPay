@@ -918,23 +918,23 @@ const layoutStyles = `
       border-color: rgba(239, 68, 68, 0.35);
   }
 
-      /* ===== RESPONSIVE ===== */
-      @media (max-width: 768px) {
-    .lp - sidebar - desktop {
-        display: none;
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .lp-sidebar-desktop {
+      display: none;
     }
-      .lp-main-shell {
-        padding: 16px 16px 130px 16px;
+    .lp-main-shell {
+      padding: 16px 16px 130px 16px;
       max-width: 100%;
     }
-      .lp-mobile-nav {
-        display: block;
+    .lp-mobile-nav {
+      display: block;
     }
   }
 
-      @media (min-width: 769px) {
-    .lp - mobile - nav {
-        display: none;
+  @media (min-width: 769px) {
+    .lp-mobile-nav {
+      display: none;
     }
   }
-      `;
+`;
