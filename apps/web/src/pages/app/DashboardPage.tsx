@@ -237,7 +237,7 @@ export function DashboardPage() {
           animate="visible"
         >
 
-          {/* CARD 1: REVENUE */}
+          {/* CARD 1: REVENUE + REFERRALS */}
           <motion.div
             className={`lp-dashboard-card lp-card-green ${revenueIncreased ? 'pulse-green' : ''}`}
             variants={cardVariants}
@@ -251,7 +251,7 @@ export function DashboardPage() {
               <div className="lp-stat-label">{t('dashboard.stats.revenue.label')}</div>
               <div className="lp-stat-value">€{animatedRevenue.toFixed(4)}</div>
 
-              {/* Mini Sparkline (Simulated presence for UI) */}
+              {/* Mini Sparkline */}
               <div className="h-1 w-full bg-slate-800/50 rounded-full mt-2 mb-4 overflow-hidden">
                 <motion.div
                   className="h-full bg-green-500"
@@ -261,7 +261,7 @@ export function DashboardPage() {
                 />
               </div>
 
-              <div className="lp-substats">
+              <div className="lp-substats" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">{t('dashboard.stats.revenue.links')}</span>
                   <span className="lp-substat-value">€{realtimeStats.linkRevenue.toFixed(4)}</span>
@@ -270,15 +270,19 @@ export function DashboardPage() {
                   <span className="lp-substat-label">{t('dashboard.stats.revenue.bio')}</span>
                   <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
                 </div>
+                <div className="lp-substat-box">
+                  <span className="lp-substat-label">REFERIDOS</span>
+                  <span className="lp-substat-value">€{animatedReferrals.toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* CARD 2: CLICKS */}
+          {/* CARD 2: CLICKS - PURPLE */}
           <motion.div
-            className="lp-dashboard-card lp-card-blue"
+            className="lp-dashboard-card lp-card-purple"
             variants={cardVariants}
-            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.25)" }}
+            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
           >
             <div className="lp-stat-header">
               <div className="lp-stat-icon"><MousePointer2 size={24} /></div>
@@ -317,33 +321,12 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* CARD 4: REFERRALS - Compact with Share Button */}
-          <motion.div
-            className="lp-dashboard-card lp-card-purple lp-referral-compact"
-            variants={cardVariants}
-            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
-          >
-            <div className="lp-stat-label">PROGRAMA DE REFERIDOS</div>
-            <div className="lp-referral-header">
-              <div className="lp-referral-left">
-                <div className="lp-stat-icon"><Users size={24} /></div>
-                <div className="lp-referral-amount">€{animatedReferrals.toFixed(2)}</div>
-              </div>
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={copyReferral}
-                className="lp-share-btn"
-              >
-                <Share2 size={18} />
-              </motion.button>
-            </div>
-          </motion.div>
 
         </motion.div>
 
-        {/* RECENT ACTIVITY */}
+        {/* RECENT ACTIVITY - BLUE */}
         <motion.div
-          className="lp-dashboard-card lp-recent-card"
+          className="lp-dashboard-card lp-recent-card lp-card-blue"
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.4 }}
