@@ -302,10 +302,16 @@ const layoutStyles = `
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
 
-  /* Hide app shell during splash */
+  /* Hide app shell during splash - completely invisible */
   .lp-app-shell.lp-hidden {
+    visibility: hidden;
     opacity: 0;
     pointer-events: none;
+  }
+
+  .lp-app-shell.lp-hidden .lp-mobile-nav,
+  .lp-app-shell.lp-hidden .lp-sidebar-desktop {
+    display: none !important;
   }
 
 
