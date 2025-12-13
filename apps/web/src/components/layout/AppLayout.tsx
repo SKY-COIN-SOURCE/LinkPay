@@ -72,9 +72,8 @@ export function AppLayout() {
     { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
   ];
 
-  // MOBILE MORE MENU - Sin Settings (está en header)
+  // MOBILE MORE MENU - Solo Analytics (Settings y Referidos están en header)
   const secondaryMobileNav = [
-    { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
     { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
   ];
 
@@ -926,8 +925,11 @@ const layoutStyles = `
       display: none;
     }
     .lp-main-shell {
-      /* No horizontal padding - pages control their own edge-to-edge layout */
-      padding: 0 0 100px 0;
+      /* Padding-top for header + safe-area, padding-bottom for nav */
+      padding-top: calc(56px + env(safe-area-inset-top, 0px));
+      padding-bottom: 100px;
+      padding-left: 0;
+      padding-right: 0;
       max-width: 100%;
     }
     .lp-mobile-nav {

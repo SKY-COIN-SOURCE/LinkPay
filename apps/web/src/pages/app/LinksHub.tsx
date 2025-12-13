@@ -2,77 +2,62 @@ import React, { useState } from 'react';
 import { PlusSquare, Link2 } from 'lucide-react';
 import { CreateLinkPage } from './CreateLinkPage';
 import { LinksPage } from './LinksPage';
-import '../../styles/PremiumBackground.css';
 
 type TabType = 'create' | 'list';
 
 export function LinksHub() {
-    const [activeTab, setActiveTab] = useState<TabType>('create');
+  const [activeTab, setActiveTab] = useState<TabType>('create');
 
-    return (
-        <div className="lp-links-hub">
-            <style>{linksHubStyles}</style>
+  return (
+    <div className="lp-links-hub">
+      <style>{linksHubStyles}</style>
 
-            {/* Premium Background */}
-            <div className="lp-bg" />
+      {/* Premium Tabs */}
+      <div className="lp-hub-tabs-bar">
+        <button
+          className={`lp-hub-tab ${activeTab === 'create' ? 'active' : ''}`}
+          onClick={() => setActiveTab('create')}
+        >
+          <PlusSquare size={18} />
+          <span>Crear Link</span>
+        </button>
+        <button
+          className={`lp-hub-tab ${activeTab === 'list' ? 'active' : ''}`}
+          onClick={() => setActiveTab('list')}
+        >
+          <Link2 size={18} />
+          <span>Mis Enlaces</span>
+        </button>
+      </div>
 
-            {/* Tabs Container */}
-            <div className="lp-hub-tabs-container">
-                <div className="lp-hub-tabs">
-                    <button
-                        className={`lp-hub-tab ${activeTab === 'create' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('create')}
-                    >
-                        <PlusSquare size={18} />
-                        <span>Crear Link</span>
-                    </button>
-                    <button
-                        className={`lp-hub-tab ${activeTab === 'list' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('list')}
-                    >
-                        <Link2 size={18} />
-                        <span>Mis Enlaces</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="lp-hub-content">
-                {activeTab === 'create' ? <CreateLinkPage /> : <LinksPage />}
-            </div>
-        </div>
-    );
+      {/* Content - Show one at a time */}
+      <div className="lp-hub-content">
+        {activeTab === 'create' && <CreateLinkPage />}
+        {activeTab === 'list' && <LinksPage />}
+      </div>
+    </div>
+  );
 }
 
 const linksHubStyles = `
   .lp-links-hub {
     min-height: 100dvh;
+    background: linear-gradient(135deg, #0a0f1a 0%, #020617 50%, #000000 100%);
     position: relative;
   }
 
-  /* Tabs Container - Fixed at top below header */
-  .lp-hub-tabs-container {
+  /* Tabs Bar */
+  .lp-hub-tabs-bar {
     position: sticky;
-    top: calc(56px + env(safe-area-inset-top, 0px));
-    z-index: 40;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    gap: 8px;
+    padding: 12px 12px;
     background: rgba(2, 6, 23, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 12px 16px;
     border-bottom: 1px solid rgba(99, 102, 241, 0.15);
-  }
-
-  @media (min-width: 769px) {
-    .lp-hub-tabs-container {
-      top: 0;
-    }
-  }
-
-  .lp-hub-tabs {
-    display: flex;
-    gap: 8px;
-    max-width: 400px;
-    margin: 0 auto;
   }
 
   .lp-hub-tab {
@@ -112,19 +97,21 @@ const linksHubStyles = `
   /* Content Area */
   .lp-hub-content {
     position: relative;
-    z-index: 1;
   }
 
-  /* Override nested page backgrounds - they use their own */
-  .lp-hub-content .lp-bg,
-  .lp-hub-content .lp-create-bg {
-    display: none;
-  }
-
+  /* Override child page shells - they must be relative, not fixed */
   .lp-hub-content .lp-create-shell,
   .lp-hub-content .lp-links-shell {
-    position: relative;
-    min-height: auto;
-    padding-top: 0;
+    position: relative !important;
+    inset: auto !important;
+    min-height: auto !important;
+    padding-top: 0 !important;
+  }
+
+  /* Hide duplicate backgrounds */
+  .lp-hub-content .lp-bg,
+  .lp-hub-content .lp-create-bg,
+  .lp-hub-content .lp-links-bg {
+    display: none !important;
   }
 `;

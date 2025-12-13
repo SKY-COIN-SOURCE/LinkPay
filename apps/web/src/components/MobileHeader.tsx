@@ -1,54 +1,99 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Camera } from 'lucide-react';
+import { Settings, Camera, Users } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../context/AuthContext';
 
-interface MobileHeaderProps {
-    userAvatar?: string | null;
-    userName?: string;
-}
+export function MobileHeader() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-export function MobileHeader({ userAvatar, userName }: MobileHeaderProps) {
-    const navigate = useNavigate();
+  // Load user profile with avatar
+  useEffect(() => {
+    if (!user?.id) return;
 
-    return (
-        <header className="lp-mobile-header">
-            <style>{mobileHeaderStyles}</style>
+    const loadProfile = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
 
-            {/* Avatar / Camera placeholder */}
-            <button
-                className="lp-header-avatar-btn"
-                onClick={() => navigate('/app/settings')}
-                aria-label="Perfil"
-            >
-                {userAvatar ? (
-                    <img
-                        src={userAvatar}
-                        alt={userName || 'Avatar'}
-                        className="lp-header-avatar-img"
-                    />
-                ) : (
-                    <div className="lp-header-avatar-placeholder">
-                        <Camera size={18} className="lp-header-camera-icon" />
-                        <span className="lp-header-avatar-pulse" />
-                    </div>
-                )}
-            </button>
+      if (data?.avatar_url) {
+        setAvatarUrl(data.avatar_url);
+      }
+    };
 
-            {/* App name / branding */}
-            <div className="lp-header-brand">
-                <span className="lp-header-title">LinkPay</span>
-            </div>
+    loadProfile();
 
-            {/* Settings button */}
-            <button
-                className="lp-header-settings-btn"
-                onClick={() => navigate('/app/settings')}
-                aria-label="Ajustes"
-            >
-                <Settings size={22} />
-            </button>
-        </header>
-    );
+    // Subscribe to profile changes (when user updates avatar in settings)
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
+        (payload) => {
+          if (payload.new?.avatar_url) {
+            setAvatarUrl(payload.new.avatar_url as string);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
+  return (
+    <header className="lp-mobile-header">
+      <style>{mobileHeaderStyles}</style>
+
+      {/* Avatar / Camera placeholder */}
+      <button
+        className="lp-header-avatar-btn"
+        onClick={() => navigate('/app/settings')}
+        aria-label="Perfil"
+      >
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt="Avatar"
+            className="lp-header-avatar-img"
+          />
+        ) : (
+          <div className="lp-header-avatar-placeholder">
+            <Camera size={18} className="lp-header-camera-icon" />
+            <span className="lp-header-avatar-pulse" />
+          </div>
+        )}
+      </button>
+
+      {/* App name / branding */}
+      <div className="lp-header-brand">
+        <span className="lp-header-title">LinkPay</span>
+      </div>
+
+      {/* Right icons: Referrals + Settings */}
+      <div className="lp-header-right">
+        <button
+          className="lp-header-icon-btn"
+          onClick={() => navigate('/app/referrals')}
+          aria-label="Referidos"
+        >
+          <Users size={20} />
+        </button>
+        <button
+          className="lp-header-icon-btn"
+          onClick={() => navigate('/app/settings')}
+          aria-label="Ajustes"
+        >
+          <Settings size={20} />
+        </button>
+      </div>
+    </header>
+  );
 }
 
 const mobileHeaderStyles = `
@@ -62,11 +107,9 @@ const mobileHeaderStyles = `
     height: calc(56px + env(safe-area-inset-top, 0px));
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: 16px;
-    padding-right: 16px;
-    background: linear-gradient(180deg, rgba(2, 6, 23, 0.98) 0%, rgba(2, 6, 23, 0.95) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    padding-right: 12px;
+    background: #020617;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
     align-items: center;
     justify-content: space-between;
   }
@@ -158,8 +201,15 @@ const mobileHeaderStyles = `
     letter-spacing: -0.02em;
   }
 
-  /* Settings Button */
-  .lp-header-settings-btn {
+  /* Right Icons Container */
+  .lp-header-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Icon Buttons */
+  .lp-header-icon-btn {
     width: 40px;
     height: 40px;
     border-radius: 12px;
@@ -173,12 +223,12 @@ const mobileHeaderStyles = `
     transition: all 0.2s ease;
   }
 
-  .lp-header-settings-btn:hover {
+  .lp-header-icon-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #f9fafb;
   }
 
-  .lp-header-settings-btn:active {
+  .lp-header-icon-btn:active {
     transform: scale(0.95);
   }
 `;
