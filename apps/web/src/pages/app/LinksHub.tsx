@@ -48,19 +48,7 @@ const linksHubStyles = `
     min-height: 100dvh;
     background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000000 100%);
     position: relative;
-  }
-
-  @media (max-width: 768px) {
-    .lp-links-hub-shell {
-      /* Mobile: content starts right after header - header is 48px content + safe area */
-      padding-top: calc(48px + env(safe-area-inset-top, 0px));
-    }
-  }
-
-  @media (min-width: 769px) {
-    .lp-links-hub-shell {
-      padding-top: 0;
-    }
+    /* NO padding-top here - parent lp-main-shell already handles header offset */
   }
 
   /* Tabs Bar - sticky at top */
@@ -159,8 +147,10 @@ const linksHubStyles = `
   }
 
   /* Remove padding-top from inner containers since tabs handle it */
+  /* Add padding-bottom for bottom nav bar clearance */
   .lp-links-content-wrapper .lp-create-inner,
   .lp-links-content-wrapper .lp-links-inner {
     padding-top: 16px !important;
+    padding-bottom: 120px !important;
   }
 `;
