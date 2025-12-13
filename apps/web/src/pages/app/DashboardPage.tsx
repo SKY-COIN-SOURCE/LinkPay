@@ -197,16 +197,92 @@ export function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="lp-dashboard-shell">
-        <div className="flex h-screen items-center justify-center flex-col gap-4">
-          <Loader2 className="animate-spin text-indigo-500" size={48} />
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-slate-400 text-sm font-medium tracking-wider"
-          >
-            LOADING DASHBOARD...
-          </motion.span>
+      <div className="lp-bg">
+        <div className="lp-dashboard-shell">
+          <div className="flex h-screen items-center justify-center flex-col gap-6">
+            {/* Premium Animated Logo */}
+            <motion.div
+              className="relative"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              {/* Outer ring - rotating */}
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  width: 120,
+                  height: 120,
+                  border: '2px solid transparent',
+                  borderTopColor: 'rgba(34, 211, 238, 0.6)',
+                  borderRightColor: 'rgba(168, 85, 247, 0.4)',
+                }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              />
+              {/* Second ring - counter-rotating */}
+              <motion.div
+                className="absolute rounded-full"
+                style={{
+                  width: 100,
+                  height: 100,
+                  top: 10,
+                  left: 10,
+                  border: '2px solid transparent',
+                  borderBottomColor: 'rgba(34, 197, 94, 0.5)',
+                  borderLeftColor: 'rgba(59, 130, 246, 0.4)',
+                }}
+                animate={{ rotate: -360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              />
+              {/* Center orb - pulsing */}
+              <motion.div
+                className="rounded-full flex items-center justify-center"
+                style={{
+                  width: 120,
+                  height: 120,
+                  background: 'radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.1) 50%, transparent 70%)',
+                }}
+                animate={{
+                  scale: [1, 1.05, 1],
+                  opacity: [0.8, 1, 0.8]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <motion.span
+                  className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  LP
+                </motion.span>
+              </motion.div>
+            </motion.div>
+
+            {/* Premium loading text */}
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+            >
+              <motion.p
+                className="text-slate-300 text-sm font-semibold tracking-[0.3em] uppercase"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                LINKPAY
+              </motion.p>
+              <motion.p
+                className="text-slate-500 text-xs mt-2 tracking-wider"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Preparando tu dashboard...
+              </motion.p>
+            </motion.div>
+          </div>
         </div>
       </div>
     );

@@ -281,10 +281,13 @@
 
 .lp-dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
   margin-bottom: 24px;
   perspective: 1200px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .lp-dashboard-card {
@@ -796,68 +799,87 @@
   .lp-dashboard-card {
     padding: 20px;
     border-radius: 20px;
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* ELEVATED BY DEFAULT on mobile too */
+    transform: translateY(-2px);
     box-shadow:
-      0 4px 24px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+      0 0 50px rgba(99, 102, 241, 0.1),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
     transition: all 0.25s ease;
   }
 
   .lp-dashboard-card:active {
-    transform: scale(0.99);
+    transform: scale(0.98) translateY(0px);
     opacity: 0.95;
   }
 
-  /* Card color accents - subtle gradient borders */
+  /* Card color accents - ELEVATED with colored glow */
   .lp-card-green {
-    border-top: 2px solid rgba(34, 197, 94, 0.5);
-    background: linear-gradient(180deg, rgba(34, 197, 94, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border-top: 3px solid rgba(34, 197, 94, 0.8);
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.08) 0%, rgba(30, 41, 59, 0.7) 100%);
+    box-shadow:
+      0 0 60px rgba(34, 197, 94, 0.12),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(34, 197, 94, 0.15);
   }
 
   .lp-card-blue {
-    border-top: 2px solid rgba(59, 130, 246, 0.5);
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border-top: 3px solid rgba(59, 130, 246, 0.8);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, rgba(30, 41, 59, 0.7) 100%);
+    box-shadow:
+      0 0 60px rgba(59, 130, 246, 0.12),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(59, 130, 246, 0.15);
   }
 
   .lp-card-purple {
-    border-top: 2px solid rgba(168, 85, 247, 0.5);
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border-top: 3px solid rgba(168, 85, 247, 0.8);
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.08) 0%, rgba(30, 41, 59, 0.7) 100%);
+    box-shadow:
+      0 0 60px rgba(168, 85, 247, 0.12),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(168, 85, 247, 0.15);
   }
 
   .lp-card-orange {
-    border-top: 2px solid rgba(249, 115, 22, 0.5);
-    background: linear-gradient(180deg, rgba(249, 115, 22, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border-top: 3px solid rgba(249, 115, 22, 0.8);
+    background: linear-gradient(180deg, rgba(249, 115, 22, 0.08) 0%, rgba(30, 41, 59, 0.7) 100%);
+    box-shadow:
+      0 0 60px rgba(249, 115, 22, 0.12),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(249, 115, 22, 0.15);
   }
 
-  /* Half-width cards need compact styling */
-  .lp-card-blue,
+  /* Compact cards (purple/orange on mobile) */
+  .lp-card-purple,
   .lp-card-orange {
     padding: 16px;
   }
 
-  .lp-card-blue .lp-stat-icon,
+  .lp-card-purple .lp-stat-icon,
   .lp-card-orange .lp-stat-icon {
     width: 36px;
     height: 36px;
     border-radius: 10px;
   }
 
-  .lp-card-blue .lp-stat-icon svg,
+  .lp-card-purple .lp-stat-icon svg,
   .lp-card-orange .lp-stat-icon svg {
     width: 18px;
     height: 18px;
   }
 
-  .lp-card-blue .lp-stat-value,
+  .lp-card-purple .lp-stat-value,
   .lp-card-orange .lp-stat-value {
     font-size: 22px;
     margin-bottom: 8px;
   }
 
-  .lp-card-blue .lp-stat-label,
+  .lp-card-purple .lp-stat-label,
   .lp-card-orange .lp-stat-label {
     font-size: 10px;
     margin-bottom: 6px;
