@@ -609,17 +609,27 @@ const baseStyles = `
 
   .lp-create-shell {
     position: fixed;
-    inset: 0;
+    /* Mobile: start below header */
+    top: calc(56px + env(safe-area-inset-top, 0px));
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     display: flex;
     justify-content: center;
-    min-height: 100dvh;
-    padding-top: env(safe-area-inset-top, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
     overflow-y: auto;
     overflow-x: hidden;
     font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Desktop: no header offset needed */
+  @media (min-width: 769px) {
+    .lp-create-shell {
+      top: 0;
+      min-height: 100dvh;
+    }
   }
 
   .lp-create-inner {

@@ -27,7 +27,7 @@ export function MobileHeader() {
 
     loadProfile();
 
-    // Subscribe to profile changes (when user updates avatar in settings)
+    // Subscribe to profile changes
     const channel = supabase
       .channel('profile-changes')
       .on(
@@ -52,18 +52,13 @@ export function MobileHeader() {
 
       {/* Left side: Avatar + Notifications */}
       <div className="lp-header-left">
-        {/* Avatar / Camera placeholder */}
         <button
           className="lp-header-avatar-btn"
           onClick={() => navigate('/app/settings')}
           aria-label="Perfil"
         >
           {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt="Avatar"
-              className="lp-header-avatar-img"
-            />
+            <img src={avatarUrl} alt="Avatar" className="lp-header-avatar-img" />
           ) : (
             <div className="lp-header-avatar-placeholder">
               <Camera size={16} className="lp-header-camera-icon" />
@@ -72,22 +67,21 @@ export function MobileHeader() {
           )}
         </button>
 
-        {/* Notifications / Alerts */}
         <button
           className="lp-header-icon-btn"
-          onClick={() => {/* TODO: Open notifications */ }}
+          onClick={() => {/* TODO: Notifications */ }}
           aria-label="Notificaciones"
         >
           <Bell size={20} />
         </button>
       </div>
 
-      {/* App name / branding */}
+      {/* Center: App name */}
       <div className="lp-header-brand">
         <span className="lp-header-title">LinkPay</span>
       </div>
 
-      {/* Right icons: Referrals + Settings */}
+      {/* Right: Referrals + Settings */}
       <div className="lp-header-right">
         <button
           className="lp-header-icon-btn"
@@ -115,13 +109,16 @@ const mobileHeaderStyles = `
     top: 0;
     left: 0;
     right: 0;
-    z-index: 50;
+    z-index: 100;
     height: calc(56px + env(safe-area-inset-top, 0px));
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: 12px;
     padding-right: 12px;
-    /* TRANSPARENT - se integra con el fondo de cada página */
-    background: transparent;
+    /* Semi-transparent with blur - integrates but visible */
+    background: rgba(2, 6, 23, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
     align-items: center;
     justify-content: space-between;
   }
@@ -132,14 +129,12 @@ const mobileHeaderStyles = `
     }
   }
 
-  /* Left Container */
   .lp-header-left {
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
-  /* Avatar Button */
   .lp-header-avatar-btn {
     width: 34px;
     height: 34px;
@@ -149,7 +144,6 @@ const mobileHeaderStyles = `
     cursor: pointer;
     background: transparent;
     position: relative;
-    overflow: visible;
   }
 
   .lp-header-avatar-img {
@@ -160,7 +154,6 @@ const mobileHeaderStyles = `
     border: 2px solid rgba(99, 102, 241, 0.5);
   }
 
-  /* Camera placeholder with animation */
   .lp-header-avatar-placeholder {
     width: 100%;
     height: 100%;
@@ -183,7 +176,6 @@ const mobileHeaderStyles = `
     50% { transform: scale(1.15); }
   }
 
-  /* Pulsing ring animation */
   .lp-header-avatar-pulse {
     position: absolute;
     inset: -3px;
@@ -193,17 +185,10 @@ const mobileHeaderStyles = `
   }
 
   @keyframes lp-pulse-ring {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1.4);
-      opacity: 0;
-    }
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
   }
 
-  /* Brand / Title */
   .lp-header-brand {
     position: absolute;
     left: 50%;
@@ -217,17 +202,14 @@ const mobileHeaderStyles = `
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -0.02em;
   }
 
-  /* Right Icons Container */
   .lp-header-right {
     display: flex;
     align-items: center;
     gap: 2px;
   }
 
-  /* Icon Buttons */
   .lp-header-icon-btn {
     width: 38px;
     height: 38px;
@@ -240,7 +222,6 @@ const mobileHeaderStyles = `
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    position: relative;
   }
 
   .lp-header-icon-btn:hover {
