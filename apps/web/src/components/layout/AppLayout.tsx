@@ -62,7 +62,7 @@ export function AppLayout() {
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
   ];
 
-  // MOBILE NAV - 5 ITEMS: Bio, Links, Home, Wallet, Más
+  // MOBILE NAV - 5 ITEMS: Bio, Links, Home, Wallet, Analytics
   const mobileNavLeft = [
     { icon: Smartphone, label: 'Bio', path: '/app/bio-editor' },
     { icon: Link2, label: 'Links', path: '/app/links' },
@@ -70,10 +70,6 @@ export function AppLayout() {
 
   const mobileNavRight = [
     { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
-  ];
-
-  // MOBILE MORE MENU - Solo Analytics (Settings y Referidos están en header)
-  const secondaryMobileNav = [
     { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
   ];
 
@@ -223,61 +219,8 @@ export function AppLayout() {
                 <span className="lp-mobile-label">{item.label}</span>
               </NavLink>
             ))}
-
-            {/* MORE BUTTON */}
-            <button
-              className={`lp-mobile-item lp-more-btn ${moreMenuOpen ? 'active' : ''}`}
-              onClick={() => setMoreMenuOpen(true)}
-            >
-              <div className="lp-mobile-icon-pill">
-                <Menu className="lp-mobile-icon" size={22} strokeWidth={2} />
-              </div>
-              <span className="lp-mobile-label">Más</span>
-            </button>
           </div>
         </nav>
-
-        {/* MORE MENU OVERLAY - BANK GRADE SHEET */}
-        {moreMenuOpen && (
-          <>
-            <div
-              className="lp-more-backdrop"
-              onClick={() => setMoreMenuOpen(false)}
-            />
-            <div className="lp-more-sheet">
-              <div className="lp-more-header">
-                <span className="lp-more-title">Más opciones</span>
-                <button
-                  className="lp-more-close"
-                  onClick={() => setMoreMenuOpen(false)}
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              <div className="lp-more-list">
-                {secondaryMobileNav.map((item) => (
-                  <button
-                    key={item.path}
-                    className={`lp-more-item ${location.pathname === item.path ? 'active' : ''}`}
-                    onClick={() => handleMoreNavClick(item.path)}
-                  >
-                    <div className="lp-more-icon">
-                      <item.icon size={20} />
-                    </div>
-                    <span className="lp-more-label">{item.label}</span>
-                    <ChevronRight size={16} className="lp-more-chevron" />
-                  </button>
-                ))}
-              </div>
-              <div className="lp-more-footer">
-                <button className="lp-more-logout" onClick={handleLogout}>
-                  <LogOut size={18} />
-                  <span>Cerrar sesión</span>
-                </button>
-              </div>
-            </div>
-          </>
-        )}
 
         {/* CONTENIDO */}
         <main className="lp-main-shell">

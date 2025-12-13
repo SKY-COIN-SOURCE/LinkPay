@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Camera, Users } from 'lucide-react';
+import { Settings, Camera, Users, Bell } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 
@@ -50,25 +50,39 @@ export function MobileHeader() {
     <header className="lp-mobile-header">
       <style>{mobileHeaderStyles}</style>
 
-      {/* Avatar / Camera placeholder */}
-      <button
-        className="lp-header-avatar-btn"
-        onClick={() => navigate('/app/settings')}
-        aria-label="Perfil"
-      >
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            className="lp-header-avatar-img"
-          />
-        ) : (
-          <div className="lp-header-avatar-placeholder">
-            <Camera size={18} className="lp-header-camera-icon" />
-            <span className="lp-header-avatar-pulse" />
-          </div>
-        )}
-      </button>
+      {/* Left side: Avatar + Notifications */}
+      <div className="lp-header-left">
+        {/* Avatar / Camera placeholder */}
+        <button
+          className="lp-header-avatar-btn"
+          onClick={() => navigate('/app/settings')}
+          aria-label="Perfil"
+        >
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className="lp-header-avatar-img"
+            />
+          ) : (
+            <div className="lp-header-avatar-placeholder">
+              <Camera size={16} className="lp-header-camera-icon" />
+              <span className="lp-header-avatar-pulse" />
+            </div>
+          )}
+        </button>
+
+        {/* Notifications / Alerts */}
+        <button
+          className="lp-header-icon-btn lp-header-notif-btn"
+          onClick={() => {/* TODO: Open notifications */ }}
+          aria-label="Notificaciones"
+        >
+          <Bell size={20} />
+          {/* Notification dot - show when there are unread notifications */}
+          {/* <span className="lp-notif-dot" /> */}
+        </button>
+      </div>
 
       {/* App name / branding */}
       <div className="lp-header-brand">
@@ -106,7 +120,7 @@ const mobileHeaderStyles = `
     z-index: 50;
     height: calc(56px + env(safe-area-inset-top, 0px));
     padding-top: env(safe-area-inset-top, 0px);
-    padding-left: 16px;
+    padding-left: 12px;
     padding-right: 12px;
     background: #020617;
     border-bottom: 1px solid rgba(99, 102, 241, 0.2);
@@ -120,10 +134,17 @@ const mobileHeaderStyles = `
     }
   }
 
+  /* Left Container */
+  .lp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   /* Avatar Button */
   .lp-header-avatar-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     border: none;
     padding: 0;
@@ -167,7 +188,7 @@ const mobileHeaderStyles = `
   /* Pulsing ring animation */
   .lp-header-avatar-pulse {
     position: absolute;
-    inset: -4px;
+    inset: -3px;
     border-radius: 50%;
     border: 2px solid rgba(99, 102, 241, 0.6);
     animation: lp-pulse-ring 2s ease-out infinite;
@@ -179,20 +200,20 @@ const mobileHeaderStyles = `
       opacity: 1;
     }
     100% {
-      transform: scale(1.5);
+      transform: scale(1.4);
       opacity: 0;
     }
   }
 
   /* Brand / Title */
   .lp-header-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .lp-header-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     background: linear-gradient(135deg, #f9fafb 0%, #a5b4fc 100%);
     -webkit-background-clip: text;
@@ -205,30 +226,48 @@ const mobileHeaderStyles = `
   .lp-header-right {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
   }
 
   /* Icon Buttons */
   .lp-header-icon-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     border: none;
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
     color: #94a3b8;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    position: relative;
   }
 
   .lp-header-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #f9fafb;
   }
 
   .lp-header-icon-btn:active {
     transform: scale(0.95);
+  }
+
+  /* Notification Button - slightly different style */
+  .lp-header-notif-btn {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Notification dot */
+  .lp-notif-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #020617;
   }
 `;
