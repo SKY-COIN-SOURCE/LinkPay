@@ -565,23 +565,20 @@ const layoutStyles = `
     bottom: 0;
     display: none;
     z-index: 60;
-    /* Cover safe area with solid background */
+    /* Solid background extending to bottom of screen */
     background: #020617;
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    /* Use max() to ensure minimum padding even before safe-area calculates */
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
   }
 
   .lp-mobile-nav-inner {
     display: flex;
     align-items: flex-end;
     justify-content: space-evenly;
-    padding: 8px 8px 10px 8px;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(2, 6, 23, 1) 100%);
-    backdrop-filter: blur(24px) saturate(1.2);
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
-    border-top: 1px solid rgba(99, 102, 241, 0.2);
-    box-shadow:
-      0 -4px 20px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    padding: 10px 8px 12px 8px;
+    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+    border-top: 1px solid rgba(99, 102, 241, 0.25);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
   }
 
   .lp-mobile-item {
