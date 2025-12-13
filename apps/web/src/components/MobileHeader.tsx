@@ -9,7 +9,6 @@ export function MobileHeader() {
   const { user } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // Load user profile with avatar
   useEffect(() => {
     if (!user?.id) return;
 
@@ -27,7 +26,6 @@ export function MobileHeader() {
 
     loadProfile();
 
-    // Subscribe to profile changes
     const channel = supabase
       .channel('profile-changes')
       .on(
@@ -50,13 +48,8 @@ export function MobileHeader() {
     <header className="lp-mobile-header">
       <style>{mobileHeaderStyles}</style>
 
-      {/* Left side: Avatar + Notifications */}
       <div className="lp-header-left">
-        <button
-          className="lp-header-avatar-btn"
-          onClick={() => navigate('/app/settings')}
-          aria-label="Perfil"
-        >
+        <button className="lp-header-avatar-btn" onClick={() => navigate('/app/settings')}>
           {avatarUrl ? (
             <img src={avatarUrl} alt="Avatar" className="lp-header-avatar-img" />
           ) : (
@@ -66,35 +59,20 @@ export function MobileHeader() {
             </div>
           )}
         </button>
-
-        <button
-          className="lp-header-icon-btn"
-          onClick={() => {/* TODO: Notifications */ }}
-          aria-label="Notificaciones"
-        >
+        <button className="lp-header-icon-btn" onClick={() => { }}>
           <Bell size={20} />
         </button>
       </div>
 
-      {/* Center: App name */}
       <div className="lp-header-brand">
         <span className="lp-header-title">LinkPay</span>
       </div>
 
-      {/* Right: Referrals + Settings */}
       <div className="lp-header-right">
-        <button
-          className="lp-header-icon-btn"
-          onClick={() => navigate('/app/referrals')}
-          aria-label="Referidos"
-        >
+        <button className="lp-header-icon-btn" onClick={() => navigate('/app/referrals')}>
           <Users size={20} />
         </button>
-        <button
-          className="lp-header-icon-btn"
-          onClick={() => navigate('/app/settings')}
-          aria-label="Ajustes"
-        >
+        <button className="lp-header-icon-btn" onClick={() => navigate('/app/settings')}>
           <Settings size={20} />
         </button>
       </div>
@@ -114,11 +92,7 @@ const mobileHeaderStyles = `
     padding-top: env(safe-area-inset-top, 0px);
     padding-left: 12px;
     padding-right: 12px;
-    /* Semi-transparent with blur - integrates but visible */
-    background: rgba(2, 6, 23, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    background: transparent;
     align-items: center;
     justify-content: space-between;
   }
