@@ -565,14 +565,17 @@ const layoutStyles = `
     bottom: 0;
     display: none;
     z-index: 60;
+    /* Cover safe area with solid background */
+    background: #020617;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
   .lp-mobile-nav-inner {
     display: flex;
     align-items: flex-end;
     justify-content: space-evenly;
-    padding: 8px 8px calc(env(safe-area-inset-bottom, 8px) + 8px) 8px;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.97) 0%, rgba(2, 6, 23, 0.99) 100%);
+    padding: 8px 8px 10px 8px;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(2, 6, 23, 1) 100%);
     backdrop-filter: blur(24px) saturate(1.2);
     -webkit-backdrop-filter: blur(24px) saturate(1.2);
     border-top: 1px solid rgba(99, 102, 241, 0.2);
