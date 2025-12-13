@@ -743,10 +743,11 @@
   .lp-dashboard-inner {
     max-width: 100%;
     /* Safe area padding on content, not shell */
+    /* Use 34px fallback (iPhone notch standard) to prevent layout shift */
     padding-top: calc(env(safe-area-inset-top, 20px) + 16px);
     padding-left: 16px;
     padding-right: 16px;
-    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 140px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 34px) + 110px);
   }
 
   /* --- HEADER - PREMIUM COMPACT --- */

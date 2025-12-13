@@ -567,8 +567,8 @@ const layoutStyles = `
     z-index: 60;
     /* Solid background extending to bottom of screen */
     background: #020617;
-    /* Use max() to ensure minimum padding even before safe-area calculates */
-    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+    /* 34px fallback = iPhone notch standard, prevents layout shift */
+    padding-bottom: env(safe-area-inset-bottom, 34px);
   }
 
   .lp-mobile-nav-inner {
