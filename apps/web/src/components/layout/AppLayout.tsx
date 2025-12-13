@@ -46,21 +46,20 @@ export function AppLayout() {
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
   ];
 
-  // MOBILE NAV - NUEVO DISEÑO: Dashboard en centro elevado
-  // Izquierda: Bio, Create, Links | Centro: Dashboard | Derecha: Referidos, Wallet, Más
+  // MOBILE NAV - 5 ITEMS: Bio, Crear, Home, Wallet, Más
   const mobileNavLeft = [
     { icon: Smartphone, label: 'Bio', path: '/app/bio-editor' },
     { icon: PlusSquare, label: 'Crear', path: '/app/create' },
   ];
 
   const mobileNavRight = [
-    { icon: Users, label: 'Red', path: '/app/referrals' },
     { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
   ];
 
-  // MOBILE MORE MENU - elementos secundarios
+  // MOBILE MORE MENU - todo lo demás
   const secondaryMobileNav = [
     { icon: Link2, label: 'Mis Enlaces', path: '/app/links' },
+    { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
     { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
   ];
@@ -558,33 +557,28 @@ const layoutStyles = `
     z-index: 1;
   }
 
-  /* ===== MOBILE NAV - PREMIUM BANK GRADE ===== */
+  /* ===== MOBILE NAV - SOLID INTEGRATED DOCK ===== */
   .lp-mobile-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 6px 12px calc(env(safe-area-inset-bottom, 8px) + 6px) 12px;
     display: none;
     z-index: 60;
-    pointer-events: none;
   }
 
   .lp-mobile-nav-inner {
-    pointer-events: auto;
     display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 6px 2px 4px 2px;
-    border-radius: 28px;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(2, 6, 23, 0.99) 100%);
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
-    border: 1px solid rgba(99, 102, 241, 0.15);
+    align-items: flex-end;
+    justify-content: space-evenly;
+    padding: 8px 8px calc(env(safe-area-inset-bottom, 8px) + 8px) 8px;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.97) 0%, rgba(2, 6, 23, 0.99) 100%);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
     box-shadow:
-      0 -8px 32px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(15, 23, 42, 0.9),
-      0 2px 16px rgba(99, 102, 241, 0.1);
+      0 -4px 20px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   .lp-mobile-item {
@@ -592,25 +586,25 @@ const layoutStyles = `
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 4px;
     text-decoration: none;
     color: #64748b;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.02em;
-    min-width: 64px;
-    min-height: 60px;
-    padding: 6px 4px;
+    flex: 1;
+    min-height: 56px;
+    padding: 6px 2px;
     border: none;
     background: transparent;
     cursor: pointer;
     position: relative;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .lp-mobile-item:active {
-    transform: scale(0.92);
+    transform: scale(0.95);
   }
 
   .lp-mobile-item.active {
@@ -658,51 +652,34 @@ const layoutStyles = `
   .lp-mobile-center {
     position: relative;
     z-index: 10;
+    flex: 1.2;
   }
 
   .lp-mobile-center-orb {
-    width: 56px;
-    height: 56px;
-    border-radius: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
     box-shadow:
-      0 0 40px rgba(99, 102, 241, 0.5),
-      0 8px 24px -4px rgba(139, 92, 246, 0.6),
-      0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-    transform: translateY(-8px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: lp-center-pulse 3s ease-in-out infinite;
-  }
-
-  @keyframes lp-center-pulse {
-    0%, 100% {
-      box-shadow:
-        0 0 40px rgba(99, 102, 241, 0.5),
-        0 8px 24px -4px rgba(139, 92, 246, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-    }
-    50% {
-      box-shadow:
-        0 0 60px rgba(99, 102, 241, 0.7),
-        0 12px 32px -4px rgba(139, 92, 246, 0.8),
-        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-    }
+      0 4px 20px rgba(99, 102, 241, 0.4),
+      0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+    transform: translateY(-4px);
+    transition: all 0.2s ease;
   }
 
   .lp-mobile-center:active .lp-mobile-center-orb {
-    transform: translateY(-4px) scale(0.95);
+    transform: translateY(-2px) scale(0.95);
   }
 
   .lp-mobile-center.active .lp-mobile-center-orb {
     background: linear-gradient(135deg, #22c55e 0%, #10b981 50%, #059669 100%);
     box-shadow:
-      0 0 50px rgba(34, 197, 94, 0.6),
-      0 10px 28px -4px rgba(16, 185, 129, 0.7),
-      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-    transform: translateY(-10px) scale(1.05);
+      0 6px 24px rgba(34, 197, 94, 0.5),
+      0 0 0 2px rgba(255, 255, 255, 0.15) inset;
+    transform: translateY(-6px);
   }
 
   .lp-mobile-center-icon {
