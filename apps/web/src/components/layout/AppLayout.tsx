@@ -20,6 +20,7 @@ import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
 import { PWAInstallButton } from '../PWAInstall';
 import { SplashScreen } from '../SplashScreen';
+import { MobileHeader } from '../MobileHeader';
 
 // Key para sessionStorage - solo mostrar splash una vez por sesión
 const SPLASH_SHOWN_KEY = 'lp_splash_shown';
@@ -61,22 +62,20 @@ export function AppLayout() {
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
   ];
 
-  // MOBILE NAV - 5 ITEMS: Bio, Crear, Home, Wallet, Más
+  // MOBILE NAV - 5 ITEMS: Bio, Links, Home, Wallet, Más
   const mobileNavLeft = [
     { icon: Smartphone, label: 'Bio', path: '/app/bio-editor' },
-    { icon: PlusSquare, label: 'Crear', path: '/app/create' },
+    { icon: Link2, label: 'Links', path: '/app/links' },
   ];
 
   const mobileNavRight = [
     { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
   ];
 
-  // MOBILE MORE MENU - todo lo demás
+  // MOBILE MORE MENU - Sin Settings (está en header)
   const secondaryMobileNav = [
-    { icon: Link2, label: 'Mis Enlaces', path: '/app/links' },
     { icon: Users, label: 'Red de Referidos', path: '/app/referrals' },
     { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
-    { icon: Settings, label: 'Ajustes', path: '/app/settings' },
   ];
 
   const handleMoreNavClick = (path: string) => {
@@ -93,6 +92,9 @@ export function AppLayout() {
 
       <div className={`lp-app-shell ${showSplash ? 'lp-hidden' : ''}`}>
         <style>{layoutStyles}</style>
+
+        {/* MOBILE HEADER - Avatar + Settings */}
+        <MobileHeader />
 
         {/* SIDEBAR DESKTOP */}
         <aside className="lp-sidebar-desktop">
