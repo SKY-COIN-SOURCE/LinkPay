@@ -12,7 +12,8 @@ import {
   ArrowRight,
   Activity,
   DollarSign,
-  Loader2
+  Loader2,
+  Share2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LinkService, Link } from '../../lib/linkService';
@@ -274,7 +275,7 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* CARD 2: CLICKS (With Chart) */}
+          {/* CARD 2: CLICKS */}
           <motion.div
             className="lp-dashboard-card lp-card-blue"
             variants={cardVariants}
@@ -282,34 +283,11 @@ export function DashboardPage() {
           >
             <div className="lp-stat-header">
               <div className="lp-stat-icon"><MousePointer2 size={24} /></div>
-              <div className="lp-trend-badge" style={{ color: '#60a5fa', background: 'rgba(59, 130, 246, 0.1)' }}>
-                <Activity size={12} /> +5%
-              </div>
             </div>
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
               <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
-
-              {/* Tiny Chart */}
-              <div className="h-[30px] w-full mt-2 opacity-60">
-                {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <Area type="monotone" dataKey="clicks" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorClicks)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full w-full bg-slate-800/30 rounded animate-pulse" />
-                )}
-              </div>
-
-              <div className="lp-substats mt-2">
+              <div className="lp-substats">
                 <div className="lp-substat-box">
                   <span className="lp-substat-label">LINKS</span>
                   <span className="lp-substat-value">{realtimeStats.linkClicks}</span>
@@ -322,28 +300,7 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* CARD 3: REFERRALS */}
-          <motion.div
-            className="lp-dashboard-card lp-card-purple"
-            variants={cardVariants}
-            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
-          >
-            <div className="lp-stat-header">
-              <div className="lp-stat-icon"><Users size={24} /></div>
-              <motion.div whileTap={{ scale: 0.9 }}>
-                <Copy size={18} className="text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={copyReferral} />
-              </motion.div>
-            </div>
-            <div>
-              <div className="lp-stat-label">{t('dashboard.stats.referrals.label')}</div>
-              <div className="lp-stat-value">€{animatedReferrals.toFixed(2)}</div>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed opacity-80">
-                {t('dashboard.stats.referrals.text')}
-              </p>
-            </div>
-          </motion.div>
-
-          {/* CARD 4: RPM */}
+          {/* CARD 3: RPM - Compact */}
           <motion.div
             className="lp-dashboard-card lp-card-orange"
             variants={cardVariants}
@@ -353,11 +310,35 @@ export function DashboardPage() {
               <div className="lp-stat-icon"><BarChart3 size={24} /></div>
             </div>
             <div>
-              <div className="lp-stat-label">{t('dashboard.stats.rpm.label')}</div>
+              <div className="lp-stat-label">RPM MEDIO</div>
               <div className="lp-stat-value">€1.22</div>
-              <p className="text-xs text-slate-400 mt-2 opacity-80">
-                {t('dashboard.stats.rpm.help') || 'Average revenue per 1k visits'}
+              <p className="text-xs text-slate-400 mt-1 opacity-80">
+                Por 1000 visitas
               </p>
+            </div>
+          </motion.div>
+
+          {/* CARD 4: REFERRALS - Compact with Share Button */}
+          <motion.div
+            className="lp-dashboard-card lp-card-purple lp-referral-compact"
+            variants={cardVariants}
+            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
+          >
+            <div className="lp-referral-header">
+              <div className="lp-referral-left">
+                <div className="lp-stat-icon"><Users size={24} /></div>
+                <div className="lp-referral-amount">€{animatedReferrals.toFixed(2)}</div>
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={copyReferral}
+                className="lp-share-btn"
+              >
+                <Share2 size={18} />
+              </motion.button>
+            </div>
+            <div className="lp-referral-label">
+              Programa de referidos
             </div>
           </motion.div>
 
