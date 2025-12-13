@@ -153,4 +153,97 @@ const linksHubStyles = `
     padding-top: 16px !important;
     padding-bottom: 120px !important;
   }
+
+  /* ===== PREMIUM CARD ANIMATIONS - MATCHING DASHBOARD ===== */
+  
+  /* Card entrance animation */
+  @keyframes lp-card-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  @keyframes lp-card-glow-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.12), 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+    }
+    50% { 
+      box-shadow: 0 0 60px rgba(99, 102, 241, 0.2), 0 25px 50px -10px rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  /* Premium card base style for Links section */
+  .lp-links-content-wrapper .lp-card-v2,
+  .lp-links-content-wrapper .lp-links-card {
+    position: relative;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 60%),
+      radial-gradient(ellipse at top left, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+    border: 1px solid rgba(148, 163, 184, 0.25) !important;
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 60px rgba(99, 102, 241, 0.12),
+      0 0 25px rgba(99, 102, 241, 0.08),
+      0 25px 50px -12px rgba(0, 0, 0, 0.75),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: lp-card-glow-pulse 4s ease-in-out infinite;
+  }
+
+  .lp-links-content-wrapper .lp-card-v2:hover,
+  .lp-links-content-wrapper .lp-links-card:hover {
+    transform: translateY(-6px) scale(1.01) !important;
+    border-color: rgba(129, 140, 248, 0.5) !important;
+    box-shadow:
+      0 0 100px rgba(99, 102, 241, 0.2),
+      0 0 40px rgba(99, 102, 241, 0.15),
+      0 35px 70px -15px rgba(0, 0, 0, 0.85),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* URL Card - Blue accent glow */
+  .lp-links-content-wrapper .lp-card-url {
+    border-top: 3px solid rgba(59, 130, 246, 0.8) !important;
+    box-shadow:
+      0 0 60px rgba(59, 130, 246, 0.15),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(59, 130, 246, 0.15) !important;
+  }
+
+  /* Alias Card - Orange/Amber accent glow */
+  .lp-links-content-wrapper .lp-card-alias {
+    border-top: 3px solid rgba(249, 115, 22, 0.8) !important;
+    box-shadow:
+      0 0 60px rgba(249, 115, 22, 0.15),
+      0 20px 40px -10px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(249, 115, 22, 0.15) !important;
+  }
+
+  /* Engine Card - Green accent glow */
+  .lp-links-content-wrapper .lp-engine-card {
+    border: 2px solid rgba(34, 197, 94, 0.6) !important;
+    box-shadow:
+      0 0 80px rgba(34, 197, 94, 0.15),
+      0 25px 50px -12px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(34, 197, 94, 0.15) !important;
+    animation: lp-card-float 8s ease-in-out infinite;
+  }
+
+  /* Links list cards - Purple accent */
+  .lp-links-content-wrapper .lp-link-card {
+    border-left: 3px solid rgba(168, 85, 247, 0.7) !important;
+    box-shadow:
+      0 0 50px rgba(168, 85, 247, 0.12),
+      0 16px 40px rgba(15, 23, 42, 0.9),
+      0 0 0 1px rgba(15, 23, 42, 0.9) !important;
+  }
+
+  .lp-links-content-wrapper .lp-link-card:hover {
+    border-left-color: rgba(168, 85, 247, 1) !important;
+    box-shadow:
+      0 0 80px rgba(168, 85, 247, 0.2),
+      0 22px 60px rgba(15, 23, 42, 1),
+      0 0 0 1px rgba(191, 219, 254, 0.5) !important;
+  }
 `;
