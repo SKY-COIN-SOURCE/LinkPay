@@ -37,6 +37,32 @@
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Critical CSS to prevent layout shift on mobile nav -->
+  <style>
+    html,
+    body,
+    #root {
+      margin: 0;
+      padding: 0;
+      background: #020617;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* Mobile nav critical styles - prevents black border flash */
+    @media (max-width: 768px) {
+      .lp-mobile-nav {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: #020617 !important;
+        padding-bottom: env(safe-area-inset-bottom, 0) !important;
+        z-index: 60 !important;
+      }
+    }
+  </style>
 </head>
 
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
