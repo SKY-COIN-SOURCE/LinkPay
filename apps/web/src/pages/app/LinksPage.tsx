@@ -996,7 +996,7 @@ const linksStyles = `
   .lp-link-card {
     border-radius: 16px;
     padding: 10px 10px 10px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     border: 1px solid rgba(30,64,175,0.8);
     background: radial-gradient(circle at 0% 0%, rgba(30,64,175,0.7), rgba(15,23,42,0.96));
     box-shadow:
@@ -1139,8 +1139,8 @@ const linksStyles = `
 
     .lp-btn-ghost,
     .lp-btn-danger {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
     }
 
     .lp-chip-stat,

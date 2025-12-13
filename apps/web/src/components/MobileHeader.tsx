@@ -59,9 +59,6 @@ export function MobileHeader() {
             </div>
           )}
         </button>
-        <button className="lp-header-icon-btn" onClick={() => { }}>
-          <Bell size={20} />
-        </button>
       </div>
 
       <div className="lp-header-brand">
@@ -69,6 +66,9 @@ export function MobileHeader() {
       </div>
 
       <div className="lp-header-right">
+        <button className="lp-header-icon-btn" onClick={() => { }}>
+          <Bell size={20} />
+        </button>
         <button className="lp-header-icon-btn" onClick={() => navigate('/app/referrals')}>
           <Users size={20} />
         </button>
@@ -106,7 +106,9 @@ const mobileHeaderStyles = `
   .lp-header-left {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    min-width: 50px;
+    flex-shrink: 0;
   }
 
   .lp-header-avatar-btn {
@@ -181,7 +183,9 @@ const mobileHeaderStyles = `
   .lp-header-right {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 6px;
+    min-width: 50px;
+    flex-shrink: 0;
   }
 
   .lp-header-icon-btn {

@@ -48,8 +48,13 @@ const linksHubStyles = `
     min-height: 100dvh;
     background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000000 100%);
     position: relative;
-    /* Mobile: start below header */
-    padding-top: calc(56px + env(safe-area-inset-top, 0px));
+  }
+
+  @media (max-width: 768px) {
+    .lp-links-hub-shell {
+      /* Mobile: content starts right after header */
+      padding-top: calc(56px + env(safe-area-inset-top, 0px));
+    }
   }
 
   @media (min-width: 769px) {
@@ -70,12 +75,6 @@ const linksHubStyles = `
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(99, 102, 241, 0.15);
-  }
-
-  @media (min-width: 769px) {
-    .lp-links-tabs-bar {
-      top: 0;
-    }
   }
 
   .lp-links-tab {
