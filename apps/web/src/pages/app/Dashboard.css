@@ -722,15 +722,28 @@
 
 @media (max-width: 700px) {
 
-  /* --- SHELL & LAYOUT --- */
+  /* --- SHELL & LAYOUT - SEAMLESS NOTCH INTEGRATION --- */
   .lp-dashboard-shell {
     display: block;
-    background: linear-gradient(180deg, #0a0f1a 0%, #020617 100%);
+    /* Background extends fully to notch - no padding here */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Background extends to edges */
+  .lp-bg {
+    /* Ensure background fills entire screen including notch area */
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .lp-dashboard-inner {
     max-width: 100%;
-    padding: 20px 16px 140px 16px;
+    /* Safe area padding on content, not shell */
+    padding-top: calc(env(safe-area-inset-top, 20px) + 16px);
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 140px);
   }
 
   /* --- HEADER - PREMIUM COMPACT --- */

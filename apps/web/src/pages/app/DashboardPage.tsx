@@ -311,9 +311,9 @@ export function DashboardPage() {
             <div>
               <div className="lp-stat-label">RPM MEDIO</div>
               <div className="lp-stat-value">€1.22</div>
-              <p className="text-xs text-slate-400 mt-1 opacity-80">
-                Por 1000 visitas
-              </p>
+              <div className="lp-substat-label" style={{ marginTop: '8px' }}>
+                POR 1000 VISITAS
+              </div>
             </div>
           </motion.div>
 
