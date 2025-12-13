@@ -357,7 +357,10 @@
   color: #4ade80;
 }
 
-/* RESPONSIVE - MOBILE FIRST */
+/* =============================================================================
+   MOBILE RESPONSIVE - SHOPIFY-LIKE PREMIUM UX
+   ============================================================================= */
+
 @media (max-width: 1200px) {
   .lp-dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -369,96 +372,206 @@
 }
 
 @media (max-width: 700px) {
+
+  /* --- SHELL & LAYOUT --- */
+  .lp-dashboard-shell {
+    display: block;
+    background: linear-gradient(180deg, #0a0f1a 0%, #020617 100%);
+  }
+
+  .lp-dashboard-inner {
+    max-width: 100%;
+    padding: 20px 16px 140px 16px;
+  }
+
+  /* --- HEADER - PREMIUM COMPACT --- */
+  .lp-dashboard-header-center {
+    margin-bottom: 24px;
+    padding: 0 4px;
+  }
+
+  .lp-chip-center {
+    font-size: 10px;
+    padding: 6px 14px;
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+  }
+
+  .lp-dashboard-subtitle-center {
+    font-size: 14px;
+    margin-top: 12px;
+    line-height: 1.5;
+    max-width: 100%;
+    padding: 0 8px;
+  }
+
+  /* --- METRICS GRID - CARD STACK --- */
   .lp-dashboard-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 14px;
   }
 
   .lp-recent-card {
     grid-column: span 1;
   }
 
-  .lp-dashboard-shell {
-    display: block;
-  }
-
-  .lp-dashboard-inner {
-    max-width: 100%;
-    padding: 16px 16px 140px 16px;
-  }
-
+  /* --- STAT CARDS - PREMIUM GLASS --- */
   .lp-dashboard-card {
-    padding: 16px;
-    border-radius: 16px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    transition: all 0.25s ease;
   }
 
-  .lp-stat-value {
-    font-size: 24px;
-    margin-bottom: 12px;
+  .lp-dashboard-card:active {
+    transform: scale(0.99);
+    opacity: 0.95;
   }
 
-  .lp-stat-label {
-    font-size: 11px;
+  /* Card color accents - subtle gradient borders */
+  .lp-card-green {
+    border-top: 2px solid rgba(34, 197, 94, 0.5);
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+  }
+
+  .lp-card-blue {
+    border-top: 2px solid rgba(59, 130, 246, 0.5);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+  }
+
+  .lp-card-purple {
+    border-top: 2px solid rgba(168, 85, 247, 0.5);
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+  }
+
+  .lp-card-orange {
+    border-top: 2px solid rgba(249, 115, 22, 0.5);
+    background: linear-gradient(180deg, rgba(249, 115, 22, 0.04) 0%, rgba(30, 41, 59, 0.6) 100%);
+  }
+
+  /* --- STAT HEADER --- */
+  .lp-stat-header {
+    margin-bottom: 16px;
   }
 
   .lp-stat-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   }
 
   .lp-trend-badge {
-    font-size: 10px;
-    padding: 3px 6px;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 700;
   }
 
+  /* --- STAT VALUES - PREMIUM TYPOGRAPHY --- */
+  .lp-stat-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  .lp-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.85) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* --- SUBSTATS - SCANNABLE --- */
   .lp-substats {
-    gap: 8px;
-    padding-top: 12px;
+    gap: 12px;
+    padding-top: 14px;
+    margin-top: 4px;
   }
 
   .lp-substat-label {
-    font-size: 9px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
   }
 
   .lp-substat-value {
-    font-size: 13px;
+    font-size: 15px;
+    font-weight: 700;
   }
 
-  .lp-dashboard-header-center {
-    margin-bottom: 20px;
+  /* --- RECENT ACTIVITY - LIST PREMIUM --- */
+  .lp-recent-card {
+    margin-top: 6px;
   }
 
-  .lp-chip-center {
-    font-size: 10px;
-    padding: 5px 10px;
-  }
-
-  .lp-dashboard-subtitle-center {
-    font-size: 13px;
-    margin-top: 8px;
+  .lp-recent-list {
+    gap: 8px;
   }
 
   .lp-recent-item {
-    padding: 10px;
-    gap: 12px;
+    padding: 14px 12px;
+    gap: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .lp-recent-item:active {
+    transform: scale(0.99);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .lp-link-icon-circle {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+  }
+
+  .lp-link-icon-circle svg {
+    width: 18px;
+    height: 18px;
+    color: #a5b4fc;
   }
 
   .lp-link-alias {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 700;
   }
 
   .lp-link-url {
-    font-size: 11px;
+    font-size: 12px;
+    opacity: 0.6;
+    max-width: 180px;
   }
 
   .lp-link-money {
-    font-size: 13px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  /* --- EMPTY STATE --- */
+  .lp-recent-list .text-center {
+    padding: 40px 20px;
   }
 }
 

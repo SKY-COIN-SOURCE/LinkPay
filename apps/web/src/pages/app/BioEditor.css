@@ -1056,7 +1056,10 @@
     border: none;
 }
 
-/* --- MOBILE RESPONSIVE TWEAKS --- */
+/* =============================================================================
+   MOBILE RESPONSIVE - PREMIUM LINKTREE-QUALITY UX
+   ============================================================================= */
+
 @media (max-width: 1024px) {
     .lp-preview-col {
         display: none;
@@ -1067,56 +1070,622 @@
     }
 }
 
+/* ===== MOBILE PREMIUM REDESIGN ===== */
 @media (max-width: 768px) {
-    .lp-nav {
-        padding: 0 16px;
-        height: 56px;
+
+    /* --- SHELL & LAYOUT --- */
+    .lp-bio-shell-v3 {
+        background: linear-gradient(180deg, #0a0f1a 0%, #020617 100%);
     }
 
-    .lp-tabs-container {
+    .lp-editor-col {
+        background: transparent;
+        border-right: none;
+    }
+
+    /* --- NAVIGATION TOP BAR --- */
+    .lp-nav {
         padding: 0 16px;
+        height: 60px;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .lp-logo {
+        font-size: 17px;
+    }
+
+    .lp-global-stats {
+        display: none;
+        /* Hide on mobile for cleaner nav */
+    }
+
+    .lp-nav-actions {
+        gap: 8px;
+    }
+
+    .lp-btn-basic {
+        height: 38px;
+        padding: 0 14px;
+        font-size: 12px;
+    }
+
+    .lp-btn-publish {
+        padding: 0 16px;
+    }
+
+    /* --- TABS - HORIZONTAL SCROLL WITH FADE --- */
+    .lp-tabs-container {
+        padding: 0;
         overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        background: rgba(15, 23, 42, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .lp-tabs-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .lp-tabs-container::after {
+        right: 0;
+        width: 60px;
+        background: linear-gradient(to left, rgba(15, 23, 42, 0.95) 20%, transparent 100%);
     }
 
     .lp-tabs-list {
-        gap: 24px;
+        gap: 0;
+        padding: 0 16px;
+        min-width: max-content;
     }
 
+    .lp-tab {
+        padding: 14px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+
+    .lp-tab.active {
+        color: #fff;
+    }
+
+    .lp-tab.active::after {
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    }
+
+    /* --- SCROLL AREA - BREATHING ROOM --- */
     .lp-scroll-area {
-        padding: 24px 16px;
+        padding: 20px 16px 140px 16px;
+        background: transparent;
+    }
+
+    .lp-content-max {
+        gap: 20px;
+    }
+
+    /* --- ADD LINK BUTTON - HERO CTA --- */
+    .lp-btn-add-primary {
+        height: 56px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
+    }
+
+    .lp-btn-add-primary:active {
+        transform: scale(0.98);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+    }
+
+    /* --- SPECIAL BLOCKS ROW --- */
+    .lp-add-special-row {
+        gap: 8px;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .lp-add-special-label {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    .lp-btn-special {
+        flex: 1;
+        min-height: 44px;
+        padding: 10px 12px;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    /* --- LINK CARDS - PREMIUM TOUCH --- */
+    .lp-card {
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        margin-bottom: 12px;
+    }
+
+    .lp-card:hover {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 
     .lp-card-header {
-        padding: 16px;
-        gap: 12px;
+        padding: 18px 16px;
+        gap: 14px;
+        min-height: 80px;
     }
 
-    .lp-card-body {
-        padding: 16px;
+    /* --- DRAG HANDLE - LARGER TOUCH TARGET --- */
+    .lp-drag-handle {
+        min-width: 48px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -8px;
+        padding: 8px;
+        border-radius: 12px;
+        transition: background 0.2s ease;
     }
 
-    .lp-profile-edit {
-        padding: 20px;
+    .lp-drag-handle:active {
+        background: rgba(99, 102, 241, 0.15);
     }
 
-    .lp-btn-add {
-        height: 44px;
+    .lp-drag-handle svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* --- INPUTS IN CARD --- */
+    .lp-card-inputs {
+        gap: 8px;
+    }
+
+    .lp-input-main {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .lp-input-sub {
         font-size: 14px;
     }
 
-    .lp-theme-grid {
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    /* --- LINK STATS BADGE --- */
+    .lp-link-stats {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 20px;
+    }
+
+    /* --- SWITCH - LARGER FOR THUMB --- */
+    .lp-switch {
+        width: 54px;
+        height: 32px;
+        border-radius: 16px;
+    }
+
+    .lp-switch-dot {
+        width: 28px;
+        height: 28px;
+        top: 2px;
+        left: 2px;
+    }
+
+    .lp-switch.active .lp-switch-dot {
+        transform: translateX(22px);
+    }
+
+    /* --- CHEVRON TOUCH TARGET --- */
+    .lp-chevron-indicator {
+        min-width: 48px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -8px -4px -8px 0;
+        border-radius: 12px;
+    }
+
+    .lp-chevron-indicator svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* --- CARD BODY (EXPANDED) --- */
+    .lp-card-body {
+        padding: 20px 16px;
+        gap: 20px;
+    }
+
+    /* --- ICON SELECTOR GRID --- */
+    .lp-icon-selector {
+        margin-bottom: 16px;
+        padding-bottom: 20px;
+    }
+
+    .lp-icon-label {
+        font-size: 12px;
+        margin-bottom: 14px;
+    }
+
+    .lp-icon-grid {
+        gap: 10px;
+    }
+
+    .lp-icon-opt {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+    }
+
+    .lp-icon-opt svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* --- LINK TYPE SELECTOR --- */
+    .lp-link-type-grid {
+        gap: 10px;
+    }
+
+    .lp-link-type-opt {
+        padding: 14px 10px;
+        font-size: 13px;
+        border-radius: 14px;
+        min-height: 52px;
+    }
+
+    /* --- ACTION BUTTONS --- */
+    .lp-card-actions {
+        gap: 10px;
+    }
+
+    .lp-action-row {
+        gap: 10px;
+        width: 100%;
+    }
+
+    .lp-action-btn {
+        min-height: 48px;
+        padding: 12px 18px;
+        font-size: 14px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        flex: 1;
+        justify-content: center;
+    }
+
+    .lp-action-btn:active {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(0.98);
+    }
+
+    .lp-action-btn.danger {
+        background: rgba(239, 68, 68, 0.08);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        width: 100%;
+        flex: none;
+    }
+
+    .lp-action-btn.danger:active {
+        background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* --- PROFILE SECTION --- */
+    .lp-profile-edit {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .lp-profile-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .lp-avatar-upload-v2 {
+        width: 100px;
+        height: 100px;
+    }
+
+    .lp-avatar-placeholder-v2 {
+        font-size: 36px;
+    }
+
+    /* --- SETTINGS CARDS --- */
+    .lp-settings-card {
+        border-radius: 20px;
+        padding: 20px;
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .lp-settings-card-header {
+        gap: 14px;
+        margin-bottom: 18px;
+        padding-bottom: 16px;
+    }
+
+    .lp-settings-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+
+    .lp-settings-card-header h3 {
+        font-size: 17px;
+    }
+
+    .lp-settings-card-header p {
+        font-size: 13px;
+    }
+
+    /* --- INPUT GROUPS --- */
+    .lp-input-group {
+        gap: 8px;
+    }
+
+    .lp-input-group label {
+        font-size: 12px;
+    }
+
+    .lp-input-group input,
+    .lp-input-group textarea {
+        padding: 14px 16px;
+        font-size: 16px;
+        /* Prevents iOS zoom */
+        border-radius: 14px;
+    }
+
+    .lp-input-with-prefix {
+        border-radius: 14px;
+    }
+
+    .lp-input-prefix {
+        padding: 14px 12px;
+        font-size: 12px;
+    }
+
+    .lp-input-with-prefix input {
+        padding: 14px 12px;
+        font-size: 16px;
+    }
+
+    /* --- THEME SELECTOR --- */
+    .lp-theme-selector {
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
-    .lp-link-thumb {
+    .lp-theme-item {
+        height: 64px;
+        border-radius: 16px;
+    }
+
+    .lp-theme-item span {
+        font-size: 12px;
+    }
+
+    /* --- BUTTON STYLES GRID --- */
+    .lp-button-style-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .lp-button-style-item {
+        padding: 18px 10px;
+        border-radius: 16px;
+    }
+
+    /* --- BACKGROUND OPTIONS --- */
+    .lp-background-options {
+        gap: 14px;
+    }
+
+    .lp-bg-preview {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+    }
+
+    /* --- ACCENT COLORS --- */
+    .lp-accent-colors {
+        gap: 12px;
+    }
+
+    .lp-accent-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .lp-accent-custom input {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* --- EARN TAB --- */
+    .lp-earn-cards {
+        gap: 14px;
+    }
+
+    .lp-earn-card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .lp-earn-card-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+    }
+
+    .lp-earn-card-content h3 {
+        font-size: 17px;
+    }
+
+    .lp-rpm-value {
+        font-size: 22px;
+    }
+
+    /* --- SETTINGS ROW --- */
+    .lp-settings-row {
+        padding: 4px 0;
+    }
+
+    .lp-settings-info h4 {
+        font-size: 15px;
+    }
+
+    .lp-settings-info p {
+        font-size: 13px;
+    }
+
+    /* --- QR CODE CONTAINER --- */
+    .lp-qr-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 24px 20px;
+        border-radius: 18px;
+    }
+
+    .lp-qr-preview {
+        width: 140px;
+        height: 140px;
+        margin-bottom: 8px;
+    }
+
+    /* --- GAMIFICATION --- */
+    .lp-completion-card {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .lp-completion-steps {
+        gap: 8px;
+    }
+
+    .lp-completion-step {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .lp-achievements-items {
+        gap: 10px;
+    }
+
+    .lp-achievement-item {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .lp-achievement-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    /* --- SCHEDULING --- */
+    .lp-scheduling-section {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .lp-schedule-field input[type="datetime-local"] {
+        padding: 14px;
+        font-size: 14px;
+        border-radius: 12px;
+    }
+
+    .lp-schedule-clear {
+        padding: 12px 16px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+
+    /* --- EMPTY STATE --- */
+    .lp-empty-state-premium {
+        padding: 50px 24px;
+    }
+
+    .lp-empty-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .lp-empty-icon svg {
         width: 40px;
         height: 40px;
     }
 
-    .lp-action-row {
-        flex-wrap: wrap;
-        gap: 12px;
+    .lp-empty-title {
+        font-size: 20px;
+    }
+
+    .lp-empty-desc {
+        font-size: 15px;
+        max-width: 300px;
+    }
+
+    .lp-empty-cta {
+        padding: 16px 28px;
+        font-size: 16px;
+        border-radius: 16px;
+    }
+
+    /* --- LINK THUMBNAILS --- */
+    .lp-link-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+
+    .lp-link-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+
+    /* --- SPECIAL BLOCKS --- */
+    .lp-card-special {
+        border-radius: 18px;
+    }
+
+    .lp-special-block-actions {
+        padding: 12px;
+    }
+
+    .lp-special-block-info {
+        padding: 14px 16px;
+        font-size: 14px;
+        border-radius: 14px;
     }
 }
 
@@ -2113,32 +2682,58 @@
 /* Switch styles defined in main section - no duplicates here */
 
 /* =============================================================================
-   MOBILE PREVIEW FAB & MODAL
+   MOBILE PREVIEW FAB & MODAL - PREMIUM REDESIGN
    ============================================================================= */
 
 .lp-preview-fab {
     position: fixed;
-    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-    right: 24px;
-    z-index: 50;
+    bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    z-index: 55;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 14px 20px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    gap: 10px;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
     border: none;
-    border-radius: 50px;
+    border-radius: 999px;
     font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow:
+        0 8px 30px rgba(99, 102, 241, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fabPulse 3s ease-in-out infinite;
 }
 
-.lp-preview-fab:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 35px rgba(37, 99, 235, 0.5);
+.lp-preview-fab svg {
+    width: 20px;
+    height: 20px;
+}
+
+.lp-preview-fab:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+@keyframes fabPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 8px 30px rgba(99, 102, 241, 0.5),
+            0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    }
+
+    50% {
+        box-shadow:
+            0 12px 40px rgba(99, 102, 241, 0.6),
+            0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+            0 0 0 4px rgba(99, 102, 241, 0.2);
+    }
 }
 
 .lp-preview-modal-overlay {
@@ -2147,27 +2742,28 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 100;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(8px);
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    flex-direction: column;
     animation: fadeIn 0.2s ease;
+    padding: 0;
 }
 
 .lp-preview-modal {
     width: 100%;
-    max-width: 380px;
-    max-height: 85vh;
-    background: var(--lp-bg-dark);
-    border-radius: 32px;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    background: transparent;
+    border-radius: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
-    animation: slideUp 0.3s ease;
+    box-shadow: none;
+    animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .lp-preview-modal-header {
@@ -2175,37 +2771,78 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid var(--lp-border);
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
 }
 
 .lp-preview-modal-header span {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--lp-text-main);
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: -0.02em;
 }
 
 .lp-preview-modal-header button {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: var(--lp-text-muted);
-    font-size: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 18px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
-.lp-preview-modal-header button:hover {
-    background: rgba(255, 255, 255, 0.2);
+.lp-preview-modal-header button:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
 }
 
 .lp-preview-modal-frame {
     flex: 1;
     overflow-y: auto;
-    min-height: 500px;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Mobile-specific FAB positioning */
+@media (max-width: 768px) {
+    .lp-preview-fab {
+        bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+        right: 16px;
+        padding: 14px 20px;
+        font-size: 13px;
+    }
+
+    .lp-preview-fab span {
+        display: inline;
+        /* Show text on mobile */
+    }
+
+    .lp-preview-modal {
+        animation: slideUpMobile 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUpMobile {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 }
 
 /* =============================================================================
