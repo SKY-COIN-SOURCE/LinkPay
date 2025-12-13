@@ -278,7 +278,7 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* CARD 2: CLICKS - PURPLE */}
+          {/* CARD 2: CLICKS - PURPLE (Compact like RPM) */}
           <motion.div
             className="lp-dashboard-card lp-card-purple"
             variants={cardVariants}
@@ -290,15 +290,8 @@ export function DashboardPage() {
             <div>
               <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
               <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
-              <div className="lp-substats">
-                <div className="lp-substat-box">
-                  <span className="lp-substat-label">LINKS</span>
-                  <span className="lp-substat-value">{realtimeStats.linkClicks}</span>
-                </div>
-                <div className="lp-substat-box">
-                  <span className="lp-substat-label">BIO PAGE</span>
-                  <span className="lp-substat-value">{realtimeStats.bioClicks}</span>
-                </div>
+              <div className="lp-substat-label" style={{ marginTop: '8px' }}>
+                LINKS + BIO PAGE
               </div>
             </div>
           </motion.div>

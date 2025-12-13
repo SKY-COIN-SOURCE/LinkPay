@@ -780,17 +780,13 @@
     grid-column: span 2;
   }
 
-  /* Clicks and RPM - side by side */
-  .lp-card-blue,
+  /* Clicks (purple) and RPM (orange) - side by side */
+  .lp-card-purple,
   .lp-card-orange {
     grid-column: span 1;
   }
 
-  /* Referrals - full width */
-  .lp-card-purple {
-    grid-column: span 2;
-  }
-
+  /* Recent activity (blue) - full width */
   .lp-recent-card {
     grid-column: span 2;
     margin-top: 6px;
