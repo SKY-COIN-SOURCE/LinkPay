@@ -181,17 +181,17 @@ export function DashboardPage() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+      transition: { staggerChildren: 0.05, delayChildren: 0.06 }
     }
   };
 
   const cardVariants: any = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    hidden: { opacity: 0, y: 20, scale: 0.97 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { type: "spring", stiffness: 100, damping: 20 }
+      transition: { type: "spring", stiffness: 180, damping: 22 }
     }
   };
 
@@ -219,9 +219,9 @@ export function DashboardPage() {
         {/* HEADER */}
         <motion.header
           className="lp-dashboard-header-center"
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <div className="lp-chip-center">
             <span className="lp-chip-dot" />
@@ -344,9 +344,9 @@ export function DashboardPage() {
         {/* RECENT ACTIVITY */}
         <motion.div
           className="lp-dashboard-card lp-recent-card"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          transition={{ delay: 0.35, duration: 0.4 }}
         >
           <div className="flex justify-between items-center mb-4">
             <div className="lp-stat-label">ACTIVIDAD RECIENTE</div>
