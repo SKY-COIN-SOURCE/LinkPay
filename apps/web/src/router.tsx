@@ -23,6 +23,7 @@ import { ProtectedRoute } from './components/layout/ProtectedRoute';
 const DashboardPage = lazy(() => import('./pages/app/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const CreateLinkPage = lazy(() => import('./pages/app/CreateLinkPage').then(m => ({ default: m.CreateLinkPage })));
 const LinksPage = lazy(() => import('./pages/app/LinksPage').then(m => ({ default: m.LinksPage })));
+const LinksHub = lazy(() => import('./pages/app/LinksHub').then(m => ({ default: m.LinksHub })));
 const AnalyticsPage = lazy(() => import('./pages/app/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
 const TechnologyPage = lazy(() => import('./pages/app/TechnologyPage').then(m => ({ default: m.TechnologyPage })));
 const DevelopersPage = lazy(() => import('./pages/app/DevelopersPage').then(m => ({ default: m.DevelopersPage })));
@@ -94,8 +95,8 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: withSuspense(DashboardPage) },
-      { path: "create", element: withSuspense(CreateLinkPage) },
-      { path: "links", element: withSuspense(LinksPage) },
+      { path: "create", element: <Navigate to="/app/links" replace /> },
+      { path: "links", element: withSuspense(LinksHub) },
       { path: "finance", element: withSuspense(PayoutsPage) },
       { path: "payouts", element: withSuspense(PayoutsPage) },
       { path: "analytics", element: withSuspense(AnalyticsPage) },

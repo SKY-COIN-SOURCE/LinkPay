@@ -202,17 +202,7 @@ export function DashboardPage() {
       <div className="lp-dashboard-inner">
 
         {/* HEADER */}
-        <motion.header
-          className="lp-dashboard-header-center"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        >
-          <div className="lp-chip-center">
-            <span className="lp-chip-dot" />
-            {t('dashboard.chip')}
-          </div>
-        </motion.header>
+        {/* Header removed for cleaner mobile look - MobileHeader handles top bar now */}
 
         {/* METRICS GRID */}
         <motion.div
