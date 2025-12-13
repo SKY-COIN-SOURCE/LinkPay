@@ -517,9 +517,10 @@
     }
 
     .lp-create-inner {
-        padding: 16px 16px 140px 16px;
-        padding-top: calc(env(safe-area-inset-top, 0) + 16px);
-        max-width: 480px;
+        /* Full-width edge-to-edge on mobile */
+        max-width: 100%;
+        padding: 12px 8px 120px 8px;
+        padding-top: calc(env(safe-area-inset-top, 0) + 12px);
     }
 
     /* === CARDS ELEVATED BY DEFAULT ON MOBILE === */
