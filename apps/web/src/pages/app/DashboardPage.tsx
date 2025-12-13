@@ -227,7 +227,6 @@ export function DashboardPage() {
             <span className="lp-chip-dot" />
             {t('dashboard.chip')}
           </div>
-          <p className="lp-dashboard-subtitle-center">{t('dashboard.subtitle')}</p>
         </motion.header>
 
         {/* METRICS GRID */}
@@ -324,6 +323,7 @@ export function DashboardPage() {
             variants={cardVariants}
             whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
           >
+            <div className="lp-stat-label">PROGRAMA DE REFERIDOS</div>
             <div className="lp-referral-header">
               <div className="lp-referral-left">
                 <div className="lp-stat-icon"><Users size={24} /></div>
@@ -336,9 +336,6 @@ export function DashboardPage() {
               >
                 <Share2 size={18} />
               </motion.button>
-            </div>
-            <div className="lp-referral-label">
-              Programa de referidos
             </div>
           </motion.div>
 
