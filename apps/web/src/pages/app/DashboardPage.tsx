@@ -348,11 +348,8 @@ export function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
         >
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="text-lg font-bold text-white tracking-tight">{t('dashboard.recent.title')}</h3>
-              <p className="text-sm text-slate-400">{t('dashboard.recent.subtitle')}</p>
-            </div>
+          <div className="flex justify-between items-center mb-4">
+            <div className="lp-stat-label">ACTIVIDAD RECIENTE</div>
             <motion.button
               whileHover={{ x: 4, color: "#818cf8" }}
               onClick={() => navigate('/app/links')}
