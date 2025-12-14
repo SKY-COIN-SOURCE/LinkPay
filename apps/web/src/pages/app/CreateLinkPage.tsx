@@ -329,82 +329,254 @@ export function CreateLinkPage() {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const createLinkStyles = `
-  /* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ANIMATIONS - DASHBOARD GALAXY STYLE
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
   .lp-spin { animation: lp-spin 1s linear infinite; }
   @keyframes lp-spin { 100% { transform: rotate(360deg); } }
 
-  @keyframes lp-glow-pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.8; }
+  /* Floating orb animations */
+  @keyframes lp-orb-float-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(60px, 40px) scale(1.1); }
+    50% { transform: translate(30px, 80px) scale(0.95); }
+    75% { transform: translate(-20px, 50px) scale(1.05); }
   }
 
+  @keyframes lp-orb-float-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-50px, -40px) scale(1.08); }
+    66% { transform: translate(-80px, 20px) scale(0.92); }
+  }
+
+  @keyframes lp-orb-float-3 {
+    0%, 100% { transform: translateX(0) scale(1); }
+    50% { transform: translateX(70px) scale(1.12); }
+  }
+
+  /* Card glow pulse */
+  @keyframes lp-glow-pulse {
+    0%, 100% { 
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+  }
+
+  /* Ambient pulse */
+  @keyframes lp-ambient-pulse {
+    0% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+  }
+
+  /* Star particles drift */
+  @keyframes lp-particles-drift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-200px); }
+  }
+
+  /* Card hover lift */
+  @keyframes lp-card-breathe {
+    0%, 100% { 
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px rgba(99, 102, 241, 0.12), 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+    }
+    50% { 
+      transform: translateY(-6px);
+      box-shadow: 0 0 70px rgba(99, 102, 241, 0.18), 0 28px 55px -10px rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  /* Button glow */
+  @keyframes lp-btn-glow {
+    0%, 100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.3), 0 12px 35px -8px rgba(59, 130, 246, 0.4); }
+    50% { box-shadow: 0 0 60px rgba(139, 92, 246, 0.45), 0 18px 45px -8px rgba(59, 130, 246, 0.5); }
+  }
+
+  /* Float animation */
   @keyframes lp-float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+    50% { transform: translateY(-8px); }
   }
 
-  /* ─── SHELL (overridden by LinksHub to be relative) ─────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SHELL - GALAXY BACKGROUND
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
   .lp-create-shell {
     position: relative;
     min-height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     color: #fff;
+    isolation: isolate;
   }
 
-  /* ─── INNER CONTAINER ────────────────────────────────────────────────────── */
+  /* Floating Orb 1 - CYAN (Top-left) */
+  .lp-create-shell::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: -150px;
+    left: -150px;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.35) 0%, rgba(34, 211, 238, 0.1) 40%, transparent 70%);
+    filter: blur(50px);
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+    animation: lp-orb-float-1 12s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  /* Floating Orb 2 - PURPLE (Bottom-right) */
+  .lp-create-shell::after {
+    content: "";
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    bottom: -200px;
+    right: -200px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(139, 92, 246, 0.12) 40%, transparent 70%);
+    filter: blur(60px);
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+    animation: lp-orb-float-2 15s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     INNER CONTAINER - AMBIENT EFFECTS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
   .lp-create-inner {
+    position: relative;
     max-width: 480px;
     margin: 0 auto;
     padding: 0 16px;
+    z-index: 1;
   }
 
-  /* ─── FORM ───────────────────────────────────────────────────────────────── */
+  /* Ambient pulse glow */
+  .lp-create-inner::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150%;
+    height: 150%;
+    background:
+      radial-gradient(ellipse 50% 40% at 30% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 50% at 70% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+    animation: lp-ambient-pulse 8s ease-in-out infinite alternate;
+  }
+
+  /* Star particles */
+  .lp-create-inner::after {
+    content: "";
+    position: absolute;
+    inset: -100px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1px 1px at 80px 50px, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(2px 2px at 120px 80px, rgba(34, 211, 238, 0.8), transparent),
+      radial-gradient(1px 1px at 180px 40px, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(2px 2px at 220px 100px, rgba(168, 85, 247, 0.7), transparent),
+      radial-gradient(1px 1px at 280px 60px, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 300px 150px;
+    animation: lp-particles-drift 25s linear infinite;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     FORM
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
   .lp-create-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
+    position: relative;
+    z-index: 2;
   }
 
-  /* ─── CARDS ──────────────────────────────────────────────────────────────── */
+  /* ─── CARDS - PREMIUM ANIMATED ────────────────────────────────────────────── */
   .lp-card-v2 {
     position: relative;
     background: 
-      linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%),
-      rgba(15, 23, 42, 0.95);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+      linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 30%, transparent 60%),
+      radial-gradient(ellipse at top left, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.25);
     border-radius: 20px;
-    padding: 16px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    padding: 18px;
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
     overflow: hidden;
-    transition: all 0.3s;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 50px rgba(99, 102, 241, 0.1),
+      0 0 20px rgba(99, 102, 241, 0.06),
+      0 20px 45px -12px rgba(0, 0, 0, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: lp-card-breathe 5s ease-in-out infinite;
   }
 
   .lp-card-v2:focus-within {
-    border-color: rgba(139, 92, 246, 0.5);
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.6);
+    transform: translateY(-5px) scale(1.01);
+    box-shadow:
+      0 0 80px rgba(139, 92, 246, 0.2),
+      0 0 35px rgba(139, 92, 246, 0.12),
+      0 30px 60px -15px rgba(0, 0, 0, 0.75),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   .lp-card-glow {
     position: absolute;
-    inset: -50%;
-    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+    inset: -80%;
+    background: 
+      radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
     pointer-events: none;
     animation: lp-glow-pulse 4s ease-in-out infinite;
   }
 
-  /* URL Card - Blue accent */
+  /* URL Card - Blue/Cyan accent with dramatic glow */
   .lp-card-url {
-    border-top: 3px solid rgba(59, 130, 246, 0.7);
+    border-top: 3px solid rgba(34, 211, 238, 0.8);
+    box-shadow:
+      0 0 60px rgba(34, 211, 238, 0.12),
+      0 0 25px rgba(59, 130, 246, 0.08),
+      0 22px 50px -12px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(34, 211, 238, 0.15);
   }
 
   .lp-card-url .lp-card-glow {
-    background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.25) 0%, transparent 50%);
+    background: 
+      radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.3) 0%, transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.2) 0%, transparent 40%);
   }
 
-  /* Alias Card - Purple accent */
+  /* Alias Card - Purple/Violet accent with dramatic glow */
   .lp-card-alias {
-    border-top: 3px solid rgba(139, 92, 246, 0.7);
+    border-top: 3px solid rgba(168, 85, 247, 0.8);
+    box-shadow:
+      0 0 60px rgba(168, 85, 247, 0.12),
+      0 0 25px rgba(139, 92, 246, 0.08),
+      0 22px 50px -12px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(168, 85, 247, 0.15);
   }
 
   .lp-alias-label {
@@ -696,7 +868,7 @@ const createLinkStyles = `
     color: #f87171;
   }
 
-  /* ─── SUBMIT BUTTON ──────────────────────────────────────────────────────── */
+  /* ─── SUBMIT BUTTON - ANIMATED GLOW ──────────────────────────────────────── */
   .lp-submit {
     display: flex;
     align-items: center;
@@ -704,35 +876,65 @@ const createLinkStyles = `
     gap: 10px;
     width: 100%;
     padding: 18px;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
-    border: none;
-    border-radius: 16px;
+    background: 
+      linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%),
+      linear-gradient(135deg, #8b5cf6 0%, #6366f1 40%, #3b82f6 100%);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    border-radius: 18px;
     color: #fff;
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.25s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow:
-      0 0 60px rgba(139, 92, 246, 0.3),
-      0 15px 40px -10px rgba(59, 130, 246, 0.4);
-    margin-top: 8px;
+      0 0 60px rgba(139, 92, 246, 0.35),
+      0 0 25px rgba(99, 102, 241, 0.2),
+      0 18px 45px -12px rgba(59, 130, 246, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    margin-top: 10px;
+    animation: lp-btn-glow 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Shimmer effect */
+  .lp-submit::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .lp-submit:hover::before {
+    left: 100%;
   }
 
   .lp-submit:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.01);
     box-shadow:
-      0 0 80px rgba(139, 92, 246, 0.4),
-      0 20px 50px -10px rgba(59, 130, 246, 0.5);
+      0 0 100px rgba(139, 92, 246, 0.5),
+      0 0 40px rgba(99, 102, 241, 0.3),
+      0 25px 60px -15px rgba(59, 130, 246, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
   }
 
   .lp-submit:active {
     transform: scale(0.98);
+    box-shadow:
+      0 0 50px rgba(139, 92, 246, 0.3),
+      0 0 20px rgba(99, 102, 241, 0.2),
+      0 12px 30px -8px rgba(59, 130, 246, 0.4);
   }
 
   .lp-submit:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+    animation: none;
   }
 
   /* ─── SUCCESS VIEW ───────────────────────────────────────────────────────── */
