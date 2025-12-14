@@ -48,10 +48,12 @@ const linksHubStyles = `
     min-height: 100dvh;
     background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000000 100%);
     position: relative;
-    /* NO padding-top here - parent lp-main-shell already handles header offset */
+    overflow-x: hidden;
+    /* Block horizontal scroll on mobile */
+    max-width: 100vw;
   }
 
-  /* Tabs Bar - sticky at top */
+  /* Tabs Bar - Transparent like header */
   .lp-links-tabs-bar {
     position: sticky;
     top: 0;
@@ -59,10 +61,10 @@ const linksHubStyles = `
     display: flex;
     gap: 8px;
     padding: 12px 16px;
-    background: rgba(2, 6, 23, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    background: transparent;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
   }
 
   .lp-links-tab {

@@ -404,7 +404,7 @@ const createLinkStyles = `
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     SHELL - GALAXY BACKGROUND
+     SHELL - GALAXY BACKGROUND - VISUAL DRUG
      ═══════════════════════════════════════════════════════════════════════════ */
   
   .lp-create-shell {
@@ -413,39 +413,49 @@ const createLinkStyles = `
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     color: #fff;
     isolation: isolate;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
-  /* Floating Orb 1 - CYAN (Top-left) */
+  /* Floating Orb 1 - INTENSE CYAN (Top-left) */
   .lp-create-shell::before {
     content: "";
     position: absolute;
-    width: 500px;
-    height: 500px;
-    top: -150px;
-    left: -150px;
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.35) 0%, rgba(34, 211, 238, 0.1) 40%, transparent 70%);
+    width: 700px;
+    height: 700px;
+    top: -200px;
+    left: -250px;
+    background: radial-gradient(circle, 
+      rgba(34, 211, 238, 0.6) 0%, 
+      rgba(34, 211, 238, 0.3) 25%,
+      rgba(6, 182, 212, 0.15) 50%, 
+      transparent 70%);
+    filter: blur(40px);
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+    animation: lp-orb-float-1 10s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  /* Floating Orb 2 - INTENSE PURPLE/MAGENTA (Bottom-right) */
+  .lp-create-shell::after {
+    content: "";
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    bottom: -300px;
+    right: -300px;
+    background: radial-gradient(circle, 
+      rgba(168, 85, 247, 0.55) 0%, 
+      rgba(236, 72, 153, 0.3) 25%,
+      rgba(139, 92, 246, 0.15) 50%, 
+      transparent 70%);
     filter: blur(50px);
     border-radius: 50%;
     pointer-events: none;
     will-change: transform;
-    animation: lp-orb-float-1 12s ease-in-out infinite;
-    z-index: 0;
-  }
-
-  /* Floating Orb 2 - PURPLE (Bottom-right) */
-  .lp-create-shell::after {
-    content: "";
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    bottom: -200px;
-    right: -200px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(139, 92, 246, 0.12) 40%, transparent 70%);
-    filter: blur(60px);
-    border-radius: 50%;
-    pointer-events: none;
-    will-change: transform;
-    animation: lp-orb-float-2 15s ease-in-out infinite;
+    animation: lp-orb-float-2 13s ease-in-out infinite;
     z-index: 0;
   }
 
@@ -461,42 +471,46 @@ const createLinkStyles = `
     z-index: 1;
   }
 
-  /* Ambient pulse glow */
+  /* Ambient pulse glow - INTENSIFIED */
   .lp-create-inner::before {
     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 150%;
-    height: 150%;
+    width: 200%;
+    height: 200%;
     background:
-      radial-gradient(ellipse 50% 40% at 30% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse 40% 50% at 70% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
-    filter: blur(40px);
+      radial-gradient(ellipse 60% 50% at 25% 15%, rgba(34, 211, 238, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 60% at 75% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+    filter: blur(30px);
     pointer-events: none;
     z-index: 0;
-    animation: lp-ambient-pulse 8s ease-in-out infinite alternate;
+    animation: lp-ambient-pulse 6s ease-in-out infinite alternate;
   }
 
-  /* Star particles */
+  /* Star particles - MORE VISIBLE */
   .lp-create-inner::after {
     content: "";
     position: absolute;
-    inset: -100px;
+    inset: -150px;
     pointer-events: none;
     z-index: 0;
-    opacity: 0.5;
+    opacity: 0.8;
     background-image:
-      radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
-      radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.5), transparent),
-      radial-gradient(1px 1px at 80px 50px, rgba(255, 255, 255, 0.7), transparent),
-      radial-gradient(2px 2px at 120px 80px, rgba(34, 211, 238, 0.8), transparent),
-      radial-gradient(1px 1px at 180px 40px, rgba(255, 255, 255, 0.5), transparent),
-      radial-gradient(2px 2px at 220px 100px, rgba(168, 85, 247, 0.7), transparent),
-      radial-gradient(1px 1px at 280px 60px, rgba(255, 255, 255, 0.4), transparent);
-    background-size: 300px 150px;
-    animation: lp-particles-drift 25s linear infinite;
+      radial-gradient(2px 2px at 15px 25px, rgba(255, 255, 255, 0.95), transparent),
+      radial-gradient(1px 1px at 35px 65px, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(2px 2px at 75px 45px, rgba(34, 211, 238, 1), transparent),
+      radial-gradient(3px 3px at 115px 75px, rgba(168, 85, 247, 0.9), transparent),
+      radial-gradient(1px 1px at 165px 35px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 205px 95px, rgba(236, 72, 153, 0.85), transparent),
+      radial-gradient(1px 1px at 55px 115px, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(2px 2px at 145px 15px, rgba(34, 197, 94, 0.8), transparent),
+      radial-gradient(1px 1px at 255px 55px, rgba(255, 255, 255, 0.75), transparent),
+      radial-gradient(3px 3px at 295px 85px, rgba(99, 102, 241, 0.9), transparent);
+    background-size: 320px 140px;
+    animation: lp-particles-drift 20s linear infinite;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
