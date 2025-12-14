@@ -543,8 +543,19 @@ const revStyles = `
     color: #fff;
   }
 
+  /* Mobile: start below header */
+  @media (max-width: 768px) {
+    .rev-shell {
+      top: calc(48px + env(safe-area-inset-top, 0px));
+    }
+  }
+
+  /* Desktop: sidebar offset */
   @media (min-width: 769px) {
-    .rev-shell { left: 260px; }
+    .rev-shell { 
+      left: 260px; 
+      top: 0;
+    }
   }
 
   /* ─── BACKGROUND ─────────────────────────────────────────────────────────── */
@@ -585,8 +596,16 @@ const revStyles = `
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    padding: 20px 16px 100px;
+    padding: 20px 16px 120px;
     animation: rev-fade-up 0.5s ease-out;
+  }
+
+  /* Mobile: reduce top padding since we offset the shell */
+  @media (max-width: 768px) {
+    .rev-container {
+      padding-top: 0;
+      padding-bottom: 140px;
+    }
   }
 
   .rev-loading {
@@ -604,6 +623,12 @@ const revStyles = `
   .rev-balance-section {
     padding: 40px 0 30px;
     text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .rev-balance-section {
+      padding-top: 20px;
+    }
   }
 
   .rev-balance-card {
