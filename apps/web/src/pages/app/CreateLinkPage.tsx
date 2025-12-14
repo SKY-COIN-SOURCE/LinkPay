@@ -14,51 +14,47 @@ import {
   MousePointer2,
   EyeOff,
   ChevronDown,
+  Sparkles,
 } from 'lucide-react';
 import { LinkService } from '../../lib/linkService';
 import { useNavigate } from 'react-router-dom';
-
-// Nuevas librerías solo para UX
 import { motion, AnimatePresence } from 'framer-motion';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import Confetti from 'react-confetti';
-import './CreateLink.css';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CREATE LINK - DARK MATTER GALAXY EDITION
+   Mobile-first, minimal text, maximum visual impact
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 export function CreateLinkPage() {
   const navigate = useNavigate();
 
-  // Estados Básicos
+  // Core States
   const [url, setUrl] = useState('');
   const [alias, setAlias] = useState('');
   const [mode, setMode] = useState<'standard' | 'turbo'>('standard');
 
-  // Estados Avanzados (lógica de opciones)
+  // Advanced Options
   const [password, setPassword] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [maxClicks, setMaxClicks] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
 
+  // UI States
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [result, setResult] = useState<any>(null);
-
-  // Estados NUEVOS solo para UX
   const [showConfetti, setShowConfetti] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [engineOpen, setEngineOpen] = useState(true); // pestaña motor abierta/cerrada
-
-  // NEW: refs para auto-scroll móvil
-  const engineRef = useRef<HTMLDivElement | null>(null);
-  const [engineScrollY, setEngineScrollY] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (result) {
       setShowConfetti(true);
       const t = setTimeout(() => setShowConfetti(false), 4000);
       return () => clearTimeout(t);
-    } else {
-      setShowConfetti(false);
     }
   }, [result]);
 
@@ -73,10 +69,9 @@ export function CreateLinkPage() {
       let finalUrl = url.trim();
       if (!/^https?:\/\//i.test(finalUrl)) finalUrl = 'https://' + finalUrl;
 
-      const cleanAlias = alias.trim();
-      const normalizedAlias = cleanAlias ? cleanAlias.toLowerCase() : '';
+      const cleanAlias = alias.trim().toLowerCase();
 
-      const data = await LinkService.create(finalUrl, normalizedAlias, mode, {
+      const data = await LinkService.create(finalUrl, cleanAlias || '', mode, {
         password: password || undefined,
         expiresAt: expirationDate ? new Date(expirationDate).toISOString() : undefined,
         maxClicks: maxClicks ? parseInt(maxClicks) : undefined,
@@ -87,11 +82,7 @@ export function CreateLinkPage() {
       setResult({ ...data, short_url: shortUrl });
     } catch (err: any) {
       console.error(err);
-      if (err.message && err.message.includes('alias')) {
-        setErrorMsg('Este alias ya está ocupado. Prueba otro.');
-      } else {
-        setErrorMsg(err.message || 'Error al crear el enlace.');
-      }
+      setErrorMsg(err.message?.includes('alias') ? 'Alias ocupado' : err.message || 'Error');
     } finally {
       setLoading(false);
     }
@@ -100,1370 +91,822 @@ export function CreateLinkPage() {
   const copyToClipboard = () => {
     if (result) {
       navigator.clipboard.writeText(result.short_url);
-      alert('¡Copiado!');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  // NEW: toggle con auto-scroll SOLO en móvil
-  const handleToggleEngine = () => {
-    const isBrowser = typeof window !== 'undefined';
-    const isMobile = isBrowser && window.innerWidth <= 800;
-
-    if (!isMobile) {
-      // En escritorio solo abrimos/cerramos, sin scroll especial
-      setEngineOpen((prev) => !prev);
-      return;
-    }
-
-    if (!isBrowser) {
-      setEngineOpen((prev) => !prev);
-      return;
-    }
-
-    if (!engineOpen) {
-      // Vamos a abrir el panel en móvil
-      const currentScroll = window.scrollY || window.pageYOffset;
-      setEngineScrollY(currentScroll);
-      setEngineOpen(true);
-
-      // Dejamos que el contenido se expanda un poco y luego hacemos scroll
-      setTimeout(() => {
-        if (engineRef.current) {
-          const rect = engineRef.current.getBoundingClientRect();
-          const absoluteBottom = rect.bottom + window.scrollY;
-          const viewportHeight =
-            window.innerHeight || document.documentElement.clientHeight;
-
-          // *** AJUSTE: más margen para que se vea también el botón "Crear enlace"
-          const target = Math.max(
-            0,
-            absoluteBottom - viewportHeight + 220 // antes 24
-          );
-
-          window.scrollTo({ top: target, behavior: 'smooth' });
-        }
-      }, 60);
-    } else {
-      // Vamos a cerrar el panel
-      const prev = engineScrollY;
-      setEngineOpen(false);
-
-      setTimeout(() => {
-        if (prev != null) {
-          window.scrollTo({ top: prev, behavior: 'smooth' });
-        } else if (engineRef.current) {
-          const top =
-            engineRef.current.getBoundingClientRect().top +
-            window.scrollY -
-            40;
-          window.scrollTo({ top, behavior: 'smooth' });
-        }
-      }, 80);
-    }
+  const resetForm = () => {
+    setResult(null);
+    setUrl('');
+    setAlias('');
+    setPassword('');
+    setExpirationDate('');
+    setMaxClicks('');
+    setIsPrivate(false);
   };
 
-  // ============= VISTA DE ÉXITO =============
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SUCCESS VIEW
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  const renderSuccessView = () => {
-    if (!result) return null;
-
+  if (result) {
     return (
-      <motion.div
-        key="success"
-        className="lp-create-shell lp-create-bg"
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.98 }}
-        transition={{ duration: 0.22 }}
-      >
-        <style>{baseStyles}</style>
+      <div className="cl-shell">
+        <style>{darkMatterStyles}</style>
 
         {showConfetti && (
-          <div className="lp-confetti-layer">
+          <div className="cl-confetti">
             <Confetti numberOfPieces={200} recycle={false} />
           </div>
         )}
 
-        <div className="lp-create-inner lp-success-v2">
-          <div className="lp-success-card-v2">
-            <div className="lp-success-badge">SMART LINK CREADO</div>
-            <div className="lp-success-icon-v2">
-              <Check size={30} />
-            </div>
+        <motion.div
+          className="cl-success"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="cl-success-glow" />
 
-            <h2>¡Tu Smart Link está activo!</h2>
-            <p className="lp-success-sub">
-              Modo:{' '}
-              <strong className="lp-success-mode">
-                {result.monetization_mode?.toUpperCase()}
-              </strong>
-            </p>
-
-            <div className="lp-success-url">
-              <input readOnly value={result.short_url} />
-              <button type="button" onClick={copyToClipboard}>
-                <Copy size={18} />
-              </button>
-            </div>
-
-            <div className="lp-success-actions">
-              <button
-                type="button"
-                className="lp-btn-ghost"
-                onClick={() => {
-                  setResult(null);
-                  setUrl('');
-                  setAlias('');
-                  setPassword('');
-                  setExpirationDate('');
-                  setMaxClicks('');
-                  setIsPrivate(false);
-                }}
-              >
-                Crear otro
-              </button>
-              <button
-                type="button"
-                className="lp-btn-primary lp-btn-primary-gradient"
-                onClick={() => navigate('/app/links')}
-              >
-                Ir a mis enlaces
-              </button>
-            </div>
-
-            <p className="lp-success-foot">
-              Tip: pega este Smart Link en tu bio de TikTok, Instagram o descripción de vídeo.
-            </p>
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
-
-  // ============= VISTA FORMULARIO SIMPLE =============
-
-  const renderFormView = () => (
-    <motion.div
-      key="form"
-      className="lp-create-shell lp-create-bg"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.2 }}
-    >
-      <style>{baseStyles}</style>
-
-      <div className="lp-create-inner">
-
-        <form className="lp-flow" onSubmit={handleCreate}>
-          {/* 1. URL DESTINO */}
-          <div className="lp-card-v2 lp-card-main lp-card-animate lp-card-url">
-            <label className="lp-label-v2">URL de destino</label>
-            <p className="lp-label-sub">
-              Cualquier enlace público: vídeos, tiendas, redes, lo que quieras.
-            </p>
-            <div className="lp-input-icon-wrapper">
-              <span className="lp-input-icon">
-                <Link2 size={18} />
-              </span>
-              <input
-                type="text"
-                placeholder="https://tuvideo.com/..."
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="lp-input-v2 lp-input-with-icon"
-                required
-              />
-            </div>
+          <div className="cl-success-icon">
+            <Check size={32} />
           </div>
 
-          {/* 2. ALIAS SIMPLE */}
-          <div className="lp-card-v2 lp-card-main lp-card-animate lp-card-alias">
-            <div className="lp-section-title">
-              <span className="lp-section-icon">
-                <Zap size={16} />
-              </span>
-              <div>
-                <div className="lp-section-label">Nombre del enlace (alias)</div>
-                <div className="lp-section-caption">
-                  Para que se vea bonito y fácil de recordar.
-                </div>
-              </div>
-            </div>
-
-            <div className="lp-field-v2">
-              <label className="lp-label-v2">Alias (opcional)</label>
-              <div className="lp-alias-row-v2">
-                <span className="lp-alias-prefix-v2">linkpay.gg/</span>
-                <input
-                  type="text"
-                  value={alias}
-                  onChange={(e) => setAlias(e.target.value)}
-                  placeholder="mi-enlace"
-                  className="lp-input-v2 lp-alias-input-v2"
-                />
-              </div>
-              <p className="lp-help-v2">Si lo dejas vacío, creamos uno automático.</p>
-            </div>
+          <div className="cl-success-badge">
+            {mode === 'turbo' ? '🚀 TURBO' : '⚡ SMART'} LINK
           </div>
 
-          {/* 3. MOTOR DE INGRESOS (ahora antes del botón y colapsable) */}
-          <div
-            ref={engineRef}
-            className={`lp-engine-card ${engineOpen ? 'open' : 'closed'}`}
-          >
-            <button
-              type="button"
-              className="lp-engine-header-click"
-              onClick={handleToggleEngine}
-            >
-              <div className="lp-engine-top">
-                <div className="lp-engine-chip">
-                  MODO {mode === 'standard' ? 'ESTÁNDAR' : 'TURBO'}
-                </div>
-                <div className="lp-engine-title">Motor de ingresos</div>
-                <p className="lp-engine-sub">
-                  Ajusta cómo mostramos anuncios y protege tu enlace (opcional).
-                </p>
-              </div>
-              <ChevronDown
-                size={18}
-                className={`lp-engine-chevron ${engineOpen ? 'open' : ''}`}
-              />
-            </button>
+          <h2>¡Link creado!</h2>
 
-            <AnimatePresence initial={false}>
-              {engineOpen && (
-                <motion.div
-                  className="lp-engine-body"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                >
-                  {/* Selector de modo */}
-                  <div className="lp-mode-row-v2">
-                    <button
-                      type="button"
-                      className={`lp-mode-pill-v2 ${mode === 'standard' ? 'active' : ''}`}
-                      onClick={() => setMode('standard')}
-                    >
-                      <span className="lp-mode-pill-icon standard">
-                        <Zap size={16} />
-                      </span>
-                      <div className="lp-mode-pill-texts">
-                        <span className="main">Estándar</span>
-                        <span className="sub">      Equilibrio entre experiencia y dinero.</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`lp-mode-pill-v2 ${mode === 'turbo' ? 'active' : ''}`}
-                      onClick={() => setMode('turbo')}
-                    >
-                      <span className="lp-mode-pill-icon turbo">
-                        <Rocket size={16} />
-                      </span>
-                      <div className="lp-mode-pill-texts">
-                        <span className="main">Turbo</span>
-                        <span className="sub">      Máximo dinero, más impacto publicitario.</span>
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* Toggle avanzadas -> BottomSheet */}
-                  <div className="lp-advanced-toggle-v2">
-                    <button
-                      type="button"
-                      onClick={() => setSheetOpen(true)}
-                    >
-                      <Settings size={15} />
-                      Opciones avanzadas (contraseña, fecha, clicks…)
-                    </button>
-                  </div>
-
-                  <BottomSheet
-                    open={sheetOpen}
-                    onDismiss={() => setSheetOpen(false)}
-                    snapPoints={({ maxHeight }) => [
-                      Math.min(maxHeight * 0.6, 480),
-                      Math.min(maxHeight * 0.9, 640),
-                    ]}
-                  >
-                    <div className="lp-advanced-sheet-header">
-                      <h3>Opciones avanzadas</h3>
-                      <p>Solo si quieres controlar quién entra y hasta cuándo.</p>
-                    </div>
-
-                    <div className="lp-advanced-grid-v2 lp-advanced-grid-sheet">
-                      <div className="lp-field-v2">
-                        <label className="lp-label-v2">Contraseña</label>
-                        <div className="lp-input-icon-wrapper">
-                          <span className="lp-input-icon">
-                            <Lock size={15} />
-                          </span>
-                          <input
-                            type="text"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Opcional"
-                            className="lp-input-v2 lp-input-with-icon"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="lp-field-v2">
-                        <label className="lp-label-v2">Fecha de expiración</label>
-                        <div className="lp-input-icon-wrapper">
-                          <span className="lp-input-icon">
-                            <Calendar size={15} />
-                          </span>
-                          <input
-                            type="datetime-local"
-                            value={expirationDate}
-                            onChange={(e) => setExpirationDate(e.target.value)}
-                            className="lp-input-v2 lp-input-with-icon"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="lp-field-v2">
-                        <label className="lp-label-v2">Límite de clics</label>
-                        <div className="lp-input-icon-wrapper">
-                          <span className="lp-input-icon">
-                            <MousePointer2 size={15} />
-                          </span>
-                          <input
-                            type="number"
-                            value={maxClicks}
-                            onChange={(e) => setMaxClicks(e.target.value)}
-                            placeholder="Ej: 100"
-                            className="lp-input-v2 lp-input-with-icon"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="lp-field-v2 lp-private-row-v2">
-                        <div
-                          className={`lp-switch-v2 ${isPrivate ? 'on' : ''}`}
-                          onClick={() => setIsPrivate(!isPrivate)}
-                        >
-                          <div className="lp-switch-thumb-v2" />
-                        </div>
-                        <div className="lp-private-label-v2">
-                          <EyeOff size={15} />
-                          <span>Enlace privado (no aparece en tu lista pública)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </BottomSheet>
-
-                  {/* HUD resumen */}
-                  <div className="lp-engine-footer">
-                    <div className="lp-engine-stat">
-                      <span className="label">Alias</span>
-                      <span className="value">
-                        {alias ? `linkpay.gg/${alias}` : 'Se generará automáticamente'}
-                      </span>
-                    </div>
-                    <div className="lp-engine-stat">
-                      <span className="label">Seguridad</span>
-                      <span className="value">
-                        {password || expirationDate || maxClicks || isPrivate
-                          ? 'Reglas avanzadas activas'
-                          : 'Modo simple · sin restricciones'}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* 4. CTA PRINCIPAL (botón debajo del motor) */}
-          <div className="lp-footer-row">
-            {errorMsg && (
-              <div className="lp-error-v2">
-                <AlertCircle size={18} />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="lp-btn-primary lp-btn-primary-gradient lp-btn-submit-v2"
-            >
-              {loading ? (
-                <Loader2 className="spin" size={18} />
-              ) : (
-                <>
-                  Crear enlace <ArrowRight size={18} />
-                </>
-              )}
+          <div className="cl-success-url-box">
+            <input readOnly value={result.short_url} />
+            <button onClick={copyToClipboard} className={copied ? 'copied' : ''}>
+              {copied ? <Check size={18} /> : <Copy size={18} />}
             </button>
           </div>
-        </form>
+
+          <div className="cl-success-actions">
+            <button onClick={resetForm} className="cl-btn-ghost">
+              Crear otro
+            </button>
+            <button onClick={() => navigate('/app/links')} className="cl-btn-primary">
+              Mis enlaces <ArrowRight size={16} />
+            </button>
+          </div>
+        </motion.div>
       </div>
-    </motion.div>
-  );
+    );
+  }
 
-  // ===================== RENDER =====================
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORM VIEW
+  // ═══════════════════════════════════════════════════════════════════════════
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      {result ? renderSuccessView() : renderFormView()}
-    </AnimatePresence>
+    <div className="cl-shell">
+      <style>{darkMatterStyles}</style>
+
+      <form className="cl-form" onSubmit={handleCreate}>
+        {/* URL INPUT - Hero Card */}
+        <div className="cl-card cl-card-url">
+          <div className="cl-card-glow" />
+          <div className="cl-input-group">
+            <div className="cl-input-icon">
+              <Link2 size={20} />
+            </div>
+            <input
+              type="text"
+              placeholder="Pega tu URL aquí..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        {/* ALIAS INPUT */}
+        <div className="cl-card cl-card-alias">
+          <div className="cl-card-glow" />
+          <label>
+            <Sparkles size={14} />
+            Alias personalizado
+          </label>
+          <div className="cl-alias-input">
+            <span>linkpay.gg/</span>
+            <input
+              type="text"
+              placeholder="mi-link"
+              value={alias}
+              onChange={(e) => setAlias(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* MODE SELECTOR */}
+        <div className="cl-mode-section">
+          <button
+            type="button"
+            className={`cl-mode-btn ${mode === 'standard' ? 'active' : ''}`}
+            onClick={() => setMode('standard')}
+          >
+            <div className="cl-mode-icon standard">
+              <Zap size={22} />
+            </div>
+            <div className="cl-mode-info">
+              <span className="cl-mode-name">Estándar</span>
+              <span className="cl-mode-desc">Equilibrio perfecto</span>
+            </div>
+            {mode === 'standard' && <div className="cl-mode-check"><Check size={16} /></div>}
+          </button>
+
+          <button
+            type="button"
+            className={`cl-mode-btn ${mode === 'turbo' ? 'active' : ''}`}
+            onClick={() => setMode('turbo')}
+          >
+            <div className="cl-mode-icon turbo">
+              <Rocket size={22} />
+            </div>
+            <div className="cl-mode-info">
+              <span className="cl-mode-name">Turbo</span>
+              <span className="cl-mode-desc">Máximo ingreso</span>
+            </div>
+            {mode === 'turbo' && <div className="cl-mode-check"><Check size={16} /></div>}
+          </button>
+        </div>
+
+        {/* ADVANCED OPTIONS TRIGGER */}
+        <button
+          type="button"
+          className="cl-advanced-btn"
+          onClick={() => setSheetOpen(true)}
+        >
+          <Settings size={16} />
+          <span>Opciones avanzadas</span>
+          <ChevronDown size={16} />
+        </button>
+
+        {/* BOTTOM SHEET */}
+        <BottomSheet
+          open={sheetOpen}
+          onDismiss={() => setSheetOpen(false)}
+          snapPoints={({ maxHeight }) => [Math.min(maxHeight * 0.7, 500)]}
+        >
+          <div className="cl-sheet">
+            <h3>Opciones avanzadas</h3>
+
+            <div className="cl-sheet-field">
+              <label><Lock size={14} /> Contraseña</label>
+              <input
+                type="text"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Opcional"
+              />
+            </div>
+
+            <div className="cl-sheet-field">
+              <label><Calendar size={14} /> Expiración</label>
+              <input
+                type="datetime-local"
+                value={expirationDate}
+                onChange={(e) => setExpirationDate(e.target.value)}
+              />
+            </div>
+
+            <div className="cl-sheet-field">
+              <label><MousePointer2 size={14} /> Límite de clics</label>
+              <input
+                type="number"
+                value={maxClicks}
+                onChange={(e) => setMaxClicks(e.target.value)}
+                placeholder="Sin límite"
+              />
+            </div>
+
+            <div className="cl-sheet-toggle">
+              <div
+                className={`cl-toggle ${isPrivate ? 'on' : ''}`}
+                onClick={() => setIsPrivate(!isPrivate)}
+              >
+                <div className="cl-toggle-thumb" />
+              </div>
+              <span><EyeOff size={14} /> Enlace privado</span>
+            </div>
+          </div>
+        </BottomSheet>
+
+        {/* ERROR */}
+        {errorMsg && (
+          <div className="cl-error">
+            <AlertCircle size={16} />
+            {errorMsg}
+          </div>
+        )}
+
+        {/* SUBMIT BUTTON */}
+        <button type="submit" disabled={loading} className="cl-submit">
+          {loading ? (
+            <Loader2 className="cl-spin" size={20} />
+          ) : (
+            <>
+              Crear link <ArrowRight size={18} />
+            </>
+          )}
+        </button>
+      </form>
+    </div>
   );
 }
 
-// ===================== ESTILOS V2 =====================
-const baseStyles = `
-  .spin { animation: spin 1s linear infinite; }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
+/* ═══════════════════════════════════════════════════════════════════════════
+   STYLES - DARK MATTER GALAXY
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-  /* ===== GLOBAL: fondo full-screen y sin bordes blancos ===== */
-  html, body, #root {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    background: #020617;
-    touch-action: pan-y; /* solo scroll vertical */
-    -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
+const darkMatterStyles = `
+  /* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
+  .cl-spin { animation: cl-spin 1s linear infinite; }
+  @keyframes cl-spin { 100% { transform: rotate(360deg); } }
+
+  @keyframes cl-glow-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
   }
 
-  body {
-    overscroll-behavior-y: none;
+  @keyframes cl-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
 
-  /* Todos los inputs a 16px para que iOS NO haga zoom */
-  .lp-create-shell input,
-  .lp-create-shell select,
-  .lp-create-shell textarea {
-    font-size: 16px;
-  }
-
-  /* Fondo general: "galaxia" azul animada */
-  .lp-bg {
-    min-height: 100dvh;
-    background:
-      radial-gradient(circle at 0% 0%, #1e3a8a 0, transparent 55%),
-      radial-gradient(circle at 100% 100%, #0f172a 0, #020617 55%, #000 100%);
-    background-color: #020617;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .lp-bg::before,
-  .lp-bg::after {
-    content: "";
-    position: absolute;
-    inset: -40%;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(56, 189, 248, 0.15), transparent 60%),
-      radial-gradient(circle at 80% 100%, rgba(129, 140, 248, 0.16), transparent 55%);
-    opacity: 0.9;
-    filter: blur(32px);
-    pointer-events: none;
-    animation: lp-nebula 20s ease-in-out infinite alternate;
-  }
-
-  .lp-bg::after {
-    background:
-      radial-gradient(circle at 0% 100%, rgba(34, 197, 94, 0.18), transparent 55%),
-      radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.16), transparent 55%);
-    mix-blend-mode: screen;
-    animation: lp-orbit 30s linear infinite;
-  }
-
-  @keyframes lp-nebula {
-    0% { transform: translate3d(-10px, -10px, 0) scale(1); opacity: 0.85; }
-    100% { transform: translate3d(20px, 10px, 0) scale(1.1); opacity: 1; }
-  }
-
-  @keyframes lp-orbit {
-    0% { transform: rotate(0deg) scale(1.05); }
-    100% { transform: rotate(360deg) scale(1.05); }
-  }
-
-  .lp-create-shell {
+  /* ─── SHELL ──────────────────────────────────────────────────────────────── */
+  .cl-shell {
     position: fixed;
-    /* Mobile: start below header */
-    top: calc(56px + env(safe-area-inset-top, 0px));
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    inset: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    padding-bottom: 140px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    color: #fff;
+    background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000 100%);
   }
 
-  /* Desktop: no header offset needed */
-  @media (min-width: 769px) {
-    .lp-create-shell {
-      top: 0;
-      min-height: 100dvh;
+  @media (max-width: 768px) {
+    .cl-shell {
+      top: calc(48px + env(safe-area-inset-top, 0px));
     }
   }
 
-  .lp-create-inner {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 1080px;
-    padding: 32px 16px 72px 16px; /* más padding abajo para ver el botón */
-    margin: 0 auto;
+  @media (min-width: 769px) {
+    .cl-shell {
+      left: 260px;
+      padding: 32px;
+      padding-bottom: 100px;
+    }
   }
 
-  /* HEADER - SCOPED TO CREATE LINK PAGE */
-  .lp-create-header-v2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 18px;
-  }
-
-  .lp-create-header-left {
-    text-align: center;
-    max-width: 520px;
-    margin: 0 auto;
-  }
-
-  .lp-create-header-left h1 {
-    margin: 0 0 4px 0;
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    color: #f9fafb;
-    font-size: 28px;
-  }
-
-  .lp-create-header-left p {
-    margin: 0 auto;
-    color: #9ca3af;
-    font-size: 13px;
-    max-width: 520px;
-  }
-
-  .lp-title-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .lp-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(30, 64, 175, 0.75);
-    color: #e5e7eb;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.65);
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
-      0 0 18px rgba(59, 130, 246, 0.45);
-    animation: lp-chip-glow 4s ease-in-out infinite;
-  }
-
-  @keyframes lp-chip-glow {
-    0%, 100% { box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8), 0 0 10px rgba(59, 130, 246, 0.35); }
-    50% { box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.9), 0 0 22px rgba(96, 165, 250, 0.8); }
-  }
-
-  .lp-chip-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
-  }
-
-  /* FLOW base (móvil / tablet) */
-  .lp-flow {
+  /* ─── FORM ───────────────────────────────────────────────────────────────── */
+  .cl-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  /* CARDS */
-  .lp-card-v2 {
-    background: rgba(15, 23, 42, 0.94);
-    border-radius: 20px;
-    border: 1px solid rgba(30, 64, 175, 0.55);
-    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.85);
-    padding: 16px 16px 18px 16px;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    transition:
-      transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-      box-shadow 0.25s ease,
-      border-color 0.25s ease,
-      background 0.25s ease;
-  }
-
-  .lp-card-main {
-    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
-  }
-
-  .lp-card-v2:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.95);
-    border-color: rgba(129, 140, 248, 0.8);
-  }
-
-  .lp-card-animate {
-    animation: lp-card-enter 0.45s ease-out;
-  }
-
-  @keyframes lp-card-enter {
-    from { opacity: 0; transform: translateY(10px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .lp-label-v2 {
-    font-size: 12px;
-    font-weight: 700;
-    color: #e5e7eb;
-    margin-bottom: 4px;
-  }
-
-  .lp-label-sub {
-    font-size: 11px;
-    color: #9ca3af;
-    margin: 0 0 10px 0;
-  }
-
-  .lp-input-icon-wrapper {
+  /* ─── CARDS ──────────────────────────────────────────────────────────────── */
+  .cl-card {
     position: relative;
+    background: 
+      linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%),
+      rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    padding: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all 0.3s;
   }
 
-  .lp-input-icon {
+  .cl-card:focus-within {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+  }
+
+  .cl-card-glow {
     position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9ca3af;
+    inset: -50%;
+    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    animation: cl-glow-pulse 4s ease-in-out infinite;
+  }
+
+  /* URL Card - Blue accent */
+  .cl-card-url {
+    border-top: 3px solid rgba(59, 130, 246, 0.7);
+    box-shadow:
+      0 0 60px rgba(59, 130, 246, 0.1),
+      0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  .cl-card-url .cl-card-glow {
+    background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.25) 0%, transparent 50%);
+  }
+
+  /* Alias Card - Purple accent */
+  .cl-card-alias {
+    border-top: 3px solid rgba(139, 92, 246, 0.7);
+  }
+
+  .cl-card-alias label {
     display: flex;
     align-items: center;
-    justify-content: center;
-  }
-
-  .lp-input-v2 {
-    width: 100%;
-    border-radius: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    padding: 11px 12px;
-    font-size: 16px;
-    font-weight: 500;
-    outline: none;
-    color: #f9fafb;
-    background: rgba(15, 23, 42, 0.92);
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.18s ease;
-  }
-
-  .lp-input-v2::placeholder {
-    color: #6b7280;
-  }
-
-  .lp-input-with-icon {
-    padding-left: 42px;
-  }
-
-  .lp-input-v2:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 32px rgba(79, 70, 229, 0.5);
-    background: rgba(15, 23, 42, 0.98);
-    transform: translateY(-1px);
-  }
-
-  .lp-section-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
     margin-bottom: 10px;
   }
 
-  .lp-section-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 999px;
-    background: radial-gradient(circle at top, #facc15, #f97316);
+  .cl-card-alias label svg {
+    color: #8b5cf6;
+  }
+
+  /* ─── INPUT GROUP ────────────────────────────────────────────────────────── */
+  .cl-input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cl-input-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #0f172a;
-    box-shadow: 0 12px 30px rgba(249, 115, 22, 0.55);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+    color: #60a5fa;
+    flex-shrink: 0;
   }
 
-  .lp-section-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #e5e7eb;
+  .cl-input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    padding: 12px 0;
   }
 
-  .lp-section-caption {
-    font-size: 11px;
-    color: #9ca3af;
+  .cl-input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
   }
 
-  .lp-field-v2 {
-    margin-top: 10px;
-  }
-
-  /* Alias */
-  .lp-alias-row-v2 {
-    display: flex;
-    align-items: stretch;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    background: rgba(15, 23, 42, 0.9);
-  }
-
-  .lp-alias-prefix-v2 {
-    padding: 10px 10px;
-    font-size: 11px;
-    background: rgba(15, 23, 42, 0.96);
-    color: #9ca3af;
-    border-right: 1px solid rgba(51, 65, 85, 0.95);
-    font-family: monospace;
-    min-width: 104px;
+  /* ─── ALIAS INPUT ────────────────────────────────────────────────────────── */
+  .cl-alias-input {
     display: flex;
     align-items: center;
-  }
-
-  .lp-alias-input-v2 {
-    border: none;
-    background: transparent;
-    padding: 9px 10px;
-    font-size: 16px;
-    color: #f9fafb;
-    outline: none;
-    flex: 1;
-  }
-
-  .lp-help-v2 {
-    margin: 4px 0 0 0;
-    font-size: 11px;
-    color: #9ca3af;
-  }
-
-  /* ENGINE PANEL */
-  .lp-engine-card {
-    background: radial-gradient(circle at top left, #111827, #020617);
-    border-radius: 24px;
-    border: 1px solid rgba(148, 163, 184, 0.65);
-    box-shadow: 0 22px 65px rgba(0, 0, 0, 0.9);
-    padding: 10px 14px 12px 14px;
-    color: #e5e7eb;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    animation: lp-engine-float 8s ease-in-out infinite;
-  }
-
-  @keyframes lp-engine-float {
-    0%, 100% { transform: translateY(-2px); }
-    50% { transform: translateY(2px); }
-  }
-
-  .lp-engine-card::before {
-    content: "";
-    position: absolute;
-    inset: -80px;
-    background:
-      radial-gradient(circle at top right, rgba(79, 70, 229, 0.35), transparent 55%);
-    opacity: 0.9;
-    pointer-events: none;
-  }
-
-  .lp-engine-card.open {
-    padding-bottom: 14px;
-  }
-
-  .lp-engine-card.closed {
-    padding-bottom: 8px;
-  }
-
-  .lp-engine-header-click {
+    gap: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 4px;
     position: relative;
     z-index: 1;
-    border: none;
-    background: transparent;
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 0 4px 0;
-    cursor: pointer;
   }
 
-  .lp-engine-top {
+  .cl-alias-input span {
+    padding: 12px 4px 12px 14px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    white-space: nowrap;
+  }
+
+  .cl-alias-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    padding: 12px 14px 12px 0;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+
+  .cl-alias-input input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ─── MODE SELECTOR ──────────────────────────────────────────────────────── */
+  .cl-mode-section {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cl-mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .cl-mode-btn:active {
+    transform: scale(0.98);
+  }
+
+  .cl-mode-btn.active {
+    border-color: rgba(139, 92, 246, 0.6);
+    background: 
+      linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%),
+      rgba(15, 23, 42, 0.95);
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+  }
+
+  .cl-mode-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .cl-mode-icon.standard {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%);
+    color: #4ade80;
+  }
+
+  .cl-mode-icon.turbo {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(234, 88, 12, 0.2) 100%);
+    color: #fb923c;
+  }
+
+  .cl-mode-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     text-align: left;
   }
 
-  .lp-engine-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(22, 163, 74, 0.16);
-    border: 1px solid rgba(34, 197, 94, 0.7);
+  .cl-mode-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  .cl-mode-desc {
     font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cl-mode-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  /* ─── ADVANCED BUTTON ────────────────────────────────────────────────────── */
+  .cl-advanced-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cl-advanced-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* ─── BOTTOM SHEET ───────────────────────────────────────────────────────── */
+  .cl-sheet {
+    padding: 24px 20px;
+  }
+
+  .cl-sheet h3 {
+    margin: 0 0 20px;
+    font-size: 18px;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #bbf7d0;
+    color: #1e293b;
+  }
+
+  .cl-sheet-field {
+    margin-bottom: 16px;
+  }
+
+  .cl-sheet-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
     margin-bottom: 8px;
   }
 
-  .lp-engine-title {
+  .cl-sheet-field input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     font-size: 16px;
-    font-weight: 800;
-    color: #f9fafb;
-    margin-bottom: 2px;
+    color: #1e293b;
+    outline: none;
   }
 
-  .lp-engine-sub {
-    font-size: 12px;
-    color: #9ca3af;
-    margin: 0 0 4px 0;
+  .cl-sheet-field input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
   }
 
-  .lp-engine-chevron {
-    flex-shrink: 0;
-    color: #9ca3af;
-    transition: transform 0.18s ease;
-  }
-
-  .lp-engine-chevron.open {
-    transform: rotate(180deg);
-  }
-
-  .lp-engine-body {
-    position: relative;
-    z-index: 1;
+  .cl-sheet-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 0;
+    border-top: 1px solid #e2e8f0;
     margin-top: 8px;
   }
 
-  /* Mode pills v2 */
-  .lp-mode-row-v2 {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .lp-mode-pill-v2 {
-    border-radius: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.55);
-    background: rgba(15, 23, 42, 0.95);
-    padding: 8px 10px;
+  .cl-sheet-toggle span {
     display: flex;
-    gap: 10px;
-    cursor: pointer;
-    align-items: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-  }
-
-  .lp-mode-pill-v2:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
-  }
-
-  .lp-mode-pill-v2:active {
-    transform: scale(0.97);
-  }
-
-  .lp-mode-pill-v2.active {
-    border-color: #6366f1;
-    background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.45), #020617);
-    box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.6),
-      0 18px 40px rgba(79, 70, 229, 0.5);
-  }
-
-  .lp-mode-pill-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .lp-mode-pill-icon.standard {
-    background: rgba(59, 130, 246, 0.22);
-    color: #bfdbfe;
-  }
-
-  .lp-mode-pill-icon.turbo {
-    background: rgba(249, 115, 22, 0.22);
-    color: #fed7aa;
-  }
-
-  .lp-mode-pill-texts .main {
-    font-size: 13px;
-    font-weight: 700;
-    color: #e5e7eb;
-  }
-
-  .lp-mode-pill-texts .sub {
-    font-size: 11px;
-    color: #9ca3af;
-  }
-
-  .lp-advanced-toggle-v2 {
-    margin-top: 10px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .lp-advanced-toggle-v2 button {
-    border: none;
-    background: transparent;
-    color: #a5b4fc;
-    font-weight: 600;
-    font-size: 12px;
-    display: inline-flex;
     align-items: center;
     gap: 6px;
-    cursor: pointer;
+    font-size: 14px;
+    color: #64748b;
   }
 
-  .lp-advanced-grid-v2 {
-    margin-top: 10px;
-    display: grid;
-    gap: 10px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .lp-private-row-v2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 4px;
-  }
-
-  .lp-switch-v2 {
-    width: 42px;
-    height: 22px;
-    background: #e5e7eb;
+  .cl-toggle {
+    width: 50px;
+    height: 28px;
     border-radius: 999px;
-    position: relative;
+    background: #cbd5e1;
     padding: 2px;
     cursor: pointer;
-    transition: background 0.18s;
+    transition: background 0.2s;
   }
 
-  .lp-switch-v2.on {
-    background: #22c55e;
+  .cl-toggle.on {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   }
 
-  .lp-switch-thumb-v2 {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 999px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
-    transition: left 0.18s;
+  .cl-toggle-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
   }
 
-  .lp-switch-v2.on .lp-switch-thumb-v2 {
-    left: 22px;
+  .cl-toggle.on .cl-toggle-thumb {
+    transform: translateX(22px);
   }
 
-  .lp-private-label-v2 {
+  /* ─── ERROR ──────────────────────────────────────────────────────────────── */
+  .cl-error {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #e5e7eb;
-    font-weight: 500;
-  }
-
-  /* HUD resumen */
-  .lp-engine-footer {
-    position: relative;
-    z-index: 1;
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(148, 163, 184, 0.45);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .lp-engine-stat {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #9ca3af;
-  }
-
-  .lp-engine-stat .label {
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-weight: 700;
-    color: #6b7280;
-  }
-
-  .lp-engine-stat .value {
-    font-weight: 600;
-    color: #e5e7eb;
-    text-align: right;
-  }
-
-  /* Footer CTA (botón final) */
-  .lp-footer-row {
-    margin-top: 6px;
-    display: flex;
-    flex-direction: column;
     gap: 8px;
+    padding: 14px 16px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    font-size: 13px;
+    color: #f87171;
   }
 
-  .lp-error-v2 {
-    background: rgba(248, 113, 113, 0.12);
-    border-radius: 999px;
-    padding: 8px 12px;
-    border: 1px solid rgba(248, 113, 113, 0.75);
-    font-size: 12px;
-    color: #fecaca;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .lp-btn-primary {
-    border: none;
-    color: white;
-    border-radius: 999px;
-    padding: 13px 18px;
-    font-size: 15px;
-    font-weight: 800;
-    display: inline-flex;
+  /* ─── SUBMIT BUTTON ──────────────────────────────────────────────────────── */
+  .cl-submit {
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+    border: none;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-  }
-
-  .lp-btn-primary-gradient {
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 40%, #22c55e 100%);
+    transition: all 0.25s;
     box-shadow:
-      0 20px 60px rgba(15, 23, 42, 0.9),
-      0 0 0 1px rgba(248, 250, 252, 0.06);
-    animation: lp-btn-glow 6s ease-in-out infinite;
+      0 0 60px rgba(139, 92, 246, 0.3),
+      0 15px 40px -10px rgba(59, 130, 246, 0.4);
+    margin-top: 8px;
   }
 
-  @keyframes lp-btn-glow {
-    0%, 100% { filter: saturate(1); box-shadow: 0 20px 60px rgba(15, 23, 42, 0.9), 0 0 0 1px rgba(248, 250, 252, 0.06); }
-    50% { filter: saturate(1.15); box-shadow: 0 28px 80px rgba(15, 23, 42, 1), 0 0 0 1px rgba(191, 219, 254, 0.4); }
-  }
-
-  .lp-btn-primary:hover:not(:disabled) {
-    transform: translateY(-1px) scale(1.01);
+  .cl-submit:hover {
+    transform: translateY(-2px);
     box-shadow:
-      0 24px 72px rgba(15, 23, 42, 0.95),
-      0 0 0 1px rgba(248, 250, 252, 0.08);
-    filter: saturate(1.1);
+      0 0 80px rgba(139, 92, 246, 0.4),
+      0 20px 50px -10px rgba(59, 130, 246, 0.5);
   }
 
-  .lp-btn-primary:active:not(:disabled) {
-    transform: scale(0.97);
+  .cl-submit:active {
+    transform: scale(0.98);
   }
 
-  .lp-btn-primary:disabled {
+  .cl-submit:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    box-shadow: none;
+    transform: none;
   }
 
-  .lp-btn-submit-v2 {
-    width: 100%;
-  }
-
-  /* ÉXITO V2 */
-  .lp-success-v2 {
-    padding-top: 40px;
-  }
-
-  .lp-success-card-v2 {
-    max-width: 520px;
-    margin: 0 auto;
-    background: radial-gradient(circle at top, #111827, #020617);
-    border-radius: 26px;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    padding: 26px 20px 22px 20px;
-    text-align: center;
-    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.96);
-    color: #e5e7eb;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .lp-success-card-v2::before {
-    content: "";
-    position: absolute;
-    inset: -80px;
-    background:
-      radial-gradient(circle at top right, rgba(34, 197, 94, 0.4), transparent 55%);
-    opacity: 0.9;
-    pointer-events: none;
-  }
-
-  .lp-success-badge {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(34, 197, 94, 0.14);
-    border: 1px solid rgba(74, 222, 128, 0.8);
-    color: #bbf7d0;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
-  .lp-success-icon-v2 {
-    position: relative;
-    z-index: 1;
-    width: 68px;
-    height: 68px;
-    border-radius: 999px;
-    margin: 0 auto 14px auto;
-    background: radial-gradient(circle at top, #22c55e, #16a34a);
-    color: #0f172a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 18px 40px rgba(22, 163, 74, 0.8);
-  }
-
-  .lp-success-card-v2 h2 {
-    position: relative;
-    z-index: 1;
-    margin: 0 0 4px 0;
-    font-size: 22px;
-    font-weight: 900;
-    color: #f9fafb;
-  }
-
-  .lp-success-sub {
-    position: relative;
-    z-index: 1;
-    margin: 0 0 18px 0;
-    font-size: 13px;
-    color: #cbd5f5;
-  }
-
-  .lp-success-mode {
-    color: #a5b4fc;
-  }
-
-  .lp-success-url {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: stretch;
-    gap: 8px;
-    margin-bottom: 18px;
-  }
-
-  .lp-success-url input {
-    flex: 1;
-    border-radius: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.75);
-    padding: 10px 12px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #e5e7eb;
-    font-family: monospace;
-    outline: none;
-    background: rgba(15, 23, 42, 0.9);
-  }
-
-  .lp-success-url button {
-    border-radius: 14px;
-    border: none;
-    padding: 8px 10px;
-    background: #0f172a;
-    color: white;
-    cursor: pointer;
-  }
-
-  .lp-success-actions {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-
-  .lp-btn-ghost {
-    border: none;
-    background: transparent;
-    color: #cbd5f5;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  .lp-success-foot {
-    position: relative;
-    z-index: 1;
-    font-size: 11px;
-    color: #9ca3af;
-    margin: 0;
-  }
-
-  .lp-confetti-layer {
+  /* ─── SUCCESS VIEW ───────────────────────────────────────────────────────── */
+  .cl-confetti {
     position: fixed;
     inset: 0;
+    z-index: 100;
     pointer-events: none;
-    z-index: 40;
   }
 
-  /* BottomSheet */
-  .rsbs-root {
-    --rsbs-bg: rgba(15, 23, 42, 0.98);
-    --rsbs-backdrop-bg: rgba(15, 23, 42, 0.7);
-    --rsbs-handle-bg: #4b5563;
-    color: #e5e7eb;
-    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  .cl-success {
+    position: relative;
+    max-width: 400px;
+    margin: 60px auto 0;
+    padding: 32px 24px;
+    background: 
+      linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%),
+      rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 28px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+      0 0 100px rgba(34, 197, 94, 0.2),
+      0 30px 60px -15px rgba(0, 0, 0, 0.6);
+    animation: cl-float 6s ease-in-out infinite;
   }
 
-  .lp-advanced-sheet-header {
-    padding: 4px 12px 10px;
+  .cl-success-glow {
+    position: absolute;
+    inset: -100px;
+    background: radial-gradient(circle at 50% 30%, rgba(34, 197, 94, 0.3) 0%, transparent 50%);
+    pointer-events: none;
   }
 
-  .lp-advanced-sheet-header h3 {
-    margin: 0 0 4px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #e5e7eb;
+  .cl-success-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.5);
+    position: relative;
+    z-index: 1;
   }
 
-  .lp-advanced-sheet-header p {
-    margin: 0;
+  .cl-success-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 999px;
     font-size: 11px;
-    color: #9ca3af;
+    font-weight: 700;
+    color: #4ade80;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
   }
 
-  .lp-advanced-grid-sheet {
-    padding: 0 12px 12px;
+  .cl-success h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #f1f5f9;
+    position: relative;
+    z-index: 1;
   }
 
-  /* ===== LAYOUT ESCRITORIO ===== */
-  @media (min-width: 1024px) {
-    /* *** AJUSTE: que el contenido se alinee con el área derecha (no centrado bajo el sidebar) */
-    .lp-create-shell {
-      justify-content: flex-start;
-    }
-
-    /* desplazamos todo a la derecha, dejando hueco para el sidebar (~260px) */
-    .lp-create-inner {
-      margin: 0 40px 0 260px;
-    }
-
-    .lp-flow {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      grid-auto-rows: auto;
-      column-gap: 18px;
-      row-gap: 14px;
-      grid-template-areas:
-        "url engine"
-        "alias engine"
-        "footer footer";
-      align-items: flex-start;
-    }
-
-    .lp-card-url {
-      grid-area: url;
-    }
-
-    .lp-card-alias {
-      grid-area: alias;
-    }
-
-    .lp-engine-card {
-      grid-area: engine;
-      align-self: stretch;
-    }
-
-    .lp-footer-row {
-      grid-area: footer;
-      max-width: 520px;
-      justify-self: center;
-    }
+  .cl-success-url-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
   }
 
-  /* RESPONSIVE MÓVIL / TABLET */
-  @media (max-width: 800px) {
-    .lp-create-inner {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 20px 16px 140px 16px;
-    }
+  .cl-success-url-box input {
+    flex: 1;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    color: #fff;
+    outline: none;
+  }
 
-    .lp-create-header-v2 {
-      flex-direction: column;
-      gap: 10px;
-    }
+  .cl-success-url-box button {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
 
-    .lp-create-header-left p {
-      font-size: 12px;
-      max-width: none;
-    }
+  .cl-success-url-box button.copied {
+    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+  }
 
-    .lp-card-v2 {
-      padding: 12px 12px 14px 12px;
-      border-radius: 18px;
-    }
+  .cl-success-url-box button:active {
+    transform: scale(0.95);
+  }
 
-    .lp-label-sub,
-    .lp-help-v2 {
-      font-size: 10px;
-    }
+  .cl-success-actions {
+    display: flex;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
 
-    .lp-engine-card {
-      border-radius: 22px;
-      animation-duration: 10s;
-    }
+  .cl-btn-ghost {
+    flex: 1;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
 
-    .lp-card-v2:hover {
-      transform: none;
-      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.75);
-    }
+  .cl-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .cl-btn-primary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+  }
+
+  .cl-btn-primary:active {
+    transform: scale(0.98);
   }
 `;
