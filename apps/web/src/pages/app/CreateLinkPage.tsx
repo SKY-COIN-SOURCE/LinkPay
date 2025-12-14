@@ -19,8 +19,6 @@ import {
 import { LinkService } from '../../lib/linkService';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BottomSheet } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css';
 import Confetti from 'react-confetti';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -250,55 +248,146 @@ export function CreateLinkPage() {
             <ChevronDown size={16} />
           </button>
 
-          {/* BOTTOM SHEET */}
-          <BottomSheet
-            open={sheetOpen}
-            onDismiss={() => setSheetOpen(false)}
-            snapPoints={({ maxHeight }) => [Math.min(maxHeight * 0.7, 500)]}
-          >
-            <div className="lp-sheet">
-              <h3>Opciones avanzadas</h3>
-
-              <div className="lp-sheet-field">
-                <label><Lock size={14} /> Contraseña</label>
-                <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Opcional"
+          {/* PREMIUM ADVANCED OPTIONS MODAL */}
+          <AnimatePresence>
+            {sheetOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  className="lp-modal-backdrop"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setSheetOpen(false)}
                 />
-              </div>
 
-              <div className="lp-sheet-field">
-                <label><Calendar size={14} /> Expiración</label>
-                <input
-                  type="datetime-local"
-                  value={expirationDate}
-                  onChange={(e) => setExpirationDate(e.target.value)}
-                />
-              </div>
-
-              <div className="lp-sheet-field">
-                <label><MousePointer2 size={14} /> Límite de clics</label>
-                <input
-                  type="number"
-                  value={maxClicks}
-                  onChange={(e) => setMaxClicks(e.target.value)}
-                  placeholder="Sin límite"
-                />
-              </div>
-
-              <div className="lp-sheet-toggle">
-                <div
-                  className={`lp-toggle ${isPrivate ? 'on' : ''}`}
-                  onClick={() => setIsPrivate(!isPrivate)}
+                {/* Modal */}
+                <motion.div
+                  className="lp-modal"
+                  initial={{ opacity: 0, y: 100, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 80, scale: 0.95 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
                 >
-                  <div className="lp-toggle-thumb" />
-                </div>
-                <span><EyeOff size={14} /> Enlace privado</span>
-              </div>
-            </div>
-          </BottomSheet>
+                  <div className="lp-modal-glow" />
+
+                  {/* Handle bar */}
+                  <div className="lp-modal-handle">
+                    <div className="lp-modal-handle-bar" />
+                  </div>
+
+                  {/* Header */}
+                  <motion.div
+                    className="lp-modal-header"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <div className="lp-modal-icon">
+                      <Settings size={20} />
+                    </div>
+                    <div>
+                      <h3>Opciones Avanzadas</h3>
+                      <p>Protege y personaliza tu enlace</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Fields with staggered animation */}
+                  <div className="lp-modal-fields">
+                    <motion.div
+                      className="lp-modal-field"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.15 }}
+                    >
+                      <div className="lp-modal-field-icon">
+                        <Lock size={18} />
+                      </div>
+                      <div className="lp-modal-field-content">
+                        <label>Contraseña</label>
+                        <input
+                          type="text"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Sin contraseña"
+                        />
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className="lp-modal-field"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <div className="lp-modal-field-icon">
+                        <Calendar size={18} />
+                      </div>
+                      <div className="lp-modal-field-content">
+                        <label>Fecha de expiración</label>
+                        <input
+                          type="datetime-local"
+                          value={expirationDate}
+                          onChange={(e) => setExpirationDate(e.target.value)}
+                        />
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className="lp-modal-field"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.25 }}
+                    >
+                      <div className="lp-modal-field-icon">
+                        <MousePointer2 size={18} />
+                      </div>
+                      <div className="lp-modal-field-content">
+                        <label>Límite de clics</label>
+                        <input
+                          type="number"
+                          value={maxClicks}
+                          onChange={(e) => setMaxClicks(e.target.value)}
+                          placeholder="Sin límite"
+                        />
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className="lp-modal-toggle-row"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                      onClick={() => setIsPrivate(!isPrivate)}
+                    >
+                      <div className="lp-modal-field-icon">
+                        <EyeOff size={18} />
+                      </div>
+                      <div className="lp-modal-toggle-content">
+                        <span>Enlace privado</span>
+                        <p>No aparece en tu lista pública</p>
+                      </div>
+                      <div className={`lp-modal-toggle ${isPrivate ? 'on' : ''}`}>
+                        <div className="lp-modal-toggle-thumb" />
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  {/* Close button */}
+                  <motion.button
+                    className="lp-modal-close-btn"
+                    onClick={() => setSheetOpen(false)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 }}
+                  >
+                    <Check size={18} />
+                    Aplicar
+                  </motion.button>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
 
           {/* ERROR */}
           {errorMsg && (
@@ -783,90 +872,259 @@ const createLinkStyles = `
     color: rgba(255, 255, 255, 0.8);
   }
 
-  /* ─── BOTTOM SHEET ───────────────────────────────────────────────────────── */
-  .lp-sheet {
-    padding: 24px 20px;
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PREMIUM ADVANCED OPTIONS MODAL - DARK GLASS MORPHISM
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  .lp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
   }
 
-  .lp-sheet h3 {
-    margin: 0 0 20px;
+  .lp-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 85vh;
+    background: 
+      linear-gradient(180deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-bottom: none;
+    padding: 16px 20px 40px;
+    z-index: 1001;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow:
+      0 -20px 80px rgba(139, 92, 246, 0.2),
+      0 -10px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .lp-modal-glow {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  /* Handle bar */
+  .lp-modal-handle {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0 16px;
+  }
+
+  .lp-modal-handle-bar {
+    width: 40px;
+    height: 4px;
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 999px;
+  }
+
+  /* Header */
+  .lp-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .lp-modal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(99, 102, 241, 0.2) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: #a5b4fc;
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+  }
+
+  .lp-modal-header h3 {
+    margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #1e293b;
+    color: #f1f5f9;
   }
 
-  .lp-sheet-field {
-    margin-bottom: 16px;
-  }
-
-  .lp-sheet-field label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .lp-modal-header p {
+    margin: 4px 0 0;
     font-size: 13px;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.5);
   }
 
-  .lp-sheet-field input {
-    width: 100%;
-    padding: 14px 16px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 16px;
-    color: #1e293b;
-    outline: none;
-  }
-
-  .lp-sheet-field input:focus {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-  }
-
-  .lp-sheet-toggle {
+  /* Fields container */
+  .lp-modal-fields {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
-    padding: 16px 0;
-    border-top: 1px solid #e2e8f0;
-    margin-top: 8px;
+    position: relative;
+    z-index: 1;
   }
 
-  .lp-sheet-toggle span {
+  /* Individual field */
+  .lp-modal-field {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    color: #64748b;
+    gap: 14px;
+    padding: 14px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 16px;
+    transition: all 0.25s;
   }
 
-  .lp-toggle {
-    width: 50px;
-    height: 28px;
-    border-radius: 999px;
-    background: #cbd5e1;
-    padding: 2px;
+  .lp-modal-field:focus-within {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
+    background: rgba(30, 41, 59, 0.6);
+  }
+
+  .lp-modal-field-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    flex-shrink: 0;
+  }
+
+  .lp-modal-field-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .lp-modal-field-content label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+  }
+
+  .lp-modal-field-content input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    padding: 0;
+  }
+
+  .lp-modal-field-content input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Toggle row */
+  .lp-modal-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 16px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.25s;
   }
 
-  .lp-toggle.on {
+  .lp-modal-toggle-row:active {
+    transform: scale(0.98);
+  }
+
+  .lp-modal-toggle-content {
+    flex: 1;
+  }
+
+  .lp-modal-toggle-content span {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  .lp-modal-toggle-content p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Premium toggle */
+  .lp-modal-toggle {
+    width: 52px;
+    height: 30px;
+    border-radius: 999px;
+    background: rgba(100, 116, 139, 0.4);
+    padding: 3px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+  }
+
+  .lp-modal-toggle.on {
     background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
   }
 
-  .lp-toggle-thumb {
+  .lp-modal-toggle-thumb {
     width: 24px;
     height: 24px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .lp-toggle.on .lp-toggle-thumb {
+  .lp-modal-toggle.on .lp-modal-toggle-thumb {
     transform: translateX(22px);
+  }
+
+  /* Apply button */
+  .lp-modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow:
+      0 0 40px rgba(34, 197, 94, 0.3),
+      0 12px 30px -8px rgba(16, 185, 129, 0.4);
+    position: relative;
+    z-index: 1;
+  }
+
+  .lp-modal-close-btn:active {
+    transform: scale(0.98);
   }
 
   /* ─── ERROR ──────────────────────────────────────────────────────────────── */
