@@ -273,15 +273,23 @@ const refStyles = `
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    padding-top: env(safe-area-inset-top, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
     z-index: 1;
   }
 
-  /* respetar sidebar en escritorio */
+  /* Mobile: start below header */
+  @media (max-width: 768px) {
+    .lp-ref-shell {
+      top: calc(48px + env(safe-area-inset-top, 0px));
+      padding-top: 0;
+    }
+  }
+
+  /* Desktop: sidebar offset */
   @media (min-width: 769px) {
     .lp-ref-shell {
       left: 260px;
+      padding-top: env(safe-area-inset-top, 0);
     }
   }
 
