@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Link2,
   Zap,
@@ -24,7 +24,7 @@ import 'react-spring-bottom-sheet/dist/style.css';
 import Confetti from 'react-confetti';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CREATE LINK - DARK MATTER GALAXY EDITION
+   CREATE LINK - Integrated with LinksHub
    Mobile-first, minimal text, maximum visual impact
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -112,49 +112,51 @@ export function CreateLinkPage() {
 
   if (result) {
     return (
-      <div className="cl-shell">
-        <style>{darkMatterStyles}</style>
+      <div className="lp-create-shell">
+        <style>{createLinkStyles}</style>
 
         {showConfetti && (
-          <div className="cl-confetti">
+          <div className="lp-confetti">
             <Confetti numberOfPieces={200} recycle={false} />
           </div>
         )}
 
-        <motion.div
-          className="cl-success"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="cl-success-glow" />
+        <div className="lp-create-inner">
+          <motion.div
+            className="lp-success-card"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="lp-success-glow" />
 
-          <div className="cl-success-icon">
-            <Check size={32} />
-          </div>
+            <div className="lp-success-icon">
+              <Check size={32} />
+            </div>
 
-          <div className="cl-success-badge">
-            {mode === 'turbo' ? '🚀 TURBO' : '⚡ SMART'} LINK
-          </div>
+            <div className="lp-success-badge">
+              {mode === 'turbo' ? '🚀 TURBO' : '⚡ SMART'} LINK
+            </div>
 
-          <h2>¡Link creado!</h2>
+            <h2>¡Link creado!</h2>
 
-          <div className="cl-success-url-box">
-            <input readOnly value={result.short_url} />
-            <button onClick={copyToClipboard} className={copied ? 'copied' : ''}>
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-            </button>
-          </div>
+            <div className="lp-success-url-box">
+              <input readOnly value={result.short_url} />
+              <button onClick={copyToClipboard} className={copied ? 'copied' : ''}>
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+              </button>
+            </div>
 
-          <div className="cl-success-actions">
-            <button onClick={resetForm} className="cl-btn-ghost">
-              Crear otro
-            </button>
-            <button onClick={() => navigate('/app/links')} className="cl-btn-primary">
-              Mis enlaces <ArrowRight size={16} />
-            </button>
-          </div>
-        </motion.div>
+            <div className="lp-success-actions">
+              <button onClick={resetForm} className="lp-btn-ghost">
+                Crear otro
+              </button>
+              <button onClick={() => navigate('/app/links')} className="lp-btn-primary">
+                Mis enlaces <ArrowRight size={16} />
+              </button>
+            </div>
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -164,220 +166,207 @@ export function CreateLinkPage() {
   // ═══════════════════════════════════════════════════════════════════════════
 
   return (
-    <div className="cl-shell">
-      <style>{darkMatterStyles}</style>
+    <div className="lp-create-shell">
+      <style>{createLinkStyles}</style>
 
-      <form className="cl-form" onSubmit={handleCreate}>
-        {/* URL INPUT - Hero Card */}
-        <div className="cl-card cl-card-url">
-          <div className="cl-card-glow" />
-          <div className="cl-input-group">
-            <div className="cl-input-icon">
-              <Link2 size={20} />
-            </div>
-            <input
-              type="text"
-              placeholder="Pega tu URL aquí..."
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-            />
-          </div>
-        </div>
-
-        {/* ALIAS INPUT */}
-        <div className="cl-card cl-card-alias">
-          <div className="cl-card-glow" />
-          <label>
-            <Sparkles size={14} />
-            Alias personalizado
-          </label>
-          <div className="cl-alias-input">
-            <span>linkpay.gg/</span>
-            <input
-              type="text"
-              placeholder="mi-link"
-              value={alias}
-              onChange={(e) => setAlias(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* MODE SELECTOR */}
-        <div className="cl-mode-section">
-          <button
-            type="button"
-            className={`cl-mode-btn ${mode === 'standard' ? 'active' : ''}`}
-            onClick={() => setMode('standard')}
-          >
-            <div className="cl-mode-icon standard">
-              <Zap size={22} />
-            </div>
-            <div className="cl-mode-info">
-              <span className="cl-mode-name">Estándar</span>
-              <span className="cl-mode-desc">Equilibrio perfecto</span>
-            </div>
-            {mode === 'standard' && <div className="cl-mode-check"><Check size={16} /></div>}
-          </button>
-
-          <button
-            type="button"
-            className={`cl-mode-btn ${mode === 'turbo' ? 'active' : ''}`}
-            onClick={() => setMode('turbo')}
-          >
-            <div className="cl-mode-icon turbo">
-              <Rocket size={22} />
-            </div>
-            <div className="cl-mode-info">
-              <span className="cl-mode-name">Turbo</span>
-              <span className="cl-mode-desc">Máximo ingreso</span>
-            </div>
-            {mode === 'turbo' && <div className="cl-mode-check"><Check size={16} /></div>}
-          </button>
-        </div>
-
-        {/* ADVANCED OPTIONS TRIGGER */}
-        <button
-          type="button"
-          className="cl-advanced-btn"
-          onClick={() => setSheetOpen(true)}
-        >
-          <Settings size={16} />
-          <span>Opciones avanzadas</span>
-          <ChevronDown size={16} />
-        </button>
-
-        {/* BOTTOM SHEET */}
-        <BottomSheet
-          open={sheetOpen}
-          onDismiss={() => setSheetOpen(false)}
-          snapPoints={({ maxHeight }) => [Math.min(maxHeight * 0.7, 500)]}
-        >
-          <div className="cl-sheet">
-            <h3>Opciones avanzadas</h3>
-
-            <div className="cl-sheet-field">
-              <label><Lock size={14} /> Contraseña</label>
+      <div className="lp-create-inner">
+        <form className="lp-create-form" onSubmit={handleCreate}>
+          {/* URL INPUT - Hero Card */}
+          <div className="lp-card-v2 lp-card-url">
+            <div className="lp-card-glow" />
+            <div className="lp-input-group">
+              <div className="lp-input-icon">
+                <Link2 size={20} />
+              </div>
               <input
                 type="text"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Opcional"
+                placeholder="Pega tu URL aquí..."
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                required
               />
             </div>
+          </div>
 
-            <div className="cl-sheet-field">
-              <label><Calendar size={14} /> Expiración</label>
+          {/* ALIAS INPUT */}
+          <div className="lp-card-v2 lp-card-alias">
+            <div className="lp-card-glow" />
+            <label className="lp-alias-label">
+              <Sparkles size={14} />
+              Alias personalizado
+            </label>
+            <div className="lp-alias-input">
+              <span>linkpay.gg/</span>
               <input
-                type="datetime-local"
-                value={expirationDate}
-                onChange={(e) => setExpirationDate(e.target.value)}
+                type="text"
+                placeholder="mi-link"
+                value={alias}
+                onChange={(e) => setAlias(e.target.value)}
               />
             </div>
+          </div>
 
-            <div className="cl-sheet-field">
-              <label><MousePointer2 size={14} /> Límite de clics</label>
-              <input
-                type="number"
-                value={maxClicks}
-                onChange={(e) => setMaxClicks(e.target.value)}
-                placeholder="Sin límite"
-              />
-            </div>
-
-            <div className="cl-sheet-toggle">
-              <div
-                className={`cl-toggle ${isPrivate ? 'on' : ''}`}
-                onClick={() => setIsPrivate(!isPrivate)}
-              >
-                <div className="cl-toggle-thumb" />
+          {/* MODE SELECTOR */}
+          <div className="lp-mode-section">
+            <button
+              type="button"
+              className={`lp-mode-btn ${mode === 'standard' ? 'active' : ''}`}
+              onClick={() => setMode('standard')}
+            >
+              <div className="lp-mode-icon standard">
+                <Zap size={22} />
               </div>
-              <span><EyeOff size={14} /> Enlace privado</span>
+              <div className="lp-mode-info">
+                <span className="lp-mode-name">Estándar</span>
+                <span className="lp-mode-desc">Equilibrio perfecto</span>
+              </div>
+              {mode === 'standard' && <div className="lp-mode-check"><Check size={16} /></div>}
+            </button>
+
+            <button
+              type="button"
+              className={`lp-mode-btn ${mode === 'turbo' ? 'active' : ''}`}
+              onClick={() => setMode('turbo')}
+            >
+              <div className="lp-mode-icon turbo">
+                <Rocket size={22} />
+              </div>
+              <div className="lp-mode-info">
+                <span className="lp-mode-name">Turbo</span>
+                <span className="lp-mode-desc">Máximo ingreso</span>
+              </div>
+              {mode === 'turbo' && <div className="lp-mode-check"><Check size={16} /></div>}
+            </button>
+          </div>
+
+          {/* ADVANCED OPTIONS TRIGGER */}
+          <button
+            type="button"
+            className="lp-advanced-btn"
+            onClick={() => setSheetOpen(true)}
+          >
+            <Settings size={16} />
+            <span>Opciones avanzadas</span>
+            <ChevronDown size={16} />
+          </button>
+
+          {/* BOTTOM SHEET */}
+          <BottomSheet
+            open={sheetOpen}
+            onDismiss={() => setSheetOpen(false)}
+            snapPoints={({ maxHeight }) => [Math.min(maxHeight * 0.7, 500)]}
+          >
+            <div className="lp-sheet">
+              <h3>Opciones avanzadas</h3>
+
+              <div className="lp-sheet-field">
+                <label><Lock size={14} /> Contraseña</label>
+                <input
+                  type="text"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Opcional"
+                />
+              </div>
+
+              <div className="lp-sheet-field">
+                <label><Calendar size={14} /> Expiración</label>
+                <input
+                  type="datetime-local"
+                  value={expirationDate}
+                  onChange={(e) => setExpirationDate(e.target.value)}
+                />
+              </div>
+
+              <div className="lp-sheet-field">
+                <label><MousePointer2 size={14} /> Límite de clics</label>
+                <input
+                  type="number"
+                  value={maxClicks}
+                  onChange={(e) => setMaxClicks(e.target.value)}
+                  placeholder="Sin límite"
+                />
+              </div>
+
+              <div className="lp-sheet-toggle">
+                <div
+                  className={`lp-toggle ${isPrivate ? 'on' : ''}`}
+                  onClick={() => setIsPrivate(!isPrivate)}
+                >
+                  <div className="lp-toggle-thumb" />
+                </div>
+                <span><EyeOff size={14} /> Enlace privado</span>
+              </div>
             </div>
-          </div>
-        </BottomSheet>
+          </BottomSheet>
 
-        {/* ERROR */}
-        {errorMsg && (
-          <div className="cl-error">
-            <AlertCircle size={16} />
-            {errorMsg}
-          </div>
-        )}
-
-        {/* SUBMIT BUTTON */}
-        <button type="submit" disabled={loading} className="cl-submit">
-          {loading ? (
-            <Loader2 className="cl-spin" size={20} />
-          ) : (
-            <>
-              Crear link <ArrowRight size={18} />
-            </>
+          {/* ERROR */}
+          {errorMsg && (
+            <div className="lp-error">
+              <AlertCircle size={16} />
+              {errorMsg}
+            </div>
           )}
-        </button>
-      </form>
+
+          {/* SUBMIT BUTTON */}
+          <button type="submit" disabled={loading} className="lp-submit">
+            {loading ? (
+              <Loader2 className="lp-spin" size={20} />
+            ) : (
+              <>
+                Crear link <ArrowRight size={18} />
+              </>
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   STYLES - DARK MATTER GALAXY
+   STYLES - Integrated with LinksHub (uses lp-create-* classes)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const darkMatterStyles = `
+const createLinkStyles = `
   /* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
-  .cl-spin { animation: cl-spin 1s linear infinite; }
-  @keyframes cl-spin { 100% { transform: rotate(360deg); } }
+  .lp-spin { animation: lp-spin 1s linear infinite; }
+  @keyframes lp-spin { 100% { transform: rotate(360deg); } }
 
-  @keyframes cl-glow-pulse {
+  @keyframes lp-glow-pulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 0.8; }
   }
 
-  @keyframes cl-float {
+  @keyframes lp-float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
   }
 
-  /* ─── SHELL ──────────────────────────────────────────────────────────────── */
-  .cl-shell {
-    position: fixed;
-    inset: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding: 16px;
-    padding-bottom: 140px;
+  /* ─── SHELL (overridden by LinksHub to be relative) ─────────────────────── */
+  .lp-create-shell {
+    position: relative;
+    min-height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     color: #fff;
-    background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000 100%);
   }
 
-  @media (max-width: 768px) {
-    .cl-shell {
-      top: calc(48px + env(safe-area-inset-top, 0px));
-    }
-  }
-
-  @media (min-width: 769px) {
-    .cl-shell {
-      left: 260px;
-      padding: 32px;
-      padding-bottom: 100px;
-    }
+  /* ─── INNER CONTAINER ────────────────────────────────────────────────────── */
+  .lp-create-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px;
   }
 
   /* ─── FORM ───────────────────────────────────────────────────────────────── */
-  .cl-form {
+  .lp-create-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    max-width: 480px;
-    margin: 0 auto;
   }
 
   /* ─── CARDS ──────────────────────────────────────────────────────────────── */
-  .cl-card {
+  .lp-card-v2 {
     position: relative;
     background: 
       linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%),
@@ -391,37 +380,34 @@ const darkMatterStyles = `
     transition: all 0.3s;
   }
 
-  .cl-card:focus-within {
+  .lp-card-v2:focus-within {
     border-color: rgba(139, 92, 246, 0.5);
     box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
   }
 
-  .cl-card-glow {
+  .lp-card-glow {
     position: absolute;
     inset: -50%;
     background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
     pointer-events: none;
-    animation: cl-glow-pulse 4s ease-in-out infinite;
+    animation: lp-glow-pulse 4s ease-in-out infinite;
   }
 
   /* URL Card - Blue accent */
-  .cl-card-url {
+  .lp-card-url {
     border-top: 3px solid rgba(59, 130, 246, 0.7);
-    box-shadow:
-      0 0 60px rgba(59, 130, 246, 0.1),
-      0 20px 40px -10px rgba(0, 0, 0, 0.5);
   }
 
-  .cl-card-url .cl-card-glow {
+  .lp-card-url .lp-card-glow {
     background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.25) 0%, transparent 50%);
   }
 
   /* Alias Card - Purple accent */
-  .cl-card-alias {
+  .lp-card-alias {
     border-top: 3px solid rgba(139, 92, 246, 0.7);
   }
 
-  .cl-card-alias label {
+  .lp-alias-label {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -431,12 +417,12 @@ const darkMatterStyles = `
     margin-bottom: 10px;
   }
 
-  .cl-card-alias label svg {
+  .lp-alias-label svg {
     color: #8b5cf6;
   }
 
   /* ─── INPUT GROUP ────────────────────────────────────────────────────────── */
-  .cl-input-group {
+  .lp-input-group {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -444,7 +430,7 @@ const darkMatterStyles = `
     z-index: 1;
   }
 
-  .cl-input-icon {
+  .lp-input-icon {
     width: 44px;
     height: 44px;
     border-radius: 12px;
@@ -456,7 +442,7 @@ const darkMatterStyles = `
     flex-shrink: 0;
   }
 
-  .cl-input-group input {
+  .lp-input-group input {
     flex: 1;
     background: transparent;
     border: none;
@@ -466,12 +452,12 @@ const darkMatterStyles = `
     padding: 12px 0;
   }
 
-  .cl-input-group input::placeholder {
+  .lp-input-group input::placeholder {
     color: rgba(255, 255, 255, 0.4);
   }
 
   /* ─── ALIAS INPUT ────────────────────────────────────────────────────────── */
-  .cl-alias-input {
+  .lp-alias-input {
     display: flex;
     align-items: center;
     gap: 0;
@@ -482,7 +468,7 @@ const darkMatterStyles = `
     z-index: 1;
   }
 
-  .cl-alias-input span {
+  .lp-alias-input span {
     padding: 12px 4px 12px 14px;
     font-size: 14px;
     color: rgba(255, 255, 255, 0.5);
@@ -490,7 +476,7 @@ const darkMatterStyles = `
     white-space: nowrap;
   }
 
-  .cl-alias-input input {
+  .lp-alias-input input {
     flex: 1;
     background: transparent;
     border: none;
@@ -501,17 +487,17 @@ const darkMatterStyles = `
     font-family: ui-monospace, SFMono-Regular, monospace;
   }
 
-  .cl-alias-input input::placeholder {
+  .lp-alias-input input::placeholder {
     color: rgba(255, 255, 255, 0.3);
   }
 
   /* ─── MODE SELECTOR ──────────────────────────────────────────────────────── */
-  .cl-mode-section {
+  .lp-mode-section {
     display: flex;
     gap: 10px;
   }
 
-  .cl-mode-btn {
+  .lp-mode-btn {
     flex: 1;
     display: flex;
     align-items: center;
@@ -525,11 +511,11 @@ const darkMatterStyles = `
     position: relative;
   }
 
-  .cl-mode-btn:active {
+  .lp-mode-btn:active {
     transform: scale(0.98);
   }
 
-  .cl-mode-btn.active {
+  .lp-mode-btn.active {
     border-color: rgba(139, 92, 246, 0.6);
     background: 
       linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%),
@@ -537,7 +523,7 @@ const darkMatterStyles = `
     box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
   }
 
-  .cl-mode-icon {
+  .lp-mode-icon {
     width: 44px;
     height: 44px;
     border-radius: 12px;
@@ -547,35 +533,35 @@ const darkMatterStyles = `
     flex-shrink: 0;
   }
 
-  .cl-mode-icon.standard {
+  .lp-mode-icon.standard {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%);
     color: #4ade80;
   }
 
-  .cl-mode-icon.turbo {
+  .lp-mode-icon.turbo {
     background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(234, 88, 12, 0.2) 100%);
     color: #fb923c;
   }
 
-  .cl-mode-info {
+  .lp-mode-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
     text-align: left;
   }
 
-  .cl-mode-name {
+  .lp-mode-name {
     font-size: 14px;
     font-weight: 600;
     color: #f1f5f9;
   }
 
-  .cl-mode-desc {
+  .lp-mode-desc {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
   }
 
-  .cl-mode-check {
+  .lp-mode-check {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -590,7 +576,7 @@ const darkMatterStyles = `
   }
 
   /* ─── ADVANCED BUTTON ────────────────────────────────────────────────────── */
-  .cl-advanced-btn {
+  .lp-advanced-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -606,28 +592,28 @@ const darkMatterStyles = `
     transition: all 0.2s;
   }
 
-  .cl-advanced-btn:hover {
+  .lp-advanced-btn:hover {
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.8);
   }
 
   /* ─── BOTTOM SHEET ───────────────────────────────────────────────────────── */
-  .cl-sheet {
+  .lp-sheet {
     padding: 24px 20px;
   }
 
-  .cl-sheet h3 {
+  .lp-sheet h3 {
     margin: 0 0 20px;
     font-size: 18px;
     font-weight: 700;
     color: #1e293b;
   }
 
-  .cl-sheet-field {
+  .lp-sheet-field {
     margin-bottom: 16px;
   }
 
-  .cl-sheet-field label {
+  .lp-sheet-field label {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -637,7 +623,7 @@ const darkMatterStyles = `
     margin-bottom: 8px;
   }
 
-  .cl-sheet-field input {
+  .lp-sheet-field input {
     width: 100%;
     padding: 14px 16px;
     background: #f1f5f9;
@@ -648,12 +634,12 @@ const darkMatterStyles = `
     outline: none;
   }
 
-  .cl-sheet-field input:focus {
+  .lp-sheet-field input:focus {
     border-color: #8b5cf6;
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
   }
 
-  .cl-sheet-toggle {
+  .lp-sheet-toggle {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -662,7 +648,7 @@ const darkMatterStyles = `
     margin-top: 8px;
   }
 
-  .cl-sheet-toggle span {
+  .lp-sheet-toggle span {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -670,7 +656,7 @@ const darkMatterStyles = `
     color: #64748b;
   }
 
-  .cl-toggle {
+  .lp-toggle {
     width: 50px;
     height: 28px;
     border-radius: 999px;
@@ -680,11 +666,11 @@ const darkMatterStyles = `
     transition: background 0.2s;
   }
 
-  .cl-toggle.on {
+  .lp-toggle.on {
     background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   }
 
-  .cl-toggle-thumb {
+  .lp-toggle-thumb {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -693,12 +679,12 @@ const darkMatterStyles = `
     transition: transform 0.2s;
   }
 
-  .cl-toggle.on .cl-toggle-thumb {
+  .lp-toggle.on .lp-toggle-thumb {
     transform: translateX(22px);
   }
 
   /* ─── ERROR ──────────────────────────────────────────────────────────────── */
-  .cl-error {
+  .lp-error {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -711,7 +697,7 @@ const darkMatterStyles = `
   }
 
   /* ─── SUBMIT BUTTON ──────────────────────────────────────────────────────── */
-  .cl-submit {
+  .lp-submit {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -732,35 +718,35 @@ const darkMatterStyles = `
     margin-top: 8px;
   }
 
-  .cl-submit:hover {
+  .lp-submit:hover {
     transform: translateY(-2px);
     box-shadow:
       0 0 80px rgba(139, 92, 246, 0.4),
       0 20px 50px -10px rgba(59, 130, 246, 0.5);
   }
 
-  .cl-submit:active {
+  .lp-submit:active {
     transform: scale(0.98);
   }
 
-  .cl-submit:disabled {
+  .lp-submit:disabled {
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
   }
 
   /* ─── SUCCESS VIEW ───────────────────────────────────────────────────────── */
-  .cl-confetti {
+  .lp-confetti {
     position: fixed;
     inset: 0;
     z-index: 100;
     pointer-events: none;
   }
 
-  .cl-success {
+  .lp-success-card {
     position: relative;
     max-width: 400px;
-    margin: 60px auto 0;
+    margin: 40px auto 0;
     padding: 32px 24px;
     background: 
       linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%),
@@ -773,17 +759,17 @@ const darkMatterStyles = `
     box-shadow:
       0 0 100px rgba(34, 197, 94, 0.2),
       0 30px 60px -15px rgba(0, 0, 0, 0.6);
-    animation: cl-float 6s ease-in-out infinite;
+    animation: lp-float 6s ease-in-out infinite;
   }
 
-  .cl-success-glow {
+  .lp-success-glow {
     position: absolute;
     inset: -100px;
     background: radial-gradient(circle at 50% 30%, rgba(34, 197, 94, 0.3) 0%, transparent 50%);
     pointer-events: none;
   }
 
-  .cl-success-icon {
+  .lp-success-icon {
     width: 64px;
     height: 64px;
     margin: 0 auto 16px;
@@ -798,7 +784,7 @@ const darkMatterStyles = `
     z-index: 1;
   }
 
-  .cl-success-badge {
+  .lp-success-badge {
     display: inline-block;
     padding: 6px 14px;
     background: rgba(34, 197, 94, 0.2);
@@ -813,7 +799,7 @@ const darkMatterStyles = `
     z-index: 1;
   }
 
-  .cl-success h2 {
+  .lp-success-card h2 {
     margin: 0 0 20px;
     font-size: 24px;
     font-weight: 700;
@@ -822,7 +808,7 @@ const darkMatterStyles = `
     z-index: 1;
   }
 
-  .cl-success-url-box {
+  .lp-success-url-box {
     display: flex;
     gap: 8px;
     margin-bottom: 24px;
@@ -830,7 +816,7 @@ const darkMatterStyles = `
     z-index: 1;
   }
 
-  .cl-success-url-box input {
+  .lp-success-url-box input {
     flex: 1;
     padding: 14px 16px;
     background: rgba(0, 0, 0, 0.4);
@@ -842,7 +828,7 @@ const darkMatterStyles = `
     outline: none;
   }
 
-  .cl-success-url-box button {
+  .lp-success-url-box button {
     width: 48px;
     height: 48px;
     border-radius: 12px;
@@ -856,22 +842,22 @@ const darkMatterStyles = `
     transition: all 0.2s;
   }
 
-  .cl-success-url-box button.copied {
+  .lp-success-url-box button.copied {
     background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
   }
 
-  .cl-success-url-box button:active {
+  .lp-success-url-box button:active {
     transform: scale(0.95);
   }
 
-  .cl-success-actions {
+  .lp-success-actions {
     display: flex;
     gap: 10px;
     position: relative;
     z-index: 1;
   }
 
-  .cl-btn-ghost {
+  .lp-btn-ghost {
     flex: 1;
     padding: 14px;
     background: rgba(255, 255, 255, 0.06);
@@ -884,11 +870,11 @@ const darkMatterStyles = `
     transition: all 0.2s;
   }
 
-  .cl-btn-ghost:hover {
+  .lp-btn-ghost:hover {
     background: rgba(255, 255, 255, 0.1);
   }
 
-  .cl-btn-primary {
+  .lp-btn-primary {
     flex: 1;
     display: flex;
     align-items: center;
@@ -906,7 +892,7 @@ const darkMatterStyles = `
     box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
   }
 
-  .cl-btn-primary:active {
+  .lp-btn-primary:active {
     transform: scale(0.98);
   }
 `;
