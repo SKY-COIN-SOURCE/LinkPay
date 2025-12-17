@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { useAuth } from './AuthContext';
-import { notificationsService, Notification, NotificationType } from '../lib/notificationsService';
+import { notificationsService, Notification, NotificationType, ensureUserHasWelcome } from '../lib/notificationsService';
 import { supabase } from '../lib/supabaseClient';
 import { useNotificationEvents } from '../hooks/useNotificationEvents';
 
@@ -66,21 +66,24 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Generar notificaciones históricas para nuevas cuentas
+  // Generar notificaciones históricas para nuevas cuentas Y asegurar bienvenida
   useEffect(() => {
     if (!user?.id) return;
 
-    const generateHistorical = async () => {
-      // Verificar si el usuario ya tiene notificaciones
+    const initializeUserNotifications = async () => {
+      // Primero: Asegurar que TODOS los usuarios tengan bienvenida
+      // (incluso usuarios existentes que no la tenían)
+      await ensureUserHasWelcome(user.id, user.user_metadata?.username);
+
+      // Segundo: Verificar si el usuario ya tiene notificaciones
       const { data: existing } = await supabase
         .from('notifications')
         .select('id')
         .eq('user_id', user.id)
-        .limit(1)
-        .single();
+        .limit(2);
 
-      // Si no tiene notificaciones, generar históricas
-      if (!existing) {
+      // Si solo tiene la bienvenida (1 notificación), generar históricas
+      if (!existing || existing.length <= 1) {
         await notificationsService.generateHistoricalNotifications(user.id);
         // Recargar después de generar
         setTimeout(() => {
@@ -89,7 +92,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    generateHistorical();
+    initializeUserNotifications();
   }, [user?.id, loadNotifications]);
 
   // Real-time subscription con animaciones

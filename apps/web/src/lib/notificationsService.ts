@@ -376,8 +376,12 @@ export const notificationsService = {
       return null;
     }
 
-    // 🔔 Trigger local push notification for high/urgent priority
-    if ((priority === 'high' || priority === 'urgent') && typeof window !== 'undefined') {
+    // 🔔 Trigger local push notification ONLY for important types
+    // Uses isPushWorthy to check if this notification deserves a push
+    const shouldPush = (priority === 'high' || priority === 'urgent') ||
+      this.isPushWorthyType(type);
+
+    if (shouldPush && typeof window !== 'undefined') {
       this.triggerLocalPush(title, message, priority);
     }
 
@@ -385,6 +389,17 @@ export const notificationsService = {
       ...data,
       category: getNotificationCategory(type),
     };
+  },
+
+  // Check if notification type is important enough for push
+  isPushWorthyType(type: NotificationType): boolean {
+    const pushTypes = [
+      'first_earning', 'revenue_milestone', 'payout_processed', 'payout_available',
+      'link_viral', 'link_milestone_100', 'link_milestone_500', 'link_milestone_1k',
+      'referral_signup', 'referral_earnings', 'security_suspicious_activity',
+      'security_new_login', 'welcome', 'announcement', 'push_enabled'
+    ];
+    return pushTypes.some(t => type.startsWith(t) || type === t);
   },
 
   // Trigger local push notification via service worker
@@ -968,4 +983,166 @@ function getNotificationCategory(type: NotificationType): Notification['category
   if (type.startsWith('referral_') || type.startsWith('achievement_')) return 'social';
   if (type.startsWith('security_')) return 'security';
   return 'system';
+}
+
+// ============================================================
+// NOTIFICACIONES IMPORTANTES PARA PUSH (móvil/pantalla)
+// Solo estos tipos envían push notification al dispositivo
+// ============================================================
+export const PUSH_WORTHY_TYPES: NotificationType[] = [
+  // === INGRESOS (siempre importantes) ===
+  'first_earning',
+  'revenue_milestone_1',
+  'revenue_milestone_5',
+  'revenue_milestone_10',
+  'revenue_milestone_25',
+  'revenue_milestone_50',
+  'revenue_milestone_100',
+  'revenue_milestone_250',
+  'revenue_milestone_500',
+  'revenue_milestone_1k',
+  'revenue_milestone_5k',
+  'revenue_milestone_10k',
+  'daily_earnings_record',
+  'weekly_earnings_record',
+  'monthly_earnings_record',
+
+  // === PAYOUTS ===
+  'payout_processed',
+  'payout_available',
+  'payout_failed',
+  'payout_threshold_reached',
+
+  // === HITOS IMPORTANTES ===
+  'link_milestone_100',
+  'link_milestone_500',
+  'link_milestone_1k',
+  'link_milestone_5k',
+  'link_milestone_10k',
+  'link_viral',
+  'link_top_performer_day',
+  'link_top_performer_week',
+
+  // === REFERIDOS ===
+  'referral_signup',
+  'referral_first_earning',
+  'referral_earnings',
+
+  // === SEGURIDAD (urgente) ===
+  'security_suspicious_activity',
+  'security_new_login',
+  'security_password_changed',
+
+  // === SISTEMA IMPORTANTE ===
+  'welcome',
+  'push_enabled',
+  'announcement',
+];
+
+// Función para verificar si un tipo merece push
+export function isPushWorthy(type: NotificationType, priority: NotificationPriority): boolean {
+  // High/Urgent siempre van a push
+  if (priority === 'high' || priority === 'urgent') return true;
+  // O si está en la lista de tipos importantes
+  return PUSH_WORTHY_TYPES.includes(type);
+}
+
+// ============================================================
+// FUNCIÓN: Enviar bienvenida a TODOS los usuarios
+// ============================================================
+export async function sendWelcomeToAllUsers(): Promise<{ sent: number; errors: number }> {
+  let sent = 0;
+  let errors = 0;
+
+  try {
+    // Obtener todos los usuarios
+    const { data: users, error } = await supabase
+      .from('profiles')
+      .select('id, username, email');
+
+    if (error || !users) {
+      console.error('Error fetching users:', error);
+      return { sent: 0, errors: 1 };
+    }
+
+    console.log(`📢 Enviando bienvenida a ${users.length} usuarios...`);
+
+    for (const user of users) {
+      try {
+        // Verificar si ya tiene la notificación de bienvenida del sistema
+        const { data: existing } = await supabase
+          .from('notifications')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', 'announcement')
+          .ilike('title', '%LinkPay 2.0%')
+          .single();
+
+        if (existing) {
+          console.log(`⏭️ Usuario ${user.username || user.id} ya tiene bienvenida`);
+          continue;
+        }
+
+        // Crear notificación de bienvenida
+        await supabase
+          .from('notifications')
+          .insert({
+            user_id: user.id,
+            type: 'announcement',
+            title: '🚀 ¡Bienvenido a LinkPay 2.0!',
+            message: `¡Hola${user.username ? ' @' + user.username : ''}! Gracias por formar parte de LinkPay. Hemos añadido notificaciones en tiempo real, push al móvil, y mucho más. ¡Crea links y empieza a ganar!`,
+            priority: 'high',
+            read: false,
+            metadata: {
+              version: '2.0',
+              broadcast: true,
+              sentAt: new Date().toISOString(),
+            },
+          });
+
+        sent++;
+        console.log(`✅ Bienvenida enviada a ${user.username || user.id}`);
+      } catch (e) {
+        errors++;
+        console.error(`❌ Error enviando a ${user.id}:`, e);
+      }
+    }
+
+    console.log(`📊 Resultado: ${sent} enviados, ${errors} errores`);
+    return { sent, errors };
+  } catch (e) {
+    console.error('Error en sendWelcomeToAllUsers:', e);
+    return { sent, errors: errors + 1 };
+  }
+}
+
+// ============================================================
+// FUNCIÓN: Verificar y enviar bienvenida a usuario actual
+// ============================================================
+export async function ensureUserHasWelcome(userId: string, username?: string): Promise<void> {
+  try {
+    // Verificar si tiene alguna notificación de bienvenida
+    const { data: existing } = await supabase
+      .from('notifications')
+      .select('id')
+      .eq('user_id', userId)
+      .in('type', ['welcome', 'announcement'])
+      .limit(1)
+      .single();
+
+    if (!existing) {
+      // No tiene bienvenida, crear una
+      await notificationsService.create(
+        userId,
+        'welcome',
+        '🎉 ¡Bienvenido a LinkPay!',
+        `¡Hola${username ? ' @' + username : ''}! Gracias por unirte a LinkPay. Crea tu primer link, compártelo, y empieza a ganar dinero con cada clic. ¡Es así de fácil!`,
+        'high',
+        { source: 'auto', isNewUser: true }
+      );
+      console.log('✅ Bienvenida creada para usuario:', userId);
+    }
+  } catch (e) {
+    console.warn('Error checking welcome notification:', e);
+  }
 }
