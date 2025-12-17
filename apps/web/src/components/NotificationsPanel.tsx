@@ -105,6 +105,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     markAllAsRead,
     deleteNotification,
     deleteAllRead,
+    refresh: refreshNotifications,
   } = useNotifications();
 
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -132,7 +133,22 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
 
       if (subscription) {
         setPushPermission('granted');
-        // Send test notification
+
+        // Create in-app notification in database
+        const { notificationsService } = await import('../lib/notificationsService');
+        await notificationsService.create(
+          data.user.id,
+          'push_enabled',
+          '🔔 ¡Notificaciones Push Activadas!',
+          'Ahora recibirás alertas en tiempo real de clics, ganancias, hitos y más. ¡Nunca te perderás nada importante!',
+          'high',
+          { source: 'settings', device: navigator.userAgent }
+        );
+
+        // Refresh the notifications list
+        await refreshNotifications();
+
+        // Also send browser push
         await pushNotificationService.sendLocalNotification(
           '🎉 ¡Notificaciones activadas!',
           {
