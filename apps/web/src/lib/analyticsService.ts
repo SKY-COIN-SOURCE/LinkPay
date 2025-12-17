@@ -258,6 +258,7 @@ export const AnalyticsService = {
       dailyPrevRes,
       activeLinksRes,
       eventsRes,
+      linksRes,
     ] = await Promise.all([
       supabase
         .from('analytics_events_daily')
@@ -288,11 +289,32 @@ export const AnalyticsService = {
         .lt('created_at', until.toISOString())
         .order('created_at', { ascending: false })
         .limit(5000),
+      supabase
+        .from('links')
+        .select('id, slug, title, earnings, views')
+        .eq('user_id', user.id),
     ]);
 
     const dailyNowData = (dailyNowRes.data as DailyRow[]) || [];
     const dailyPrevData = (dailyPrevRes.data as DailyRow[]) || [];
-    const events = (eventsRes.data as EventRow[]) || [];
+    let events = (eventsRes.data as EventRow[]) || [];
+    const links = linksRes.data || [];
+
+    // Fallback: si la vista analytics_events falla por RLS o vacía, intentamos desde click_events por link_id
+    if ((!events || events.length === 0) && links.length > 0) {
+      const linkIds = links.map((l: any) => l.id);
+      const direct = await supabase
+        .from('click_events')
+        .select('created_at, earned_amount, is_paid, link_id, country, device')
+        .in('link_id', linkIds)
+        .gte('created_at', since.toISOString())
+        .lt('created_at', until.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(5000);
+      if (!direct.error && direct.data) {
+        events = direct.data as EventRow[];
+      }
+    }
 
     const dailyNow = ensureDailyContinuity(
       dailyNowData.length ? dailyNowData : buildDailyFromEvents(events, since, until),
@@ -309,6 +331,13 @@ export const AnalyticsService = {
 
     const totalsNow = aggregateDaily(dailyNow);
     const totalsPrev = aggregateDaily(dailyPrev);
+
+    // Si no hay eventos, rellenamos totales desde links (views/earnings)
+    if ((!events || events.length === 0) && links.length > 0) {
+      totalsNow.earnings = links.reduce((acc: number, l: any) => acc + (l.earnings || 0), 0);
+      totalsNow.clicks = links.reduce((acc: number, l: any) => acc + (l.views || 0), 0);
+      totalsNow.paid_clicks = 0;
+    }
 
     const conversionRate =
       totalsNow.clicks > 0 ? totalsNow.paid_clicks / totalsNow.clicks : 0;
@@ -335,7 +364,22 @@ export const AnalyticsService = {
 
     const countries = buildCountries(events);
     const devices = buildDevices(events);
-    const { topLinks } = buildTopLinks(events, since, until);
+    const { topLinks } = events.length
+      ? buildTopLinks(events, since, until)
+      : {
+          topLinks: links
+            .map((l: any) => ({
+              id: l.id,
+              slug: l.slug,
+              title: l.title,
+              earnings: l.earnings || 0,
+              clicks: l.views || 0,
+              ctr: 0,
+              sparkline: Array(14).fill(0),
+            }))
+            .sort((a: any, b: any) => b.earnings - a.earnings)
+            .slice(0, 5),
+        };
 
     const timeseries = dailyNow.map((d) => ({
       date: formatDateKey(new Date(d.day)),
