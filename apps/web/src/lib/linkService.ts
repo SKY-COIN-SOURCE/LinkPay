@@ -24,12 +24,12 @@ const EARNING_RATES = {
 
 export const LinkService = {
 
-  // CREAR LINK (Ahora con opciones avanzadas)
+  // CREAR LINK (Ahora con opciones avanzadas y título)
   create: async (
     originalUrl: string,
     customAlias?: string,
     mode: 'lite' | 'standard' | 'turbo' = 'standard',
-    advanced: { password?: string, expiresAt?: string, maxClicks?: number, isPrivate?: boolean } = {}
+    advanced: { password?: string, expiresAt?: string, maxClicks?: number, isPrivate?: boolean, title?: string } = {}
   ) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Debes iniciar sesión para crear enlaces.");
@@ -41,6 +41,17 @@ export const LinkService = {
       slug = slug.trim().replace(/[^a-zA-Z0-9-_]/g, '');
     }
 
+    // Generate title from URL if not provided
+    let title = advanced.title?.trim();
+    if (!title) {
+      try {
+        const urlObj = new URL(originalUrl);
+        title = urlObj.hostname.replace('www.', '');
+      } catch {
+        title = slug;
+      }
+    }
+
     const { data, error } = await supabase
       .from('links')
       .insert([{
@@ -48,7 +59,7 @@ export const LinkService = {
         original_url: originalUrl,
         slug: slug,
         monetization_mode: mode,
-        title: 'Enlace LinkPay',
+        title: title,
         views: 0,
         earnings: 0,
         is_active: true,
