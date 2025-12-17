@@ -3,24 +3,8 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { ShieldCheck, Loader2, ExternalLink, AlertTriangle, Clock } from 'lucide-react';
 import { LinkService } from '../../lib/linkService';
 import { BioService } from '../../lib/bioService';
+import { GeoService, GeoData } from '../../lib/geoService';
 
-// --------- HELPER: INFO DEL CLIENTE (DEVICE + COUNTRY APROX) ----------
-function getClientInfo() {
-  let device: string = 'Desktop';
-  if (typeof navigator !== 'undefined') {
-    const ua = navigator.userAgent || '';
-    if (/tablet|ipad|playbook|silk/i.test(ua)) device = 'Tablet';
-    else if (/Mobile|Android|iPhone|iPod|IEMobile|BlackBerry/i.test(ua)) device = 'Mobile';
-  }
-
-  let country = 'Unknown';
-  if (typeof navigator !== 'undefined' && navigator.language) {
-    const parts = navigator.language.split('-'); // es-ES -> ['es','ES']
-    if (parts[1]) country = parts[1].toUpperCase();
-  }
-
-  return { device, country };
-}
 
 export function RedirectPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -52,8 +36,6 @@ export function RedirectPage() {
           if (!url) {
             throw new Error('Destino no válido.');
           }
-
-          const client = getClientInfo();
 
           // Datos mínimos para la UI
           setLinkData({
@@ -151,21 +133,22 @@ export function RedirectPage() {
             setVerifying(true);
 
             const performTracking = async () => {
-              const client = getClientInfo();
+              // Use IP-based geolocation (works with private browsing)
+              const geoData = await GeoService.getGeoData();
               try {
                 if (slug === 'bio-redirect') {
                   const pid = searchParams.get('pid');
                   const mode = searchParams.get('m') || 'lite';
                   if (pid) {
                     await BioService.trackLinkClick(pid, mode, {
-                      country: client.country,
-                      device: client.device,
+                      country: geoData.country,
+                      device: geoData.device,
                     });
                   }
                 } else if (slug) {
                   await LinkService.trackClick(slug, {
-                    device: client.device,
-                    country: client.country,
+                    device: geoData.device,
+                    country: geoData.country,
                   });
                 }
               } catch (e) {

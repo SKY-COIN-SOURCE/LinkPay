@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import './Analytics.css';
-import '../../styles/PremiumBackground.css';
 import {
-  ArrowUpRight,
-  ArrowDownRight,
   TrendingUp,
   Link2,
   MousePointer2,
-  Activity,
+  DollarSign,
+  BarChart3,
   Globe2,
   Smartphone,
   AlertTriangle,
@@ -27,45 +25,35 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import {
-  AnalyticsService,
-  AnalyticsResponse,
-  TimeRange,
-  TopLink,
-  CountryStat,
-  DeviceStat,
-} from '../../lib/analyticsService';
-type StatCardProps = {
-  label: string;
-  value: number;
-  prefix?: string;
-  suffix?: string;
-  delta?: number | null;
-  icon: React.ReactNode;
-  accent: 'cyan' | 'purple' | 'green' | 'red';
-  sparkline?: number[];
-};
+import { supabase } from '../../lib/supabaseClient';
+import { LinkService, Link } from '../../lib/linkService';
+import { AnalyticsService, TimeRange } from '../../lib/analyticsService';
+
+type ChartView = 'revenue' | 'clicks' | 'links' | 'geo';
 
 const RANGE_OPTIONS: { key: TimeRange; label: string }[] = [
   { key: '1d', label: 'Hoy' },
-  { key: '7d', label: '7 días' },
-  { key: '30d', label: '30 días' },
-  { key: '12m', label: '12 meses' },
+  { key: '7d', label: '7d' },
+  { key: '30d', label: '30d' },
+  { key: '12m', label: '1 año' },
 ];
 
-const COLORS = ['#22d3ee', '#a855f7', '#22c55e', '#f97316', '#ef4444', '#0ea5e9'];
+const COLORS = ['#22d3ee', '#a855f7', '#22c55e', '#f97316', '#ef4444', '#3b82f6'];
 
-function useCountTo(end: number, duration = 1200) {
+// Fixed counter - NO overshoot
+function useCountTo(end: number, duration = 1500) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    let start: number | null = null;
+    if (end === 0) { setCount(0); return; }
+    let startTime: number | null = null;
     let raf: number;
     const step = (ts: number) => {
-      if (start === null) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      setCount(end * eased);
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCount(Math.min(end * ease, end));
       if (progress < 1) raf = requestAnimationFrame(step);
+      else setCount(end);
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
@@ -73,519 +61,440 @@ function useCountTo(end: number, duration = 1200) {
   return count;
 }
 
-function formatNumber(value: number) {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 10_000) return `${(value / 1000).toFixed(1)}k`;
-  return value.toLocaleString('es-ES');
+function formatMoney(v: number) {
+  return `€${v.toFixed(4)}`;
 }
 
-function formatCurrency(value: number) {
-  if (value >= 1000) return `€${(value / 1000).toFixed(1)}k`;
-  return `€${value.toFixed(2)}`;
+function formatMoneyShort(v: number) {
+  if (v >= 1000) return `€${(v / 1000).toFixed(1)}k`;
+  return `€${v.toFixed(2)}`;
 }
 
-function DeltaTag({ delta }: { delta: number | null | undefined }) {
-  if (delta === null || delta === undefined) return <span className="lp-delta neutral">–</span>;
-  const positive = delta >= 0;
-  const Icon = positive ? ArrowUpRight : ArrowDownRight;
+function formatNum(v: number) {
+  if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
+  if (v >= 1000) return `${(v / 1000).toFixed(1)}k`;
+  return Math.floor(v).toLocaleString('es-ES');
+}
+
+// Custom tooltip
+function ChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
   return (
-    <span className={`lp-delta ${positive ? 'up' : 'down'}`}>
-      <Icon size={14} />
-      {Math.abs(delta).toFixed(1)}%
-    </span>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  prefix,
-  suffix,
-  delta,
-  icon,
-  accent,
-  sparkline = [],
-}: StatCardProps) {
-  const animated = useCountTo(value);
-  const displayValue = suffix
-    ? `${animated.toFixed(1)}`
-    : prefix === '€'
-      ? animated.toFixed(2)
-      : formatNumber(animated);
-  return (
-    <div className={`lp-card lp-stat-card accent-${accent}`}>
-      <div className="lp-card-top">
-        <div className="lp-card-icon">{icon}</div>
-        <DeltaTag delta={delta ?? null} />
-      </div>
-      <div className="lp-card-body">
-        <div className="lp-stat-value">
-          <span className="lp-stat-prefix">{prefix}</span>
-          {displayValue}
-          <span className="lp-stat-suffix">{suffix}</span>
+    <div className="lp-tooltip">
+      <div className="lp-tooltip-label">{label}</div>
+      {payload.map((p: any, i: number) => (
+        <div key={i} className="lp-tooltip-row" style={{ color: p.color }}>
+          <span className="lp-tooltip-val">
+            {p.name === 'earnings' ? formatMoneyShort(p.value) : formatNum(p.value)}
+          </span>
         </div>
-        <div className="lp-stat-label">{label}</div>
-      </div>
-      {sparkline.length > 0 && (
-        <div className="lp-sparkline">
-          <ResponsiveContainer width="100%" height={50}>
-            <AreaChart data={sparkline.map((v, i) => ({ idx: i, v }))}>
-              <defs>
-                <linearGradient id={`spark-${label}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--lp-accent)" stopOpacity={0.45} />
-                  <stop offset="95%" stopColor="var(--lp-accent)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area
-                dataKey="v"
-                type="monotone"
-                stroke="var(--lp-accent)"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill={`url(#spark-${label})`}
-                isAnimationActive={false}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SkeletonCard() {
-  return (
-    <div className="lp-card lp-skeleton-card">
-      <div className="lp-skeleton-line w-24" />
-      <div className="lp-skeleton-line w-16" />
-      <div className="lp-skeleton-line w-full h-10 mt-4" />
-    </div>
-  );
-}
-
-function EmptyState({ onRetry }: { onRetry: () => void }) {
-  return (
-    <div className="lp-empty-state">
-      <div className="lp-empty-illustration">🚀</div>
-      <h3>Aún no hay datos</h3>
-      <p>Crea tu primer link y comienza a monetizar en segundos.</p>
-      <button className="lp-btn" onClick={onRetry}>Refrescar</button>
+      ))}
     </div>
   );
 }
 
 export function AnalyticsPage() {
   const [range, setRange] = useState<TimeRange>('30d');
-  const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const fetchData = async () => {
+  // Stats like Dashboard
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    linkRevenue: 0,
+    bioRevenue: 0,
+    totalClicks: 0,
+    activeLinks: 0,
+    rpm: 0,
+  });
+
+  // All links for table
+  const [links, setLinks] = useState<Link[]>([]);
+
+  // Chart data
+  const [timeseries, setTimeseries] = useState<any[]>([]);
+  const [clicksByDay, setClicksByDay] = useState<any[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [devices, setDevices] = useState<any[]>([]);
+
+  // Chart view toggle
+  const [chartView, setChartView] = useState<ChartView>('revenue');
+
+  // Animated values
+  const animRevenue = useCountTo(stats.totalRevenue, 1500);
+  const animClicks = useCountTo(stats.totalClicks, 1500);
+  const animLinks = useCountTo(stats.activeLinks, 1500);
+  const animRpm = useCountTo(stats.rpm, 1500);
+
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
-      const res = await AnalyticsService.getDashboardData(range);
-      setData(res);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Fetch everything in parallel like Dashboard
+      const [analyticsData, linksData] = await Promise.all([
+        AnalyticsService.getDashboardData(range),
+        LinkService.getAll(),
+      ]);
+
+      if (linksData) {
+        setLinks(linksData);
+
+        const linkRev = linksData.reduce((acc, l) => acc + (l.earnings || 0), 0);
+        const linkClx = linksData.reduce((acc, l) => acc + (l.views || 0), 0);
+        const bioRev = (analyticsData as any)?.bioRevenue || 0;
+        const bioClx = (analyticsData as any)?.bioClicks || 0;
+        const totalRev = linkRev + bioRev;
+        const totalClx = linkClx + bioClx;
+        const activeLinksCount = linksData.filter((l: any) => l.is_active !== false).length;
+
+        setStats({
+          totalRevenue: totalRev,
+          linkRevenue: linkRev,
+          bioRevenue: bioRev,
+          totalClicks: totalClx,
+          activeLinks: activeLinksCount,
+          rpm: totalClx > 0 ? (totalRev / totalClx) * 1000 : 0,
+        });
+      }
+
+      if (analyticsData) {
+        setTimeseries(analyticsData.timeseries || []);
+        setClicksByDay(analyticsData.clicksByDay || []);
+        setCountries(analyticsData.countries || []);
+        setDevices(analyticsData.devices || []);
+      }
+
     } catch (err) {
-      console.error('[AnalyticsPage] load error', err);
-      setError('No pudimos cargar Analytics. Intenta de nuevo.');
+      console.error('[Analytics] Error:', err);
+      setError('Error al cargar datos');
     } finally {
       setLoading(false);
     }
-  };
+  }, [range]);
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [range]);
+  }, [fetchData]);
 
-  const hasData = useMemo(() => {
-    if (!data) return false;
-    return (
-      data.summary.earnings > 0 ||
-      data.summary.clicks > 0 ||
-      data.topLinks.length > 0
-    );
-  }, [data]);
+  // Real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('analytics-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, () => fetchData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'click_events' }, () => fetchData())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [fetchData]);
 
+  // Top 5 links by earnings
+  const topLinks = useMemo(() => {
+    return [...links]
+      .sort((a, b) => (b.earnings || 0) - (a.earnings || 0))
+      .slice(0, 5);
+  }, [links]);
+
+  const hasData = stats.totalClicks > 0 || stats.totalRevenue > 0 || links.length > 0;
+
+  // Loading
   if (loading) {
     return (
-      <div className="lp-analytics-shell lp-premium-bg">
-        <div className="lp-analytics-inner">
-          <div className="lp-header">
-            <div className="lp-chip">
-              <span className="lp-dot" />
-              Analytics
-            </div>
-            <div className="lp-title">Panel en vivo</div>
+      <div className="lpa-shell">
+        <div className="lpa-inner">
+          <div className="lpa-range-bar">
+            {RANGE_OPTIONS.map(o => <button key={o.key} className="lpa-range-btn">{o.label}</button>)}
           </div>
-          <div className="lp-grid lp-grid-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <SkeletonCard key={i} />
+          <div className="lpa-stats-grid">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="lpa-stat-card lpa-skeleton">
+                <div className="lpa-skel-line short" />
+                <div className="lpa-skel-line" />
+              </div>
             ))}
           </div>
-          <div className="lp-card lp-skeleton-chart">
-            <div className="lp-skeleton-line w-32" />
-            <div className="lp-skeleton-line w-20" />
-            <div className="lp-skeleton-chart-lines" />
+          <div className="lpa-chart-card lpa-skeleton">
+            <div className="lpa-skel-line short" />
+            <div className="lpa-skel-chart" />
           </div>
         </div>
       </div>
     );
   }
 
+  // Error
   if (error) {
     return (
-      <div className="lp-analytics-shell lp-premium-bg">
-        <div className="lp-analytics-inner">
-          <div className="lp-error">
-            <div className="lp-error-icon">
-              <AlertTriangle size={22} />
-            </div>
-            <div>
-              <h3>Algo salió mal</h3>
-              <p>{error}</p>
-            </div>
-            <button className="lp-btn" onClick={fetchData}>
-              <RefreshCw size={16} />
-              Reintentar
-            </button>
+      <div className="lpa-shell">
+        <div className="lpa-inner">
+          <div className="lpa-error">
+            <AlertTriangle size={24} />
+            <span>{error}</span>
+            <button className="lpa-btn" onClick={fetchData}><RefreshCw size={14} /> Reintentar</button>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!data || !hasData) {
+  // Empty
+  if (!hasData) {
     return (
-      <div className="lp-analytics-shell lp-premium-bg">
-        <div className="lp-analytics-inner">
-          <EmptyState onRetry={fetchData} />
+      <div className="lpa-shell">
+        <div className="lpa-inner">
+          <div className="lpa-empty">
+            <div className="lpa-empty-icon">📊</div>
+            <h3>Sin datos todavía</h3>
+            <p>Crea tu primer link y empieza a monetizar</p>
+            <button className="lpa-btn" onClick={fetchData}><RefreshCw size={14} /> Refrescar</button>
+          </div>
         </div>
       </div>
     );
   }
-
-  const { summary } = data;
 
   return (
-    <div className="lp-analytics-shell lp-premium-bg">
-      <div className="lp-analytics-inner">
-        <header className="lp-header">
-          <div>
-            <div className="lp-chip">
-              <span className="lp-dot" />
-              Analytics
-            </div>
-            <h1 className="lp-title">Inteligencia en tiempo real</h1>
-            <p className="lp-subtitle">
-              Visualiza ingresos, clics, conversión y desempeño por link, país y dispositivo.
-            </p>
-          </div>
-          <div className="lp-range-switch">
-            {RANGE_OPTIONS.map((opt) => (
-              <button
-                key={opt.key}
-                className={`lp-range-btn ${range === opt.key ? 'active' : ''}`}
-                onClick={() => setRange(opt.key)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </header>
+    <div className="lpa-shell">
+      <div className="lpa-inner">
 
-        {/* Stat cards */}
-        <div className="lp-grid lp-grid-4">
-          <StatCard
-            label="Total Earnings"
-            value={summary.earnings}
-            prefix="€"
-            delta={summary.deltas.earnings}
-            accent="purple"
-            icon={<TrendingUp size={18} />}
-            sparkline={data.timeseries.map((d) => d.earnings)}
-          />
-          <StatCard
-            label="Total Clicks"
-            value={summary.clicks}
-            delta={summary.deltas.clicks}
-            accent="cyan"
-            icon={<MousePointer2 size={18} />}
-          />
-          <StatCard
-            label="Conversion Rate"
-            value={summary.conversionRate * 100}
-            suffix="%"
-            delta={summary.deltas.conversionRate}
-            accent="green"
-            icon={<Activity size={18} />}
-          />
-          <StatCard
-            label="Active Links"
-            value={summary.activeLinks}
-            delta={summary.deltas.activeLinks}
-            accent="red"
-            icon={<Link2 size={18} />}
-          />
+        {/* Period selector */}
+        <div className="lpa-range-bar">
+          {RANGE_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              className={`lpa-range-btn ${range === opt.key ? 'active' : ''}`}
+              onClick={() => setRange(opt.key)}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
 
-        {/* Main chart */}
-        <div className="lp-card lp-chart-card">
-          <div className="lp-card-head">
-            <div>
-              <p className="lp-card-kicker">Ingresos vs Clics</p>
-              <h3 className="lp-card-title">Curva de crecimiento</h3>
+        {/* 4 Stats Grid - 2x2 squares */}
+        <div className="lpa-stats-grid">
+          {/* Revenue */}
+          <div className="lpa-stat-card green">
+            <div className="lpa-stat-top">
+              <div className="lpa-stat-icon"><DollarSign size={18} /></div>
+              <span className="lpa-live-dot" />
             </div>
-            <DeltaTag delta={summary.deltas.earnings} />
+            <div className="lpa-stat-val">{formatMoney(animRevenue)}</div>
+            <div className="lpa-stat-label">Ingresos</div>
+            <div className="lpa-stat-sub">
+              <span>Links €{stats.linkRevenue.toFixed(4)}</span>
+              <span>Bio €{stats.bioRevenue.toFixed(4)}</span>
+            </div>
           </div>
-          <div className="lp-chart-body">
-            <ResponsiveContainer width="100%" height={320}>
-              <AreaChart data={data.timeseries}>
-                <defs>
-                  <linearGradient id="gradEarnings" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.45} />
-                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gradClicks" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" vertical={false} />
-                <XAxis dataKey="date" tick={{ fill: '#9ca3af', fontSize: 11 }} tickLine={false} axisLine={false} />
-                <YAxis
-                  yAxisId="left"
-                  tick={{ fill: '#9ca3af', fontSize: 11 }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v) => `€${v.toFixed(2)}`}
-                />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  tick={{ fill: '#9ca3af', fontSize: 11 }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  contentStyle={{ background: 'rgba(15,23,42,0.96)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 14 }}
-                  labelStyle={{ color: '#cbd5e1' }}
-                  formatter={(value: number, name: string) => {
-                    if (name === 'earnings') return [formatCurrency(value), 'Earnings'];
-                    return [formatNumber(value), 'Clicks'];
-                  }}
-                />
-                <Area
-                  yAxisId="left"
-                  dataKey="earnings"
-                  type="monotone"
-                  stroke="#a855f7"
-                  strokeWidth={2.6}
-                  fill="url(#gradEarnings)"
-                  name="earnings"
-                />
-                <Area
-                  yAxisId="right"
-                  dataKey="clicks"
-                  type="monotone"
-                  stroke="#22d3ee"
-                  strokeWidth={2}
-                  fill="url(#gradClicks)"
-                  name="clicks"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+
+          {/* Clicks */}
+          <div className="lpa-stat-card purple">
+            <div className="lpa-stat-top">
+              <div className="lpa-stat-icon"><MousePointer2 size={18} /></div>
+            </div>
+            <div className="lpa-stat-val">{formatNum(animClicks)}</div>
+            <div className="lpa-stat-label">Clicks Totales</div>
+          </div>
+
+          {/* Active Links */}
+          <div className="lpa-stat-card blue">
+            <div className="lpa-stat-top">
+              <div className="lpa-stat-icon"><Link2 size={18} /></div>
+            </div>
+            <div className="lpa-stat-val">{Math.floor(animLinks)}</div>
+            <div className="lpa-stat-label">Links Activos</div>
+          </div>
+
+          {/* RPM */}
+          <div className="lpa-stat-card orange">
+            <div className="lpa-stat-top">
+              <div className="lpa-stat-icon"><BarChart3 size={18} /></div>
+            </div>
+            <div className="lpa-stat-val">€{animRpm.toFixed(2)}</div>
+            <div className="lpa-stat-label">RPM</div>
           </div>
         </div>
 
-        {/* Secondary charts */}
-        <div className="lp-grid lp-grid-3">
-          <div className="lp-card lp-chart-card">
-            <div className="lp-card-head">
-              <div>
-                <p className="lp-card-kicker">Tráfico</p>
-                <h3 className="lp-card-title">Clicks por día</h3>
-              </div>
-            </div>
-            <div className="lp-chart-body small">
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={data.clicksByDay}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.12)" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#9ca3af', fontSize: 10 }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fill: '#9ca3af', fontSize: 10 }} tickLine={false} axisLine={false} />
-                  <Tooltip
-                    contentStyle={{ background: 'rgba(15,23,42,0.96)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14 }}
-                    labelStyle={{ color: '#cbd5e1' }}
-                  />
-                  <Bar dataKey="clicks" radius={[6, 6, 4, 4]} fill="#22d3ee" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="lp-card lp-chart-card">
-            <div className="lp-card-head">
-              <div>
-                <p className="lp-card-kicker">Top Links</p>
-                <h3 className="lp-card-title">Ingresos líderes</h3>
-              </div>
-            </div>
-            <div className="lp-chart-body small">
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart
-                  data={data.topLinks.map((l) => ({
-                    name: l.title || l.slug || l.id.slice(0, 6),
-                    earnings: l.earnings,
-                  }))}
-                  layout="vertical"
-                  margin={{ left: 60 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.12)" horizontal />
-                  <XAxis type="number" tick={{ fill: '#9ca3af', fontSize: 10 }} tickLine={false} axisLine={false} />
-                  <YAxis dataKey="name" type="category" tick={{ fill: '#cbd5e1', fontSize: 12 }} width={120} />
-                  <Tooltip
-                    contentStyle={{ background: 'rgba(15,23,42,0.96)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14 }}
-                    formatter={(val: number) => formatCurrency(val)}
-                  />
-                  <Bar dataKey="earnings" radius={[6, 6, 6, 6]}>
-                    {data.topLinks.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="lp-card lp-chart-card">
-            <div className="lp-card-head">
-              <div>
-                <p className="lp-card-kicker">Dispositivos</p>
-                <h3 className="lp-card-title">Distribution</h3>
-              </div>
-            </div>
-            <div className="lp-chart-body small devices">
-              <ResponsiveContainer width="100%" height={240}>
-                <PieChart>
-                  <Pie
-                    data={data.devices}
-                    dataKey="value"
-                    nameKey="device"
-                    innerRadius={70}
-                    outerRadius={100}
-                    paddingAngle={4}
-                    stroke="none"
-                  >
-                    {data.devices.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{ background: 'rgba(15,23,42,0.96)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14 }}
-                    formatter={(val: number, name: string) => [`${val} clicks`, name]}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="lp-legend">
-                {data.devices.map((d, i) => (
-                  <div key={d.device + i} className="lp-legend-row">
-                    <span className="lp-dot" style={{ background: COLORS[i % COLORS.length] }} />
-                    <span>{d.device || 'Unknown'}</span>
-                    <span className="lp-legend-value">
-                      {d.value} · {d.percent.toFixed(1)}%
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* Chart Toggle Buttons */}
+        <div className="lpa-chart-tabs">
+          <button className={`lpa-tab ${chartView === 'revenue' ? 'active' : ''}`} onClick={() => setChartView('revenue')}>
+            <TrendingUp size={14} /> Ingresos
+          </button>
+          <button className={`lpa-tab ${chartView === 'clicks' ? 'active' : ''}`} onClick={() => setChartView('clicks')}>
+            <MousePointer2 size={14} /> Clicks
+          </button>
+          <button className={`lpa-tab ${chartView === 'links' ? 'active' : ''}`} onClick={() => setChartView('links')}>
+            <Link2 size={14} /> Top Links
+          </button>
+          <button className={`lpa-tab ${chartView === 'geo' ? 'active' : ''}`} onClick={() => setChartView('geo')}>
+            <Globe2 size={14} /> Geo
+          </button>
         </div>
 
-        {/* Countries + table */}
-        <div className="lp-grid lp-grid-2">
-          <div className="lp-card lp-table-card">
-            <div className="lp-card-head">
-              <div>
-                <p className="lp-card-kicker">Regiones</p>
-                <h3 className="lp-card-title">Países con más clics</h3>
+        {/* Chart Area */}
+        <div className="lpa-chart-card">
+          {chartView === 'revenue' && (
+            <>
+              <div className="lpa-chart-title">Ingresos en el tiempo</div>
+              <div className="lpa-chart-wrap">
+                <ResponsiveContainer width="100%" height={180}>
+                  <AreaChart data={timeseries}>
+                    <defs>
+                      <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4} />
+                        <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false} width={35} tickFormatter={v => `€${v}`} />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Area type="monotone" dataKey="earnings" stroke="#22c55e" strokeWidth={2} fill="url(#gRev)" name="earnings" />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
-              <Globe2 size={18} className="lp-muted-icon" />
-            </div>
-            <div className="lp-table">
-              {data.countries.map((c: CountryStat, i: number) => (
-                <div className="lp-table-row" key={c.country + i}>
-                  <div className="lp-country">
-                    <span className="lp-dot" style={{ background: COLORS[i % COLORS.length] }} />
-                    {c.country === 'Unknown' ? 'Desconocido' : c.country}
-                  </div>
-                  <div className="lp-progress">
-                    <div
-                      className="lp-progress-bar"
-                      style={{ width: `${Math.max(5, c.percent)}%`, background: COLORS[i % COLORS.length] }}
-                    />
-                  </div>
-                  <div className="lp-table-value">
-                    {c.value} · {c.percent.toFixed(1)}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+            </>
+          )}
 
-          <div className="lp-card lp-table-card">
-            <div className="lp-card-head">
-              <div>
-                <p className="lp-card-kicker">Top performers</p>
-                <h3 className="lp-card-title">Links</h3>
+          {chartView === 'clicks' && (
+            <>
+              <div className="lpa-chart-title">Clicks por día</div>
+              <div className="lpa-chart-wrap">
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={clicksByDay}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false} width={30} />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Bar dataKey="clicks" fill="#a855f7" radius={[4, 4, 0, 0]} name="clicks" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <Smartphone size={18} className="lp-muted-icon" />
-            </div>
-            <div className="lp-table header">
-              <div className="lp-table-row head">
-                <span>Link</span>
-                <span>Clicks</span>
-                <span>Earnings</span>
-                <span>CTR</span>
-                <span>Tendencia</span>
-              </div>
-              {data.topLinks.map((l: TopLink, idx: number) => (
-                <div className="lp-table-row" key={l.id}>
-                  <div className="lp-link-name">
-                    <span className="lp-dot" style={{ background: COLORS[idx % COLORS.length] }} />
-                    <div>
-                      <div className="lp-link-title">{l.title || l.slug || 'Link'}</div>
-                      <div className="lp-link-sub">{l.slug || l.id.slice(0, 6)}</div>
+            </>
+          )}
+
+          {chartView === 'links' && (
+            <>
+              <div className="lpa-chart-title">Top 5 Links por Ingresos</div>
+              <div className="lpa-links-list">
+                {topLinks.map((link, i) => (
+                  <div className="lpa-link-row" key={link.id}>
+                    <div className="lpa-link-rank" style={{ background: COLORS[i] }}>{i + 1}</div>
+                    <div className="lpa-link-info">
+                      <span className="lpa-link-name">{link.title || link.slug}</span>
+                      <span className="lpa-link-slug">/{link.slug}</span>
+                    </div>
+                    <div className="lpa-link-stats">
+                      <span className="lpa-link-clicks">{link.views || 0} clicks</span>
+                      <span className="lpa-link-earn">{formatMoneyShort(link.earnings || 0)}</span>
                     </div>
                   </div>
-                  <span className="lp-table-value">{l.clicks}</span>
-                  <span className="lp-table-value">{formatCurrency(l.earnings)}</span>
-                  <span className="lp-table-value">{(l.ctr * 100).toFixed(1)}%</span>
-                  <div className="lp-sparkline mini">
-                    <ResponsiveContainer width="100%" height={40}>
-                      <AreaChart data={l.sparkline.map((v, i) => ({ idx: i, v }))}>
-                        <defs>
-                          <linearGradient id={`mini-${l.id}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={COLORS[idx % COLORS.length]} stopOpacity={0.4} />
-                            <stop offset="95%" stopColor={COLORS[idx % COLORS.length]} stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <Area
-                          dataKey="v"
-                          type="monotone"
-                          stroke={COLORS[idx % COLORS.length]}
-                          strokeWidth={1.8}
-                          fill={`url(#mini-${l.id})`}
-                          isAnimationActive={false}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                ))}
+                {topLinks.length === 0 && (
+                  <div className="lpa-empty-mini">No hay links todavía</div>
+                )}
+              </div>
+            </>
+          )}
+
+          {chartView === 'geo' && (
+            <>
+              <div className="lpa-chart-title">Distribución Geográfica</div>
+              {countries.length === 0 && devices.length === 0 ? (
+                /* Professional empty state */
+                <div className="lpa-geo-empty">
+                  <div className="lpa-geo-empty-icon">🌍</div>
+                  <div className="lpa-geo-empty-title">Sin datos geográficos</div>
+                  <div className="lpa-geo-empty-desc">
+                    Los datos de país y dispositivo aparecerán cuando tus enlaces reciban clicks
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+              ) : (
+                <div className="lpa-geo-grid">
+                  {/* Countries with flags */}
+                  <div className="lpa-geo-section">
+                    <div className="lpa-geo-subtitle"><Globe2 size={12} /> Países</div>
+                    {countries.slice(0, 5).map((c, i) => {
+                      // Country flag emoji from country name
+                      const getFlag = (name: string) => {
+                        const flags: Record<string, string> = {
+                          'SPAIN': '🇪🇸', 'MEXICO': '🇲🇽', 'ARGENTINA': '🇦🇷', 'COLOMBIA': '🇨🇴',
+                          'CHILE': '🇨🇱', 'PERU': '🇵🇪', 'UNITED STATES': '🇺🇸', 'BRAZIL': '🇧🇷',
+                          'GERMANY': '🇩🇪', 'FRANCE': '🇫🇷', 'ITALY': '🇮🇹', 'PORTUGAL': '🇵🇹',
+                          'UNITED KINGDOM': '🇬🇧', 'CANADA': '🇨🇦', 'VENEZUELA': '🇻🇪', 'ECUADOR': '🇪🇨',
+                          'ES': '🇪🇸', 'MX': '🇲🇽', 'AR': '🇦🇷', 'CO': '🇨🇴', 'US': '🇺🇸', 'BR': '🇧🇷',
+                        };
+                        return flags[name.toUpperCase()] || '🌐';
+                      };
+                      return (
+                        <div className="lpa-geo-row" key={c.country}>
+                          <span className="lpa-geo-flag">{getFlag(c.country)}</span>
+                          <span className="lpa-geo-name">
+                            {c.country === 'UNKNOWN' || c.country === 'Unknown' ? 'Desconocido' : c.country}
+                          </span>
+                          <span className="lpa-geo-bar">
+                            <span className="lpa-geo-bar-fill" style={{ width: `${c.percent}%`, background: COLORS[i] }} />
+                          </span>
+                          <span className="lpa-geo-val">{c.percent.toFixed(0)}%</span>
+                        </div>
+                      );
+                    })}
+                    {countries.length === 0 && (
+                      <div className="lpa-geo-placeholder">
+                        <span>🌐</span> Esperando clicks...
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Devices with icons */}
+                  <div className="lpa-geo-section">
+                    <div className="lpa-geo-subtitle"><Smartphone size={12} /> Dispositivos</div>
+                    {devices.slice(0, 4).map((d, i) => {
+                      const getDeviceIcon = (name: string) => {
+                        const n = (name || '').toLowerCase();
+                        if (n.includes('mobile') || n.includes('phone')) return '📱';
+                        if (n.includes('tablet') || n.includes('ipad')) return '📲';
+                        if (n.includes('desktop')) return '🖥️';
+                        return '💻';
+                      };
+                      return (
+                        <div className="lpa-geo-row" key={d.device}>
+                          <span className="lpa-geo-flag">{getDeviceIcon(d.device)}</span>
+                          <span className="lpa-geo-name">{d.device || 'Otro'}</span>
+                          <span className="lpa-geo-bar">
+                            <span className="lpa-geo-bar-fill" style={{ width: `${d.percent}%`, background: COLORS[i + 2] }} />
+                          </span>
+                          <span className="lpa-geo-val">{d.percent.toFixed(0)}%</span>
+                        </div>
+                      );
+                    })}
+                    {devices.length === 0 && (
+                      <div className="lpa-geo-placeholder">
+                        <span>📱</span> Esperando clicks...
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
+
+        {/* Quick Links Preview */}
+        {links.length > 0 && chartView !== 'links' && (
+          <div className="lpa-quick-links">
+            <div className="lpa-quick-title">Últimos Links</div>
+            {links.slice(0, 3).map((link, i) => (
+              <div className="lpa-quick-row" key={link.id}>
+                <span className="lpa-quick-dot" style={{ background: COLORS[i] }} />
+                <span className="lpa-quick-name">{link.title || link.slug}</span>
+                <span className="lpa-quick-earn">{formatMoneyShort(link.earnings || 0)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
       </div>
     </div>
   );
