@@ -295,7 +295,6 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
           width: '100%',
           maxWidth: '420px',
           height: '100vh',
-          height: '100dvh',
           background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
           borderLeft: '1px solid rgba(148, 163, 184, 0.1)',
           zIndex: 9999,
