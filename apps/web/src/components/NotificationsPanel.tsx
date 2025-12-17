@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  X, Bell, Check, Trash2, ExternalLink, DollarSign, TrendingUp, Users, Shield, 
-  Zap, Award, Link2, Eye, Sparkles, Filter, Settings, Volume2, VolumeX,
-  Activity, Calendar, Star, AlertTriangle, CheckCircle2, Info, Gift, Trophy
+  X, Bell, Check, Trash2, Volume2, VolumeX
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationsContext';
 import { Notification, NotificationType } from '../lib/notificationsService';
@@ -15,164 +13,85 @@ interface NotificationsPanelProps {
   onClose: () => void;
 }
 
-type FilterType = 'all' | 'unread' | 'activity' | 'financial' | 'social' | 'security' | 'system';
-
-// Iconos por tipo de notificación con animaciones
-const getNotificationIcon = (type: NotificationType, priority: string) => {
-  const iconClass = 'w-5 h-5';
-  const urgent = priority === 'urgent';
-  
-  // Iconos animados según tipo
-  switch (type) {
-    case 'link_click':
-    case 'link_milestone_100':
-    case 'link_milestone_500':
-    case 'link_milestone_1k':
-    case 'link_milestone_5k':
-    case 'link_milestone_10k':
-    case 'link_milestone_50k':
-    case 'link_milestone_100k':
-    case 'link_viral':
-    case 'link_trending':
-    case 'link_top_performer_day':
-    case 'link_top_performer_week':
-    case 'link_top_performer_month':
-      return <Link2 className={iconClass} />;
-    case 'revenue_milestone_10':
-    case 'revenue_milestone_25':
-    case 'revenue_milestone_50':
-    case 'revenue_milestone_100':
-    case 'revenue_milestone_250':
-    case 'revenue_milestone_500':
-    case 'revenue_milestone_1k':
-    case 'revenue_milestone_2.5k':
-    case 'revenue_milestone_5k':
-    case 'revenue_milestone_10k':
-    case 'first_earning':
-    case 'payout_processed':
-    case 'payout_available':
-    case 'payout_failed':
-      return <DollarSign className={iconClass} />;
-    case 'referral_signup':
-    case 'referral_first_earning':
-    case 'referral_earnings':
-    case 'referral_milestone_5':
-    case 'referral_milestone_10':
-    case 'referral_milestone_25':
-    case 'referral_milestone_50':
-    case 'referral_milestone_100':
-      return <Users className={iconClass} />;
-    case 'security_new_login':
-    case 'security_suspicious_activity':
-    case 'security_password_changed':
-    case 'security_2fa_enabled':
-    case 'security_2fa_disabled':
-    case 'security_session_revoked':
-      return <Shield className={iconClass} />;
-    case 'achievement_first_link':
-    case 'achievement_first_earning':
-    case 'achievement_100_clicks':
-    case 'achievement_1k_clicks':
-    case 'achievement_10k_clicks':
-    case 'achievement_100k_clicks':
-    case 'achievement_1m_clicks':
-    case 'achievement_power_user':
-    case 'achievement_viral_master':
-    case 'achievement_earner':
-      return <Trophy className={iconClass} />;
-    case 'bio_page_view':
-    case 'bio_page_milestone_100':
-    case 'bio_page_milestone_500':
-    case 'bio_page_milestone_1k':
-    case 'bio_page_milestone_5k':
-    case 'bio_page_milestone_10k':
-      return <Eye className={iconClass} />;
-    case 'daily_summary':
-    case 'weekly_summary':
-    case 'monthly_summary':
-      return <Calendar className={iconClass} />;
-    case 'new_feature':
-    case 'announcement':
-      return <Sparkles className={iconClass} />;
-    case 'welcome':
-      return <Gift className={iconClass} />;
-    default:
-      return <Bell className={iconClass} />;
-  }
+// Helper para obtener el nombre de la categoría
+const getCategoryName = (category?: string): string => {
+  const categoryMap: Record<string, string> = {
+    'activity': 'Actividad',
+    'financial': 'Finanzas',
+    'social': 'Social',
+    'security': 'Seguridad',
+    'system': 'Sistema',
+    'analytics': 'Analytics'
+  };
+  return categoryMap[category || 'system'] || 'Sistema';
 };
 
-// Color y gradiente por tipo y prioridad
-const getNotificationStyle = (type: NotificationType, priority: string, read: boolean) => {
-  const baseOpacity = read ? 0.4 : 1;
+// Iconos por tipo de notificación
+const getNotificationIcon = (type: NotificationType, priority: string) => {
+  const iconClass = 'w-5 h-5';
   
-  if (priority === 'urgent') {
-    return {
-      background: `linear-gradient(135deg, rgba(239, 68, 68, ${0.15 * baseOpacity}) 0%, rgba(220, 38, 38, ${0.08 * baseOpacity}) 100%)`,
-      borderColor: `rgba(239, 68, 68, ${0.4 * baseOpacity})`,
-      iconBg: `rgba(239, 68, 68, ${0.2 * baseOpacity})`,
-      iconColor: '#f87171',
-      glow: '0 0 20px rgba(239, 68, 68, 0.3)',
-    };
-  }
-  
-  if (priority === 'high') {
-    return {
-      background: `linear-gradient(135deg, rgba(59, 130, 246, ${0.15 * baseOpacity}) 0%, rgba(37, 99, 235, ${0.08 * baseOpacity}) 100%)`,
-      borderColor: `rgba(59, 130, 246, ${0.4 * baseOpacity})`,
-      iconBg: `rgba(59, 130, 246, ${0.2 * baseOpacity})`,
-      iconColor: '#60a5fa',
-      glow: '0 0 20px rgba(59, 130, 246, 0.3)',
-    };
-  }
-
-  // Colores por categoría
   if (type.startsWith('link_') || type.startsWith('bio_page_')) {
-    return {
-      background: `linear-gradient(135deg, rgba(168, 85, 247, ${0.12 * baseOpacity}) 0%, rgba(139, 92, 246, ${0.06 * baseOpacity}) 100%)`,
-      borderColor: `rgba(168, 85, 247, ${0.3 * baseOpacity})`,
-      iconBg: `rgba(168, 85, 247, ${0.15 * baseOpacity})`,
-      iconColor: '#c084fc',
-      glow: '0 0 15px rgba(168, 85, 247, 0.2)',
-    };
+    return <Bell className={iconClass} />;
   }
-  
   if (type.startsWith('revenue_') || type.startsWith('payout_') || type.startsWith('first_earning')) {
-    return {
-      background: `linear-gradient(135deg, rgba(34, 197, 94, ${0.12 * baseOpacity}) 0%, rgba(22, 163, 74, ${0.06 * baseOpacity}) 100%)`,
-      borderColor: `rgba(34, 197, 94, ${0.3 * baseOpacity})`,
-      iconBg: `rgba(34, 197, 94, ${0.15 * baseOpacity})`,
-      iconColor: '#4ade80',
-      glow: '0 0 15px rgba(34, 197, 94, 0.2)',
-    };
+    return <Bell className={iconClass} />;
   }
-  
   if (type.startsWith('referral_') || type.startsWith('achievement_')) {
+    return <Bell className={iconClass} />;
+  }
+  if (type.startsWith('security_')) {
+    return <Bell className={iconClass} />;
+  }
+  return <Bell className={iconClass} />;
+};
+
+// Estilos mejorados - no leídas resaltan mucho, leídas no
+const getNotificationStyle = (type: NotificationType, priority: string, read: boolean) => {
+  // Las no leídas resaltan mucho más
+  if (!read) {
+    if (priority === 'urgent') {
+      return {
+        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.15) 100%)',
+        borderColor: 'rgba(239, 68, 68, 0.6)',
+        iconBg: 'rgba(239, 68, 68, 0.3)',
+        iconColor: '#f87171',
+        glow: '0 0 25px rgba(239, 68, 68, 0.5)',
+        opacity: 1,
+        borderWidth: '2px',
+      };
+    }
+    if (priority === 'high') {
+      return {
+        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
+        borderColor: 'rgba(59, 130, 246, 0.6)',
+        iconBg: 'rgba(59, 130, 246, 0.3)',
+        iconColor: '#60a5fa',
+        glow: '0 0 25px rgba(59, 130, 246, 0.5)',
+        opacity: 1,
+        borderWidth: '2px',
+      };
+    }
+    // No leídas normales - resaltan mucho
     return {
-      background: `linear-gradient(135deg, rgba(249, 115, 22, ${0.12 * baseOpacity}) 0%, rgba(234, 88, 12, ${0.06 * baseOpacity}) 100%)`,
-      borderColor: `rgba(249, 115, 22, ${0.3 * baseOpacity})`,
-      iconBg: `rgba(249, 115, 22, ${0.15 * baseOpacity})`,
-      iconColor: '#fb923c',
-      glow: '0 0 15px rgba(249, 115, 22, 0.2)',
+      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.12) 100%)',
+      borderColor: 'rgba(99, 102, 241, 0.5)',
+      iconBg: 'rgba(99, 102, 241, 0.25)',
+      iconColor: '#a5b4fc',
+      glow: '0 0 20px rgba(99, 102, 241, 0.3)',
+      opacity: 1,
+      borderWidth: '2px',
     };
   }
   
-  if (type.startsWith('security_')) {
-    return {
-      background: `linear-gradient(135deg, rgba(239, 68, 68, ${0.12 * baseOpacity}) 0%, rgba(220, 38, 38, ${0.06 * baseOpacity}) 100%)`,
-      borderColor: `rgba(239, 68, 68, ${0.3 * baseOpacity})`,
-      iconBg: `rgba(239, 68, 68, ${0.15 * baseOpacity})`,
-      iconColor: '#f87171',
-      glow: '0 0 15px rgba(239, 68, 68, 0.2)',
-    };
-  }
-
-  // Default
+  // Las leídas son muy sutiles
   return {
-    background: `linear-gradient(135deg, rgba(99, 102, 241, ${0.1 * baseOpacity}) 0%, rgba(79, 70, 229, ${0.05 * baseOpacity}) 100%)`,
-    borderColor: `rgba(99, 102, 241, ${0.25 * baseOpacity})`,
-    iconBg: `rgba(99, 102, 241, ${0.12 * baseOpacity})`,
-    iconColor: '#a5b4fc',
-    glow: '0 0 10px rgba(99, 102, 241, 0.15)',
+    background: 'rgba(255, 255, 255, 0.02)',
+    borderColor: 'rgba(148, 163, 184, 0.1)',
+    iconBg: 'rgba(148, 163, 184, 0.05)',
+    iconColor: '#64748b',
+    glow: 'none',
+    opacity: 0.4,
+    borderWidth: '1px',
   };
 };
 
@@ -186,7 +105,6 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     deleteAllRead,
   } = useNotifications();
 
-  const [filter, setFilter] = useState<FilterType>('all');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -217,17 +135,11 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     };
   }, [isOpen]);
 
-  const filteredNotifications = (() => {
-    let filtered = notifications;
-    
-    if (filter === 'unread') {
-      filtered = filtered.filter((n) => !n.read);
-    } else if (filter !== 'all') {
-      filtered = filtered.filter((n) => n.category === filter);
-    }
-    
-    return filtered;
-  })();
+  // Ordenar: no leídas primero, luego por fecha
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    if (a.read !== b.read) return a.read ? 1 : -1;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 
   const handleNotificationClick = async (notification: Notification) => {
     if (!notification.read) {
@@ -244,19 +156,9 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     });
   };
 
-  const filterOptions: { value: FilterType; label: string; icon: any; count?: number }[] = [
-    { value: 'all', label: 'Todas', icon: Bell, count: notifications.length },
-    { value: 'unread', label: 'No leídas', icon: AlertTriangle, count: unreadCount },
-    { value: 'activity', label: 'Actividad', icon: Activity },
-    { value: 'financial', label: 'Finanzas', icon: DollarSign },
-    { value: 'social', label: 'Social', icon: Users },
-    { value: 'security', label: 'Seguridad', icon: Shield },
-    { value: 'system', label: 'Sistema', icon: Settings },
-  ];
-
   return (
     <>
-      {/* Overlay con animación */}
+      {/* Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -277,7 +179,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
         )}
       </AnimatePresence>
 
-      {/* Panel con animación de slide */}
+      {/* Panel */}
       <motion.div
         ref={panelRef}
         initial={{ x: '100%' }}
@@ -304,7 +206,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
           overflow: 'hidden',
         }}
       >
-        {/* Header con gradiente animado */}
+        {/* Header */}
         <div
           style={{
             padding: '20px',
@@ -313,25 +215,9 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
             background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            position: 'relative',
-            overflow: 'hidden',
           }}
         >
-          {/* Efecto de partículas en el fondo del header */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `
-                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)
-              `,
-              animation: 'lp-header-shimmer 3s ease-in-out infinite',
-              pointerEvents: 'none',
-            }}
-          />
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
@@ -412,68 +298,8 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
             </div>
           </div>
 
-          {/* Filtros horizontales con scroll */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '8px', 
-            overflowX: 'auto',
-            paddingBottom: '4px',
-            position: 'relative',
-            zIndex: 1,
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}>
-            <style>{`
-              div::-webkit-scrollbar { display: none; }
-            `}</style>
-            {filterOptions.map((option) => {
-              const Icon = option.icon;
-              const isActive = filter === option.value;
-              return (
-                <motion.button
-                  key={option.value}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setFilter(option.value)}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: isActive 
-                      ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(79, 70, 229, 0.2) 100%)'
-                      : 'rgba(255, 255, 255, 0.05)',
-                    color: isActive ? '#a5b4fc' : '#94a3b8',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isActive ? '0 2px 8px rgba(99, 102, 241, 0.2)' : 'none',
-                  }}
-                >
-                  <Icon size={14} />
-                  <span>{option.label}</span>
-                  {option.count !== undefined && option.count > 0 && (
-                    <span style={{
-                      background: isActive ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                      padding: '2px 6px',
-                      borderRadius: '999px',
-                      fontSize: '10px',
-                      fontWeight: 700,
-                    }}>
-                      {option.count}
-                    </span>
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
-
           {/* Acciones rápidas */}
-          <div style={{ display: 'flex', gap: '8px', marginTop: '12px', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
             {unreadCount > 0 && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -528,7 +354,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
           </div>
         </div>
 
-        {/* Lista de notificaciones con animaciones */}
+        {/* Lista de notificaciones */}
         <div
           style={{
             flex: 1,
@@ -537,11 +363,10 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
             padding: '12px',
             paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
             WebkitOverflowScrolling: 'touch',
-            position: 'relative',
           }}
         >
           <AnimatePresence mode="popLayout">
-            {filteredNotifications.length === 0 ? (
+            {sortedNotifications.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -566,16 +391,14 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
                   <Bell size={64} style={{ marginBottom: '20px', opacity: 0.3 }} />
                 </motion.div>
                 <p style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px', color: '#94a3b8' }}>
-                  {filter === 'unread' ? 'No hay notificaciones no leídas' : 'No hay notificaciones'}
+                  No hay notificaciones
                 </p>
                 <p style={{ fontSize: '13px', color: '#64748b' }}>
-                  {filter === 'unread'
-                    ? 'Todas tus notificaciones están leídas'
-                    : 'Te notificaremos cuando haya actividad importante'}
+                  Te notificaremos cuando haya actividad importante
                 </p>
               </motion.div>
             ) : (
-              filteredNotifications.map((notification, index) => (
+              sortedNotifications.map((notification, index) => (
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
@@ -590,13 +413,6 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
           </AnimatePresence>
         </div>
       </motion.div>
-
-      <style>{`
-        @keyframes lp-header-shimmer {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 1; }
-        }
-      `}</style>
     </>
   );
 }
@@ -621,6 +437,7 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
 
   const style = getNotificationStyle(notification.type, notification.priority, notification.read);
   const icon = getNotificationIcon(notification.type, notification.priority);
+  const categoryName = getCategoryName(notification.category);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -634,7 +451,7 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
       layout
       initial={{ opacity: 0, x: 50, scale: 0.9 }}
       animate={{ 
-        opacity: isDeleting ? 0 : 1, 
+        opacity: isDeleting ? 0 : (notification.read ? 0.4 : 1), 
         x: isDeleting ? 100 : 0, 
         scale: isDeleting ? 0.8 : 1,
       }}
@@ -648,43 +465,49 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
-      whileHover={{ x: -4, scale: 1.01 }}
+      whileHover={{ x: -4, scale: notification.read ? 1 : 1.02 }}
       whileTap={{ scale: 0.98 }}
       style={{
         padding: '16px',
         borderRadius: '16px',
         background: style.background,
-        border: `1px solid ${style.borderColor}`,
+        border: `${style.borderWidth} solid ${style.borderColor}`,
         cursor: 'pointer',
         marginBottom: '8px',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: isHovered ? `0 8px 24px rgba(0, 0, 0, 0.4), ${style.glow}` : '0 2px 8px rgba(0, 0, 0, 0.2)',
+        opacity: style.opacity,
+        boxShadow: !notification.read && isHovered 
+          ? `0 8px 24px rgba(0, 0, 0, 0.5), ${style.glow}` 
+          : !notification.read 
+          ? `0 4px 12px rgba(0, 0, 0, 0.3), ${style.glow}`
+          : '0 1px 3px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
-      {/* Indicador de no leída con animación */}
+      {/* Indicador de no leída - más visible */}
       {!notification.read && (
         <motion.div
           initial={{ scale: 0 }}
-          animate={{ scale: [1, 1.2, 1] }}
+          animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
           style={{
             position: 'absolute',
             left: '0',
             top: '50%',
             transform: 'translateY(-50%)',
-            width: '4px',
-            height: '60%',
+            width: '5px',
+            height: '70%',
             background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
             borderRadius: '0 4px 4px 0',
-            boxShadow: '0 0 8px rgba(99, 102, 241, 0.6)',
+            boxShadow: '0 0 12px rgba(99, 102, 241, 0.8)',
+            zIndex: 1,
           }}
         />
       )}
 
-      {/* Efecto de brillo al hover */}
-      {isHovered && (
+      {/* Efecto de brillo para no leídas */}
+      {!notification.read && isHovered && (
         <motion.div
           initial={{ x: '-100%' }}
           animate={{ x: '100%' }}
@@ -692,17 +515,17 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%)',
             pointerEvents: 'none',
           }}
         />
       )}
 
       <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
-        {/* Icono con animación */}
+        {/* Icono */}
         <motion.div
           animate={!notification.read ? {
-            scale: [1, 1.1, 1],
+            scale: [1, 1.15, 1],
             rotate: [0, 5, -5, 0],
           } : {}}
           transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -716,7 +539,7 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
             justifyContent: 'center',
             color: style.iconColor,
             flexShrink: 0,
-            boxShadow: `0 4px 12px ${style.iconBg}`,
+            boxShadow: !notification.read ? `0 4px 16px ${style.iconBg}` : 'none',
           }}
         >
           {icon}
@@ -726,12 +549,30 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
             <div style={{ flex: 1 }}>
+              {/* Categoría en el mensaje */}
+              <div style={{ 
+                display: 'inline-block',
+                marginBottom: '6px',
+                padding: '2px 8px',
+                borderRadius: '6px',
+                background: notification.read 
+                  ? 'rgba(148, 163, 184, 0.1)' 
+                  : 'rgba(99, 102, 241, 0.2)',
+                color: notification.read ? '#64748b' : '#a5b4fc',
+                fontSize: '10px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}>
+                {categoryName}
+              </div>
+              
               <h3
                 style={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  color: notification.read ? '#cbd5e1' : '#f9fafb',
-                  margin: '0 0 4px 0',
+                  fontSize: '15px',
+                  fontWeight: notification.read ? 500 : 700,
+                  color: notification.read ? '#94a3b8' : '#f9fafb',
+                  margin: '0 0 6px 0',
                   lineHeight: '1.4',
                 }}
               >
@@ -740,39 +581,19 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
               <p
                 style={{
                   fontSize: '13px',
-                  color: notification.read ? '#64748b' : '#94a3b8',
+                  color: notification.read ? '#64748b' : '#cbd5e1',
                   margin: '0 0 8px 0',
                   lineHeight: '1.5',
                 }}
               >
                 {notification.message}
               </p>
-              
-              {/* Metadata expandida */}
-              {isExpanded && notification.metadata && Object.keys(notification.metadata).length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  style={{
-                    marginTop: '8px',
-                    padding: '8px',
-                    background: 'rgba(0, 0, 0, 0.2)',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    color: '#94a3b8',
-                    fontFamily: 'monospace',
-                  }}
-                >
-                  {JSON.stringify(notification.metadata, null, 2)}
-                </motion.div>
-              )}
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
                 <span
                   style={{
                     fontSize: '11px',
-                    color: '#64748b',
+                    color: notification.read ? '#475569' : '#64748b',
                     fontWeight: 500,
                   }}
                 >
@@ -783,7 +604,7 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
                     fontSize: '10px',
                     fontWeight: 700,
                     color: '#f87171',
-                    background: 'rgba(239, 68, 68, 0.15)',
+                    background: 'rgba(239, 68, 68, 0.2)',
                     padding: '2px 6px',
                     borderRadius: '4px',
                   }}>
@@ -793,7 +614,7 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
               </div>
             </div>
 
-            {/* Acciones con animación */}
+            {/* Acciones */}
             {isHovered && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}

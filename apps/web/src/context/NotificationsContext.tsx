@@ -62,6 +62,32 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     loadNotifications();
   }, [loadNotifications]);
 
+  // Generar notificaciones históricas para nuevas cuentas
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const generateHistorical = async () => {
+      // Verificar si el usuario ya tiene notificaciones
+      const { data: existing } = await supabase
+        .from('notifications')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1)
+        .single();
+
+      // Si no tiene notificaciones, generar históricas
+      if (!existing) {
+        await notificationsService.generateHistoricalNotifications(user.id);
+        // Recargar después de generar
+        setTimeout(() => {
+          loadNotifications();
+        }, 1000);
+      }
+    };
+
+    generateHistorical();
+  }, [user?.id, loadNotifications]);
+
   // Real-time subscription con animaciones
   useEffect(() => {
     if (!user?.id) return;

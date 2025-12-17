@@ -515,6 +515,99 @@ export const notificationsService = {
       { views }
     );
   },
+
+  // Generar notificaciones históricas para nuevas cuentas
+  async generateHistoricalNotifications(userId: string): Promise<void> {
+    const now = new Date();
+    const notifications = [
+      {
+        type: 'welcome' as NotificationType,
+        title: '🎉 ¡Bienvenido a LinkPay!',
+        message: 'Estamos emocionados de tenerte aquí. Empieza a crear links y gana dinero.',
+        priority: 'high' as const,
+        createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000), // Hace 2 horas
+      },
+      {
+        type: 'achievement_first_link' as NotificationType,
+        title: '🎯 Crea tu primer link',
+        message: 'Crea tu primer link corto y empieza a compartirlo. ¡Es muy fácil!',
+        priority: 'medium' as const,
+        createdAt: new Date(now.getTime() - 1.5 * 60 * 60 * 1000), // Hace 1.5 horas
+      },
+      {
+        type: 'link_click' as NotificationType,
+        title: '✨ Nuevo clic recibido',
+        message: 'Tu link recibió un clic. ¡Sigue compartiendo para ganar más!',
+        priority: 'low' as const,
+        createdAt: new Date(now.getTime() - 1 * 60 * 60 * 1000), // Hace 1 hora
+      },
+      {
+        type: 'link_milestone_10' as NotificationType,
+        title: '🎉 ¡10 clics alcanzados!',
+        message: 'Tu link alcanzó 10 clics. ¡Sigue así!',
+        priority: 'medium' as const,
+        createdAt: new Date(now.getTime() - 45 * 60 * 1000), // Hace 45 min
+      },
+      {
+        type: 'first_earning' as NotificationType,
+        title: '💰 ¡Primera ganancia!',
+        message: 'Has ganado tu primer euro. ¡Felicidades!',
+        priority: 'high' as const,
+        createdAt: new Date(now.getTime() - 30 * 60 * 1000), // Hace 30 min
+      },
+      {
+        type: 'revenue_milestone_10' as NotificationType,
+        title: '💵 ¡€10 en ingresos!',
+        message: 'Has alcanzado €10 en ingresos totales. ¡Sigue creciendo!',
+        priority: 'high' as const,
+        createdAt: new Date(now.getTime() - 20 * 60 * 1000), // Hace 20 min
+      },
+      {
+        type: 'link_viral' as NotificationType,
+        title: '🔥 ¡Tu link se está volviendo viral!',
+        message: 'Tu link ha crecido un 150% en las últimas 24h. ¡Está explotando!',
+        priority: 'high' as const,
+        createdAt: new Date(now.getTime() - 15 * 60 * 1000), // Hace 15 min
+      },
+      {
+        type: 'referral_signup' as NotificationType,
+        title: '🎁 Nuevo referido',
+        message: 'Un nuevo usuario se registró usando tu código de referido.',
+        priority: 'medium' as const,
+        createdAt: new Date(now.getTime() - 10 * 60 * 1000), // Hace 10 min
+      },
+      {
+        type: 'payout_available' as NotificationType,
+        title: '💰 Payout disponible',
+        message: 'Tienes €25.50 disponibles para retirar. ¡Solicita tu payout ahora!',
+        priority: 'high' as const,
+        createdAt: new Date(now.getTime() - 5 * 60 * 1000), // Hace 5 min
+      },
+      {
+        type: 'achievement_power_user' as NotificationType,
+        title: '🏆 Logro: Usuario Power',
+        message: 'Has creado 50 links y recibido 10,000 clics. ¡Eres un usuario power!',
+        priority: 'medium' as const,
+        createdAt: new Date(now.getTime() - 2 * 60 * 1000), // Hace 2 min
+      },
+    ];
+
+    // Crear todas las notificaciones históricas
+    for (const notif of notifications) {
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: userId,
+          type: notif.type,
+          title: notif.title,
+          message: notif.message,
+          priority: notif.priority,
+          read: false,
+          metadata: {},
+          created_at: notif.createdAt.toISOString(),
+        });
+    }
+  },
 };
 
 // Helper para categorizar notificaciones
