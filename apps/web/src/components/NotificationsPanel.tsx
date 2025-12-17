@@ -47,53 +47,164 @@ const getNotificationIcon = (type: NotificationType, priority: string) => {
   return <Bell className={iconClass} />;
 };
 
-// Estilos mejorados - no leídas resaltan mucho, leídas no
+// ============================================================
+// ESTILOS POR TIPO DE NOTIFICACIÓN - Colores únicos por categoría
+// ============================================================
 const getNotificationStyle = (type: NotificationType, priority: string, read: boolean) => {
-  // Las no leídas resaltan mucho más
-  if (!read) {
-    if (priority === 'urgent') {
-      return {
-        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.15) 100%)',
-        borderColor: 'rgba(239, 68, 68, 0.6)',
-        iconBg: 'rgba(239, 68, 68, 0.3)',
-        iconColor: '#f87171',
-        glow: '0 0 25px rgba(239, 68, 68, 0.5)',
-        opacity: 1,
-        borderWidth: '2px',
-      };
-    }
-    if (priority === 'high') {
-      return {
-        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
-        borderColor: 'rgba(59, 130, 246, 0.6)',
-        iconBg: 'rgba(59, 130, 246, 0.3)',
-        iconColor: '#60a5fa',
-        glow: '0 0 25px rgba(59, 130, 246, 0.5)',
-        opacity: 1,
-        borderWidth: '2px',
-      };
-    }
-    // No leídas normales - resaltan mucho
+  // Si está leída, siempre muy sutil
+  if (read) {
     return {
-      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.12) 100%)',
-      borderColor: 'rgba(99, 102, 241, 0.5)',
-      iconBg: 'rgba(99, 102, 241, 0.25)',
-      iconColor: '#a5b4fc',
-      glow: '0 0 20px rgba(99, 102, 241, 0.3)',
+      background: 'rgba(255, 255, 255, 0.02)',
+      borderColor: 'rgba(148, 163, 184, 0.1)',
+      iconBg: 'rgba(148, 163, 184, 0.05)',
+      iconColor: '#64748b',
+      glow: 'none',
+      opacity: 0.4,
+      borderWidth: '1px',
+    };
+  }
+
+  // === INGRESOS / DINERO === (Verde/Dorado brillante)
+  if (type.startsWith('revenue_') || type.startsWith('first_earning') || type.startsWith('payout_') ||
+    type.startsWith('daily_earnings') || type.startsWith('weekly_earnings') || type.startsWith('monthly_earnings')) {
+    return {
+      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(234, 179, 8, 0.2) 100%)',
+      borderColor: 'rgba(34, 197, 94, 0.7)',
+      iconBg: 'linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(234, 179, 8, 0.3))',
+      iconColor: '#4ade80',
+      glow: '0 0 30px rgba(34, 197, 94, 0.5)',
       opacity: 1,
       borderWidth: '2px',
     };
   }
 
-  // Las leídas son muy sutiles
+  // === SEGURIDAD === (Rojo intenso)
+  if (type.startsWith('security_')) {
+    return {
+      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.2) 100%)',
+      borderColor: 'rgba(239, 68, 68, 0.7)',
+      iconBg: 'rgba(239, 68, 68, 0.35)',
+      iconColor: '#f87171',
+      glow: '0 0 30px rgba(239, 68, 68, 0.5)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // === REFERIDOS === (Morado/Violeta vibrante)
+  if (type.startsWith('referral_')) {
+    return {
+      background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.2) 100%)',
+      borderColor: 'rgba(139, 92, 246, 0.7)',
+      iconBg: 'linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(236, 72, 153, 0.3))',
+      iconColor: '#a78bfa',
+      glow: '0 0 30px rgba(139, 92, 246, 0.5)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // === VIRAL / HITOS IMPORTANTES === (Rosa/Magenta brillante)
+  if (type === 'link_viral' || type.includes('viral') || type.includes('trending') ||
+    type.includes('top_performer') || type.includes('record')) {
+    return {
+      background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.35) 0%, rgba(168, 85, 247, 0.25) 100%)',
+      borderColor: 'rgba(236, 72, 153, 0.8)',
+      iconBg: 'linear-gradient(135deg, rgba(236, 72, 153, 0.45), rgba(168, 85, 247, 0.35))',
+      iconColor: '#f472b6',
+      glow: '0 0 35px rgba(236, 72, 153, 0.6)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // === LOGROS / ACHIEVEMENTS === (Dorado/Ámbar)
+  if (type.startsWith('achievement_') || type === 'streak_bonus' || type.includes('milestone')) {
+    return {
+      background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.3) 0%, rgba(245, 158, 11, 0.2) 100%)',
+      borderColor: 'rgba(251, 191, 36, 0.7)',
+      iconBg: 'rgba(251, 191, 36, 0.35)',
+      iconColor: '#fbbf24',
+      glow: '0 0 30px rgba(251, 191, 36, 0.5)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // === SISTEMA / BIENVENIDA === (Azul eléctrico)
+  if (type === 'welcome' || type === 'announcement' || type === 'new_feature' ||
+    type === 'system_update' || type === 'push_enabled') {
+    return {
+      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(14, 165, 233, 0.2) 100%)',
+      borderColor: 'rgba(59, 130, 246, 0.7)',
+      iconBg: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(14, 165, 233, 0.3))',
+      iconColor: '#60a5fa',
+      glow: '0 0 30px rgba(59, 130, 246, 0.5)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // === ACTIVIDAD DE LINKS === (Cyan/Turquesa)
+  if (type.startsWith('link_') || type.startsWith('bio_page_')) {
+    return {
+      background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(6, 182, 212, 0.15) 100%)',
+      borderColor: 'rgba(14, 165, 233, 0.6)',
+      iconBg: 'rgba(14, 165, 233, 0.3)',
+      iconColor: '#38bdf8',
+      glow: '0 0 25px rgba(14, 165, 233, 0.4)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // === TIPS / CONSEJOS === (Slate claro)
+  if (type === 'tip_of_the_day' || type === 'daily_summary' || type === 'weekly_summary') {
+    return {
+      background: 'linear-gradient(135deg, rgba(100, 116, 139, 0.2) 0%, rgba(71, 85, 105, 0.12) 100%)',
+      borderColor: 'rgba(100, 116, 139, 0.5)',
+      iconBg: 'rgba(100, 116, 139, 0.25)',
+      iconColor: '#94a3b8',
+      glow: '0 0 15px rgba(100, 116, 139, 0.3)',
+      opacity: 1,
+      borderWidth: '1px',
+    };
+  }
+
+  // === DEFAULT basado en prioridad ===
+  if (priority === 'urgent') {
+    return {
+      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.15) 100%)',
+      borderColor: 'rgba(239, 68, 68, 0.6)',
+      iconBg: 'rgba(239, 68, 68, 0.3)',
+      iconColor: '#f87171',
+      glow: '0 0 25px rgba(239, 68, 68, 0.5)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  if (priority === 'high') {
+    return {
+      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
+      borderColor: 'rgba(59, 130, 246, 0.6)',
+      iconBg: 'rgba(59, 130, 246, 0.3)',
+      iconColor: '#60a5fa',
+      glow: '0 0 25px rgba(59, 130, 246, 0.5)',
+      opacity: 1,
+      borderWidth: '2px',
+    };
+  }
+
+  // Default para medium/low
   return {
-    background: 'rgba(255, 255, 255, 0.02)',
-    borderColor: 'rgba(148, 163, 184, 0.1)',
-    iconBg: 'rgba(148, 163, 184, 0.05)',
-    iconColor: '#64748b',
-    glow: 'none',
-    opacity: 0.4,
-    borderWidth: '1px',
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.12) 100%)',
+    borderColor: 'rgba(99, 102, 241, 0.5)',
+    iconBg: 'rgba(99, 102, 241, 0.25)',
+    iconColor: '#a5b4fc',
+    glow: '0 0 20px rgba(99, 102, 241, 0.3)',
+    opacity: 1,
+    borderWidth: '2px',
   };
 };
 
