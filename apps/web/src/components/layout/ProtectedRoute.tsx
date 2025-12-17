@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useDataCache } from "../../context/DataCacheContext";
 
 type Props = {
   children: ReactNode;
@@ -9,6 +10,18 @@ type Props = {
 export function ProtectedRoute({ children }: Props) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const { prefetchAll } = useDataCache();
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PREFETCH DATOS CRÍTICOS cuando el usuario está autenticado
+  // Esto hace la navegación instantánea porque los datos ya están cacheados
+  // ═══════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    if (user && !loading) {
+      // Prefetch en background sin bloquear el render
+      prefetchAll();
+    }
+  }, [user, loading, prefetchAll]);
 
   if (loading) {
     return (

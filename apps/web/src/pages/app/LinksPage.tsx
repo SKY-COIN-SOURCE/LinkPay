@@ -15,37 +15,40 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { LinkService, Link } from '../../lib/linkService';
+import { useCachedLinks } from '../../context/DataCacheContext';
 import '../../styles/PremiumBackground.css';
 
 export function LinksPage() {
-  const [links, setLinks] = useState<Link[]>([]);
-  const [loading, setLoading] = useState(true);
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DATOS CACHEADOS - Navegación instantánea
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { links, loading, refresh } = useCachedLinks();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [animatedCount, setAnimatedCount] = useState(0);
   const prevCountRef = useRef(0);
-
-  const loadLinks = async () => {
-    setLoading(true);
-    try {
-      const data = await LinkService.getAll();
-      setLinks(data as any[]);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadLinks();
-  }, []);
+  
+  // Estado local para eliminar links (actualización optimista)
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  
+  // Links filtrados (excluyendo los eliminados localmente)
+  const activeLinks = links.filter(l => !deletedIds.has(l.id));
 
   const handleDelete = async (id: string) => {
     if (window.confirm('¿Eliminar enlace?')) {
       try {
+        // Actualización optimista - marcar como eliminado inmediatamente
+        setDeletedIds(prev => new Set(prev).add(id));
         await LinkService.deleteLink(id);
-        setLinks((prev) => prev.filter((l) => l.id !== id));
+        // Refrescar caché en background
+        refresh();
       } catch (err) {
+        // Revertir si falla
+        setDeletedIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
         alert('Error al eliminar.');
       }
     }
@@ -56,7 +59,7 @@ export function LinksPage() {
     alert('Copiado');
   };
 
-  const filteredLinks = links.filter((l) => {
+  const filteredLinks = activeLinks.filter((l) => {
     const term = searchTerm.toLowerCase();
     return (
       l.slug?.toLowerCase().includes(term) ||
@@ -156,7 +159,7 @@ export function LinksPage() {
             </div>
             <button
               type="button"
-              onClick={loadLinks}
+              onClick={refresh}
               className="lp-links-refresh"
             >
               <Zap size={16} />

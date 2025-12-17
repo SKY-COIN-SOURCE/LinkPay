@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useTranslation } from '../../i18n';
 import './Dashboard.css';
@@ -13,17 +13,23 @@ import {
   Share2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { LinkService, Link } from '../../lib/linkService';
-import { AnalyticsService } from '../../lib/analyticsService';
+import { Link } from '../../lib/linkService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import { useCachedDashboard } from '../../context/DataCacheContext';
 
-// Hook para animar números (Count Up)
-function useCountTo(end: number, duration = 2000) {
-  const [count, setCount] = useState(0);
+// Hook para animar números (Count Up) - Optimizado para no re-animar en navegación
+function useCountTo(end: number, duration = 2000, skip = false) {
+  const [count, setCount] = useState(skip ? end : 0);
 
   useEffect(() => {
+    // Si skip es true, mostrar valor final inmediatamente (datos cacheados)
+    if (skip) {
+      setCount(end);
+      return;
+    }
+    
     let startTime: number;
     let animationFrame: number;
 
@@ -42,7 +48,7 @@ function useCountTo(end: number, duration = 2000) {
 
     animationFrame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration]);
+  }, [end, duration, skip]);
 
   return count;
 }
@@ -50,118 +56,47 @@ function useCountTo(end: number, duration = 2000) {
 export function DashboardPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [links, setLinks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // USAR DATOS CACHEADOS - Navegación instantánea
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { data: dashboardData, links, loading, isRefreshing, refresh } = useCachedDashboard();
+  
+  // Determinar si debemos animar o mostrar valores instantáneamente
+  // Si ya teníamos datos (navegación de vuelta), no animamos
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const skipAnimation = useMemo(() => {
+    // Si los datos ya existen cuando el componente monta, saltar animación
+    return dashboardData !== null && !hasAnimated;
+  }, []);
+  
+  useEffect(() => {
+    if (!loading && dashboardData) {
+      setHasAnimated(true);
+    }
+  }, [loading, dashboardData]);
 
-  // Real-time calculated stats
-  const [realtimeStats, setRealtimeStats] = useState({
-    totalRevenue: 0,
-    linkRevenue: 0,
-    bioRevenue: 0,
-    totalClicks: 0,
-    linkClicks: 0,
-    bioClicks: 0, // This might need separate handling if not in 'links'
-  });
+  // Stats calculados
+  const realtimeStats = useMemo(() => ({
+    totalRevenue: dashboardData?.totalRevenue ?? 0,
+    linkRevenue: dashboardData?.linkRevenue ?? 0,
+    bioRevenue: dashboardData?.bioRevenue ?? 0,
+    totalClicks: dashboardData?.totalClicks ?? 0,
+    linkClicks: dashboardData?.linkClicks ?? 0,
+    bioClicks: dashboardData?.bioClicks ?? 0,
+  }), [dashboardData]);
 
-  // Historical data for charts
-  const [chartData, setChartData] = useState<any[]>([]);
-
-  // Animated values
-  const animatedRevenue = useCountTo(realtimeStats.totalRevenue, 1500);
-  const animatedClicks = useCountTo(realtimeStats.totalClicks, 1500);
-  const animatedReferrals = useCountTo(0, 2000); // Placeholder for now
+  // Animated values - Skip si datos están cacheados
+  const animatedRevenue = useCountTo(realtimeStats.totalRevenue, 1500, skipAnimation);
+  const animatedClicks = useCountTo(realtimeStats.totalClicks, 1500, skipAnimation);
+  const animatedReferrals = useCountTo(0, 2000, skipAnimation);
 
   // Visual Trigger State
   const [revenueIncreased, setRevenueIncreased] = useState(false);
 
-  useEffect(() => {
-    loadDashboard();
-
-    // REAL-TIME SUBSCRIPTION
-    const channel = supabase
-      .channel('dashboard-updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'links' },
-        (payload) => {
-          handleRealtimeEvent(payload);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const handleRealtimeEvent = (payload: any) => {
-    if (payload.eventType === 'INSERT') {
-      setLinks(prev => [payload.new, ...prev]);
-    } else if (payload.eventType === 'UPDATE') {
-      setLinks(prev => prev.map(l => l.id === payload.new.id ? payload.new : l));
-      // Visual feedback if earnings increased
-      if (payload.new.earnings > (payload.old?.earnings || 0)) {
-        triggerRevenuePulse();
-      }
-    } else if (payload.eventType === 'DELETE') {
-      setLinks(prev => prev.filter(l => l.id !== payload.old.id));
-    }
-  };
-
   const triggerRevenuePulse = () => {
     setRevenueIncreased(true);
     setTimeout(() => setRevenueIncreased(false), 2000);
-  };
-
-  // Recalculate stats whenever 'links' changes
-  useEffect(() => {
-    if (links.length > 0) {
-      const linkRev = links.reduce((acc, curr) => acc + (curr.earnings || 0), 0);
-      const linkClx = links.reduce((acc, curr) => acc + (curr.views || 0), 0);
-
-      setRealtimeStats(prev => ({
-        ...prev,
-        linkRevenue: linkRev,
-        totalRevenue: linkRev + prev.bioRevenue, // Bio revenue is additive
-        linkClicks: linkClx,
-        totalClicks: linkClx + prev.bioClicks
-      }));
-    }
-  }, [links]);
-
-  const loadDashboard = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const [dashData, linksData] = await Promise.all([
-        AnalyticsService.getDashboardData(),
-        LinkService.getAll()
-      ]);
-
-      // Set historical chart data
-      if (dashData?.timeline) {
-        setChartData(dashData.timeline);
-      }
-
-      // Initial stats population
-      if (linksData) {
-        setLinks(linksData);
-
-        // Now AnalyticsService returns proper bio data
-        setRealtimeStats(prev => ({
-          ...prev,
-          bioRevenue: (dashData as any)?.bioRevenue || 0, // Keep cast if type not updated yet in IDE, but runtime is safe
-          bioClicks: (dashData as any)?.bioClicks || 0,
-        }));
-      }
-
-    } catch (e) {
-      console.error(e);
-    } finally {
-      // Carga instantánea - sin delay artificial
-      setLoading(false);
-    }
   };
 
   const copyReferral = async () => {

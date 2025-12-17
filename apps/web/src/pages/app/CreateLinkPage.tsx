@@ -20,6 +20,7 @@ import { LinkService } from '../../lib/linkService';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
+import { useDataCache } from '../../context/DataCacheContext';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CREATE LINK - Integrated with LinksHub
@@ -28,6 +29,7 @@ import Confetti from 'react-confetti';
 
 export function CreateLinkPage() {
   const navigate = useNavigate();
+  const { refreshLinks, refreshDashboard } = useDataCache();
 
   // Core States
   const [url, setUrl] = useState('');
@@ -78,6 +80,10 @@ export function CreateLinkPage() {
 
       const shortUrl = `${window.location.origin}/l/${data.slug}`;
       setResult({ ...data, short_url: shortUrl });
+      
+      // Refrescar caché en background para que los datos estén actualizados
+      refreshLinks();
+      refreshDashboard();
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message?.includes('alias') ? 'Alias ocupado' : err.message || 'Error');

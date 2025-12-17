@@ -25,8 +25,7 @@ const CreateLinkPage = lazy(() => import('./pages/app/CreateLinkPage').then(m =>
 const LinksPage = lazy(() => import('./pages/app/LinksPage').then(m => ({ default: m.LinksPage })));
 const LinksHub = lazy(() => import('./pages/app/LinksHub').then(m => ({ default: m.LinksHub })));
 const AnalyticsPage = lazy(() => import('./pages/app/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
-const TechnologyPage = lazy(() => import('./pages/app/TechnologyPage').then(m => ({ default: m.TechnologyPage })));
-const DevelopersPage = lazy(() => import('./pages/app/DevelopersPage').then(m => ({ default: m.DevelopersPage })));
+// TechnologyPage y DevelopersPage eliminados - redirigen a secciones útiles
 const PayoutsPage = lazy(() => import('./pages/app/PayoutsPage').then(m => ({ default: m.PayoutsPage })));
 const SettingsPage = lazy(() => import('./pages/app/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const BioEditorPage = lazy(() => import('./pages/app/BioEditorPage').then(m => ({ default: m.BioEditorPage })));
@@ -101,8 +100,8 @@ export const router = createBrowserRouter([
       { path: "payouts", element: withSuspense(PayoutsPage) },
       { path: "finance", element: withSuspense(PayoutsPage) },
       { path: "analytics", element: withSuspense(AnalyticsPage) },
-      { path: "technology", element: withSuspense(TechnologyPage) },
-      { path: "developers", element: withSuspense(DevelopersPage) },
+      { path: "technology", element: <Navigate to="/app" replace /> },
+      { path: "developers", element: <Navigate to="/app/settings" replace /> },
       { path: "settings", element: withSuspense(SettingsPage) },
       { path: "bio-editor", element: withSuspense(BioEditorPage) },
       { path: "referrals", element: withSuspense(ReferralsPage) },

@@ -32,9 +32,9 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { supabase } from '../../lib/supabaseClient';
-import { LinkService, Link } from '../../lib/linkService';
-import { AnalyticsService, TimeRange } from '../../lib/analyticsService';
+import { Link } from '../../lib/linkService';
+import { TimeRange } from '../../lib/analyticsService';
+import { useCachedAnalytics } from '../../context/DataCacheContext';
 
 type ChartView = 'revenue' | 'clicks' | 'links' | 'geo';
 
@@ -101,30 +101,11 @@ function ChartTooltip({ active, payload, label }: any) {
 }
 
 export function AnalyticsPage() {
-  const [range, setRange] = useState<TimeRange>('30d');
-  const [loading, setLoading] = useState(true);
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DATOS CACHEADOS - Navegación instantánea
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { data: analyticsData, links, loading, range, setRange, refresh } = useCachedAnalytics();
   const [error, setError] = useState('');
-
-  // Stats like Dashboard
-  const [stats, setStats] = useState({
-    totalRevenue: 0,
-    linkRevenue: 0,
-    bioRevenue: 0,
-    totalClicks: 0,
-    linkClicks: 0,
-    bioClicks: 0,
-    activeLinks: 0,
-    rpm: 0,
-  });
-
-  // All links for table
-  const [links, setLinks] = useState<Link[]>([]);
-
-  // Chart data
-  const [timeseries, setTimeseries] = useState<any[]>([]);
-  const [clicksByDay, setClicksByDay] = useState<any[]>([]);
-  const [countries, setCountries] = useState<any[]>([]);
-  const [devices, setDevices] = useState<any[]>([]);
 
   // Chart view toggle
   const [chartView, setChartView] = useState<ChartView>('revenue');
@@ -132,164 +113,117 @@ export function AnalyticsPage() {
   // Links expanded state
   const [linksExpanded, setLinksExpanded] = useState(false);
 
-  // Animated values
+  // Calcular stats desde los datos cacheados
+  const stats = useMemo(() => {
+    const activeLinksCount = links?.filter((l: any) => l.is_active !== false).length || 0;
+    const linkRev = links?.reduce((acc: number, l: any) => acc + (l.earnings || 0), 0) || 0;
+    const linkClx = links?.reduce((acc: number, l: any) => acc + (l.views || 0), 0) || 0;
+    const bioRev = (analyticsData as any)?.bioRevenue || 0;
+    const bioClx = (analyticsData as any)?.bioClicks || 0;
+    const totalRev = linkRev + bioRev;
+    const totalClx = linkClx + bioClx;
+
+    return {
+      totalRevenue: totalRev,
+      linkRevenue: linkRev,
+      bioRevenue: bioRev,
+      totalClicks: totalClx,
+      linkClicks: linkClx,
+      bioClicks: bioClx,
+      activeLinks: activeLinksCount,
+      rpm: totalClx > 0 ? (totalRev / totalClx) * 1000 : 0,
+    };
+  }, [links, analyticsData]);
+
+  // Calcular datos de charts desde los datos cacheados
+  const { timeseries, clicksByDay, countries, devices } = useMemo(() => {
+    if (!analyticsData) {
+      return { timeseries: [], clicksByDay: [], countries: [], devices: [] };
+    }
+
+    // Get timeseries from API
+    let ts = analyticsData.timeseries || [];
+
+    // Convert to CUMULATIVE chart (progressive earnings over time)
+    let cumulativeEarnings = 0;
+    let cumulativeClicks = 0;
+    let tsCumulative = ts.map((point: any) => {
+      cumulativeEarnings += point.earnings || 0;
+      cumulativeClicks += point.clicks || 0;
+      return {
+        date: point.date,
+        earnings: cumulativeEarnings,
+        clicks: cumulativeClicks,
+      };
+    });
+
+    // If cumulative ends at 0 but we have real earnings, adjust
+    const finalCumulative = tsCumulative.length > 0 ? tsCumulative[tsCumulative.length - 1].earnings : 0;
+    if (finalCumulative < stats.totalRevenue && stats.totalRevenue > 0 && tsCumulative.length > 0) {
+      const lastPoint = tsCumulative[tsCumulative.length - 1];
+      tsCumulative[tsCumulative.length - 1] = {
+        ...lastPoint,
+        earnings: stats.totalRevenue,
+        clicks: stats.totalClicks,
+      };
+    }
+
+    // Fallback: if no timeseries data, create minimal progression
+    if (tsCumulative.length === 0 && stats.totalRevenue > 0) {
+      const today = new Date();
+      const weekAgo = new Date(today);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      tsCumulative = [
+        { date: weekAgo.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), earnings: 0, clicks: 0 },
+        { date: today.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), earnings: stats.totalRevenue, clicks: stats.totalClicks },
+      ];
+    }
+
+    // Normalize countries
+    const countryCodeToName: Record<string, string> = {
+      'ES': 'Spain', 'MX': 'Mexico', 'AR': 'Argentina', 'CO': 'Colombia',
+      'CL': 'Chile', 'PE': 'Peru', 'US': 'United States', 'BR': 'Brazil',
+      'DE': 'Germany', 'FR': 'France', 'IT': 'Italy', 'PT': 'Portugal',
+      'GB': 'United Kingdom', 'CA': 'Canada', 'VE': 'Venezuela', 'EC': 'Ecuador',
+      'UY': 'Uruguay', 'PY': 'Paraguay', 'BO': 'Bolivia', 'CR': 'Costa Rica',
+      'PA': 'Panama', 'DO': 'Dominican Republic', 'GT': 'Guatemala', 'HN': 'Honduras',
+      'NI': 'Nicaragua', 'SV': 'El Salvador', 'CU': 'Cuba', 'PR': 'Puerto Rico',
+      'SPAIN': 'Spain', 'MEXICO': 'Mexico', 'ARGENTINA': 'Argentina', 'COLOMBIA': 'Colombia',
+      'CHILE': 'Chile', 'PERU': 'Peru', 'UNITED STATES': 'United States', 'BRAZIL': 'Brazil',
+      'GERMANY': 'Germany', 'FRANCE': 'France', 'ITALY': 'Italy', 'PORTUGAL': 'Portugal',
+      'UNITED KINGDOM': 'United Kingdom', 'CANADA': 'Canada', 'VENEZUELA': 'Venezuela',
+    };
+    const rawCountries = analyticsData.countries || [];
+    const mergedMap: Record<string, { clicks: number; percent: number }> = {};
+    rawCountries.forEach((c: any) => {
+      const key = c.country?.toUpperCase();
+      const name = countryCodeToName[key] || c.country;
+      if (!mergedMap[name]) {
+        mergedMap[name] = { clicks: 0, percent: 0 };
+      }
+      mergedMap[name].clicks += c.value || c.clicks || 0;
+      mergedMap[name].percent += c.percent || 0;
+    });
+    const normalizedCountries = Object.entries(mergedMap).map(([country, data]) => ({
+      country,
+      clicks: data.clicks,
+      percent: data.percent
+    })).sort((a, b) => b.percent - a.percent);
+
+    return {
+      timeseries: tsCumulative,
+      clicksByDay: analyticsData.clicksByDay || [],
+      countries: normalizedCountries,
+      devices: analyticsData.devices || [],
+    };
+  }, [analyticsData, stats]);
+
+  // Animated values - Skip animation si datos ya están cacheados
+  const skipAnimation = analyticsData !== null;
   const animRevenue = useCountTo(stats.totalRevenue, 1500);
   const animClicks = useCountTo(stats.totalClicks, 1500);
   const animLinks = useCountTo(stats.activeLinks, 1500);
   const animRpm = useCountTo(stats.rpm, 1500);
-
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Fetch everything in parallel like Dashboard
-      const [analyticsData, linksData] = await Promise.all([
-        AnalyticsService.getDashboardData(range),
-        LinkService.getAll(),
-      ]);
-
-      if (linksData) {
-        setLinks(linksData);
-      }
-
-      // Calculate stats - use linksData for earnings (always available)
-      const activeLinksCount = linksData?.filter((l: any) => l.is_active !== false).length || 0;
-
-      // Use linksData for earnings (this is the actual stored data)
-      const linkRev = linksData?.reduce((acc: number, l: any) => acc + (l.earnings || 0), 0) || 0;
-      const linkClx = linksData?.reduce((acc: number, l: any) => acc + (l.views || 0), 0) || 0;
-      const bioRev = (analyticsData as any)?.bioRevenue || 0;
-      const bioClx = (analyticsData as any)?.bioClicks || 0;
-      const totalRev = linkRev + bioRev;
-      const totalClx = linkClx + bioClx;
-
-      setStats({
-        totalRevenue: totalRev,
-        linkRevenue: linkRev,
-        bioRevenue: bioRev,
-        totalClicks: totalClx,
-        linkClicks: linkClx,
-        bioClicks: bioClx,
-        activeLinks: activeLinksCount,
-        rpm: totalClx > 0 ? (totalRev / totalClx) * 1000 : 0,
-      });
-
-      if (analyticsData) {
-        // Get timeseries from API
-        let ts = analyticsData.timeseries || [];
-
-        // Calculate totals (same as above for stats)
-        const linkRev = linksData?.reduce((acc: number, l: any) => acc + (l.earnings || 0), 0) || 0;
-        const bioRev = (analyticsData as any)?.bioRevenue || 0;
-        const totalRev = linkRev + bioRev;
-        const linkClx = linksData?.reduce((acc: number, l: any) => acc + (l.views || 0), 0) || 0;
-        const bioClx = (analyticsData as any)?.bioClicks || 0;
-        const totalClx = linkClx + bioClx;
-
-        // Convert to CUMULATIVE chart (progressive earnings over time)
-        // Each point shows total earnings UP TO that date
-        let cumulativeEarnings = 0;
-        let cumulativeClicks = 0;
-        let tsCumulative = ts.map((point: any) => {
-          cumulativeEarnings += point.earnings || 0;
-          cumulativeClicks += point.clicks || 0;
-          return {
-            date: point.date,
-            earnings: cumulativeEarnings,
-            clicks: cumulativeClicks,
-          };
-        });
-
-        // If cumulative ends at 0 but we have real earnings, distribute evenly
-        const finalCumulative = tsCumulative.length > 0 ? tsCumulative[tsCumulative.length - 1].earnings : 0;
-        if (finalCumulative < totalRev && totalRev > 0 && tsCumulative.length > 0) {
-          // Add the missing earnings to the last point
-          const lastPoint = tsCumulative[tsCumulative.length - 1];
-          tsCumulative[tsCumulative.length - 1] = {
-            ...lastPoint,
-            earnings: totalRev,
-            clicks: totalClx,
-          };
-        }
-
-        // Fallback: if no timeseries data, create minimal progression
-        if (tsCumulative.length === 0 && totalRev > 0) {
-          const today = new Date();
-          const weekAgo = new Date(today);
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          tsCumulative = [
-            { date: weekAgo.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), earnings: 0, clicks: 0 },
-            { date: today.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), earnings: totalRev, clicks: totalClx },
-          ];
-        }
-
-        setTimeseries(tsCumulative);
-        setClicksByDay(analyticsData.clicksByDay || []);
-
-        // Normalize countries: merge ES/SPAIN, MX/MEXICO, etc.
-        const countryCodeToName: Record<string, string> = {
-          // 2-letter codes
-          'ES': 'Spain', 'MX': 'Mexico', 'AR': 'Argentina', 'CO': 'Colombia',
-          'CL': 'Chile', 'PE': 'Peru', 'US': 'United States', 'BR': 'Brazil',
-          'DE': 'Germany', 'FR': 'France', 'IT': 'Italy', 'PT': 'Portugal',
-          'GB': 'United Kingdom', 'CA': 'Canada', 'VE': 'Venezuela', 'EC': 'Ecuador',
-          'UY': 'Uruguay', 'PY': 'Paraguay', 'BO': 'Bolivia', 'CR': 'Costa Rica',
-          'PA': 'Panama', 'DO': 'Dominican Republic', 'GT': 'Guatemala', 'HN': 'Honduras',
-          'NI': 'Nicaragua', 'SV': 'El Salvador', 'CU': 'Cuba', 'PR': 'Puerto Rico',
-          // Full names (normalize case)
-          'SPAIN': 'Spain', 'MEXICO': 'Mexico', 'ARGENTINA': 'Argentina', 'COLOMBIA': 'Colombia',
-          'CHILE': 'Chile', 'PERU': 'Peru', 'UNITED STATES': 'United States', 'BRAZIL': 'Brazil',
-          'GERMANY': 'Germany', 'FRANCE': 'France', 'ITALY': 'Italy', 'PORTUGAL': 'Portugal',
-          'UNITED KINGDOM': 'United Kingdom', 'CANADA': 'Canada', 'VENEZUELA': 'Venezuela',
-        };
-        const rawCountries = analyticsData.countries || [];
-        const mergedMap: Record<string, { clicks: number; percent: number }> = {};
-        rawCountries.forEach((c: any) => {
-          // Try to normalize: check code first, then full name
-          const key = c.country?.toUpperCase();
-          const name = countryCodeToName[key] || c.country;
-          if (!mergedMap[name]) {
-            mergedMap[name] = { clicks: 0, percent: 0 };
-          }
-          // API returns 'value' not 'clicks' - use either
-          mergedMap[name].clicks += c.value || c.clicks || 0;
-          mergedMap[name].percent += c.percent || 0;
-        });
-        const normalizedCountries = Object.entries(mergedMap).map(([country, data]) => ({
-          country,
-          clicks: data.clicks,
-          percent: data.percent
-        })).sort((a, b) => b.percent - a.percent);
-        setCountries(normalizedCountries);
-
-        setDevices(analyticsData.devices || []);
-      }
-
-    } catch (err) {
-      console.error('[Analytics] Error:', err);
-      setError('Error al cargar datos');
-    } finally {
-      setLoading(false);
-    }
-  }, [range]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  // Real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('analytics-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, () => fetchData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'click_events' }, () => fetchData())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [fetchData]);
 
   // Top 5 links by earnings
   const topLinks = useMemo(() => {
@@ -333,7 +267,7 @@ export function AnalyticsPage() {
           <div className="lpa-error">
             <AlertTriangle size={24} />
             <span>{error}</span>
-            <button className="lpa-btn" onClick={fetchData}><RefreshCw size={14} /> Reintentar</button>
+            <button className="lpa-btn" onClick={refresh}><RefreshCw size={14} /> Reintentar</button>
           </div>
         </div>
       </div>
@@ -349,7 +283,7 @@ export function AnalyticsPage() {
             <div className="lpa-empty-icon">📊</div>
             <h3>Sin datos todavía</h3>
             <p>Crea tu primer link y empieza a monetizar</p>
-            <button className="lpa-btn" onClick={fetchData}><RefreshCw size={14} /> Refrescar</button>
+            <button className="lpa-btn" onClick={refresh}><RefreshCw size={14} /> Refrescar</button>
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ import { PayoutService, Transaction } from '../../lib/payoutService';
 import { Validators } from '../../lib/validators';
 import { supabase } from '../../lib/supabaseClient';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import { useCachedPayouts } from '../../context/DataCacheContext';
 import '../../styles/PremiumBackground.css';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -22,10 +23,10 @@ import '../../styles/PremiumBackground.css';
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export function PayoutsPage() {
-  // ─── STATE ───────────────────────────────────────────────────────────────
-  const [balance, setBalance] = useState(0);
-  const [history, setHistory] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DATOS CACHEADOS - Navegación instantánea
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { balance, history, loading, refresh } = useCachedPayouts();
 
   // Modal states
   const [showWithdraw, setShowWithdraw] = useState(false);
@@ -60,29 +61,9 @@ export function PayoutsPage() {
   const MIN_BANK = 10;
   const minWithdraw = withdrawMethod === 'PayPal' ? MIN_PAYPAL : MIN_BANK;
 
-  // ─── LIFECYCLE ───────────────────────────────────────────────────────────
+  // ─── CARGAR MÉTODOS GUARDADOS ─────────────────────────────────────────────
   useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (withdrawMethod === 'PayPal' && savedMethods.paypal) {
-      setWithdrawAccount(savedMethods.paypal);
-    }
-    if (withdrawMethod === 'Bank' && savedMethods.bank) {
-      setWithdrawAccount(savedMethods.bank);
-    }
-  }, [withdrawMethod, savedMethods]);
-
-  const loadData = async () => {
-    try {
-      const [bal, txs] = await Promise.all([
-        PayoutService.getBalance(),
-        PayoutService.getHistory(),
-      ]);
-      setBalance(bal);
-      setHistory(txs);
-
+    const loadSavedMethods = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase
@@ -99,12 +80,18 @@ export function PayoutsPage() {
           if (data.paypal_email) setWithdrawAccount(data.paypal_email);
         }
       }
-    } catch (err) {
-      console.error('[Finance] loadData error:', err);
-    } finally {
-      setLoading(false);
+    };
+    loadSavedMethods();
+  }, []);
+
+  useEffect(() => {
+    if (withdrawMethod === 'PayPal' && savedMethods.paypal) {
+      setWithdrawAccount(savedMethods.paypal);
     }
-  };
+    if (withdrawMethod === 'Bank' && savedMethods.bank) {
+      setWithdrawAccount(savedMethods.bank);
+    }
+  }, [withdrawMethod, savedMethods]);
 
   // ─── WITHDRAW HANDLER ────────────────────────────────────────────────────
   const handleWithdraw = async () => {
@@ -139,7 +126,7 @@ export function PayoutsPage() {
       setWithdrawSuccess(true);
       setWithdrawInfo('¡Listo! Tu solicitud está en proceso.');
       setWithdrawAmount('');
-      loadData();
+      refresh();
       setTimeout(() => {
         setWithdrawSuccess(false);
         setShowWithdraw(false);
@@ -176,7 +163,7 @@ export function PayoutsPage() {
       setSendAmount('');
       setSendEmail('');
       setSendNote('');
-      loadData();
+      refresh();
       setTimeout(() => {
         setSendSuccess(false);
         setShowSend(false);

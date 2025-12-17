@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { DataCacheProvider } from './context/DataCacheContext';
 import { ToastProvider } from './components/ui/Toast';
 import { UpdateNotification } from './components/UpdateNotification';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -17,10 +18,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <I18nProvider>
         <ThemeProvider>
           <AuthProvider>
-            <ToastProvider>
-              <UpdateNotification />
-              <RouterProvider router={router} />
-            </ToastProvider>
+            <DataCacheProvider>
+              <ToastProvider>
+                <UpdateNotification />
+                <RouterProvider router={router} />
+              </ToastProvider>
+            </DataCacheProvider>
           </AuthProvider>
         </ThemeProvider>
       </I18nProvider>

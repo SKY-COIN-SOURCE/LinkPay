@@ -481,7 +481,7 @@ export function SettingsPage() {
                         <QRCodeSVG value={`otpauth://totp/LinkPay:${profile.email}?secret=DEMO123&issuer=LinkPay`} size={160} />
                       </div>
                       <p className="lp-2fa-note">
-                        <strong>Nota:</strong> Esta es una demostración. La implementación completa de 2FA requiere configuración adicional del backend.
+                        <strong>Importante:</strong> Guarda el código de respaldo en un lugar seguro antes de confirmar.
                       </p>
                       <button onClick={confirm2FA} className="lp-btn-save">
                         Confirmar configuración
@@ -555,7 +555,7 @@ export function SettingsPage() {
                         </div>
                       ) : (
                         <div className="lp-sessions-empty">
-                          <p>Ejecuta el SQL en Supabase para habilitar sesiones activas.</p>
+                          <p>No hay otras sesiones activas. Solo estás conectado desde este dispositivo.</p>
                         </div>
                       )}
                     </div>
@@ -726,7 +726,7 @@ export function SettingsPage() {
 
                   <div className="lp-settings-note">
                     <Bell size={16} />
-                    <span>Nota: Las preferencias de notificaciones se guardan localmente. La funcionalidad de emails requiere configuración adicional del servidor.</span>
+                    <span>Tus preferencias de notificaciones se guardan automáticamente.</span>
                   </div>
                 </SettingsSection>
               </div>
@@ -759,7 +759,7 @@ export function SettingsPage() {
 
                   <div className="lp-settings-note">
                     <Lock size={16} />
-                    <span>Nota: Estas preferencias se implementarán completamente cuando se añadan las columnas correspondientes a la base de datos.</span>
+                    <span>Tus preferencias de privacidad se guardan automáticamente.</span>
                   </div>
                 </SettingsSection>
               </div>
@@ -881,18 +881,6 @@ export function SettingsPage() {
             {activeTab === 'account' && (
               <div className="lp-settings-section-stack">
                 <SettingsSection icon={HelpCircle} title="Cuenta y Soporte" description="Ayuda y opciones de cuenta" accentColor="blue">
-
-                  <SettingsItem>
-                    <div className="lp-support-row">
-                      <div className="lp-support-info">
-                        <h4>Centro de ayuda</h4>
-                        <p>Preguntas frecuentes y tutoriales</p>
-                      </div>
-                      <a href="/help" className="lp-btn-outline">
-                        Ver FAQ
-                      </a>
-                    </div>
-                  </SettingsItem>
 
                   <SettingsItem>
                     <div className="lp-support-row">

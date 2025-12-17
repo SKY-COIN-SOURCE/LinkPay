@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Camera, Users, Bell } from 'lucide-react';
+import { Settings, Camera, Users, Wallet } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 
@@ -69,8 +69,8 @@ export function MobileHeader() {
       </div>
 
       <div className="lp-header-right">
-        <button className="lp-header-icon-btn" onClick={() => { }}>
-          <Bell size={20} />
+        <button className="lp-header-icon-btn" onClick={() => navigate('/app/payouts')}>
+          <Wallet size={20} />
         </button>
         <button className="lp-header-icon-btn" onClick={() => navigate('/app/settings')}>
           <Settings size={20} />
