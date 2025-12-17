@@ -11,19 +11,15 @@ type DailyRow = {
   paid_clicks: number;
 };
 
-type TopLinkAgg = {
-  link_id: string;
-  link_slug: string | null;
-  link_title: string | null;
-  earnings: number | string | null;
-  clicks: number | string | null;
-};
-
 type EventRow = {
   link_id: string | null;
+  link_slug: string | null;
+  link_title: string | null;
   created_at: string;
   earned_amount: number | string | null;
   is_paid: boolean | null;
+  country?: string | null;
+  device?: string | null;
 };
 
 export type AnalyticsSummary = {
@@ -158,6 +154,97 @@ function buildSparkline(events: EventRow[], since: Date, until: Date, buckets = 
   return series;
 }
 
+function buildDailyFromEvents(events: EventRow[], since: Date, until: Date): DailyRow[] {
+  const buckets: Record<string, DailyRow> = {};
+  events.forEach((ev) => {
+    const day = new Date(ev.created_at).toISOString().slice(0, 10);
+    if (!buckets[day]) {
+      buckets[day] = { day, clicks: 0, earnings: 0, paid_clicks: 0 };
+    }
+    buckets[day].clicks += 1;
+    buckets[day].earnings += Number(ev.earned_amount || 0);
+    buckets[day].paid_clicks += ev.is_paid ? 1 : 0;
+  });
+  return Object.values(buckets)
+    .filter((r) => {
+      const d = new Date(r.day);
+      return d >= since && d <= until;
+    })
+    .sort((a, b) => (a.day < b.day ? -1 : 1));
+}
+
+function buildCountries(events: EventRow[]): CountryStat[] {
+  const map = new Map<string, number>();
+  events.forEach((ev) => {
+    const key = (ev.country || 'Unknown').toUpperCase();
+    map.set(key, (map.get(key) || 0) + 1);
+  });
+  const total = Array.from(map.values()).reduce((a, b) => a + b, 0);
+  return Array.from(map.entries())
+    .map(([country, value]) => ({
+      country,
+      value,
+      percent: total ? (value / total) * 100 : 0,
+    }))
+    .sort((a, b) => b.value - a.value);
+}
+
+function buildDevices(events: EventRow[]): DeviceStat[] {
+  const map = new Map<string, number>();
+  events.forEach((ev) => {
+    const key = ev.device || 'Unknown';
+    map.set(key, (map.get(key) || 0) + 1);
+  });
+  const total = Array.from(map.values()).reduce((a, b) => a + b, 0);
+  return Array.from(map.entries())
+    .map(([device, value]) => ({
+      device,
+      value,
+      percent: total ? (value / total) * 100 : 0,
+    }))
+    .sort((a, b) => b.value - a.value);
+}
+
+function buildTopLinks(events: EventRow[], since: Date, until: Date) {
+  const map = new Map<
+    string,
+    { slug: string | null; title: string | null; earnings: number; clicks: number; paid: number; evs: EventRow[] }
+  >();
+  events.forEach((ev) => {
+    if (!ev.link_id) return;
+    if (!map.has(ev.link_id)) {
+      map.set(ev.link_id, {
+        slug: ev.link_slug,
+        title: ev.link_title,
+        earnings: 0,
+        clicks: 0,
+        paid: 0,
+        evs: [],
+      });
+    }
+    const item = map.get(ev.link_id)!;
+    item.earnings += Number(ev.earned_amount || 0);
+    item.clicks += 1;
+    item.paid += ev.is_paid ? 1 : 0;
+    item.evs.push(ev);
+  });
+
+  const topLinks = Array.from(map.entries())
+    .map(([id, v]) => ({
+      id,
+      slug: v.slug,
+      title: v.title,
+      earnings: v.earnings,
+      clicks: v.clicks,
+      ctr: v.clicks > 0 ? v.paid / v.clicks : 0,
+      sparkline: buildSparkline(v.evs, since, until, 14),
+    }))
+    .sort((a, b) => b.earnings - a.earnings)
+    .slice(0, 5);
+
+  return { topLinks };
+}
+
 export const AnalyticsService = {
   async getDashboardData(range: TimeRange = '30d'): Promise<AnalyticsResponse | null> {
     const { data: authData } = await supabase.auth.getUser();
@@ -169,10 +256,8 @@ export const AnalyticsService = {
     const [
       dailyNowRes,
       dailyPrevRes,
-      countriesRes,
-      devicesRes,
       activeLinksRes,
-      topLinksAggRes,
+      eventsRes,
     ] = await Promise.all([
       supabase
         .from('analytics_events_daily')
@@ -189,18 +274,6 @@ export const AnalyticsService = {
         .lt('day', previousUntil.toISOString())
         .order('day', { ascending: true }),
       supabase
-        .from('analytics_events')
-        .select('country, value:count()', { group: 'country' })
-        .eq('owner_id', user.id)
-        .gte('created_at', since.toISOString())
-        .lt('created_at', until.toISOString()),
-      supabase
-        .from('analytics_events')
-        .select('device, value:count()', { group: 'device' })
-        .eq('owner_id', user.id)
-        .gte('created_at', since.toISOString())
-        .lt('created_at', until.toISOString()),
-      supabase
         .from('links')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
@@ -208,23 +281,28 @@ export const AnalyticsService = {
       supabase
         .from('analytics_events')
         .select(
-          'link_id, link_slug, link_title, earnings:sum(earned_amount), clicks:count()',
-          { group: 'link_id, link_slug, link_title' }
+          'created_at, earned_amount, is_paid, link_id, link_slug, link_title, country, device'
         )
         .eq('owner_id', user.id)
         .gte('created_at', since.toISOString())
         .lt('created_at', until.toISOString())
-        .order('earnings', { ascending: false })
-        .limit(5),
+        .order('created_at', { ascending: false })
+        .limit(5000),
     ]);
 
+    const dailyNowData = (dailyNowRes.data as DailyRow[]) || [];
+    const dailyPrevData = (dailyPrevRes.data as DailyRow[]) || [];
+    const events = (eventsRes.data as EventRow[]) || [];
+
     const dailyNow = ensureDailyContinuity(
-      (dailyNowRes.data as DailyRow[]) || [],
+      dailyNowData.length ? dailyNowData : buildDailyFromEvents(events, since, until),
       since,
       until
     );
     const dailyPrev = ensureDailyContinuity(
-      (dailyPrevRes.data as DailyRow[]) || [],
+      dailyPrevData.length
+        ? dailyPrevData
+        : buildDailyFromEvents(events, previousSince, previousUntil),
       previousSince,
       previousUntil
     );
@@ -255,58 +333,9 @@ export const AnalyticsService = {
       },
     };
 
-    const countriesRaw = (countriesRes.data as { country: string; value: number }[]) || [];
-    const totalCountry = countriesRaw.reduce((acc, c) => acc + Number(c.value || 0), 0);
-    const countries: CountryStat[] = countriesRaw
-      .map((c) => ({
-        country: c.country || 'Unknown',
-        value: Number(c.value || 0),
-        percent: totalCountry ? (Number(c.value || 0) / totalCountry) * 100 : 0,
-      }))
-      .sort((a, b) => b.value - a.value);
-
-    const devicesRaw = (devicesRes.data as { device: string; value: number }[]) || [];
-    const totalDevice = devicesRaw.reduce((acc, d) => acc + Number(d.value || 0), 0);
-    const devices: DeviceStat[] = devicesRaw
-      .map((d) => ({
-        device: d.device || 'Unknown',
-        value: Number(d.value || 0),
-        percent: totalDevice ? (Number(d.value || 0) / totalDevice) * 100 : 0,
-      }))
-      .sort((a, b) => b.value - a.value);
-
-    const topAgg = (topLinksAggRes.data as TopLinkAgg[]) || [];
-    const topLinkIds = topAgg.map((l) => l.link_id).filter(Boolean);
-
-    let sparkEvents: EventRow[] = [];
-    if (topLinkIds.length > 0) {
-      const sparkRes = await supabase
-        .from('analytics_events')
-        .select('link_id, created_at, earned_amount, is_paid')
-        .in('link_id', topLinkIds)
-        .eq('owner_id', user.id)
-        .gte('created_at', since.toISOString())
-        .lt('created_at', until.toISOString())
-        .limit(5000);
-      sparkEvents = (sparkRes.data as EventRow[]) || [];
-    }
-
-    const topLinks: TopLink[] = topAgg.map((l) => {
-      const linkEvents = sparkEvents.filter((e) => e.link_id === l.link_id);
-      const paidClicks = linkEvents.filter((e) => e.is_paid).length;
-      const clicks = Number(l.clicks || linkEvents.length || 0);
-      const earnings = Number(l.earnings || 0);
-      const ctr = clicks > 0 ? paidClicks / clicks : 0;
-      return {
-        id: l.link_id,
-        slug: l.link_slug,
-        title: l.link_title,
-        earnings,
-        clicks,
-        ctr,
-        sparkline: buildSparkline(linkEvents, since, until, 14),
-      };
-    });
+    const countries = buildCountries(events);
+    const devices = buildDevices(events);
+    const { topLinks } = buildTopLinks(events, since, until);
 
     const timeseries = dailyNow.map((d) => ({
       date: formatDateKey(new Date(d.day)),
