@@ -1252,3 +1252,167 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* ===== PUSH NOTIFICATIONS CARD ===== */
+.lp-push-notifications-card {
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border: 1px solid rgba(236, 72, 153, 0.2);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.lp-push-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.lp-push-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.25));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f472b6;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.2);
+    animation: pulse-glow 3s infinite;
+}
+
+.lp-push-info h4 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 6px 0;
+}
+
+.lp-push-info p {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.lp-push-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lp-push-badge {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.lp-push-badge.granted {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #4ade80;
+}
+
+.lp-push-badge.denied {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+.lp-push-badge.default {
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #94a3b8;
+}
+
+.lp-push-badge.unsupported {
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px dashed rgba(148, 163, 184, 0.3);
+    color: #64748b;
+}
+
+.lp-push-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lp-btn-push-enable {
+    flex: 1;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.3);
+}
+
+.lp-btn-push-enable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(236, 72, 153, 0.4);
+}
+
+.lp-btn-push-test {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lp-btn-push-test:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(148, 163, 184, 0.5);
+}
+
+.lp-push-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.lp-push-features span {
+    padding: 6px 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 8px;
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+    .lp-push-actions {
+        flex-direction: column;
+    }
+
+    .lp-btn-push-enable,
+    .lp-btn-push-test {
+        min-width: 100%;
+    }
+}

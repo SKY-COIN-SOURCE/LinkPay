@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   User, Shield, Wallet, Camera, CheckCircle2, Mail, Loader2, Save, LogOut,
   Landmark, Palette, Bell, Lock, Plug, HelpCircle, Eye, DollarSign,
-  ExternalLink, Copy, Zap, Moon, Sun, Smartphone, Globe, Key, Trash2, AlertTriangle, Plus, X
+  ExternalLink, Copy, Zap, Moon, Sun, Smartphone, Globe, Key, Trash2, AlertTriangle, Plus, X, BellRing
 } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { QRCodeSVG } from 'qrcode.react';
@@ -14,6 +14,7 @@ import { ProfilePreview } from '../../components/ui/ProfilePreview';
 import { useTheme, ACCENT_COLORS } from '../../context/ThemeContext';
 import { sessionsService, apiKeysService, accountService, preferencesService, UserSession, ApiKey } from '../../lib/settingsService';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import { pushNotificationService } from '../../lib/pushNotifications';
 import '../../styles/PremiumBackground.css';
 import './Settings.css';
 
@@ -711,6 +712,99 @@ export function SettingsPage() {
                       description="Recibe un email con el rendimiento de la semana"
                       color="pink"
                     />
+                  </SettingsItem>
+
+                  {/* PUSH NOTIFICATIONS PREMIUM SECTION */}
+                  <SettingsItem>
+                    <div className="lp-push-notifications-card">
+                      <div className="lp-push-header">
+                        <div className="lp-push-icon">
+                          <BellRing size={24} />
+                        </div>
+                        <div className="lp-push-info">
+                          <h4>🔔 Notificaciones Push</h4>
+                          <p>Recibe alertas en tiempo real en tu móvil y pantalla de bloqueo</p>
+                        </div>
+                      </div>
+
+                      <div className="lp-push-status">
+                        {typeof Notification !== 'undefined' ? (
+                          Notification.permission === 'granted' ? (
+                            <span className="lp-push-badge granted">✓ Activadas</span>
+                          ) : Notification.permission === 'denied' ? (
+                            <span className="lp-push-badge denied">✗ Bloqueadas en navegador</span>
+                          ) : (
+                            <span className="lp-push-badge default">○ Sin activar</span>
+                          )
+                        ) : (
+                          <span className="lp-push-badge unsupported">No soportado en este navegador</span>
+                        )}
+                      </div>
+
+                      <div className="lp-push-actions">
+                        {typeof Notification !== 'undefined' && Notification.permission !== 'denied' && (
+                          <button
+                            className="lp-btn-push-enable"
+                            onClick={async () => {
+                              try {
+                                const { data } = await supabase.auth.getUser();
+                                if (!data?.user) return;
+
+                                await pushNotificationService.initialize();
+                                const subscription = await pushNotificationService.subscribe(data.user.id);
+
+                                if (subscription) {
+                                  toast.success('¡Push notifications activadas! 🎉');
+                                } else if (Notification.permission === 'denied') {
+                                  toast.error('Permiso denegado. Actívalas en configuración del navegador.');
+                                } else {
+                                  toast.warning('No se pudo activar. Intenta de nuevo.');
+                                }
+                              } catch (e) {
+                                console.error('Push setup error:', e);
+                                toast.error('Error al activar notificaciones');
+                              }
+                            }}
+                          >
+                            <BellRing size={16} />
+                            {Notification.permission === 'granted' ? 'Renovar suscripción' : 'Activar notificaciones'}
+                          </button>
+                        )}
+
+                        {typeof Notification !== 'undefined' && Notification.permission === 'granted' && (
+                          <button
+                            className="lp-btn-push-test"
+                            onClick={async () => {
+                              try {
+                                await pushNotificationService.initialize();
+                                await pushNotificationService.sendLocalNotification(
+                                  '🔔 ¡Notificación de prueba!',
+                                  {
+                                    body: 'Las notificaciones push están funcionando correctamente.',
+                                    icon: '/icons/icon-192.png',
+                                    tag: 'test-notification',
+                                  }
+                                );
+                                toast.success('Notificación de prueba enviada');
+                              } catch (e) {
+                                console.error('Test notification error:', e);
+                                toast.error('Error al enviar notificación de prueba');
+                              }
+                            }}
+                          >
+                            <Zap size={16} />
+                            Probar notificación
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="lp-push-features">
+                        <span>✓ Clics y ganancias</span>
+                        <span>✓ Hitos alcanzados</span>
+                        <span>✓ Alertas urgentes</span>
+                        <span>✓ Nuevos referidos</span>
+                      </div>
+                    </div>
                   </SettingsItem>
 
                   <SettingsItem border={false}>

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode, useCa
 import { useAuth } from './AuthContext';
 import { notificationsService, Notification, NotificationType } from '../lib/notificationsService';
 import { supabase } from '../lib/supabaseClient';
+import { useNotificationEvents } from '../hooks/useNotificationEvents';
 
 interface NotificationsContextValue {
   notifications: Notification[];
@@ -32,6 +33,9 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const soundEnabledRef = useRef(true);
   const lastNotificationTimeRef = useRef<number>(0);
+
+  // ¡IMPORTANTE! Activar detección automática de eventos
+  useNotificationEvents();
 
   // Cargar notificaciones iniciales
   const loadNotifications = useCallback(async () => {
@@ -105,7 +109,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         async (payload) => {
           const newNotification = payload.new as Notification;
           const now = Date.now();
-          
+
           // Throttle: no más de una notificación cada 500ms
           if (now - lastNotificationTimeRef.current < 500) {
             return;
@@ -129,7 +133,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
           if (!newNotification.read) {
             setUnreadCount((prev) => prev + 1);
-            
+
             // Reproducir sonido (solo para notificaciones importantes)
             if (newNotification.priority === 'high' || newNotification.priority === 'urgent') {
               playNotificationSound();
@@ -193,7 +197,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   // Reproducir sonido de notificación
   const playNotificationSound = useCallback(() => {
     if (!soundEnabledRef.current) return;
-    
+
     try {
       // Crear audio context para sonido suave
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -206,7 +210,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
       // Sonido suave y profesional
       oscillator.frequency.value = 800;
       oscillator.type = 'sine';
-      
+
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
       gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
