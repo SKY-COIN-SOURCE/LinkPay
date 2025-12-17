@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  X, Bell, Check, Trash2, Volume2, VolumeX
+import {
+  X, Bell, Check, Trash2, Volume2, VolumeX, BellRing, Zap
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationsContext';
-import { Notification, NotificationType } from '../lib/notificationsService';
+import { Notification as AppNotification, NotificationType } from '../lib/notificationsService';
+import { pushNotificationService } from '../lib/pushNotifications';
+import { supabase } from '../lib/supabaseClient';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,7 +31,7 @@ const getCategoryName = (category?: string): string => {
 // Iconos por tipo de notificación
 const getNotificationIcon = (type: NotificationType, priority: string) => {
   const iconClass = 'w-5 h-5';
-  
+
   if (type.startsWith('link_') || type.startsWith('bio_page_')) {
     return <Bell className={iconClass} />;
   }
@@ -82,7 +84,7 @@ const getNotificationStyle = (type: NotificationType, priority: string, read: bo
       borderWidth: '2px',
     };
   }
-  
+
   // Las leídas son muy sutiles
   return {
     background: 'rgba(255, 255, 255, 0.02)',
@@ -108,6 +110,45 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
   const [soundEnabled, setSoundEnabled] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  // Push notification state
+  const [pushPermission, setPushPermission] = useState<NotificationPermission>(
+    typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  );
+  const [pushLoading, setPushLoading] = useState(false);
+
+  // Enable push notifications
+  const enablePushNotifications = async () => {
+    setPushLoading(true);
+    try {
+      const { data } = await supabase.auth.getUser();
+      if (!data?.user) {
+        setPushLoading(false);
+        return;
+      }
+
+      await pushNotificationService.initialize();
+      const subscription = await pushNotificationService.subscribe(data.user.id);
+
+      if (subscription) {
+        setPushPermission('granted');
+        // Send test notification
+        await pushNotificationService.sendLocalNotification(
+          '🎉 ¡Notificaciones activadas!',
+          {
+            body: 'Ahora recibirás alertas de clics, ganancias y más directamente aquí.',
+            icon: '/icons/icon-192.png',
+          }
+        );
+      } else {
+        setPushPermission(Notification.permission);
+      }
+    } catch (error) {
+      console.error('Push setup error:', error);
+    } finally {
+      setPushLoading(false);
+    }
+  };
 
   // Cerrar al hacer clic fuera
   useEffect(() => {
@@ -141,7 +182,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
-  const handleNotificationClick = async (notification: Notification) => {
+  const handleNotificationClick = async (notification: AppNotification) => {
     if (!notification.read) {
       await markAsRead(notification.id);
     }
@@ -185,7 +226,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
         initial={{ x: '100%' }}
         animate={{ x: isOpen ? 0 : '100%' }}
         exit={{ x: '100%' }}
-        transition={{ 
+        transition={{
           type: 'spring',
           damping: 30,
           stiffness: 300,
@@ -354,6 +395,119 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
           </div>
         </div>
 
+        {/* 🔔 PUSH NOTIFICATION CTA - Prominent activation banner */}
+        {pushPermission !== 'granted' && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              margin: '12px',
+              marginBottom: '0',
+              padding: '16px',
+              background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+              border: '2px solid rgba(236, 72, 153, 0.4)',
+              borderRadius: '16px',
+              boxShadow: '0 0 30px rgba(236, 72, 153, 0.2)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <motion.div
+                animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.1, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 20px rgba(236, 72, 153, 0.4)',
+                }}
+              >
+                <BellRing size={22} color="white" />
+              </motion.div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#f8fafc' }}>
+                  🚀 Activa notificaciones
+                </h3>
+                <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                  Recibe alertas en tu pantalla al instante
+                </p>
+              </div>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02, boxShadow: '0 8px 30px rgba(236, 72, 153, 0.5)' }}
+              whileTap={{ scale: 0.98 }}
+              onClick={enablePushNotifications}
+              disabled={pushLoading || pushPermission === 'denied'}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: pushPermission === 'denied'
+                  ? 'rgba(100, 116, 139, 0.3)'
+                  : 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
+                border: 'none',
+                borderRadius: '12px',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 700,
+                cursor: pushPermission === 'denied' ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 20px rgba(236, 72, 153, 0.3)',
+                opacity: pushLoading ? 0.7 : 1,
+              }}
+            >
+              {pushLoading ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Zap size={18} />
+                  </motion.div>
+                  Activando...
+                </>
+              ) : pushPermission === 'denied' ? (
+                <>Bloqueado - Habilita en configuración del navegador</>
+              ) : (
+                <>
+                  <BellRing size={18} />
+                  Activar Notificaciones Push
+                </>
+              )}
+            </motion.button>
+
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '6px',
+              marginTop: '12px',
+              justifyContent: 'center',
+            }}>
+              {['💰 Ganancias', '📈 Hitos', '🔥 Viral', '🎁 Referidos'].map((tag) => (
+                <span
+                  key={tag}
+                  style={{
+                    padding: '4px 8px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '6px',
+                    fontSize: '10px',
+                    color: '#cbd5e1',
+                    fontWeight: 600,
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Lista de notificaciones */}
         <div
           style={{
@@ -382,7 +536,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
                 }}
               >
                 <motion.div
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.1, 1],
                     rotate: [0, 5, -5, 0],
                   }}
@@ -418,7 +572,7 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
 }
 
 interface NotificationItemProps {
-  notification: Notification;
+  notification: AppNotification;
   index: number;
   onClick: () => void;
   onMarkRead: () => void;
@@ -450,13 +604,13 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
     <motion.div
       layout
       initial={{ opacity: 0, x: 50, scale: 0.9 }}
-      animate={{ 
-        opacity: isDeleting ? 0 : (notification.read ? 0.4 : 1), 
-        x: isDeleting ? 100 : 0, 
+      animate={{
+        opacity: isDeleting ? 0 : (notification.read ? 0.4 : 1),
+        x: isDeleting ? 100 : 0,
         scale: isDeleting ? 0.8 : 1,
       }}
       exit={{ opacity: 0, x: -50, scale: 0.9 }}
-      transition={{ 
+      transition={{
         type: 'spring',
         damping: 25,
         stiffness: 300,
@@ -477,11 +631,11 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
         position: 'relative',
         overflow: 'hidden',
         opacity: style.opacity,
-        boxShadow: !notification.read && isHovered 
-          ? `0 8px 24px rgba(0, 0, 0, 0.5), ${style.glow}` 
-          : !notification.read 
-          ? `0 4px 12px rgba(0, 0, 0, 0.3), ${style.glow}`
-          : '0 1px 3px rgba(0, 0, 0, 0.1)',
+        boxShadow: !notification.read && isHovered
+          ? `0 8px 24px rgba(0, 0, 0, 0.5), ${style.glow}`
+          : !notification.read
+            ? `0 4px 12px rgba(0, 0, 0, 0.3), ${style.glow}`
+            : '0 1px 3px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
@@ -550,13 +704,13 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
             <div style={{ flex: 1 }}>
               {/* Categoría en el mensaje */}
-              <div style={{ 
+              <div style={{
                 display: 'inline-block',
                 marginBottom: '6px',
                 padding: '2px 8px',
                 borderRadius: '6px',
-                background: notification.read 
-                  ? 'rgba(148, 163, 184, 0.1)' 
+                background: notification.read
+                  ? 'rgba(148, 163, 184, 0.1)'
                   : 'rgba(99, 102, 241, 0.2)',
                 color: notification.read ? '#64748b' : '#a5b4fc',
                 fontSize: '10px',
@@ -566,7 +720,7 @@ function NotificationItem({ notification, index, onClick, onMarkRead, onDelete, 
               }}>
                 {categoryName}
               </div>
-              
+
               <h3
                 style={{
                   fontSize: '15px',
