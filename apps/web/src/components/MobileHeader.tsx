@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Camera, Users, Wallet } from 'lucide-react';
+import { Settings, Camera, Users, Bell } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationsContext';
+import { NotificationsPanel } from './NotificationsPanel';
 
 export function MobileHeader() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -69,13 +74,30 @@ export function MobileHeader() {
       </div>
 
       <div className="lp-header-right">
-        <button className="lp-header-icon-btn" onClick={() => navigate('/app/payouts')}>
-          <Wallet size={20} />
+        <button 
+          className="lp-header-icon-btn lp-header-notifications-btn" 
+          onClick={() => setNotificationsOpen(true)}
+          style={{ position: 'relative' }}
+        >
+          <Bell size={20} />
+          {unreadCount > 0 && (
+            <motion.span
+              className="lp-notification-badge"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.15 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+            >
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </motion.span>
+          )}
         </button>
         <button className="lp-header-icon-btn" onClick={() => navigate('/app/settings')}>
           <Settings size={20} />
         </button>
       </div>
+
+      <NotificationsPanel isOpen={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
     </header>
   );
 }
@@ -209,5 +231,41 @@ const mobileHeaderStyles = `
 
   .lp-header-icon-btn:active {
     transform: scale(0.95);
+  }
+
+  .lp-header-notifications-btn {
+    position: relative;
+  }
+
+  .lp-notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0f172a;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+    animation: lp-badge-pulse 2s ease-in-out infinite;
+    z-index: 10;
+  }
+
+  @keyframes lp-badge-pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+    }
+    50% {
+      transform: scale(1.1);
+      box-shadow: 0 2px 12px rgba(239, 68, 68, 0.7);
+    }
   }
 `;
