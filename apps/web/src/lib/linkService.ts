@@ -108,18 +108,20 @@ export const LinkService = {
     return data;
   },
   trackClick: async (slug: string, deviceInfo: any) => {
-    const { data: link } = await supabase.from('links').select('id').eq('slug', slug).single();
-    if (!link) return;
+    const { data: link, error: linkError } = await supabase.from('links').select('id').eq('slug', slug).single();
 
-    // Call the secure RPC function (server-side logic)
-    // We send IP and User-Agent for anti-fraud
+    if (!link || linkError) {
+      console.error('[LinkService] Link not found:', slug);
+      return;
+    }
+
     let ip = '0.0.0.0';
     try {
       const ipResponse = await fetch('https://api.ipify.org?format=json');
       const ipData = await ipResponse.json();
       if (ipData.ip) ip = ipData.ip;
     } catch (e) {
-      console.warn('[LinkService] IP fallback', e);
+      // IP fallback - continue with default
     }
 
     const { error } = await supabase.rpc('track_link_click', {
@@ -130,7 +132,7 @@ export const LinkService = {
     });
 
     if (error) {
-      console.error('[LinkService] Secure tracking error:', error);
+      console.error('[LinkService] Tracking error:', error);
     }
   },
 
