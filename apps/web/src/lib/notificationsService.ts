@@ -272,9 +272,9 @@ export const notificationsService = {
 
   // Contar no leídas
   async getUnreadCount(userId: string): Promise<number> {
-    const { data, error } = await supabase
+    const { count, error } = await supabase
       .from('notifications')
-      .select('id', { count: 'exact', head: true })
+      .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .eq('read', false);
 
@@ -283,7 +283,7 @@ export const notificationsService = {
       return 0;
     }
 
-    return data?.length || 0;
+    return count || 0;
   },
 
   // Marcar como leída
