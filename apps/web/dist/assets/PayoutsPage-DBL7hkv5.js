@@ -1,4 +1,4 @@
-import{d as h,B as le,r,j as e,X as q,D as d,F as de,k as Z,l as G,G as K,P as X}from"./index-BtU_aJ0T.js";import{P as pe}from"./PremiumLoader-D51guMdM.js";/* empty css                          *//**
+import{d as h,B as le,r,j as e,X as q,D as d,F as de,k as Z,l as G,G as K,P as X}from"./index-B3i7KJbR.js";import{P as pe}from"./PremiumLoader-Cmbo08VS.js";/* empty css                          *//**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
@@ -519,14 +519,18 @@ import{d as h,B as le,r,j as e,X as q,D as d,F as de,k as Z,l as G,G as K,P as X
     margin: 0 auto;
     padding: 16px 12px 120px;
     animation: rev-fade-up 0.5s ease-out;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 60px);
   }
 
   /* Mobile: reduce top padding since we offset the shell */
   @media (max-width: 768px) {
     .rev-container {
-      padding-top: 8px;
-      padding-bottom: 140px;
+      padding-top: 0;
+      padding-bottom: 100px;
       max-width: 500px;
+      min-height: calc(100vh - 120px);
     }
   }
 
@@ -543,14 +547,15 @@ import{d as h,B as le,r,j as e,X as q,D as d,F as de,k as Z,l as G,G as K,P as X
 
   /* ─── BALANCE SECTION ────────────────────────────────────────────────────── */
   .rev-balance-section {
-    padding: 28px 0 16px;
+    padding: 20px 0 8px;
     text-align: center;
+    flex-shrink: 0;
   }
 
   @media (max-width: 768px) {
     .rev-balance-section {
-      padding-top: 8px;
-      padding-bottom: 10px;
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
   }
 
@@ -595,8 +600,9 @@ import{d as h,B as le,r,j as e,X as q,D as d,F as de,k as Z,l as G,G as K,P as X
     display: flex;
     justify-content: center;
     gap: 18px;
-    padding: 10px 0 16px;
+    padding: 6px 0 10px;
     flex-wrap: wrap;
+    flex-shrink: 0;
   }
 
   @media (min-width: 769px) {
@@ -702,10 +708,9 @@ import{d as h,B as le,r,j as e,X as q,D as d,F as de,k as Z,l as G,G as K,P as X
   .rev-transactions {
     background: rgba(15, 23, 42, 0.75);
     border-radius: 24px 24px 0 0;
-    padding: 18px 16px 32px;
+    padding: 16px 16px 32px;
     margin: 0 -12px;
-    margin-top: 0;
-    min-height: 300px;
+    flex: 1;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
