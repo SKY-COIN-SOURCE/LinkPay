@@ -209,52 +209,53 @@ export function PayoutsPage() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        paddingTop: window.innerWidth <= 768 ? '60px' : '20px', // Espacio para header móvil
-        paddingBottom: window.innerWidth <= 768 ? '90px' : '20px', // Espacio para navbar móvil
+        paddingTop: window.innerWidth <= 768 ? '70px' : '20px', // Más espacio debajo del header
+        paddingBottom: window.innerWidth <= 768 ? '100px' : '20px', // Espacio para navbar
         overflow: 'hidden',
       }}>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            BALANCE CARD - CENTRADO CON ESPACIO
+            ZONA SUPERIOR - BALANCE + BOTONES CENTRADOS
         ═══════════════════════════════════════════════════════════════════ */}
-        <section style={{
-          padding: window.innerWidth <= 768 ? '20px 0 16px' : '40px 0 24px',
-          textAlign: 'center',
-          flexShrink: 0,
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flex: '0 0 auto',
+          minHeight: window.innerWidth <= 768 ? '200px' : '280px',
+          paddingTop: '10px',
         }}>
-          <div className="rev-balance-card">
+          {/* BALANCE */}
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <span className="rev-balance-label">LinkPay · EUR</span>
             <div className="rev-balance-amount">
               <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
               <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
             </div>
           </div>
-        </section>
 
-        {/* ═══════════════════════════════════════════════════════════════════
-            ACCIONES PRINCIPALES - CENTRADAS
-        ═══════════════════════════════════════════════════════════════════ */}
-        <section style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '24px',
-          padding: window.innerWidth <= 768 ? '8px 0 20px' : '16px 0 28px',
-          flexShrink: 0,
-        }}>
-          <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
-            <div className="rev-action-circle">
-              <ArrowDownLeft size={22} />
-            </div>
-            <span>Solicitar retiro</span>
-          </button>
+          {/* BOTONES */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '32px',
+          }}>
+            <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
+              <div className="rev-action-circle">
+                <ArrowDownLeft size={22} />
+              </div>
+              <span>Solicitar retiro</span>
+            </button>
 
-          <button className="rev-action-item" onClick={() => setShowSend(true)}>
-            <div className="rev-action-circle">
-              <Send size={22} />
-            </div>
-            <span>Enviar interno</span>
-          </button>
-        </section>
+            <button className="rev-action-item" onClick={() => setShowSend(true)}>
+              <div className="rev-action-circle">
+                <Send size={22} />
+              </div>
+              <span>Enviar interno</span>
+            </button>
+          </div>
+        </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
             TRANSACTIONS LIST - PANEL INFERIOR SCROLLEABLE
