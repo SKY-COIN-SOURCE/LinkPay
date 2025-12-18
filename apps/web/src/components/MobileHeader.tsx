@@ -74,8 +74,8 @@ export function MobileHeader() {
       </div>
 
       <div className="lp-header-right">
-        <button 
-          className="lp-header-icon-btn lp-header-notifications-btn" 
+        <button
+          className="lp-header-icon-btn lp-header-notifications-btn"
           onClick={() => setNotificationsOpen(true)}
           style={{ position: 'relative' }}
         >
@@ -215,8 +215,8 @@ const mobileHeaderStyles = `
     height: 38px;
     border-radius: 10px;
     border: none;
-    background: rgba(255, 255, 255, 0.05);
-    color: #94a3b8;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -225,7 +225,7 @@ const mobileHeaderStyles = `
   }
 
   .lp-header-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
     color: #f9fafb;
   }
 

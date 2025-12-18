@@ -1062,13 +1062,14 @@ const revStyles = `
 
   /* ─── BALANCE SECTION ────────────────────────────────────────────────────── */
   .rev-balance-section {
-    padding: 28px 0 22px;
+    padding: 28px 0 16px;
     text-align: center;
   }
 
   @media (max-width: 768px) {
     .rev-balance-section {
-      padding-top: 12px;
+      padding-top: 8px;
+      padding-bottom: 10px;
     }
   }
 
@@ -1113,7 +1114,7 @@ const revStyles = `
     display: flex;
     justify-content: center;
     gap: 18px;
-    padding: 14px 0 22px;
+    padding: 10px 0 16px;
     flex-wrap: wrap;
   }
 
@@ -1220,8 +1221,9 @@ const revStyles = `
   .rev-transactions {
     background: rgba(15, 23, 42, 0.75);
     border-radius: 24px 24px 0 0;
-    padding: 22px 16px 32px;
+    padding: 18px 16px 32px;
     margin: 0 -12px;
+    margin-top: 0;
     min-height: 300px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
