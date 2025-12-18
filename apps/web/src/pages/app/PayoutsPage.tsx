@@ -56,6 +56,10 @@ export function PayoutsPage() {
     bank: '',
   });
 
+  // Lazy loading for transactions
+  const [visibleCount, setVisibleCount] = useState(10);
+  const LOAD_MORE_COUNT = 10;
+
   // Constants
   const MIN_PAYPAL = 5;
   const MIN_BANK = 10;
@@ -226,9 +230,19 @@ export function PayoutsPage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            TRANSACTIONS LIST
+            TRANSACTIONS LIST - REVOLUT STYLE SCROLLABLE
         ═══════════════════════════════════════════════════════════════════ */}
-        <section className="rev-transactions">
+        <section
+          className="rev-transactions"
+          onScroll={(e) => {
+            const target = e.target as HTMLElement;
+            const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
+            // Load more when near bottom (100px threshold)
+            if (scrollBottom < 100 && visibleCount < history.length) {
+              setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, history.length));
+            }
+          }}
+        >
           <h3 className="rev-section-title">Actividad reciente</h3>
 
           {history.length === 0 ? (
@@ -239,7 +253,7 @@ export function PayoutsPage() {
             </div>
           ) : (
             <div className="rev-tx-list">
-              {history.map((tx) => {
+              {history.slice(0, visibleCount).map((tx) => {
                 const isOut = tx.is_negative;
                 const label = tx.type === 'withdrawal'
                   ? 'Retiro'
@@ -282,6 +296,12 @@ export function PayoutsPage() {
                   </div>
                 );
               })}
+              {/* Loading indicator when more items available */}
+              {visibleCount < history.length && (
+                <div className="rev-tx-loading">
+                  <Loader2 size={20} className="rev-spin" />
+                </div>
+              )}
             </div>
           )}
         </section>
@@ -1036,20 +1056,20 @@ const revStyles = `
     width: 100%;
     max-width: 520px;
     margin: 0 auto;
-    padding: 16px 12px 120px;
+    padding: 0 12px;
     animation: rev-fade-up 0.5s ease-out;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 60px);
+    height: calc(100vh - 60px);
+    overflow: hidden;
   }
 
-  /* Mobile: reduce top padding since we offset the shell */
+  /* Mobile: ajustar altura considerando header y navbar */
   @media (max-width: 768px) {
     .rev-container {
-      padding-top: 0;
-      padding-bottom: 100px;
-      max-width: 500px;
-      min-height: calc(100vh - 120px);
+      padding: 0 12px;
+      max-width: 100%;
+      height: calc(100vh - 140px);
     }
   }
 
@@ -1064,17 +1084,16 @@ const revStyles = `
     font-size: 14px;
   }
 
-  /* ─── BALANCE SECTION ────────────────────────────────────────────────────── */
+  /* ─── BALANCE SECTION - CENTRADO PROMINENTE ────────────────────────────── */
   .rev-balance-section {
-    padding: 20px 0 8px;
+    padding: 40px 0 24px;
     text-align: center;
     flex-shrink: 0;
   }
 
   @media (max-width: 768px) {
     .rev-balance-section {
-      padding-top: 4px;
-      padding-bottom: 4px;
+      padding: 28px 0 20px;
     }
   }
 
@@ -1114,12 +1133,12 @@ const revStyles = `
 
   /* Removed wallet selector/dots */
 
-  /* ─── QUICK ACTIONS ──────────────────────────────────────────────────────── */
+  /* ─── QUICK ACTIONS - CENTRADO CON ESPACIO ────────────────────────────── */
   .rev-actions {
     display: flex;
     justify-content: center;
-    gap: 18px;
-    padding: 6px 0 10px;
+    gap: 24px;
+    padding: 16px 0 28px;
     flex-wrap: wrap;
     flex-shrink: 0;
   }
@@ -1223,16 +1242,25 @@ const revStyles = `
     font-size: 12px;
   }
 
-  /* ─── TRANSACTIONS ───────────────────────────────────────────────────────── */
+  /* ─── TRANSACTIONS - PANEL INFERIOR SCROLLEABLE ──────────────────────── */
   .rev-transactions {
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 23, 42, 0.85);
     border-radius: 24px 24px 0 0;
-    padding: 16px 16px 32px;
+    padding: 20px 16px 120px;
     margin: 0 -12px;
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .rev-tx-loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .rev-section-title {
