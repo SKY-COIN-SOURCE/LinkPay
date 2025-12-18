@@ -1,4 +1,4 @@
-import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P as J}from"./index-CM2GDwLJ.js";import{P as me}from"./PremiumLoader-D8QdvbVA.js";/* empty css                          *//**
+import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P as J}from"./index-CmTwLgQd.js";import{P as me}from"./PremiumLoader-D4sWLaMg.js";/* empty css                          *//**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
@@ -8,17 +8,17 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const fe=[["path",{d:"M10 12h4",key:"a56b0p"}],["path",{d:"M10 8h4",key:"1sr2af"}],["path",{d:"M14 21v-3a2 2 0 0 0-4 0v3",key:"1rgiei"}],["path",{d:"M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2",key:"secmi2"}],["path",{d:"M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16",key:"16ra0t"}]],be=v("building-2",fe);/**
+ */const fe=[["path",{d:"M10 12h4",key:"a56b0p"}],["path",{d:"M10 8h4",key:"1sr2af"}],["path",{d:"M14 21v-3a2 2 0 0 0-4 0v3",key:"1rgiei"}],["path",{d:"M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2",key:"secmi2"}],["path",{d:"M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16",key:"16ra0t"}]],he=v("building-2",fe);/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const ue=[["path",{d:"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",key:"1357e3"}],["path",{d:"M3 3v5h5",key:"1xhq8a"}],["path",{d:"M12 7v5l4 2",key:"1fdv2h"}]],he=v("history",ue);/**
+ */const be=[["path",{d:"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",key:"1357e3"}],["path",{d:"M3 3v5h5",key:"1xhq8a"}],["path",{d:"M12 7v5l4 2",key:"1fdv2h"}]],ue=v("history",be);/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const ve=[["path",{d:"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",key:"1ffxy3"}],["path",{d:"m21.854 2.147-10.94 10.939",key:"12cjpa"}]],h=v("send",ve),C={isValidEmail:n=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n),isValidIBAN:n=>{const o=n.replace(/\s/g,"").toUpperCase();return o.length<15||o.length>34||!/^[A-Z]{2}/.test(o)?!1:/^[A-Z0-9]+$/.test(o)},isValidCrypto:n=>{const o=/^0x[a-fA-F0-9]{40}$/.test(n),y=/^(1|3|bc1)[a-zA-Z0-9]{25,39}$/.test(n);return o||y}};function ke(){const{balance:n,history:o,loading:y,refresh:M}=ce(),[Q,x]=t.useState(!1),[ee,m]=t.useState(!1),[w,I]=t.useState(""),[r,L]=t.useState("PayPal"),[g,f]=t.useState(""),[ae,te]=t.useState(""),[O,l]=t.useState(""),[T,R]=t.useState(!1),[j,N]=t.useState(!1),[B,D]=t.useState(""),[b,F]=t.useState(""),[k,_]=t.useState(""),[re,W]=t.useState(""),[U,p]=t.useState(""),[$,H]=t.useState(!1),[z,S]=t.useState(!1),[c,ie]=t.useState({paypal:"",bank:""}),[E,ne]=t.useState(10),oe=10,V=5,Y=10,q=r==="PayPal"?V:Y;t.useEffect(()=>{(async()=>{const{data:{user:i}}=await X.auth.getUser();if(i){const{data:s}=await X.from("profiles").select("paypal_email, bank_details").eq("id",i.id).single();s&&(ie({paypal:s.paypal_email||"",bank:s.bank_details||""}),s.paypal_email&&f(s.paypal_email))}})()},[]),t.useEffect(()=>{r==="PayPal"&&c.paypal&&f(c.paypal),r==="Bank"&&c.bank&&f(c.bank)},[r,c]);const se=async()=>{l(""),N(!1);const a=parseFloat(w);if(!w||isNaN(a)||a<=0)return l("Introduce una cantidad válida.");if(a>n)return l("Saldo insuficiente.");if(a<q)return l(`Mínimo ${r==="PayPal"?"PayPal":"transferencia"}: €${q}`);if(r==="PayPal"){if(!C.isValidEmail(g))return l("Introduce un email de PayPal válido.")}else if(!C.isValidIBAN(g))return l("Introduce un IBAN válido.");R(!0);try{await J.requestPayout(a,r,g),N(!0),D("¡Listo! Tu solicitud está en proceso."),I(""),M(),setTimeout(()=>{N(!1),x(!1),D("")},2400)}catch(i){l(i.message||"Error al procesar el retiro.")}finally{R(!1)}},le=async()=>{p(""),S(!1);const a=parseFloat(k);if(!b||!C.isValidEmail(b))return p("Introduce un email válido.");if(!k||isNaN(a)||a<=0)return p("Introduce una cantidad válida.");if(a>n)return p("Saldo insuficiente.");H(!0);try{await J.sendMoney(b,a),S(!0),_(""),F(""),W(""),M(),setTimeout(()=>{S(!1),m(!1)},2e3)}catch(i){p(i.message||"Error al enviar.")}finally{H(!1)}};return y?e.jsx(me,{size:"medium",text:"FINANZAS",subtext:"Cargando tu billetera..."}):e.jsxs("div",{className:"rev-shell lp-premium-bg",style:{position:"fixed",inset:0,left:window.innerWidth>768?"260px":0,display:"flex",flexDirection:"column",overflow:"hidden"},children:[e.jsx("style",{children:ye}),e.jsxs("div",{className:"rev-bg",children:[e.jsx("div",{className:"rev-bg-gradient"}),e.jsx("div",{className:"rev-bg-glow"})]}),e.jsxs("div",{style:{position:"relative",zIndex:1,display:"flex",flexDirection:"column",height:"100%",paddingTop:window.innerWidth<=768?"70px":"20px",paddingBottom:window.innerWidth<=768?"100px":"20px",overflow:"hidden"},children:[e.jsxs("div",{style:{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",flex:"0 0 auto",minHeight:window.innerWidth<=768?"200px":"280px",paddingTop:"10px"},children:[e.jsxs("div",{style:{textAlign:"center",marginBottom:"24px"},children:[e.jsx("span",{className:"rev-balance-label",children:"LinkPay · EUR"}),e.jsxs("div",{className:"rev-balance-amount",children:[e.jsx("span",{className:"rev-amount-value",children:n.toFixed(2).split(".")[0]}),e.jsxs("span",{className:"rev-amount-decimal",children:[",",n.toFixed(2).split(".")[1]," €"]})]})]}),e.jsxs("div",{style:{display:"flex",justifyContent:"center",gap:"32px"},children:[e.jsxs("button",{className:"rev-action-item",onClick:()=>x(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(A,{size:22})}),e.jsx("span",{children:"Solicitar retiro"})]}),e.jsxs("button",{className:"rev-action-item",onClick:()=>m(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(h,{size:22})}),e.jsx("span",{children:"Enviar interno"})]})]})]}),e.jsxs("section",{style:{flex:1,background:"rgba(15, 23, 42, 0.9)",borderRadius:"24px 24px 0 0",padding:"20px 16px 40px",margin:"0 -12px",overflowY:"auto",WebkitOverflowScrolling:"touch",borderTop:"1px solid rgba(255, 255, 255, 0.1)"},onScroll:a=>{const i=a.target;i.scrollHeight-i.scrollTop-i.clientHeight<100&&E<o.length&&ne(u=>Math.min(u+oe,o.length))},children:[e.jsx("h3",{className:"rev-section-title",children:"Actividad reciente"}),o.length===0?e.jsxs("div",{className:"rev-empty",children:[e.jsx(he,{size:32}),e.jsx("p",{children:"Sin movimientos aún"}),e.jsx("span",{children:"Tus transacciones aparecerán aquí"})]}):e.jsxs("div",{className:"rev-tx-list",children:[o.slice(0,E).map(a=>{const i=a.is_negative,s=a.type==="withdrawal"?"Retiro":i?"Envío":"Recibido",u=["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#ec4899"],de=a.id.charCodeAt(0)%u.length,pe=u[de],Z=a.status==="pending"?"Pendiente":a.status==="failed"?"Rechazado":"";return e.jsxs("div",{className:"rev-tx-item",children:[e.jsxs("div",{className:"rev-tx-left",children:[e.jsx("div",{className:"rev-tx-avatar",style:{background:pe},children:a.type==="withdrawal"?e.jsx(A,{size:18,color:"#fff"}):e.jsx(h,{size:18,color:"#fff"})}),e.jsxs("div",{className:"rev-tx-info",children:[e.jsx("span",{className:"rev-tx-name",children:s}),e.jsx("span",{className:"rev-tx-date",children:a.date})]})]}),e.jsxs("div",{className:"rev-tx-right",children:[e.jsxs("span",{className:`rev-tx-amount ${i?"negative":"positive"}`,children:[i?"-":"+",Number(a.amount).toFixed(2)," €"]}),Z&&e.jsx("span",{className:`rev-tx-status ${a.status}`,children:Z})]})]},a.id)}),E<o.length&&e.jsx("div",{className:"rev-tx-loading",children:e.jsx(P,{size:20,className:"rev-spin"})})]})]})]}),Q&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>x(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>x(!1),children:e.jsx(G,{size:22})}),e.jsx("div",{className:"lp-modal-icon withdraw",children:e.jsx(A,{size:28})}),e.jsx("h2",{children:"Retirar fondos"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Recibe tu dinero en PayPal o cuenta bancaria"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:w,onChange:a=>I(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[n.toFixed(2)," €"]})]})]}),B&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:20}),e.jsx("span",{children:B})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Método de pago"}),e.jsxs("div",{className:"lp-method-grid",children:[e.jsxs("button",{className:`lp-method-card ${r==="PayPal"?"active":""}`,onClick:()=>L("PayPal"),children:[e.jsx("div",{className:"lp-method-icon paypal",children:e.jsx(xe,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"PayPal"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",V,"€"]})]}),r==="PayPal"&&e.jsx(d,{size:18,className:"lp-method-check"})]}),e.jsxs("button",{className:`lp-method-card ${r==="Bank"?"active":""}`,onClick:()=>L("Bank"),children:[e.jsx("div",{className:"lp-method-icon bank",children:e.jsx(be,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"Transferencia"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",Y,"€"]})]}),r==="Bank"&&e.jsx(d,{size:18,className:"lp-method-check"})]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:r==="PayPal"?"Email de PayPal":"Número IBAN"}),e.jsx("input",{type:r==="PayPal"?"email":"text",value:g,onChange:a=>f(r==="Bank"?a.target.value.toUpperCase():a.target.value),placeholder:r==="PayPal"?"tu@email.com":"ES00 0000 0000 0000 0000 0000",className:"lp-input"})]}),r==="Bank"&&e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Titular de la cuenta"}),e.jsx("input",{type:"text",value:ae,onChange:a=>te(a.target.value),placeholder:"Nombre y apellidos",className:"lp-input"})]}),O&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(K,{size:18}),e.jsx("span",{children:O})]}),j&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Solicitud enviada correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary",onClick:se,disabled:T||j,children:T?e.jsx(P,{className:"lp-spin",size:20}):j?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Solicitar retiro"})})})]})}),ee&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>m(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>m(!1),children:e.jsx(G,{size:22})}),e.jsx("div",{className:"lp-modal-icon send",children:e.jsx(h,{size:28})}),e.jsx("h2",{children:"Enviar dinero"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Transfiere fondos a otro usuario de LinkPay"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Destinatario"}),e.jsxs("div",{className:"lp-input-icon-wrapper",children:[e.jsx("input",{type:"email",value:b,onChange:a=>F(a.target.value),placeholder:"email@ejemplo.com",className:"lp-input with-icon"}),e.jsx(h,{size:18,className:"lp-input-icon"})]})]}),e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:k,onChange:a=>_(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[n.toFixed(2)," €"]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsxs("label",{children:["Nota ",e.jsx("span",{className:"lp-optional",children:"(opcional)"})]}),e.jsx("input",{type:"text",value:re,onChange:a=>W(a.target.value),placeholder:"Ej: Pago por colaboración",className:"lp-input"})]}),U&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(K,{size:18}),e.jsx("span",{children:U})]}),z&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Dinero enviado correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary blue",onClick:le,disabled:$||z,children:$?e.jsx(P,{className:"lp-spin",size:20}):z?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Enviar ahora"})})})]})})]})}const ye=`
+ */const ve=[["path",{d:"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",key:"1ffxy3"}],["path",{d:"m21.854 2.147-10.94 10.939",key:"12cjpa"}]],u=v("send",ve),C={isValidEmail:n=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n),isValidIBAN:n=>{const o=n.replace(/\s/g,"").toUpperCase();return o.length<15||o.length>34||!/^[A-Z]{2}/.test(o)?!1:/^[A-Z0-9]+$/.test(o)},isValidCrypto:n=>{const o=/^0x[a-fA-F0-9]{40}$/.test(n),y=/^(1|3|bc1)[a-zA-Z0-9]{25,39}$/.test(n);return o||y}};function ke(){const{balance:n,history:o,loading:y,refresh:M}=ce(),[Q,x]=t.useState(!1),[ee,m]=t.useState(!1),[w,I]=t.useState(""),[r,O]=t.useState("PayPal"),[g,f]=t.useState(""),[ae,te]=t.useState(""),[T,l]=t.useState(""),[L,R]=t.useState(!1),[j,N]=t.useState(!1),[B,D]=t.useState(""),[h,F]=t.useState(""),[k,_]=t.useState(""),[re,U]=t.useState(""),[$,p]=t.useState(""),[H,W]=t.useState(!1),[z,S]=t.useState(!1),[c,ie]=t.useState({paypal:"",bank:""}),[E,ne]=t.useState(10),oe=10,V=5,Y=10,q=r==="PayPal"?V:Y;t.useEffect(()=>{(async()=>{const{data:{user:i}}=await X.auth.getUser();if(i){const{data:s}=await X.from("profiles").select("paypal_email, bank_details").eq("id",i.id).single();s&&(ie({paypal:s.paypal_email||"",bank:s.bank_details||""}),s.paypal_email&&f(s.paypal_email))}})()},[]),t.useEffect(()=>{r==="PayPal"&&c.paypal&&f(c.paypal),r==="Bank"&&c.bank&&f(c.bank)},[r,c]);const se=async()=>{l(""),N(!1);const a=parseFloat(w);if(!w||isNaN(a)||a<=0)return l("Introduce una cantidad válida.");if(a>n)return l("Saldo insuficiente.");if(a<q)return l(`Mínimo ${r==="PayPal"?"PayPal":"transferencia"}: €${q}`);if(r==="PayPal"){if(!C.isValidEmail(g))return l("Introduce un email de PayPal válido.")}else if(!C.isValidIBAN(g))return l("Introduce un IBAN válido.");R(!0);try{await J.requestPayout(a,r,g),N(!0),D("¡Listo! Tu solicitud está en proceso."),I(""),M(),setTimeout(()=>{N(!1),x(!1),D("")},2400)}catch(i){l(i.message||"Error al procesar el retiro.")}finally{R(!1)}},le=async()=>{p(""),S(!1);const a=parseFloat(k);if(!h||!C.isValidEmail(h))return p("Introduce un email válido.");if(!k||isNaN(a)||a<=0)return p("Introduce una cantidad válida.");if(a>n)return p("Saldo insuficiente.");W(!0);try{await J.sendMoney(h,a),S(!0),_(""),F(""),U(""),M(),setTimeout(()=>{S(!1),m(!1)},2e3)}catch(i){p(i.message||"Error al enviar.")}finally{W(!1)}};return y?e.jsx(me,{size:"medium",text:"FINANZAS",subtext:"Cargando tu billetera..."}):e.jsxs("div",{className:"rev-shell",children:[e.jsx("style",{children:ye}),e.jsxs("div",{className:"rev-bg",children:[e.jsx("div",{className:"rev-bg-gradient"}),e.jsx("div",{className:"rev-bg-glow"})]}),e.jsxs("div",{className:"rev-content",children:[e.jsxs("div",{className:"rev-hero-zone",children:[e.jsxs("div",{className:"rev-balance-card",children:[e.jsx("span",{className:"rev-balance-label",children:"LinkPay · EUR"}),e.jsxs("div",{className:"rev-balance-amount",children:[e.jsx("span",{className:"rev-amount-value",children:n.toFixed(2).split(".")[0]}),e.jsxs("span",{className:"rev-amount-decimal",children:[",",n.toFixed(2).split(".")[1]," €"]})]})]}),e.jsxs("div",{className:"rev-actions",children:[e.jsxs("button",{className:"rev-action-item",onClick:()=>x(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(A,{size:22})}),e.jsx("span",{children:"Solicitar retiro"})]}),e.jsxs("button",{className:"rev-action-item",onClick:()=>m(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(u,{size:22})}),e.jsx("span",{children:"Enviar interno"})]})]})]}),e.jsxs("section",{className:"rev-transactions",onScroll:a=>{const i=a.target;i.scrollHeight-i.scrollTop-i.clientHeight<100&&E<o.length&&ne(b=>Math.min(b+oe,o.length))},children:[e.jsx("h3",{className:"rev-section-title",children:"Actividad reciente"}),o.length===0?e.jsxs("div",{className:"rev-empty",children:[e.jsx(ue,{size:32}),e.jsx("p",{children:"Sin movimientos aún"}),e.jsx("span",{children:"Tus transacciones aparecerán aquí"})]}):e.jsxs("div",{className:"rev-tx-list",children:[o.slice(0,E).map(a=>{const i=a.is_negative,s=a.type==="withdrawal"?"Retiro":i?"Envío":"Recibido",b=["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#ec4899"],de=a.id.charCodeAt(0)%b.length,pe=b[de],Z=a.status==="pending"?"Pendiente":a.status==="failed"?"Rechazado":"";return e.jsxs("div",{className:"rev-tx-item",children:[e.jsxs("div",{className:"rev-tx-left",children:[e.jsx("div",{className:"rev-tx-avatar",style:{background:pe},children:a.type==="withdrawal"?e.jsx(A,{size:18,color:"#fff"}):e.jsx(u,{size:18,color:"#fff"})}),e.jsxs("div",{className:"rev-tx-info",children:[e.jsx("span",{className:"rev-tx-name",children:s}),e.jsx("span",{className:"rev-tx-date",children:a.date})]})]}),e.jsxs("div",{className:"rev-tx-right",children:[e.jsxs("span",{className:`rev-tx-amount ${i?"negative":"positive"}`,children:[i?"-":"+",Number(a.amount).toFixed(2)," €"]}),Z&&e.jsx("span",{className:`rev-tx-status ${a.status}`,children:Z})]})]},a.id)}),E<o.length&&e.jsx("div",{className:"rev-tx-loading",children:e.jsx(P,{size:20,className:"rev-spin"})})]})]})]}),Q&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>x(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>x(!1),children:e.jsx(G,{size:22})}),e.jsx("div",{className:"lp-modal-icon withdraw",children:e.jsx(A,{size:28})}),e.jsx("h2",{children:"Retirar fondos"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Recibe tu dinero en PayPal o cuenta bancaria"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:w,onChange:a=>I(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[n.toFixed(2)," €"]})]})]}),B&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:20}),e.jsx("span",{children:B})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Método de pago"}),e.jsxs("div",{className:"lp-method-grid",children:[e.jsxs("button",{className:`lp-method-card ${r==="PayPal"?"active":""}`,onClick:()=>O("PayPal"),children:[e.jsx("div",{className:"lp-method-icon paypal",children:e.jsx(xe,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"PayPal"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",V,"€"]})]}),r==="PayPal"&&e.jsx(d,{size:18,className:"lp-method-check"})]}),e.jsxs("button",{className:`lp-method-card ${r==="Bank"?"active":""}`,onClick:()=>O("Bank"),children:[e.jsx("div",{className:"lp-method-icon bank",children:e.jsx(he,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"Transferencia"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",Y,"€"]})]}),r==="Bank"&&e.jsx(d,{size:18,className:"lp-method-check"})]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:r==="PayPal"?"Email de PayPal":"Número IBAN"}),e.jsx("input",{type:r==="PayPal"?"email":"text",value:g,onChange:a=>f(r==="Bank"?a.target.value.toUpperCase():a.target.value),placeholder:r==="PayPal"?"tu@email.com":"ES00 0000 0000 0000 0000 0000",className:"lp-input"})]}),r==="Bank"&&e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Titular de la cuenta"}),e.jsx("input",{type:"text",value:ae,onChange:a=>te(a.target.value),placeholder:"Nombre y apellidos",className:"lp-input"})]}),T&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(K,{size:18}),e.jsx("span",{children:T})]}),j&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Solicitud enviada correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary",onClick:se,disabled:L||j,children:L?e.jsx(P,{className:"lp-spin",size:20}):j?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Solicitar retiro"})})})]})}),ee&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>m(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>m(!1),children:e.jsx(G,{size:22})}),e.jsx("div",{className:"lp-modal-icon send",children:e.jsx(u,{size:28})}),e.jsx("h2",{children:"Enviar dinero"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Transfiere fondos a otro usuario de LinkPay"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Destinatario"}),e.jsxs("div",{className:"lp-input-icon-wrapper",children:[e.jsx("input",{type:"email",value:h,onChange:a=>F(a.target.value),placeholder:"email@ejemplo.com",className:"lp-input with-icon"}),e.jsx(u,{size:18,className:"lp-input-icon"})]})]}),e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:k,onChange:a=>_(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[n.toFixed(2)," €"]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsxs("label",{children:["Nota ",e.jsx("span",{className:"lp-optional",children:"(opcional)"})]}),e.jsx("input",{type:"text",value:re,onChange:a=>U(a.target.value),placeholder:"Ej: Pago por colaboración",className:"lp-input"})]}),$&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(K,{size:18}),e.jsx("span",{children:$})]}),z&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Dinero enviado correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary blue",onClick:le,disabled:H||z,children:H?e.jsx(P,{className:"lp-spin",size:20}):z?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Enviar ahora"})})})]})})]})}const ye=`
   /* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
   .rev-spin, .lp-spin { animation: rev-spin 1s linear infinite; }
   @keyframes rev-spin { 100% { transform: rotate(360deg); } }
@@ -511,26 +511,44 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P
     pointer-events: none;
   }
 
-  .rev-container {
+  /* ─── CONTENT CONTAINER ─────────────────────────────────────────────────── */
+  .rev-content {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 520px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 0 12px;
-    animation: rev-fade-up 0.5s ease-out;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 60px);
+    height: 100%;
+    padding: 24px 16px 100px;
     overflow: hidden;
   }
 
-  /* Mobile: ajustar altura considerando header y navbar */
   @media (max-width: 768px) {
-    .rev-container {
-      padding: 0 12px;
+    .rev-content {
+      padding: calc(48px + env(safe-area-inset-top, 12px) + 16px) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
       max-width: 100%;
-      height: calc(100vh - 140px);
+    }
+  }
+
+  /* ─── HERO ZONE - BALANCE + BOTONES CENTRADOS ─────────────────────────── */
+  .rev-hero-zone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    max-height: 60%;
+    min-height: 200px;
+  }
+
+  @media (max-width: 768px) {
+    .rev-hero-zone {
+      flex: 1;
+      max-height: 65%;
+      min-height: 180px;
+      padding-top: 10px;
     }
   }
 
@@ -545,7 +563,7 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P
     font-size: 14px;
   }
 
-  /* ─── BALANCE SECTION - CENTRADO PROMINENTE ────────────────────────────── */
+  /* ─── BALANCE SECTION - CENTRADO ─────────────────────────────────────── */
   .rev-balance-section {
     padding: 40px 0 24px;
     text-align: center;
@@ -563,6 +581,8 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    text-align: center;
+    margin-bottom: 16px;
   }
 
   .rev-balance-label {
@@ -594,14 +614,13 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P
 
   /* Removed wallet selector/dots */
 
-  /* ─── QUICK ACTIONS - CENTRADO CON ESPACIO ────────────────────────────── */
+  /* ─── QUICK ACTIONS - CENTRADO ─────────────────────────────────────────── */
   .rev-actions {
     display: flex;
     justify-content: center;
-    gap: 24px;
-    padding: 16px 0 28px;
+    gap: 32px;
+    padding: 20px 0 0;
     flex-wrap: wrap;
-    flex-shrink: 0;
   }
 
   @media (min-width: 769px) {
@@ -703,18 +722,28 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as K,G as X,P
     font-size: 12px;
   }
 
-  /* ─── TRANSACTIONS - PANEL INFERIOR SCROLLEABLE ──────────────────────── */
+  /* ─── TRANSACTIONS - PANEL INFERIOR (35% de pantalla max) ─────────────── */
   .rev-transactions {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.9);
     border-radius: 24px 24px 0 0;
-    padding: 20px 16px 120px;
+    padding: 18px 16px 30px;
     margin: 0 -12px;
-    flex: 1;
+    flex: 0 0 auto;
+    max-height: 35vh;
+    min-height: 150px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .rev-transactions {
+      max-height: 38vh;
+      min-height: 140px;
+      padding: 16px 14px 40px;
+    }
   }
 
   .rev-tx-loading {

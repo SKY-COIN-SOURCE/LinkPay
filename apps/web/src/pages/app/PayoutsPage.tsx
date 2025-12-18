@@ -186,14 +186,7 @@ export function PayoutsPage() {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
   return (
-    <div className="rev-shell lp-premium-bg" style={{
-      position: 'fixed',
-      inset: 0,
-      left: window.innerWidth > 768 ? '260px' : 0,
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-    }}>
+    <div className="rev-shell">
       <style>{revStyles}</style>
 
       {/* BACKGROUND */}
@@ -202,32 +195,15 @@ export function PayoutsPage() {
         <div className="rev-bg-glow" />
       </div>
 
-      {/* MAIN CONTAINER - FLEX COLUMN */}
-      <div style={{
-        position: 'relative',
-        zIndex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        paddingTop: window.innerWidth <= 768 ? '70px' : '20px', // Más espacio debajo del header
-        paddingBottom: window.innerWidth <= 768 ? '100px' : '20px', // Espacio para navbar
-        overflow: 'hidden',
-      }}>
+      {/* MAIN CONTENT */}
+      <div className="rev-content">
 
         {/* ═══════════════════════════════════════════════════════════════════
-            ZONA SUPERIOR - BALANCE + BOTONES CENTRADOS
+            ZONA PRINCIPAL - BALANCE CENTRADO PROMINENTE
         ═══════════════════════════════════════════════════════════════════ */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flex: '0 0 auto',
-          minHeight: window.innerWidth <= 768 ? '200px' : '280px',
-          paddingTop: '10px',
-        }}>
+        <div className="rev-hero-zone">
           {/* BALANCE */}
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div className="rev-balance-card">
             <span className="rev-balance-label">LinkPay · EUR</span>
             <div className="rev-balance-amount">
               <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
@@ -236,11 +212,7 @@ export function PayoutsPage() {
           </div>
 
           {/* BOTONES */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '32px',
-          }}>
+          <div className="rev-actions">
             <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
               <div className="rev-action-circle">
                 <ArrowDownLeft size={22} />
@@ -258,19 +230,10 @@ export function PayoutsPage() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            TRANSACTIONS LIST - PANEL INFERIOR SCROLLEABLE
+            ACTIVIDAD RECIENTE - PANEL INFERIOR (35% pantalla máximo)
         ═══════════════════════════════════════════════════════════════════ */}
         <section
-          style={{
-            flex: 1,
-            background: 'rgba(15, 23, 42, 0.9)',
-            borderRadius: '24px 24px 0 0',
-            padding: '20px 16px 40px',
-            margin: '0 -12px',
-            overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
+          className="rev-transactions"
           onScroll={(e) => {
             const target = e.target as HTMLElement;
             const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
@@ -1086,26 +1049,44 @@ const revStyles = `
     pointer-events: none;
   }
 
-  .rev-container {
+  /* ─── CONTENT CONTAINER ─────────────────────────────────────────────────── */
+  .rev-content {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 520px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 0 12px;
-    animation: rev-fade-up 0.5s ease-out;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 60px);
+    height: 100%;
+    padding: 24px 16px 100px;
     overflow: hidden;
   }
 
-  /* Mobile: ajustar altura considerando header y navbar */
   @media (max-width: 768px) {
-    .rev-container {
-      padding: 0 12px;
+    .rev-content {
+      padding: calc(48px + env(safe-area-inset-top, 12px) + 16px) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
       max-width: 100%;
-      height: calc(100vh - 140px);
+    }
+  }
+
+  /* ─── HERO ZONE - BALANCE + BOTONES CENTRADOS ─────────────────────────── */
+  .rev-hero-zone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    max-height: 60%;
+    min-height: 200px;
+  }
+
+  @media (max-width: 768px) {
+    .rev-hero-zone {
+      flex: 1;
+      max-height: 65%;
+      min-height: 180px;
+      padding-top: 10px;
     }
   }
 
@@ -1120,7 +1101,7 @@ const revStyles = `
     font-size: 14px;
   }
 
-  /* ─── BALANCE SECTION - CENTRADO PROMINENTE ────────────────────────────── */
+  /* ─── BALANCE SECTION - CENTRADO ─────────────────────────────────────── */
   .rev-balance-section {
     padding: 40px 0 24px;
     text-align: center;
@@ -1138,6 +1119,8 @@ const revStyles = `
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    text-align: center;
+    margin-bottom: 16px;
   }
 
   .rev-balance-label {
@@ -1169,14 +1152,13 @@ const revStyles = `
 
   /* Removed wallet selector/dots */
 
-  /* ─── QUICK ACTIONS - CENTRADO CON ESPACIO ────────────────────────────── */
+  /* ─── QUICK ACTIONS - CENTRADO ─────────────────────────────────────────── */
   .rev-actions {
     display: flex;
     justify-content: center;
-    gap: 24px;
-    padding: 16px 0 28px;
+    gap: 32px;
+    padding: 20px 0 0;
     flex-wrap: wrap;
-    flex-shrink: 0;
   }
 
   @media (min-width: 769px) {
@@ -1278,18 +1260,28 @@ const revStyles = `
     font-size: 12px;
   }
 
-  /* ─── TRANSACTIONS - PANEL INFERIOR SCROLLEABLE ──────────────────────── */
+  /* ─── TRANSACTIONS - PANEL INFERIOR (35% de pantalla max) ─────────────── */
   .rev-transactions {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.9);
     border-radius: 24px 24px 0 0;
-    padding: 20px 16px 120px;
+    padding: 18px 16px 30px;
     margin: 0 -12px;
-    flex: 1;
+    flex: 0 0 auto;
+    max-height: 35vh;
+    min-height: 150px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .rev-transactions {
+      max-height: 38vh;
+      min-height: 140px;
+      padding: 16px 14px 40px;
+    }
   }
 
   .rev-tx-loading {
