@@ -186,7 +186,14 @@ export function PayoutsPage() {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
   return (
-    <div className="rev-shell lp-premium-bg">
+    <div className="rev-shell lp-premium-bg" style={{
+      position: 'fixed',
+      inset: 0,
+      left: window.innerWidth > 768 ? '260px' : 0,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
       <style>{revStyles}</style>
 
       {/* BACKGROUND */}
@@ -195,12 +202,26 @@ export function PayoutsPage() {
         <div className="rev-bg-glow" />
       </div>
 
-      <div className="rev-container">
+      {/* MAIN CONTAINER - FLEX COLUMN */}
+      <div style={{
+        position: 'relative',
+        zIndex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        paddingTop: window.innerWidth <= 768 ? '60px' : '20px', // Espacio para header móvil
+        paddingBottom: window.innerWidth <= 768 ? '90px' : '20px', // Espacio para navbar móvil
+        overflow: 'hidden',
+      }}>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            BALANCE CARD - REVOLUT STYLE
+            BALANCE CARD - CENTRADO CON ESPACIO
         ═══════════════════════════════════════════════════════════════════ */}
-        <section className="rev-balance-section">
+        <section style={{
+          padding: window.innerWidth <= 768 ? '20px 0 16px' : '40px 0 24px',
+          textAlign: 'center',
+          flexShrink: 0,
+        }}>
           <div className="rev-balance-card">
             <span className="rev-balance-label">LinkPay · EUR</span>
             <div className="rev-balance-amount">
@@ -211,9 +232,15 @@ export function PayoutsPage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            ACCIONES PRINCIPALES
+            ACCIONES PRINCIPALES - CENTRADAS
         ═══════════════════════════════════════════════════════════════════ */}
-        <section className="rev-actions">
+        <section style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '24px',
+          padding: window.innerWidth <= 768 ? '8px 0 20px' : '16px 0 28px',
+          flexShrink: 0,
+        }}>
           <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
             <div className="rev-action-circle">
               <ArrowDownLeft size={22} />
@@ -230,14 +257,22 @@ export function PayoutsPage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            TRANSACTIONS LIST - REVOLUT STYLE SCROLLABLE
+            TRANSACTIONS LIST - PANEL INFERIOR SCROLLEABLE
         ═══════════════════════════════════════════════════════════════════ */}
         <section
-          className="rev-transactions"
+          style={{
+            flex: 1,
+            background: 'rgba(15, 23, 42, 0.9)',
+            borderRadius: '24px 24px 0 0',
+            padding: '20px 16px 40px',
+            margin: '0 -12px',
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
           onScroll={(e) => {
             const target = e.target as HTMLElement;
             const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
-            // Load more when near bottom (100px threshold)
             if (scrollBottom < 100 && visibleCount < history.length) {
               setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, history.length));
             }
