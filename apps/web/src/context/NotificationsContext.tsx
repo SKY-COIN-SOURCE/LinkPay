@@ -40,14 +40,11 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   // Cargar notificaciones iniciales
   const loadNotifications = useCallback(async () => {
     if (!user?.id) {
-      console.log('🔔 [Notifications] No user.id, clearing notifications');
       setNotifications([]);
       setUnreadCount(0);
       setLoading(false);
       return;
     }
-
-    console.log('🔔 [Notifications] Loading for user.id:', user.id);
 
     try {
       const [all, unread] = await Promise.all([
@@ -55,11 +52,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         notificationsService.getUnreadCount(user.id),
       ]);
 
-      console.log('🔔 [Notifications] Loaded:', all.length, 'total,', unread, 'unread');
 
-      if (all.length === 0) {
-        console.warn('🔔 [Notifications] No notifications returned! Check RLS policies or user_id mismatch');
-      }
 
       setNotifications(all);
       setUnreadCount(unread);
