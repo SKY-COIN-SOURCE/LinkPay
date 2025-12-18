@@ -1070,23 +1070,21 @@ const revStyles = `
     }
   }
 
-  /* ─── HERO ZONE - BALANCE + BOTONES CENTRADOS ─────────────────────────── */
+  /* ─── HERO ZONE - BALANCE ARRIBA + BOTONES ─────────────────────────────── */
   .rev-hero-zone {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    flex: 1;
-    max-height: 60%;
-    min-height: 200px;
+    flex: 0 0 auto;
+    padding-top: 20px;
+    padding-bottom: 24px;
   }
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      flex: 1;
-      max-height: 65%;
-      min-height: 180px;
-      padding-top: 10px;
+      padding-top: 16px;
+      padding-bottom: 20px;
     }
   }
 
@@ -1260,15 +1258,14 @@ const revStyles = `
     font-size: 12px;
   }
 
-  /* ─── TRANSACTIONS - PANEL INFERIOR (35% de pantalla max) ─────────────── */
+  /* ─── TRANSACTIONS - PANEL INFERIOR EXPANDIDO ───────────────────────────── */
   .rev-transactions {
     background: rgba(15, 23, 42, 0.9);
     border-radius: 24px 24px 0 0;
-    padding: 18px 16px 30px;
+    padding: 20px 16px 30px;
     margin: 0 -12px;
-    flex: 0 0 auto;
-    max-height: 35vh;
-    min-height: 150px;
+    flex: 1;
+    min-height: 200px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     backdrop-filter: blur(20px);
@@ -1278,9 +1275,8 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-transactions {
-      max-height: 38vh;
-      min-height: 140px;
-      padding: 16px 14px 40px;
+      min-height: 180px;
+      padding: 18px 14px 100px;
     }
   }
 
