@@ -42,7 +42,7 @@ export function useNotificationEvents() {
           if (link.views > (oldLink?.views || 0)) {
             const clicksIncrease = link.views - (oldLink?.views || 0);
             const revenue = link.earnings - (oldLink?.earnings || 0);
-            
+
             // Obtener información del último clic
             const { data: lastClicks } = await supabase
               .from('click_events')
@@ -50,7 +50,7 @@ export function useNotificationEvents() {
               .eq('link_id', link.id)
               .order('created_at', { ascending: false })
               .limit(1);
-            
+
             const lastClick = lastClicks?.[0];
 
             // Notificar clic (solo si es pagado o es el primer clic)
@@ -99,7 +99,7 @@ export function useNotificationEvents() {
             const today = new Date().toDateString();
             const linkKey = link.id;
             const daily = dailyClicks.current.get(linkKey);
-            
+
             if (!daily || daily.date !== today) {
               dailyClicks.current.set(linkKey, { count: clicksIncrease, date: today });
             } else {
@@ -294,7 +294,7 @@ export function useNotificationEvents() {
         },
         async (payload) => {
           const newProfile = payload.new as any;
-          
+
           // Verificar si es un referido
           if (newProfile.referred_by === user.id) {
             await notificationsService.notifyReferralSignup(
@@ -418,49 +418,54 @@ export function useNotificationEvents() {
       .subscribe();
 
     // ============================================================
-    // VERIFICACIÓN INICIAL
+    // VERIFICACIÓN INICIAL - SOLO SI NO EXISTE EN BD
     // ============================================================
     const checkInitialState = async () => {
-      // Verificar primer link
+      // Verificar primer link - SOLO si no existe notificación de tipo first_link
       if (!hasCheckedFirstLink.current) {
-        const { data: links } = await supabase
-          .from('links')
+        // Primero verificar si ya enviamos esta notificación
+        const { data: existingFirstLink } = await supabase
+          .from('notifications')
           .select('id')
           .eq('user_id', user.id)
+          .in('type', ['link_created', 'first_link', 'achievement_first_link'])
           .limit(1);
 
-        if (links && links.length === 1) {
+        if (existingFirstLink && existingFirstLink.length > 0) {
+          // Ya existe, no enviar de nuevo
           hasCheckedFirstLink.current = true;
-          setTimeout(async () => {
-            await notificationsService.notifyFirstLink(user.id, links[0].id);
-          }, 2000);
+        } else {
+          // Verificar si tiene links
+          const { data: links } = await supabase
+            .from('links')
+            .select('id')
+            .eq('user_id', user.id)
+            .limit(1);
+
+          if (links && links.length >= 1) {
+            hasCheckedFirstLink.current = true;
+            // NO enviamos aquí - el trigger de Supabase ya lo hace
+          }
         }
       }
 
-      // Verificar primera ganancia
+      // Verificar primera ganancia - SOLO si no existe notificación
       if (!hasCheckedFirstEarning.current) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('total_earnings')
-          .eq('id', user.id)
-          .single();
+        const { data: existingFirstEarning } = await supabase
+          .from('notifications')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', 'first_earning')
+          .limit(1);
 
-        if (profile && profile.total_earnings > 0) {
+        if (existingFirstEarning && existingFirstEarning.length > 0) {
+          // Ya existe, no enviar de nuevo
           hasCheckedFirstEarning.current = true;
-          await notificationsService.notifyFirstEarning(user.id, profile.total_earnings);
         }
+        // NO enviamos aquí - el trigger de Supabase ya lo hace
       }
 
-      // Verificar balance disponible para payout
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('balance')
-        .eq('id', user.id)
-        .single();
-
-      if (profile && profile.balance >= 5) {
-        await notificationsService.notifyPayoutAvailable(user.id, profile.balance);
-      }
+      // NO verificar payout aquí - solo verificar cuando cambia el balance (realtime)
     };
 
     checkInitialState();
