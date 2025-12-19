@@ -139,8 +139,11 @@ body {
   min-height: 100vh !important;
   min-height: 100dvh !important;
   overflow: hidden !important;
-  background: #000000 !important;
+  background: #020617 !important;
+  background: linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%) !important;
   position: relative !important;
+  opacity: 1 !important;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* UTILIDADES */
