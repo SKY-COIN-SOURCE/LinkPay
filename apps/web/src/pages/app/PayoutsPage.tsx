@@ -203,7 +203,7 @@ export function PayoutsPage() {
       <div className="rev-content">
 
         {/* ═══════════════════════════════════════════════════════════════════
-            ZONA PRINCIPAL - BALANCE CENTRADO PROMINENTE
+            ZONA PRINCIPAL - BALANCE CENTRADO PROMINENTE (REVOLUT STYLE)
         ═══════════════════════════════════════════════════════════════════ */}
         <div className="rev-hero-zone">
           {/* BALANCE */}
@@ -213,6 +213,34 @@ export function PayoutsPage() {
               <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
               <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
             </div>
+            {/* Botón Cuentas */}
+            <button className="rev-cuentas-btn">
+              Cuentas
+            </button>
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="rev-dots">
+            <span className="rev-dot active"></span>
+            <span className="rev-dot"></span>
+            <span className="rev-dot"></span>
+            <span className="rev-dot"></span>
+          </div>
+
+          {/* ACTION BUTTONS - 2 botones principales */}
+          <div className="rev-actions">
+            <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
+              <div className="rev-action-circle">
+                <ArrowDownLeft size={22} />
+              </div>
+              <span>Solicitar<br />retiro</span>
+            </button>
+            <button className="rev-action-item" onClick={() => setShowSend(true)}>
+              <div className="rev-action-circle">
+                <Send size={22} />
+              </div>
+              <span>Enviar<br />interno</span>
+            </button>
           </div>
         </div>
 
@@ -999,36 +1027,95 @@ const revStyles = `
     }
   }
 
-  /* ─── BACKGROUND ─────────────────────────────────────────────────────────── */
+  /* ─── BACKGROUND - STUNNING UNDERWATER EFFECT ────────────────────────────── */
   .rev-bg {
     position: fixed;
     inset: 0;
     z-index: 0;
     background: linear-gradient(180deg, 
-      #0a1628 0%, 
-      #0d1f3c 30%,
-      #0f172a 100%
+      #001a2c 0%, 
+      #003352 25%,
+      #004d7a 50%,
+      #003352 75%,
+      #001a2c 100%
     );
+    overflow: hidden;
   }
 
   .rev-bg-gradient {
     position: absolute;
     inset: 0;
     background: 
-      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(6, 78, 125, 0.5) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 40% at 40% 10%, rgba(14, 116, 144, 0.3) 0%, transparent 40%);
-    animation: rev-fade-up 1s ease-out;
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(0, 180, 216, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 50% at 20% 20%, rgba(0, 119, 182, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse 80% 60% at 80% 30%, rgba(72, 202, 228, 0.25) 0%, transparent 40%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(0, 150, 199, 0.2) 0%, transparent 50%);
+    animation: rev-fade-up 1.2s ease-out;
   }
 
   .rev-bg-glow {
     position: absolute;
-    top: -100px;
+    top: -150px;
     left: 50%;
     transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(72, 202, 228, 0.35) 0%, rgba(0, 180, 216, 0.15) 30%, transparent 60%);
+    pointer-events: none;
+    animation: rev-glow-pulse 4s ease-in-out infinite alternate;
+  }
+
+  /* Floating particles effect */
+  .rev-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.7;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1px 1px at 25% 35%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(2px 2px at 40% 15%, rgba(72, 202, 228, 0.9), transparent),
+      radial-gradient(1px 1px at 55% 45%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1px 1px at 70% 25%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(2px 2px at 85% 50%, rgba(0, 180, 216, 0.8), transparent),
+      radial-gradient(1px 1px at 10% 70%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1px 1px at 30% 80%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(2px 2px at 60% 75%, rgba(144, 224, 239, 0.7), transparent),
+      radial-gradient(1px 1px at 80% 85%, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 350px 250px;
+    animation: rev-particles-float 20s linear infinite;
+  }
+
+  /* Secondary floating orb */
+  .rev-bg::after {
+    content: "";
+    position: absolute;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+    bottom: 10%;
+    right: -100px;
+    background: radial-gradient(circle, rgba(0, 180, 216, 0.25) 0%, rgba(72, 202, 228, 0.1) 40%, transparent 60%);
+    border-radius: 50%;
+    filter: blur(40px);
+    animation: rev-orb-float 15s ease-in-out infinite;
     pointer-events: none;
+  }
+
+  @keyframes rev-glow-pulse {
+    0% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  }
+
+  @keyframes rev-particles-float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-250px); }
+  }
+
+  @keyframes rev-orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-30px, -50px) scale(1.05); }
+    66% { transform: translate(-60px, 20px) scale(0.95); }
   }
 
   /* ─── CONTENT CONTAINER ─────────────────────────────────────────────────── */
@@ -1098,14 +1185,14 @@ const revStyles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 16px;
   }
 
   @media (max-width: 768px) {
     .rev-balance-card {
-      margin-bottom: clamp(84px, 12vh, 120px);
+      margin-bottom: 12px;
     }
   }
 
@@ -1136,7 +1223,53 @@ const revStyles = `
     margin-left: 2px;
   }
 
-  /* Removed wallet selector/dots */
+  /* ─── CUENTAS BUTTON (REVOLUT STYLE) ──────────────────────────────────── */
+  .rev-cuentas-btn {
+    margin-top: 12px;
+    padding: 10px 24px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .rev-cuentas-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    transform: scale(1.02);
+  }
+
+  .rev-cuentas-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* ─── DOTS INDICATOR (REVOLUT STYLE) ─────────────────────────────────── */
+  .rev-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 20px 0 28px;
+  }
+
+  .rev-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .rev-dot.active {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+  }
 
   /* ─── QUICK ACTIONS - COMPACTO ─────────────────────────────────────────── */
   .rev-actions {
@@ -1662,9 +1795,14 @@ const revStyles = `
     background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
   }
 
-  /* ─── MOBILE ADJUSTMENTS ─────────────────────────────────────────────────── */
+  /* ─── MOBILE ADJUSTMENTS - REVOLUT PERFECT ─────────────────────────────── */
   @media (max-width: 768px) {
     .rev-shell { left: 0; }
+    
+    .rev-hero-zone {
+      padding-top: 8px;
+      padding-bottom: 0;
+    }
     
     .rev-amount-value {
       font-size: 48px;
@@ -1674,14 +1812,43 @@ const revStyles = `
       font-size: 28px;
     }
 
+    .rev-cuentas-btn {
+      margin-top: 8px;
+      padding: 8px 20px;
+      font-size: 13px;
+    }
+
+    .rev-dots {
+      margin: 16px 0 20px;
+    }
+
     .rev-actions {
-      gap: 20px;
-      margin-top: 32px;
+      gap: 16px;
+      margin-top: 0;
+      padding: 0 4px;
+      justify-content: space-around;
+      width: 100%;
+    }
+
+    .rev-action-item {
+      min-width: 60px;
+      padding: 4px;
     }
 
     .rev-action-circle {
       width: 52px;
       height: 52px;
+    }
+
+    .rev-action-item span {
+      font-size: 10px;
+      text-align: center;
+      line-height: 1.2;
+      margin-top: 4px;
+    }
+
+    .rev-transactions {
+      margin-top: 16px;
     }
   }
 `;
