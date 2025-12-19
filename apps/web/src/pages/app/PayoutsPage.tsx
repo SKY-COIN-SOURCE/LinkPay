@@ -213,10 +213,6 @@ export function PayoutsPage() {
               <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
               <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
             </div>
-            {/* Botón Cuentas */}
-            <button className="rev-cuentas-btn">
-              Cuentas
-            </button>
           </div>
 
           {/* ACTION BUTTONS - 2 botones principales */}
