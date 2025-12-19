@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 
 // Consejos que rotan mientras carga
 const TIPS = [
@@ -22,17 +21,10 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
     const [currentTip, setCurrentTip] = useState(0);
     const [progress, setProgress] = useState(0);
     const [fadeOut, setFadeOut] = useState(false);
-    const [mounted, setMounted] = useState(false);
     const animationFrameRef = useRef<number>();
     const startTimeRef = useRef<number>(Date.now());
 
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!mounted) return;
-
         // Rotar tips cada 1.5 segundos
         const tipInterval = setInterval(() => {
             setCurrentTip((prev) => (prev + 1) % TIPS.length);
@@ -60,13 +52,11 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [minDuration, onComplete, mounted]);
+    }, [minDuration, onComplete]);
 
     const tip = TIPS[currentTip];
 
-    if (!mounted) return null;
-
-    const splashContent = (
+    return (
         <div 
             className={`lp-splash ${fadeOut ? 'fade-out' : ''}`}
             style={{
@@ -82,22 +72,24 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: '#000000',
                 overflow: 'hidden',
                 margin: 0,
                 padding: 0,
                 transform: 'none',
                 transformOrigin: 'center center',
+                visibility: 'visible',
+                opacity: 1,
             }}
         >
             <style>{splashStyles}</style>
 
-            {/* Fondo con gradientes animados */}
+            {/* FONDO PREMIUM PERSONALIZADO - Igual que Dashboard */}
             <div className="lp-splash-bg">
-                <div className="lp-splash-gradient lp-splash-gradient-1" />
-                <div className="lp-splash-gradient lp-splash-gradient-2" />
-                <div className="lp-splash-gradient lp-splash-gradient-3" />
-                <div className="lp-splash-grid" />
+                <div className="lp-splash-bg-base" />
+                <div className="lp-splash-bg-gradient" />
+                <div className="lp-splash-bg-glow" />
+                <div className="lp-splash-bg-particles" />
+                <div className="lp-splash-bg-orb" />
             </div>
 
             {/* Contenido principal - perfectamente centrado */}
@@ -113,10 +105,6 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                                 alt="LinkPay"
                                 className="lp-splash-logo-img"
                                 loading="eager"
-                                onError={(e) => {
-                                    // Fallback si la imagen no carga
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                }}
                             />
                             <div className="lp-splash-logo-shine" />
                         </div>
@@ -161,14 +149,12 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
             </div>
         </div>
     );
-
-    // Renderizar directamente en el body usando Portal para asegurar visibilidad
-    return createPortal(splashContent, document.body);
 }
 
 const splashStyles = `
   /* ============================================
      SPLASH SCREEN ULTRA PREMIUM - MARTÍN ANDRIGHETTI
+     FONDO PERSONALIZADO PREMIUM
      ============================================ */
   
   .lp-splash {
@@ -187,7 +173,6 @@ const splashStyles = `
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    background: #000000 !important;
     overflow: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -205,18 +190,8 @@ const splashStyles = `
       height: calc(var(--vh, 1vh) * 100) !important;
       transform: none !important;
       transform-origin: center center !important;
-    }
-    
-    .lp-splash::after {
-      content: "";
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: -200px;
-      height: 200px;
-      background: #000000;
-      z-index: -1;
-      pointer-events: none;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
   }
 
@@ -226,7 +201,7 @@ const splashStyles = `
     pointer-events: none !important;
   }
 
-  /* === FONDO ANIMADO PREMIUM === */
+  /* === FONDO PREMIUM PERSONALIZADO - IGUAL QUE DASHBOARD === */
   .lp-splash-bg {
     position: absolute;
     top: 0;
@@ -237,91 +212,113 @@ const splashStyles = `
     height: 100%;
     overflow: hidden;
     pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Base gradient oscuro */
+  .lp-splash-bg-base {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      #020617 0%,
+      #0f172a 25%,
+      #1e293b 50%,
+      #0f172a 75%,
+      #020617 100%);
     z-index: 1;
   }
 
-  /* Grid pattern sutil */
-  .lp-splash-grid {
+  /* Gradientes de luminosidad */
+  .lp-splash-bg-gradient {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
-    background-size: 50px 50px;
-    opacity: 0.5;
-    z-index: 1;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 150% 80% at 50% -20%, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.15) 30%, transparent 55%),
+      radial-gradient(ellipse 100% 80% at 15% 20%, rgba(168, 85, 247, 0.2) 0%, transparent 50%),
+      radial-gradient(ellipse 90% 70% at 85% 30%, rgba(59, 130, 246, 0.2) 0%, transparent 45%),
+      radial-gradient(ellipse 100% 60% at 50% 95%, rgba(34, 197, 94, 0.15) 0%, transparent 50%);
+    z-index: 2;
+    animation: splash-bg-fade 1.2s ease-out;
   }
 
-  .lp-splash-gradient {
+  @keyframes splash-bg-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Glow central pulsante */
+  .lp-splash-bg-glow {
     position: absolute;
+    top: -250px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    height: 1000px;
+    background: radial-gradient(circle,
+      rgba(99, 102, 241, 0.4) 0%,
+      rgba(168, 85, 247, 0.3) 20%,
+      rgba(59, 130, 246, 0.2) 40%,
+      transparent 65%);
+    pointer-events: none;
+    z-index: 3;
+    animation: splash-glow-pulse 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes splash-glow-pulse {
+    0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  }
+
+  /* Partículas flotantes */
+  .lp-splash-bg-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 2;
+    background-image:
+      radial-gradient(2px 2px at 12% 18%, rgba(99, 102, 241, 0.4), transparent),
+      radial-gradient(2px 2px at 28% 32%, rgba(168, 85, 247, 0.3), transparent),
+      radial-gradient(3px 3px at 45% 12%, rgba(59, 130, 246, 0.35), transparent),
+      radial-gradient(2px 2px at 58% 42%, rgba(34, 197, 94, 0.3), transparent),
+      radial-gradient(2px 2px at 72% 22%, rgba(99, 102, 241, 0.25), transparent),
+      radial-gradient(3px 3px at 88% 48%, rgba(168, 85, 247, 0.4), transparent),
+      radial-gradient(2px 2px at 8% 68%, rgba(59, 130, 246, 0.3), transparent),
+      radial-gradient(2px 2px at 32% 78%, rgba(34, 197, 94, 0.35), transparent),
+      radial-gradient(3px 3px at 62% 72%, rgba(99, 102, 241, 0.3), transparent),
+      radial-gradient(2px 2px at 82% 82%, rgba(168, 85, 247, 0.25), transparent),
+      radial-gradient(2px 2px at 48% 58%, rgba(59, 130, 246, 0.3), transparent),
+      radial-gradient(3px 3px at 18% 88%, rgba(34, 197, 94, 0.4), transparent);
+    background-size: 450px 350px;
+    animation: splash-particles-float 25s linear infinite;
+  }
+
+  @keyframes splash-particles-float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-200px); }
+  }
+
+  /* Orb flotante inferior */
+  .lp-splash-bg-orb {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    bottom: -5%;
+    right: -15%;
+    background: radial-gradient(circle,
+      rgba(168, 85, 247, 0.3) 0%,
+      rgba(99, 102, 241, 0.2) 35%,
+      transparent 60%);
     border-radius: 50%;
-    filter: blur(90px);
-    will-change: transform, opacity;
-    z-index: 1;
+    filter: blur(60px);
+    animation: splash-orb-float 18s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
   }
 
-  .lp-splash-gradient-1 {
-    width: 450px;
-    height: 450px;
-    top: -120px;
-    left: -120px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(99, 102, 241, 0.12) 50%, transparent 70%);
-    animation: splash-gradient-1 14s ease-in-out infinite;
-  }
-
-  .lp-splash-gradient-2 {
-    width: 550px;
-    height: 550px;
-    bottom: -180px;
-    right: -180px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 70%);
-    animation: splash-gradient-2 16s ease-in-out infinite;
-  }
-
-  .lp-splash-gradient-3 {
-    width: 380px;
-    height: 380px;
-    bottom: 18%;
-    left: 8%;
-    background: radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, rgba(34, 197, 94, 0.08) 50%, transparent 70%);
-    animation: splash-gradient-3 20s ease-in-out infinite;
-  }
-
-  /* Animaciones SIN rotación - solo translate y scale */
-  @keyframes splash-gradient-1 {
-    0%, 100% { 
-      transform: translate(0, 0) scale(1); 
-      opacity: 0.45; 
-    }
-    50% { 
-      transform: translate(45px, 35px) scale(1.18); 
-      opacity: 0.65; 
-    }
-  }
-
-  @keyframes splash-gradient-2 {
-    0%, 100% { 
-      transform: translate(0, 0) scale(1); 
-      opacity: 0.4; 
-    }
-    50% { 
-      transform: translate(-55px, -45px) scale(1.22); 
-      opacity: 0.6; 
-    }
-  }
-
-  @keyframes splash-gradient-3 {
-    0%, 100% { 
-      transform: translate(0, 0) scale(1); 
-      opacity: 0.3; 
-    }
-    50% { 
-      transform: translate(35px, -55px) scale(1.28); 
-      opacity: 0.5; 
-    }
+  @keyframes splash-orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, -40px) scale(1.1); }
   }
 
   /* === CONTENIDO PRINCIPAL - PERFECTAMENTE CENTRADO === */
@@ -810,34 +807,31 @@ const splashStyles = `
       font-size: 12px;
     }
 
-    /* Reducir blur en móvil para mejor rendimiento */
-    .lp-splash-gradient {
-      filter: blur(55px);
+    /* Optimizaciones de fondo en móvil */
+    .lp-splash-bg-glow {
+      width: 800px;
+      height: 800px;
+      filter: blur(80px);
     }
 
-    .lp-splash-gradient-1 {
-      width: 320px;
-      height: 320px;
+    .lp-splash-bg-orb {
+      width: 400px;
+      height: 400px;
+      filter: blur(50px);
     }
 
-    .lp-splash-gradient-2 {
-      width: 380px;
-      height: 380px;
-    }
-
-    .lp-splash-gradient-3 {
-      width: 270px;
-      height: 270px;
-    }
-
-    .lp-splash-grid {
-      background-size: 45px 45px;
+    .lp-splash-bg-particles {
+      background-size: 350px 250px;
+      opacity: 0.5;
     }
   }
 
   /* Reducir animaciones en dispositivos con preferencia de movimiento reducido */
   @media (prefers-reduced-motion: reduce) {
-    .lp-splash-gradient,
+    .lp-splash-bg-gradient,
+    .lp-splash-bg-glow,
+    .lp-splash-bg-particles,
+    .lp-splash-bg-orb,
     .lp-splash-logo-orb,
     .lp-splash-logo-glow,
     .lp-splash-logo,
