@@ -6,6 +6,7 @@ import {
   AlertCircle,
   History,
   Loader2,
+  ChevronDown,
   CreditCard,
   Building2,
   X,
@@ -56,9 +57,9 @@ export function PayoutsPage() {
     bank: '',
   });
 
-  // Lazy loading for transactions
-  const [visibleCount, setVisibleCount] = useState(10);
-  const LOAD_MORE_COUNT = 10;
+  // Pagination for transactions
+  const [visibleCount, setVisibleCount] = useState(30);
+  const LOAD_MORE_COUNT = 30;
 
   // Constants
   const MIN_PAYPAL = 5;
@@ -185,6 +186,9 @@ export function PayoutsPage() {
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
+  const remainingCount = Math.max(history.length - visibleCount, 0);
+  const nextBatchCount = Math.min(LOAD_MORE_COUNT, remainingCount);
+
   return (
     <div className="rev-shell">
       <style>{revStyles}</style>
@@ -230,18 +234,9 @@ export function PayoutsPage() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            ACTIVIDAD RECIENTE - PANEL INFERIOR (35% pantalla máximo)
+            ACTIVIDAD RECIENTE - PANEL INFERIOR (30-35% pantalla)
         ═══════════════════════════════════════════════════════════════════ */}
-        <section
-          className="rev-transactions"
-          onScroll={(e) => {
-            const target = e.target as HTMLElement;
-            const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
-            if (scrollBottom < 100 && visibleCount < history.length) {
-              setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, history.length));
-            }
-          }}
-        >
+        <section className="rev-transactions">
           <h3 className="rev-section-title">Actividad reciente</h3>
 
           {history.length === 0 ? (
@@ -295,11 +290,15 @@ export function PayoutsPage() {
                   </div>
                 );
               })}
-              {/* Loading indicator when more items available */}
               {visibleCount < history.length && (
-                <div className="rev-tx-loading">
-                  <Loader2 size={20} className="rev-spin" />
-                </div>
+                <button
+                  type="button"
+                  className="rev-tx-more"
+                  onClick={() => setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, history.length))}
+                >
+                  Mostrar {nextBatchCount} más
+                  <ChevronDown size={16} />
+                </button>
               )}
             </div>
           )}
@@ -1121,6 +1120,12 @@ const revStyles = `
     margin-bottom: 48px;
   }
 
+  @media (max-width: 768px) {
+    .rev-balance-card {
+      margin-bottom: 68px;
+    }
+  }
+
   .rev-balance-label {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.7);
@@ -1275,7 +1280,10 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-transactions {
+      flex: 0 0 auto;
+      height: 34vh;
       min-height: 180px;
+      max-height: 40vh;
       padding: 18px 14px 100px;
     }
   }
@@ -1285,6 +1293,29 @@ const revStyles = `
     justify-content: center;
     padding: 20px 0;
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  .rev-tx-more {
+    width: 100%;
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(15, 23, 42, 0.45);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .rev-tx-more:hover {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(255, 255, 255, 0.28);
   }
 
   .rev-section-title {
