@@ -1384,10 +1384,8 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-transactions {
-      flex: 0 0 auto;
-      height: 34vh;
-      min-height: 180px;
-      max-height: 40vh;
+      flex: 1;
+      min-height: 200px;
       padding: 18px 14px 100px;
     }
   }
