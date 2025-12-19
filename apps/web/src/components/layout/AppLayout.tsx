@@ -239,15 +239,22 @@ export function AppLayout() {
 const layoutStyles = `
       .lp-app-shell {
         display: flex;
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       min-height: 100vh;
       min-height: 100dvh;
       background: #020617;
-      position: relative;
       color: #e5e7eb;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
   }
 
   /* Hide app shell during splash - completely invisible */
@@ -534,9 +541,14 @@ const layoutStyles = `
       max-width: 1200px;
       margin: 0 auto;
       width: 100%;
+      height: 100%;
+      min-height: 100%;
       padding: 24px 24px 110px 24px;
       position: relative;
       z-index: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
   }
 
       /* ===== MOBILE NAV - SOLID INTEGRATED DOCK ===== */
@@ -549,18 +561,31 @@ const layoutStyles = `
       z-index: 60;
       /* Solid background */
       background: #020617;
+      /* Extender más allá del viewport */
+      padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
       /* BULLETPROOF: Extend background beyond screen bottom to cover home indicator */
+      .lp-mobile-nav::before {
+        content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -300px;
+      height: 300px;
+      background: #020617;
+      z-index: -1;
+  }
+
       .lp-mobile-nav::after {
         content: "";
       position: absolute;
       left: 0;
       right: 0;
-      bottom: -200px;
-      height: 200px;
+      bottom: -300px;
+      height: calc(300px + env(safe-area-inset-bottom, 0px));
       background: #020617;
-      z-index: -1;
+      z-index: -2;
   }
 
       .lp-mobile-nav-inner {
@@ -874,13 +899,21 @@ const layoutStyles = `
     .lp-main-shell {
       /* Padding-top for header + safe-area, padding-bottom for nav */
       padding-top: calc(56px + env(safe-area-inset-top, 0px));
-      padding-bottom: 100px;
+      padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
       padding-left: 0;
       padding-right: 0;
       max-width: 100%;
+      height: 100%;
+      min-height: 100%;
     }
     .lp-mobile-nav {
       display: block;
+    }
+    .lp-app-shell {
+      height: 100vh;
+      height: 100dvh;
+      min-height: 100vh;
+      min-height: 100dvh;
     }
   }
 

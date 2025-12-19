@@ -49,6 +49,8 @@
       min-height: 100vh;
       min-height: 100dvh;
       overflow: hidden;
+      position: fixed;
+      inset: 0;
     }
 
     body {
@@ -60,7 +62,8 @@
       min-height: 100vh;
       min-height: 100dvh;
       overflow: hidden;
-      position: relative;
+      position: fixed;
+      inset: 0;
     }
 
     #root {
@@ -71,7 +74,8 @@
       height: 100%;
       min-height: 100vh;
       min-height: 100dvh;
-      position: relative;
+      position: fixed;
+      inset: 0;
       overflow: hidden;
     }
 
@@ -84,18 +88,30 @@
         bottom: 0 !important;
         background: #020617 !important;
         z-index: 60 !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
       }
 
-      /* Extend background 200px below to cover any home indicator gap */
+      /* Extend background 300px below to cover any home indicator gap */
+      .lp-mobile-nav::before {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -300px !important;
+        height: 300px !important;
+        background: #020617 !important;
+        z-index: -1 !important;
+      }
+
       .lp-mobile-nav::after {
         content: "" !important;
         position: absolute !important;
         left: 0 !important;
         right: 0 !important;
-        bottom: -200px !important;
-        height: 200px !important;
+        bottom: -300px !important;
+        height: calc(300px + env(safe-area-inset-bottom, 0px)) !important;
         background: #020617 !important;
-        z-index: -1 !important;
+        z-index: -2 !important;
       }
     }
   </style>
