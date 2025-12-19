@@ -219,11 +219,6 @@ export function PayoutsPage() {
             </button>
           </div>
 
-          {/* Dot Indicator - 1 cuenta */}
-          <div className="rev-dots">
-            <span className="rev-dot active"></span>
-          </div>
-
           {/* ACTION BUTTONS - 2 botones principales */}
           <div className="rev-actions">
             <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
