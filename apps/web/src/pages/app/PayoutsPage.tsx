@@ -1381,7 +1381,7 @@ const revStyles = `
 
   /* ─── TRANSACTIONS - PANEL INFERIOR EXPANDIDO ───────────────────────────── */
   .rev-transactions {
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(0, 30, 50, 0.4);
     border-radius: 24px 24px 0 0;
     padding: 20px 16px 30px;
     margin: 0 -12px;
@@ -1389,9 +1389,9 @@ const revStyles = `
     min-height: 200px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   @media (max-width: 768px) {
