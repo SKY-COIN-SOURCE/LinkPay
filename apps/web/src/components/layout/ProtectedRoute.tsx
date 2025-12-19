@@ -3,6 +3,17 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useDataCache } from "../../context/DataCacheContext";
 
+// Polyfill para requestIdleCallback en navegadores que no lo soportan
+const requestIdleCallback = window.requestIdleCallback || ((cb: IdleRequestCallback) => {
+  const start = Date.now();
+  return setTimeout(() => {
+    cb({
+      didTimeout: false,
+      timeRemaining: () => Math.max(0, 50 - (Date.now() - start)),
+    });
+  }, 1);
+}) as typeof window.requestIdleCallback;
+
 type Props = {
   children: ReactNode;
 };
@@ -15,11 +26,20 @@ export function ProtectedRoute({ children }: Props) {
   // ═══════════════════════════════════════════════════════════════════════════
   // PREFETCH DATOS CRÍTICOS cuando el usuario está autenticado
   // Esto hace la navegación instantánea porque los datos ya están cacheados
+  // Optimizado: Se ejecuta de forma asíncrona sin bloquear el render
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (user && !loading) {
-      // Prefetch en background sin bloquear el render
-      prefetchAll();
+      // Prefetch en background con delay para no interferir con la carga inicial
+      // Usar setTimeout para que se ejecute después del primer render
+      const timeoutId = setTimeout(() => {
+        // Ejecutar en el siguiente tick para no bloquear
+        requestIdleCallback(() => {
+          prefetchAll().catch(console.error);
+        }, { timeout: 2000 });
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [user, loading, prefetchAll]);
 

@@ -350,19 +350,33 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AUTO-PREFETCH AL MONTAR (Datos críticos)
+  // Optimizado: Se ejecuta de forma asíncrona sin bloquear el render inicial
   // ═══════════════════════════════════════════════════════════════════════════
 
   useEffect(() => {
     // Verificar si hay sesión antes de prefetch
-    const checkAndPrefetch = async () => {
+    // Usar setTimeout para que se ejecute después del primer render
+    const timeoutId = setTimeout(async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Prefetch en background sin bloquear
-        prefetchAll();
+        // Prefetch en background sin bloquear usando requestIdleCallback
+        const requestIdleCallback = window.requestIdleCallback || ((cb: IdleRequestCallback) => {
+          const start = Date.now();
+          return setTimeout(() => {
+            cb({
+              didTimeout: false,
+              timeRemaining: () => Math.max(0, 50 - (Date.now() - start)),
+            });
+          }, 1);
+        }) as typeof window.requestIdleCallback;
+
+        requestIdleCallback(() => {
+          prefetchAll().catch(console.error);
+        }, { timeout: 3000 });
       }
-    };
+    }, 200); // Delay de 200ms para no interferir con la carga inicial
     
-    checkAndPrefetch();
+    return () => clearTimeout(timeoutId);
   }, [prefetchAll]);
 
   return (

@@ -264,58 +264,76 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  /* Match Dashboard background */
-  background: linear-gradient(135deg, #0a0f1a 0%, #020617 50%, #000 100%);
+  /* Premium Deep Teal Ocean Background - More vibrant, less black */
+  background: linear-gradient(180deg,
+      #0c2d3a 0%,
+      #0f3d4a 15%,
+      #124a55 35%,
+      #0f4048 60%,
+      #0c3540 85%,
+      #092830 100%);
 }
 
-/* Floating orbs like Dashboard */
+/* Gradient Layer - Multiple radial gradients for depth */
 .lpa-shell::before {
   content: "";
   position: fixed;
-  width: 500px;
-  height: 500px;
-  top: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.3) 0%, transparent 60%);
-  filter: blur(60px);
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  animation: lpa-orb1 12s ease-in-out infinite;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(16, 185, 129, 0.45) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 50% at 20% 25%, rgba(34, 211, 238, 0.35) 0%, transparent 45%),
+    radial-gradient(ellipse 90% 60% at 80% 20%, rgba(52, 211, 153, 0.32) 0%, transparent 40%),
+    radial-gradient(ellipse 70% 50% at 30% 70%, rgba(34, 197, 94, 0.28) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 70% 80%, rgba(20, 184, 166, 0.25) 0%, transparent 50%);
+  animation: lpa-bg-fade-up 1.2s ease-out;
 }
 
+/* Floating Particles Layer */
 .lpa-shell::after {
   content: "";
   position: fixed;
-  width: 600px;
-  height: 600px;
-  bottom: -150px;
-  right: -150px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 60%);
-  filter: blur(70px);
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  animation: lpa-orb2 15s ease-in-out infinite;
+  opacity: 0.6;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 15%, rgba(52, 211, 153, 0.9), transparent),
+    radial-gradient(1px 1px at 25% 30%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 45% 12%, rgba(16, 185, 129, 0.95), transparent),
+    radial-gradient(1px 1px at 60% 40%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 75% 20%, rgba(34, 211, 238, 0.8), transparent),
+    radial-gradient(2px 2px at 88% 45%, rgba(6, 182, 212, 0.85), transparent),
+    radial-gradient(1px 1px at 15% 65%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 35% 75%, rgba(52, 211, 153, 0.7), transparent),
+    radial-gradient(2px 2px at 55% 70%, rgba(168, 85, 247, 0.6), transparent),
+    radial-gradient(1px 1px at 70% 85%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 85% 60%, rgba(34, 197, 94, 0.75), transparent),
+    radial-gradient(1px 1px at 5% 85%, rgba(255, 255, 255, 0.35), transparent);
+  background-size: 400px 300px;
+  animation: lpa-particles-float 25s linear infinite;
 }
 
-@keyframes lpa-orb1 {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
+@keyframes lpa-bg-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  50% {
-    transform: translate(40px, 30px);
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes lpa-orb2 {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
+@keyframes lpa-particles-float {
+  0% {
+    transform: translateY(0);
   }
 
-  50% {
-    transform: translate(-30px, -20px);
+  100% {
+    transform: translateY(-300px);
   }
 }
 
@@ -2520,7 +2538,7 @@
 /* Quick Stats Row */
 .lpa-revenue-quick-stats {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 16px;
 }
 
@@ -2529,11 +2547,13 @@
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 12px;
+  gap: 8px;
+  padding: 12px 10px;
   border-radius: 14px;
   cursor: pointer;
   overflow: hidden;
+  min-width: 0;
+  /* Allow flex shrinking */
 
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
@@ -3298,14 +3318,12 @@
 .lpa-chart-tabs {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  padding: 5px;
-  margin-bottom: 16px;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  gap: 3px;
+  padding: 4px;
+  margin-bottom: 12px;
+  background: transparent;
+  border-radius: 14px;
+  border: none;
 }
 
 .lpa-chart-tabs::-webkit-scrollbar {
@@ -3316,17 +3334,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: 4px;
+  padding: 8px 10px;
   border: none;
   background: transparent;
   color: #64748b;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 12px;
+  letter-spacing: 0.3px;
+  border-radius: 10px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);

@@ -29,7 +29,7 @@ function useCountTo(end: number, duration = 2000, skip = false) {
       setCount(end);
       return;
     }
-    
+
     let startTime: number;
     let animationFrame: number;
 
@@ -56,12 +56,12 @@ function useCountTo(end: number, duration = 2000, skip = false) {
 export function DashboardPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  
+
   // ═══════════════════════════════════════════════════════════════════════════
   // USAR DATOS CACHEADOS - Navegación instantánea
   // ═══════════════════════════════════════════════════════════════════════════
   const { data: dashboardData, links, loading, isRefreshing, refresh } = useCachedDashboard();
-  
+
   // Determinar si debemos animar o mostrar valores instantáneamente
   // Si ya teníamos datos (navegación de vuelta), no animamos
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -69,7 +69,7 @@ export function DashboardPage() {
     // Si los datos ya existen cuando el componente monta, saltar animación
     return dashboardData !== null && !hasAnimated;
   }, []);
-  
+
   useEffect(() => {
     if (!loading && dashboardData) {
       setHasAnimated(true);
@@ -133,151 +133,159 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="lp-dashboard-shell">
-      <div className="lp-dashboard-inner">
-
-        {/* HEADER */}
-        {/* Header removed for cleaner mobile look - MobileHeader handles top bar now */}
-
-        {/* METRICS GRID */}
-        <motion.div
-          className="lp-dashboard-grid"
-          variants={gridVariants}
-          initial="hidden"
-          animate="visible"
-        >
-
-          {/* CARD 1: REVENUE + REFERRALS */}
-          <motion.div
-            className={`lp-dashboard-card lp-card-green ${revenueIncreased ? 'pulse-green' : ''}`}
-            variants={cardVariants}
-            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.25)" }}
-          >
-            <div className="lp-stat-header">
-              <div className="lp-stat-icon"><DollarSign size={24} /></div>
-              <div className="lp-trend-badge"><TrendingUp size={12} /> LIVE</div>
-            </div>
-            <div>
-              <div className="lp-stat-label">{t('dashboard.stats.revenue.label')}</div>
-              <div className="lp-stat-value">€{animatedRevenue.toFixed(4)}</div>
-
-              {/* Mini Sparkline */}
-              <div className="h-1 w-full bg-slate-800/50 rounded-full mt-2 mb-4 overflow-hidden">
-                <motion.div
-                  className="h-full bg-green-500"
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 2, ease: "circOut" }}
-                />
-              </div>
-
-              <div className="lp-substats" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-                <div className="lp-substat-box">
-                  <span className="lp-substat-label">{t('dashboard.stats.revenue.links')}</span>
-                  <span className="lp-substat-value">€{realtimeStats.linkRevenue.toFixed(4)}</span>
-                </div>
-                <div className="lp-substat-box">
-                  <span className="lp-substat-label">{t('dashboard.stats.revenue.bio')}</span>
-                  <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
-                </div>
-                <div className="lp-substat-box">
-                  <span className="lp-substat-label">REFERIDOS</span>
-                  <span className="lp-substat-value">€{animatedReferrals.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CARD 2: CLICKS - PURPLE (Compact like RPM) */}
-          <motion.div
-            className="lp-dashboard-card lp-card-purple"
-            variants={cardVariants}
-            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
-          >
-            <div className="lp-stat-header">
-              <div className="lp-stat-icon"><MousePointer2 size={24} /></div>
-            </div>
-            <div>
-              <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
-              <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
-              <div className="lp-substat-label" style={{ marginTop: '8px' }}>
-                LINKS + BIO PAGE
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CARD 3: RPM - Compact */}
-          <motion.div
-            className="lp-dashboard-card lp-card-orange"
-            variants={cardVariants}
-            whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
-          >
-            <div className="lp-stat-header">
-              <div className="lp-stat-icon"><BarChart3 size={24} /></div>
-            </div>
-            <div>
-              <div className="lp-stat-label">RPM MEDIO</div>
-              <div className="lp-stat-value">€1.22</div>
-              <div className="lp-substat-label" style={{ marginTop: '8px' }}>
-                POR 1000 VISITAS
-              </div>
-            </div>
-          </motion.div>
-
-
-        </motion.div>
-
-        {/* RECENT ACTIVITY - BLUE */}
-        <motion.div
-          className="lp-dashboard-card lp-recent-card lp-card-blue"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.4 }}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <div className="lp-stat-label">ACTIVIDAD RECIENTE</div>
-            <motion.button
-              whileHover={{ x: 4, color: "#818cf8" }}
-              onClick={() => navigate('/app/links')}
-              className="text-sm font-semibold text-indigo-400 flex items-center gap-1 transition-colors"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              {t('dashboard.recent.view_all')} <ArrowRight size={14} />
-            </motion.button>
-          </div>
-
-          <div className="lp-recent-list">
-            {visibleLinks.map((link, i) => (
-              <motion.div
-                key={link.id}
-                className="lp-recent-item"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 + (i * 0.05) }}
-                whileHover={{ backgroundColor: "rgba(255,255,255,0.06)", scale: 1.005 }}
-              >
-                <div className="lp-link-icon-circle">
-                  <LinkIcon size={16} />
-                </div>
-                <div className="lp-link-info">
-                  <span className="lp-link-alias">/{link.slug}</span>
-                  <span className="lp-link-url">{link.original_url}</span>
-                </div>
-                <div className="text-right min-w-[80px]">
-                  <div className="lp-link-money">€{(link.earnings || 0).toFixed(4)}</div>
-                  <div className="text-xs text-slate-500">{link.views || 0} clicks</div>
-                </div>
-              </motion.div>
-            ))}
-            {visibleLinks.length === 0 && (
-              <div className="text-center py-8 text-slate-500 text-sm italic">
-                {t('dashboard.recent.empty_desc') || 'No links yet.'}
-              </div>
-            )}
-          </div>
-        </motion.div>
-
+    <>
+      {/* BACKGROUND - Same structure as Wallet */}
+      <div className="lp-bg">
+        <div className="lp-bg-gradient" />
+        <div className="lp-bg-glow" />
       </div>
-    </div>
+
+      <div className="lp-dashboard-shell">
+        <div className="lp-dashboard-inner">
+
+          {/* HEADER */}
+          {/* Header removed for cleaner mobile look - MobileHeader handles top bar now */}
+
+          {/* METRICS GRID */}
+          <motion.div
+            className="lp-dashboard-grid"
+            variants={gridVariants}
+            initial="hidden"
+            animate="visible"
+          >
+
+            {/* CARD 1: REVENUE + REFERRALS */}
+            <motion.div
+              className={`lp-dashboard-card lp-card-green ${revenueIncreased ? 'pulse-green' : ''}`}
+              variants={cardVariants}
+              whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.25)" }}
+            >
+              <div className="lp-stat-header">
+                <div className="lp-stat-icon"><DollarSign size={24} /></div>
+                <div className="lp-trend-badge"><TrendingUp size={12} /> LIVE</div>
+              </div>
+              <div>
+                <div className="lp-stat-label">{t('dashboard.stats.revenue.label')}</div>
+                <div className="lp-stat-value">€{animatedRevenue.toFixed(4)}</div>
+
+                {/* Mini Sparkline */}
+                <div className="h-1 w-full bg-slate-800/50 rounded-full mt-2 mb-4 overflow-hidden">
+                  <motion.div
+                    className="h-full bg-green-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2, ease: "circOut" }}
+                  />
+                </div>
+
+                <div className="lp-substats" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                  <div className="lp-substat-box">
+                    <span className="lp-substat-label">{t('dashboard.stats.revenue.links')}</span>
+                    <span className="lp-substat-value">€{realtimeStats.linkRevenue.toFixed(4)}</span>
+                  </div>
+                  <div className="lp-substat-box">
+                    <span className="lp-substat-label">{t('dashboard.stats.revenue.bio')}</span>
+                    <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
+                  </div>
+                  <div className="lp-substat-box">
+                    <span className="lp-substat-label">REFERIDOS</span>
+                    <span className="lp-substat-value">€{animatedReferrals.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* CARD 2: CLICKS - PURPLE (Compact like RPM) */}
+            <motion.div
+              className="lp-dashboard-card lp-card-purple"
+              variants={cardVariants}
+              whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
+            >
+              <div className="lp-stat-header">
+                <div className="lp-stat-icon"><MousePointer2 size={24} /></div>
+              </div>
+              <div>
+                <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
+                <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
+                <div className="lp-substat-label" style={{ marginTop: '8px' }}>
+                  LINKS + BIO PAGE
+                </div>
+              </div>
+            </motion.div>
+
+            {/* CARD 3: RPM - Compact */}
+            <motion.div
+              className="lp-dashboard-card lp-card-orange"
+              variants={cardVariants}
+              whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
+            >
+              <div className="lp-stat-header">
+                <div className="lp-stat-icon"><BarChart3 size={24} /></div>
+              </div>
+              <div>
+                <div className="lp-stat-label">RPM MEDIO</div>
+                <div className="lp-stat-value">€1.22</div>
+                <div className="lp-substat-label" style={{ marginTop: '8px' }}>
+                  POR 1000 VISITAS
+                </div>
+              </div>
+            </motion.div>
+
+
+          </motion.div>
+
+          {/* RECENT ACTIVITY - BLUE */}
+          <motion.div
+            className="lp-dashboard-card lp-recent-card lp-card-blue"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.4 }}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <div className="lp-stat-label">ACTIVIDAD RECIENTE</div>
+              <motion.button
+                whileHover={{ x: 4, color: "#818cf8" }}
+                onClick={() => navigate('/app/links')}
+                className="text-sm font-semibold text-indigo-400 flex items-center gap-1 transition-colors"
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                {t('dashboard.recent.view_all')} <ArrowRight size={14} />
+              </motion.button>
+            </div>
+
+            <div className="lp-recent-list">
+              {visibleLinks.map((link, i) => (
+                <motion.div
+                  key={link.id}
+                  className="lp-recent-item"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 + (i * 0.05) }}
+                  whileHover={{ backgroundColor: "rgba(255,255,255,0.06)", scale: 1.005 }}
+                >
+                  <div className="lp-link-icon-circle">
+                    <LinkIcon size={16} />
+                  </div>
+                  <div className="lp-link-info">
+                    <span className="lp-link-alias">/{link.slug}</span>
+                    <span className="lp-link-url">{link.original_url}</span>
+                  </div>
+                  <div className="text-right min-w-[80px]">
+                    <div className="lp-link-money">€{(link.earnings || 0).toFixed(4)}</div>
+                    <div className="text-xs text-slate-500">{link.views || 0} clicks</div>
+                  </div>
+                </motion.div>
+              ))}
+              {visibleLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-500 text-sm italic">
+                  {t('dashboard.recent.empty_desc') || 'No links yet.'}
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+        </div>
+      </div>
+    </>
   );
 }

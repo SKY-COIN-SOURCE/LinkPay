@@ -8,104 +8,177 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .lp-bg {
-  min-height: 100dvh;
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
-  isolation: isolate;
 
-  /* Deep rich base with a hint of blue */
-  background: linear-gradient(135deg, #0a0f1a 0%, #020617 50%, #000000 100%);
-  background-color: #000000;
+  /* PREMIUM WHITE OCEAN - More white, smooth transition to dark */
+  background: linear-gradient(180deg,
+      #ffffff 0%,
+      #ffffff 20%,
+      #f1f5f9 35%,
+      #94a3b8 55%,
+      #475569 75%,
+      #1e293b 100%);
 }
 
-/* === FLOATING ORB 1 - CYAN/TEAL (Top-left) === */
+.lp-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    /* Top glow - like Wallet's radiant effect */
+    radial-gradient(ellipse 150% 80% at 50% -20%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.5) 30%, transparent 55%),
+    /* Left side luminosity */
+    radial-gradient(ellipse 100% 80% at 15% 20%, rgba(241, 245, 249, 0.8) 0%, transparent 50%),
+    /* Right side luminosity */
+    radial-gradient(ellipse 90% 70% at 85% 30%, rgba(248, 250, 252, 0.7) 0%, transparent 45%),
+    /* Bottom depth */
+    radial-gradient(ellipse 100% 60% at 50% 95%, rgba(15, 23, 42, 0.5) 0%, transparent 50%);
+  animation: lp-bg-fade-up 1.2s ease-out;
+}
+
+.lp-bg-glow {
+  position: absolute;
+  top: -250px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 1000px;
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.7) 20%,
+      rgba(241, 245, 249, 0.4) 40%,
+      transparent 65%);
+  pointer-events: none;
+  animation: lp-glow-pulse 4s ease-in-out infinite alternate;
+}
+
+/* Floating particles effect - Elegant dark particles */
 .lp-bg::before {
   content: "";
   position: absolute;
-  width: 800px;
-  height: 800px;
-  top: -200px;
-  left: -200px;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.4) 0%, rgba(34, 211, 238, 0.1) 40%, transparent 70%);
-  filter: blur(60px);
-  border-radius: 50%;
+  inset: 0;
   pointer-events: none;
-  will-change: transform;
-  animation: lp-orb-float-1 12s ease-in-out infinite;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(2px 2px at 12% 18%, rgba(15, 23, 42, 0.85), transparent),
+    radial-gradient(2px 2px at 28% 32%, rgba(51, 65, 85, 0.7), transparent),
+    radial-gradient(3px 3px at 45% 12%, rgba(30, 41, 59, 0.9), transparent),
+    radial-gradient(2px 2px at 58% 42%, rgba(71, 85, 105, 0.75), transparent),
+    radial-gradient(2px 2px at 72% 22%, rgba(51, 65, 85, 0.65), transparent),
+    radial-gradient(3px 3px at 88% 48%, rgba(15, 23, 42, 0.95), transparent),
+    radial-gradient(2px 2px at 8% 68%, rgba(30, 41, 59, 0.7), transparent),
+    radial-gradient(2px 2px at 32% 78%, rgba(51, 65, 85, 0.8), transparent),
+    radial-gradient(3px 3px at 62% 72%, rgba(71, 85, 105, 0.85), transparent),
+    radial-gradient(2px 2px at 82% 82%, rgba(30, 41, 59, 0.6), transparent),
+    radial-gradient(2px 2px at 48% 58%, rgba(15, 23, 42, 0.75), transparent),
+    radial-gradient(3px 3px at 18% 88%, rgba(51, 65, 85, 0.9), transparent);
+  background-size: 450px 350px;
+  animation: lp-particles-float 25s linear infinite;
 }
 
-/* === FLOATING ORB 2 - PURPLE/VIOLET (Bottom-right) === */
+/* Secondary floating orb - bottom right, more visible */
 .lp-bg::after {
   content: "";
   position: absolute;
-  width: 900px;
-  height: 900px;
-  bottom: -300px;
-  right: -300px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.15) 40%, transparent 70%);
-  filter: blur(70px);
+  width: 600px;
+  height: 600px;
+  bottom: -5%;
+  right: -15%;
+  background: radial-gradient(circle,
+      rgba(51, 65, 85, 0.4) 0%,
+      rgba(71, 85, 105, 0.2) 35%,
+      transparent 60%);
   border-radius: 50%;
+  filter: blur(60px);
+  animation: lp-orb-float 18s ease-in-out infinite;
   pointer-events: none;
-  will-change: transform;
-  animation: lp-orb-float-2 15s ease-in-out infinite;
 }
 
-/* === THIRD ORB - EMERALD (Center-bottom via shell) === */
-.lp-dashboard-shell::before {
-  content: "";
-  position: fixed;
-  width: 700px;
-  height: 700px;
-  bottom: 0;
-  left: 30%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(34, 197, 94, 0.1) 45%, transparent 70%);
-  filter: blur(80px);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-  animation: lp-orb-float-3 18s ease-in-out infinite;
+@keyframes lp-bg-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* === AMBIENT PULSE GLOW (via inner) === */
-.lp-dashboard-inner::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120%;
-  height: 120%;
-  background:
-    radial-gradient(ellipse 50% 40% at 30% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse 40% 50% at 70% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 50%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
-  animation: lp-ambient-pulse 8s ease-in-out infinite alternate;
+@keyframes lp-glow-pulse {
+  0% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
 }
 
-/* === FLOATING PARTICLES EFFECT (Stars) === */
-.lp-dashboard-inner::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.6;
-  background-image:
-    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1px 1px at 50px 160px, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(2px 2px at 160px 120px, rgba(34, 211, 238, 0.8), transparent),
-    radial-gradient(1px 1px at 200px 50px, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1px 1px at 220px 150px, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(2px 2px at 280px 90px, rgba(168, 85, 247, 0.7), transparent),
-    radial-gradient(1px 1px at 320px 30px, rgba(255, 255, 255, 0.4), transparent);
-  background-size: 350px 200px;
-  animation: lp-particles-drift 25s linear infinite;
+@keyframes lp-particles-float {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-250px);
+  }
+}
+
+@keyframes lp-orb-float {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(-30px, -50px) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-60px, 20px) scale(0.95);
+  }
+}
+
+/* === KEYFRAMES - Same as Wallet === */
+@keyframes lp-bg-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lp-glow-pulse {
+  0% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+@keyframes lp-particles-float {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-250px);
+  }
 }
 
 /* === KEYFRAMES - ORGANIC FLOATING MOVEMENT === */
@@ -298,35 +371,25 @@
   border-radius: 20px;
   padding: 24px;
 
-  /* Premium glass - more visible luminosity */
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 60%),
-    radial-gradient(ellipse at top left, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  /* More transparent - integrates with background */
+  background: rgba(15, 23, 42, 0.6);
 
-  /* Visible glowing border */
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  /* Subtle border */
+  border: 1px solid rgba(148, 163, 184, 0.15);
 
-  /* DEFAULT STATE = ELEVATED (like hover) */
-  transform: translateY(-4px);
+  /* No transform by default */
   box-shadow:
-    /* Visible accent glow - always on */
-    0 0 80px rgba(99, 102, 241, 0.12),
-    0 0 30px rgba(99, 102, 241, 0.08),
-    /* Deep shadow - depth */
-    0 30px 60px -15px rgba(0, 0, 0, 0.75),
-    /* Top edge highlight */
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    /* Inner depth */
-    inset 0 0 30px rgba(0, 0, 0, 0.3);
+    0 10px 30px -10px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  /* NO backdrop-filter to avoid rectangular aura */
 
   /* Smooth transitions */
   transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.3s ease;
+    border-color 0.3s ease,
+    background 0.3s ease;
   will-change: transform;
 
   display: flex;
@@ -335,119 +398,55 @@
   overflow: hidden;
 }
 
-/* EXTRA DRAMATIC hover - even more lift and glow */
+/* Elegant hover */
 .lp-dashboard-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  border-color: rgba(148, 163, 184, 0.35);
+  transform: translateY(-4px);
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(148, 163, 184, 0.25);
   box-shadow:
-    /* INTENSE accent glow */
-    0 0 120px rgba(99, 102, 241, 0.2),
-    0 0 50px rgba(99, 102, 241, 0.15),
-    /* Deep lift shadow */
-    0 45px 80px -15px rgba(0, 0, 0, 0.85),
-    /* Edge highlight */
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 20px 40px -15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-/* Card accent glow overlays - STRONGER */
+/* Remove card overlay that creates glow */
 .lp-dashboard-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 150px;
-  background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
-  border-radius: 20px 20px 0 0;
+  display: none;
   pointer-events: none;
   z-index: 0;
 }
 
-/* === Card Color Variants - ELEVATED BY DEFAULT === */
+/* === Card Color Variants - Clean and transparent === */
 
 .lp-card-green {
-  border-top: 3px solid rgba(34, 197, 94, 0.8);
-  box-shadow:
-    0 0 80px rgba(34, 197, 94, 0.15),
-    0 0 35px rgba(34, 197, 94, 0.1),
-    0 30px 60px -15px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(34, 197, 94, 0.2);
-}
-
-.lp-card-green::before {
-  background: linear-gradient(180deg, rgba(34, 197, 94, 0.18) 0%, transparent 60%);
+  border-top: 2px solid rgba(34, 197, 94, 0.7);
 }
 
 .lp-card-green:hover {
   border-top-color: rgba(34, 197, 94, 1);
-  box-shadow:
-    0 0 140px rgba(34, 197, 94, 0.3),
-    0 0 60px rgba(34, 197, 94, 0.2),
-    0 45px 80px -15px rgba(0, 0, 0, 0.85),
-    inset 0 1px 0 rgba(34, 197, 94, 0.25);
 }
 
 .lp-card-blue {
-  border-top: 3px solid rgba(59, 130, 246, 0.8);
-  box-shadow:
-    0 0 80px rgba(59, 130, 246, 0.15),
-    0 0 35px rgba(59, 130, 246, 0.1),
-    0 30px 60px -15px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(59, 130, 246, 0.2);
-}
-
-.lp-card-blue::before {
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.18) 0%, transparent 60%);
+  border-top: 2px solid rgba(59, 130, 246, 0.7);
 }
 
 .lp-card-blue:hover {
   border-top-color: rgba(59, 130, 246, 1);
-  box-shadow:
-    0 0 140px rgba(59, 130, 246, 0.3),
-    0 0 60px rgba(59, 130, 246, 0.2),
-    0 45px 80px -15px rgba(0, 0, 0, 0.85);
 }
 
 .lp-card-purple {
-  border-top: 3px solid rgba(168, 85, 247, 0.8);
-  box-shadow:
-    0 0 80px rgba(168, 85, 247, 0.15),
-    0 0 35px rgba(168, 85, 247, 0.1),
-    0 30px 60px -15px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(168, 85, 247, 0.2);
-}
-
-.lp-card-purple::before {
-  background: linear-gradient(180deg, rgba(168, 85, 247, 0.18) 0%, transparent 60%);
+  border-top: 2px solid rgba(168, 85, 247, 0.7);
 }
 
 .lp-card-purple:hover {
   border-top-color: rgba(168, 85, 247, 1);
-  box-shadow:
-    0 0 140px rgba(168, 85, 247, 0.3),
-    0 0 60px rgba(168, 85, 247, 0.2),
-    0 45px 80px -15px rgba(0, 0, 0, 0.85);
 }
 
 .lp-card-orange {
-  border-top: 3px solid rgba(249, 115, 22, 0.8);
-  box-shadow:
-    0 0 80px rgba(249, 115, 22, 0.15),
-    0 0 35px rgba(249, 115, 22, 0.1),
-    0 30px 60px -15px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(249, 115, 22, 0.2);
-}
-
-.lp-card-orange::before {
-  background: linear-gradient(180deg, rgba(249, 115, 22, 0.18) 0%, transparent 60%);
+  border-top: 2px solid rgba(249, 115, 22, 0.7);
 }
 
 .lp-card-orange:hover {
   border-top-color: rgba(249, 115, 22, 1);
-  box-shadow:
-    0 0 140px rgba(249, 115, 22, 0.3),
-    0 0 60px rgba(249, 115, 22, 0.2),
-    0 45px 80px -15px rgba(0, 0, 0, 0.85);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
