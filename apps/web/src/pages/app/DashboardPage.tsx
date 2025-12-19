@@ -62,11 +62,22 @@ export function DashboardPage() {
   // ═══════════════════════════════════════════════════════════════════════════
   const { data: dashboardData, links, loading, isRefreshing, refresh } = useCachedDashboard();
 
+  // User info for greeting
+  const [userName, setUserName] = useState<string>('');
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        const name = user.email.split('@')[0];
+        setUserName(name.charAt(0).toUpperCase() + name.slice(1));
+      }
+    };
+    getUser();
+  }, []);
+
   // Determinar si debemos animar o mostrar valores instantáneamente
-  // Si ya teníamos datos (navegación de vuelta), no animamos
   const [hasAnimated, setHasAnimated] = useState(false);
   const skipAnimation = useMemo(() => {
-    // Si los datos ya existen cuando el componente monta, saltar animación
     return dashboardData !== null && !hasAnimated;
   }, []);
 
@@ -86,10 +97,16 @@ export function DashboardPage() {
     bioClicks: dashboardData?.bioClicks ?? 0,
   }), [dashboardData]);
 
-  // Animated values - Skip si datos están cacheados
+  // Calculate real RPM
+  const rpm = useMemo(() => {
+    if (realtimeStats.totalClicks === 0) return 0;
+    return (realtimeStats.totalRevenue / realtimeStats.totalClicks) * 1000;
+  }, [realtimeStats.totalRevenue, realtimeStats.totalClicks]);
+
+  // Animated values
   const animatedRevenue = useCountTo(realtimeStats.totalRevenue, 1500, skipAnimation);
   const animatedClicks = useCountTo(realtimeStats.totalClicks, 1500, skipAnimation);
-  const animatedReferrals = useCountTo(0, 2000, skipAnimation);
+  const animatedRpm = useCountTo(rpm, 1500, skipAnimation);
 
   // Visual Trigger State
   const [revenueIncreased, setRevenueIncreased] = useState(false);
@@ -143,8 +160,20 @@ export function DashboardPage() {
       <div className="lp-dashboard-shell">
         <div className="lp-dashboard-inner">
 
-          {/* HEADER */}
-          {/* Header removed for cleaner mobile look - MobileHeader handles top bar now */}
+          {/* WELCOME HEADER */}
+          <motion.div
+            className="lp-welcome-header"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="lp-welcome-title">
+              {userName ? `Hola, ${userName} 👋` : 'Bienvenido 👋'}
+            </h1>
+            <p className="lp-welcome-subtitle">
+              {realtimeStats.totalRevenue > 0 ? 'Tu cuenta está generando ingresos 🔥' : 'Tu panel de control'}
+            </p>
+          </motion.div>
 
           {/* METRICS GRID */}
           <motion.div
@@ -188,8 +217,8 @@ export function DashboardPage() {
                     <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
                   </div>
                   <div className="lp-substat-box">
-                    <span className="lp-substat-label">REFERIDOS</span>
-                    <span className="lp-substat-value">€{animatedReferrals.toFixed(2)}</span>
+                    <span className="lp-substat-label">CLICKS BIO</span>
+                    <span className="lp-substat-value">{realtimeStats.bioClicks}</span>
                   </div>
                 </div>
               </div>
@@ -224,7 +253,7 @@ export function DashboardPage() {
               </div>
               <div>
                 <div className="lp-stat-label">RPM MEDIO</div>
-                <div className="lp-stat-value">€1.22</div>
+                <div className="lp-stat-value">€{animatedRpm.toFixed(2)}</div>
                 <div className="lp-substat-label" style={{ marginTop: '8px' }}>
                   POR 1000 VISITAS
                 </div>
