@@ -557,15 +557,35 @@ const layoutStyles = `
 
       /* ===== MOBILE NAV - SEMI-TRANSPARENT DOCK PEGADO AL BORDE ===== */
       .lp-mobile-nav {
-        position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
+        position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
       display: none;
       z-index: 60;
-      /* Sin padding - pegado al borde */
-      padding: 0;
-      margin: 0;
+      /* Sin padding ni margin - pegado exactamente al borde */
+      padding: 0 !important;
+      margin: 0 !important;
+      /* Asegurar que no haya espacio debajo */
+      height: auto;
+      max-height: none;
+      /* Fondo que se extiende más abajo para cubrir cualquier espacio */
+      background: transparent;
+  }
+
+      /* Extender fondo del nav más abajo para cubrir safe area */
+      .lp-mobile-nav::after {
+        content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+      height: calc(100% + env(safe-area-inset-bottom, 0px));
+      background: rgba(2, 6, 23, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: -1;
+      pointer-events: none;
   }
 
       .lp-mobile-nav-inner {
@@ -576,12 +596,17 @@ const layoutStyles = `
       background: rgba(2, 6, 23, 0.75);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      /* Padding incluye safe area pero sin crear espacio */
-      padding: 10px 8px calc(env(safe-area-inset-bottom, 0px) + 10px) 8px;
+      /* Padding interno - safe area solo para el contenido, no para crear espacio */
+      padding-top: 10px;
+      padding-left: 8px;
+      padding-right: 8px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
       border-top: 1px solid rgba(99, 102, 241, 0.2);
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-      /* Asegurar que esté pegado al borde */
+      /* Asegurar que esté pegado al borde - sin margin */
       margin: 0;
+      /* Extender hasta el borde real del viewport */
+      min-height: calc(70px + env(safe-area-inset-bottom, 0px));
   }
 
       .lp-mobile-item {
@@ -884,7 +909,7 @@ const layoutStyles = `
     .lp-main-shell {
       /* Padding-top for header + safe-area, padding-bottom for nav */
       padding-top: calc(56px + env(safe-area-inset-top, 0px));
-      padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
       padding-left: 0;
       padding-right: 0;
       max-width: 100%;
@@ -892,13 +917,19 @@ const layoutStyles = `
       min-height: 100%;
     }
     .lp-mobile-nav {
-      display: block;
+      display: block !important;
+      bottom: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
     }
     .lp-app-shell {
-      height: 100vh;
-      height: 100dvh;
-      min-height: 100vh;
-      min-height: 100dvh;
+      height: 100vh !important;
+      height: 100dvh !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+      max-height: 100vh !important;
+      max-height: 100dvh !important;
+      bottom: 0 !important;
     }
   }
 
