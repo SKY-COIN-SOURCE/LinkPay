@@ -118,6 +118,19 @@ body {
   bottom: 0 !important;
 }
 
+/* Extender body más abajo para cubrir cualquier espacio en móvil */
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -100px !important;
+  height: 100px !important;
+  background: #000000 !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+}
+
 #root {
   width: 100vw !important;
   height: 100vh !important;

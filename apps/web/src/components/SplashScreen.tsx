@@ -177,6 +177,19 @@ const splashStyles = `
     padding: 0;
   }
 
+  /* Extender fondo más abajo para cubrir cualquier espacio */
+  .lp-splash::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -100px;
+    height: 100px;
+    background: #000000;
+    z-index: -1;
+    pointer-events: none;
+  }
+
 
   .lp-splash.fade-out {
     opacity: 0;
@@ -610,7 +623,7 @@ const splashStyles = `
   /* Footer Premium */
   .lp-splash-footer {
     position: absolute;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
+    bottom: 48px;
     left: 0;
     right: 0;
     text-align: center;
@@ -622,8 +635,8 @@ const splashStyles = `
     gap: 8px;
     font-weight: 500;
     letter-spacing: 0.05em;
-    /* Asegurar que esté dentro del viewport */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Sin padding que cree espacio - el safe area se maneja en el contenedor */
+    padding-bottom: 0;
   }
 
   .lp-splash-footer-dot {

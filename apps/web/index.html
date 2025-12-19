@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content, height=device-height" />
   <meta name="admaven-placement" content="BqjwFrjC5" />
 
   <!-- SEO & Social -->
@@ -80,6 +80,19 @@
       left: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
+    }
+
+    /* Extender body más abajo para cubrir cualquier espacio */
+    body::after {
+      content: "" !important;
+      position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: -100px !important;
+      height: 100px !important;
+      background: #000000 !important;
+      z-index: 99999 !important;
+      pointer-events: none !important;
     }
 
     #root {
