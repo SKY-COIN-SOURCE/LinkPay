@@ -1,4 +1,4 @@
-import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P as X}from"./index-TEkfXJfM.js";import{P as me}from"./PremiumLoader-C2Zd8D87.js";/* empty css                          *//**
+import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P as X}from"./index-DD_I70sm.js";import{P as me}from"./PremiumLoader-WaEaEQ_x.js";/* empty css                          *//**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
@@ -527,7 +527,7 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
 
   @media (max-width: 768px) {
     .rev-content {
-      padding: calc(48px + env(safe-area-inset-top, 12px) + 16px) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
+      padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
       max-width: 100%;
     }
   }
