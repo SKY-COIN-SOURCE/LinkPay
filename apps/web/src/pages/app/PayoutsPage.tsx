@@ -1140,8 +1140,8 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 0;
-      padding-bottom: 10px;
+      padding-top: 20px;
+      padding-bottom: 24px;
     }
   }
 
@@ -1834,7 +1834,7 @@ const revStyles = `
     }
 
     .rev-transactions {
-      margin-top: 16px;
+      margin-top: 32px;
     }
   }
 `;
