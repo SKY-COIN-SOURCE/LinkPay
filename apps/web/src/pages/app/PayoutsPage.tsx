@@ -1070,21 +1070,21 @@ const revStyles = `
     }
   }
 
-  /* ─── HERO ZONE - BALANCE ARRIBA + BOTONES ─────────────────────────────── */
+  /* ─── HERO ZONE - BALANCE COMPACTO DEBAJO DEL HEADER ────────────────── */
   .rev-hero-zone {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     flex: 0 0 auto;
-    padding-top: 20px;
-    padding-bottom: 24px;
+    padding-top: 8px;
+    padding-bottom: 16px;
   }
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 16px;
-      padding-bottom: 20px;
+      padding-top: 4px;
+      padding-bottom: 12px;
     }
   }
 
@@ -1116,9 +1116,9 @@ const revStyles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .rev-balance-label {
@@ -1150,12 +1150,12 @@ const revStyles = `
 
   /* Removed wallet selector/dots */
 
-  /* ─── QUICK ACTIONS - CENTRADO ─────────────────────────────────────────── */
+  /* ─── QUICK ACTIONS - COMPACTO ─────────────────────────────────────────── */
   .rev-actions {
     display: flex;
     justify-content: center;
-    gap: 32px;
-    padding: 20px 0 0;
+    gap: 28px;
+    padding: 8px 0 0;
     flex-wrap: wrap;
   }
 
