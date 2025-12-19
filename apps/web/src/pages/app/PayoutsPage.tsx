@@ -208,28 +208,11 @@ export function PayoutsPage() {
         <div className="rev-hero-zone">
           {/* BALANCE */}
           <div className="rev-balance-card">
-            <span className="rev-balance-label">Wallet · EUR</span>
+            <span className="rev-balance-label">Personal · EUR</span>
             <div className="rev-balance-amount">
               <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
               <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
             </div>
-          </div>
-
-          {/* BOTONES */}
-          <div className="rev-actions">
-            <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
-              <div className="rev-action-circle">
-                <ArrowDownLeft size={18} />
-              </div>
-              <span>Solicitar retiro</span>
-            </button>
-
-            <button className="rev-action-item" onClick={() => setShowSend(true)}>
-              <div className="rev-action-circle">
-                <Send size={18} />
-              </div>
-              <span>Enviar interno</span>
-            </button>
           </div>
         </div>
 
@@ -1122,7 +1105,7 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-balance-card {
-      margin-bottom: 68px;
+      margin-bottom: clamp(84px, 12vh, 120px);
     }
   }
 
