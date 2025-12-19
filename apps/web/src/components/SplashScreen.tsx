@@ -58,7 +58,7 @@ export function SplashScreen({ onComplete, minDuration = 2800 }: SplashScreenPro
             setCurrentTip((prev) => (prev + 1) % TIPS.length);
         }, 2000);
 
-        // Progreso optimizado con throttling
+        // Progreso optimizado con throttling - PERFECTAMENTE SINCRONIZADO
         const updateProgress = () => {
             const now = Date.now();
             const elapsed = now - startTimeRef.current;
@@ -71,13 +71,12 @@ export function SplashScreen({ onComplete, minDuration = 2800 }: SplashScreenPro
             
             lastUpdateRef.current = now;
             
-            // Progreso suave con easing premium
-            const progressRatio = elapsed / minDuration;
-            // Easing más suave y elegante
-            const easedProgress = progressRatio < 0.5
-                ? 2 * progressRatio * progressRatio
-                : 1 - Math.pow(-2 * progressRatio + 2, 2) / 2;
-            const newProgress = Math.min(easedProgress * 100, 100);
+            // Progreso REAL basado en tiempo - sin easing para que sea preciso
+            const progressRatio = Math.min(elapsed / minDuration, 1);
+            // Progreso lineal para que el porcentaje y la barra coincidan perfectamente
+            const newProgress = Math.min(progressRatio * 100, 100);
+            
+            // Asegurar que siempre se muestre el valor exacto
             setProgress(newProgress);
 
             if (elapsed < minDuration) {
@@ -205,7 +204,7 @@ export function SplashScreen({ onComplete, minDuration = 2800 }: SplashScreenPro
                                 <div className="lp-splash-progress-glow" />
                             </div>
                         </div>
-                        <div className="lp-splash-progress-percent">{Math.round(progress)}%</div>
+                        <div className="lp-splash-progress-percent">{Math.floor(progress)}%</div>
                     </div>
 
                     {/* Tip rotativo profesional */}
@@ -717,7 +716,7 @@ const splashStyles = `
     background-size: 400% 100%;
     border-radius: 999px;
     position: relative;
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: width 0.15s linear !important;
     animation: splash-progress-gradient 4s linear infinite;
     box-shadow:
       0 0 25px rgba(99, 102, 241, 0.7),
