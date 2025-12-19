@@ -249,12 +249,16 @@ const layoutStyles = `
       height: 100dvh;
       min-height: 100vh;
       min-height: 100dvh;
+      max-height: 100vh;
+      max-height: 100dvh;
       background: #020617;
       color: #e5e7eb;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      margin: 0;
+      padding: 0;
   }
 
   /* Hide app shell during splash - completely invisible */

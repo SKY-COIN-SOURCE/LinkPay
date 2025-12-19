@@ -162,6 +162,8 @@ const splashStyles = `
     height: 100dvh;
     min-height: 100vh;
     min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -171,32 +173,10 @@ const splashStyles = `
     overflow: hidden;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity, transform;
+    margin: 0;
+    padding: 0;
   }
 
-  /* Extender fondo más allá del viewport para cubrir safe areas */
-  .lp-splash::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: -200px;
-    height: calc(100% + 200px);
-    background: #000000;
-    z-index: -1;
-  }
-
-  /* Extender fondo adicional para cubrir safe area inferior */
-  .lp-splash::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -200px;
-    height: calc(200px + env(safe-area-inset-bottom, 0px));
-    background: #000000;
-    z-index: -1;
-  }
 
   .lp-splash.fade-out {
     opacity: 0;
@@ -210,11 +190,13 @@ const splashStyles = `
     top: 0;
     left: 0;
     right: 0;
-    bottom: -200px;
+    bottom: 0;
     width: 100%;
-    height: calc(100% + 200px);
-    min-height: calc(100vh + 200px);
-    min-height: calc(100dvh + 200px);
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
     overflow: hidden;
     pointer-events: none;
   }
