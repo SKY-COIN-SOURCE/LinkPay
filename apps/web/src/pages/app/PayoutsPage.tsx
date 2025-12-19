@@ -1140,8 +1140,8 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 20px;
-      padding-bottom: 24px;
+      padding-top: 32px;
+      padding-bottom: 36px;
     }
   }
 
@@ -1385,8 +1385,10 @@ const revStyles = `
   @media (max-width: 768px) {
     .rev-transactions {
       flex: 1;
-      min-height: 200px;
-      padding: 18px 14px 100px;
+      min-height: 280px;
+      padding: 20px 16px 120px;
+      display: flex;
+      flex-direction: column;
     }
   }
 
@@ -1437,6 +1439,8 @@ const revStyles = `
     text-align: center;
     padding: 50px 20px;
     color: rgba(255, 255, 255, 0.4);
+    flex: 1;
+    min-height: 180px;
   }
 
   .rev-empty p {
@@ -1453,6 +1457,8 @@ const revStyles = `
   .rev-tx-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   .rev-tx-item {
