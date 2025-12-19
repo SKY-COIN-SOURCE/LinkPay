@@ -272,12 +272,12 @@ export function DashboardPage() {
                   </div>
                   <div className="text-right min-w-[80px]">
                     <div className="lp-link-money">€{(link.earnings || 0).toFixed(4)}</div>
-                    <div className="text-xs text-slate-500">{link.views || 0} clicks</div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{link.views || 0} clicks</div>
                   </div>
                 </motion.div>
               ))}
               {visibleLinks.length === 0 && (
-                <div className="text-center py-8 text-slate-500 text-sm italic">
+                <div style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8', fontSize: '14px', fontStyle: 'italic' }}>
                   {t('dashboard.recent.empty_desc') || 'No links yet.'}
                 </div>
               )}

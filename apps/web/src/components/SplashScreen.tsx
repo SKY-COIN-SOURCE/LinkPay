@@ -153,7 +153,15 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
 const splashStyles = `
   .lp-splash {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -165,6 +173,31 @@ const splashStyles = `
     will-change: opacity, transform;
   }
 
+  /* Extender fondo más allá del viewport para cubrir safe areas */
+  .lp-splash::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: -200px;
+    height: calc(100% + 200px);
+    background: #000000;
+    z-index: -1;
+  }
+
+  /* Extender fondo adicional para cubrir safe area inferior */
+  .lp-splash::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -200px;
+    height: calc(200px + env(safe-area-inset-bottom, 0px));
+    background: #000000;
+    z-index: -1;
+  }
+
   .lp-splash.fade-out {
     opacity: 0;
     transform: scale(1.08);
@@ -174,7 +207,14 @@ const splashStyles = `
   /* === FONDO ANIMADO PREMIUM === */
   .lp-splash-bg {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: -200px;
+    width: 100%;
+    height: calc(100% + 200px);
+    min-height: calc(100vh + 200px);
+    min-height: calc(100dvh + 200px);
     overflow: hidden;
     pointer-events: none;
   }
@@ -588,7 +628,7 @@ const splashStyles = `
   /* Footer Premium */
   .lp-splash-footer {
     position: absolute;
-    bottom: calc(env(safe-area-inset-bottom, 20px) + 48px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
     left: 0;
     right: 0;
     text-align: center;
@@ -600,6 +640,8 @@ const splashStyles = `
     gap: 8px;
     font-weight: 500;
     letter-spacing: 0.05em;
+    /* Asegurar que esté dentro del viewport */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .lp-splash-footer-dot {

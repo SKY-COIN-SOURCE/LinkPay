@@ -239,11 +239,15 @@ export function AppLayout() {
 const layoutStyles = `
       .lp-app-shell {
         display: flex;
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
       min-height: 100dvh;
       background: #020617;
       position: relative;
       color: #e5e7eb;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      overflow-x: hidden;
   }
 
   /* Hide app shell during splash - completely invisible */
