@@ -219,12 +219,9 @@ export function PayoutsPage() {
             </button>
           </div>
 
-          {/* Dots Indicator */}
+          {/* Dot Indicator - 1 cuenta */}
           <div className="rev-dots">
             <span className="rev-dot active"></span>
-            <span className="rev-dot"></span>
-            <span className="rev-dot"></span>
-            <span className="rev-dot"></span>
           </div>
 
           {/* ACTION BUTTONS - 2 botones principales */}
@@ -1823,10 +1820,10 @@ const revStyles = `
     }
 
     .rev-actions {
-      gap: 16px;
+      gap: 32px;
       margin-top: 0;
-      padding: 0 4px;
-      justify-content: space-around;
+      padding: 0;
+      justify-content: center;
       width: 100%;
     }
 
