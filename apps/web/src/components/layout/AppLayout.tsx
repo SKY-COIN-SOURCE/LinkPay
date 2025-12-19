@@ -551,7 +551,7 @@ const layoutStyles = `
       -webkit-overflow-scrolling: touch;
   }
 
-      /* ===== MOBILE NAV - SOLID INTEGRATED DOCK ===== */
+      /* ===== MOBILE NAV - SEMI-TRANSPARENT DOCK PEGADO AL BORDE ===== */
       .lp-mobile-nav {
         position: fixed;
       left: 0;
@@ -559,44 +559,25 @@ const layoutStyles = `
       bottom: 0;
       display: none;
       z-index: 60;
-      /* Solid background */
-      background: #020617;
-      /* Extender más allá del viewport */
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
-      /* BULLETPROOF: Extend background beyond screen bottom to cover home indicator */
-      .lp-mobile-nav::before {
-        content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -300px;
-      height: 300px;
-      background: #020617;
-      z-index: -1;
-  }
-
-      .lp-mobile-nav::after {
-        content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -300px;
-      height: calc(300px + env(safe-area-inset-bottom, 0px));
-      background: #020617;
-      z-index: -2;
+      /* Sin padding - pegado al borde */
+      padding: 0;
+      margin: 0;
   }
 
       .lp-mobile-nav-inner {
         display: flex;
       align-items: flex-end;
       justify-content: space-evenly;
-      /* Content padding includes safe area for proper spacing */
-      padding: 10px 8px calc(env(safe-area-inset-bottom, 34px) + 10px) 8px;
-      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-      border-top: 1px solid rgba(99, 102, 241, 0.25);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+      /* Semi-transparente con blur para ver el fondo */
+      background: rgba(2, 6, 23, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      /* Padding incluye safe area pero sin crear espacio */
+      padding: 10px 8px calc(env(safe-area-inset-bottom, 0px) + 10px) 8px;
+      border-top: 1px solid rgba(99, 102, 241, 0.2);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+      /* Asegurar que esté pegado al borde */
+      margin: 0;
   }
 
       .lp-mobile-item {
