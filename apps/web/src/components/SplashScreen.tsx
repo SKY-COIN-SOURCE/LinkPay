@@ -157,13 +157,11 @@ const splashStyles = `
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    width: 100%;
+    height: 100%;
     min-height: 100vh;
     min-height: 100dvh;
-    max-height: 100vh;
-    max-height: 100dvh;
+    height: calc(var(--vh, 1vh) * 100);
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -177,17 +175,24 @@ const splashStyles = `
     padding: 0;
   }
 
-  /* Extender fondo más abajo para cubrir cualquier espacio */
-  .lp-splash::after {
-    content: "";
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: -100px;
-    height: 100px;
-    background: #000000;
-    z-index: -1;
-    pointer-events: none;
+  /* Extender fondo más abajo para cubrir cualquier espacio en móvil */
+  @media (max-width: 768px) {
+    .lp-splash {
+      height: 100vh !important;
+      height: calc(var(--vh, 1vh) * 100) !important;
+    }
+    
+    .lp-splash::after {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: -200px;
+      height: 200px;
+      background: #000000;
+      z-index: -1;
+      pointer-events: none;
+    }
   }
 
 

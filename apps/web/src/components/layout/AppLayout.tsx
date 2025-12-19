@@ -239,18 +239,16 @@ export function AppLayout() {
 const layoutStyles = `
       .lp-app-shell {
         display: flex;
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      width: 100%;
+      height: 100%;
       min-height: 100vh;
       min-height: 100dvh;
-      max-height: 100vh;
-      max-height: 100dvh;
+      height: calc(var(--vh, 1vh) * 100);
       background: #020617;
       color: #e5e7eb;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -260,6 +258,26 @@ const layoutStyles = `
       margin: 0;
       padding: 0;
   }
+
+      /* Extender fondo del app shell más abajo en móvil */
+      @media (max-width: 768px) {
+        .lp-app-shell {
+          height: 100vh !important;
+          height: calc(var(--vh, 1vh) * 100) !important;
+        }
+        
+        .lp-app-shell::after {
+          content: "";
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: -200px;
+          height: 200px;
+          background: #020617;
+          z-index: -1;
+          pointer-events: none;
+        }
+      }
 
   /* Hide app shell during splash - completely invisible */
   .lp-app-shell.lp-hidden {
@@ -573,14 +591,14 @@ const layoutStyles = `
       background: transparent;
   }
 
-      /* Extender fondo del nav más abajo para cubrir safe area */
+      /* Extender fondo del nav más abajo para cubrir cualquier espacio */
       .lp-mobile-nav::after {
         content: "";
       position: absolute;
       left: 0;
       right: 0;
-      bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
-      height: calc(100% + env(safe-area-inset-bottom, 0px));
+      bottom: -200px;
+      height: calc(100% + 200px);
       background: rgba(2, 6, 23, 0.75);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -593,20 +611,18 @@ const layoutStyles = `
       align-items: flex-end;
       justify-content: space-evenly;
       /* Semi-transparente con blur para ver el fondo */
-      background: rgba(2, 6, 23, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      /* Padding interno - safe area solo para el contenido, no para crear espacio */
+      background: transparent;
+      /* Padding interno - sin safe area que cree espacio */
       padding-top: 10px;
       padding-left: 8px;
       padding-right: 8px;
-      padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+      padding-bottom: 10px;
       border-top: 1px solid rgba(99, 102, 241, 0.2);
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
       /* Asegurar que esté pegado al borde - sin margin */
       margin: 0;
-      /* Extender hasta el borde real del viewport */
-      min-height: calc(70px + env(safe-area-inset-bottom, 0px));
+      /* Altura mínima sin safe area */
+      min-height: 70px;
   }
 
       .lp-mobile-item {
@@ -907,9 +923,9 @@ const layoutStyles = `
       display: none;
     }
     .lp-main-shell {
-      /* Padding-top for header + safe-area, padding-bottom for nav */
-      padding-top: calc(56px + env(safe-area-inset-top, 0px));
-      padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+      /* Padding-top for header, padding-bottom for nav */
+      padding-top: 56px;
+      padding-bottom: 80px;
       padding-left: 0;
       padding-right: 0;
       max-width: 100%;
@@ -927,8 +943,10 @@ const layoutStyles = `
       height: 100dvh !important;
       min-height: 100vh !important;
       min-height: 100dvh !important;
-      max-height: 100vh !important;
-      max-height: 100dvh !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
       bottom: 0 !important;
     }
   }

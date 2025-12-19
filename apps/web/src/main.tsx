@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -13,8 +13,33 @@ import './index.css';
 
 import { I18nProvider } from './i18n';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+// Fix para eliminar hueco negro en móvil - forzar altura completa
+function AppWrapper() {
+  useEffect(() => {
+    // Forzar que html/body/#root ocupen toda la pantalla en móvil
+    const fixMobileHeight = () => {
+      if (window.innerWidth <= 768) {
+        const vh = window.innerHeight;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        document.body.style.height = `${vh}px`;
+        const root = document.getElementById('root');
+        if (root) {
+          root.style.height = `${vh}px`;
+        }
+      }
+    };
+
+    fixMobileHeight();
+    window.addEventListener('resize', fixMobileHeight);
+    window.addEventListener('orientationchange', fixMobileHeight);
+
+    return () => {
+      window.removeEventListener('resize', fixMobileHeight);
+      window.removeEventListener('orientationchange', fixMobileHeight);
+    };
+  }, []);
+
+  return (
     <ErrorBoundary>
       <I18nProvider>
         <ThemeProvider>
@@ -31,5 +56,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         </ThemeProvider>
       </I18nProvider>
     </ErrorBoundary>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <AppWrapper />
   </React.StrictMode>,
 );

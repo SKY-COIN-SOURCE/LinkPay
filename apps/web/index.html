@@ -48,70 +48,51 @@
       margin: 0 !important;
       padding: 0 !important;
       background: #000000 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      height: 100dvh !important;
-      min-height: 100vh !important;
-      min-height: 100dvh !important;
-      max-height: 100vh !important;
-      max-height: 100dvh !important;
+      width: 100% !important;
+      height: 100% !important;
       overflow: hidden !important;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
+      /* NO position fixed - causa problemas en iOS PWA */
     }
 
     body {
       margin: 0 !important;
       padding: 0 !important;
       background: #000000 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      height: 100dvh !important;
+      width: 100% !important;
+      height: 100% !important;
       min-height: 100vh !important;
       min-height: 100dvh !important;
-      max-height: 100vh !important;
-      max-height: 100dvh !important;
       overflow: hidden !important;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
+      /* NO position fixed - causa problemas en iOS PWA */
+      position: relative !important;
     }
 
-    /* Extender body más abajo para cubrir cualquier espacio */
-    body::after {
-      content: "" !important;
-      position: fixed !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: -100px !important;
-      height: 100px !important;
-      background: #000000 !important;
-      z-index: 99999 !important;
-      pointer-events: none !important;
+    /* Extender body más abajo para cubrir cualquier espacio en móvil */
+    @media (max-width: 768px) {
+      body::after {
+        content: "" !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -200px !important;
+        height: 200px !important;
+        background: #000000 !important;
+        z-index: 999999 !important;
+        pointer-events: none !important;
+      }
     }
 
     #root {
       margin: 0 !important;
       padding: 0 !important;
       background: #000000 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      height: 100dvh !important;
+      width: 100% !important;
+      height: 100% !important;
       min-height: 100vh !important;
       min-height: 100dvh !important;
-      max-height: 100vh !important;
-      max-height: 100dvh !important;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
       overflow: hidden !important;
+      position: relative !important;
+      /* NO position fixed - causa problemas en iOS PWA */
     }
 
     /* Mobile nav critical styles - SEMI-TRANSPARENT PEGADO AL BORDE */
@@ -141,14 +122,28 @@
         pointer-events: none !important;
       }
 
+      .lp-mobile-nav::after {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -200px !important;
+        height: calc(100% + 200px) !important;
+        background: rgba(2, 6, 23, 0.75) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        z-index: -1 !important;
+        pointer-events: none !important;
+      }
+
       .lp-mobile-nav-inner {
         background: transparent !important;
         padding-top: 10px !important;
         padding-left: 8px !important;
         padding-right: 8px !important;
-        padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: 10px !important;
         margin: 0 !important;
-        min-height: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
+        min-height: 70px !important;
         position: relative !important;
         z-index: 1 !important;
       }
