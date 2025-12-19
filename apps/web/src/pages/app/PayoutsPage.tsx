@@ -215,14 +215,14 @@ export function PayoutsPage() {
           <div className="rev-actions">
             <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
               <div className="rev-action-circle">
-                <ArrowDownLeft size={22} />
+                <ArrowDownLeft size={18} />
               </div>
               <span>Solicitar retiro</span>
             </button>
 
             <button className="rev-action-item" onClick={() => setShowSend(true)}>
               <div className="rev-action-circle">
-                <Send size={22} />
+                <Send size={18} />
               </div>
               <span>Enviar interno</span>
             </button>
@@ -1070,21 +1070,21 @@ const revStyles = `
     }
   }
 
-  /* ─── HERO ZONE - BALANCE COMPACTO DEBAJO DEL HEADER ────────────────── */
+  /* ─── HERO ZONE - BALANCE CENTRADO ARRIBA (ESTILO BANCO) ────────────── */
   .rev-hero-zone {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     flex: 0 0 auto;
-    padding-top: 8px;
-    padding-bottom: 16px;
+    padding-top: 30px;
+    padding-bottom: 20px;
   }
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 4px;
-      padding-bottom: 12px;
+      padding-top: 24px;
+      padding-bottom: 16px;
     }
   }
 
@@ -1169,19 +1169,19 @@ const revStyles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 6px 10px;
-    min-width: 128px;
+    padding: 4px 8px;
+    min-width: 80px;
   }
 
   .rev-action-circle {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1189,11 +1189,11 @@ const revStyles = `
     transition: all 0.2s;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
   }
 
   .rev-action-item:hover .rev-action-circle {
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
   }
 
@@ -1202,10 +1202,10 @@ const revStyles = `
   }
 
   .rev-action-item span {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 600;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
   }
 
   /* ─── BUTTONS & ALERTS ─────────────────────────────────────────────────── */
