@@ -1693,6 +1693,7 @@ const revStyles = `
 
     .rev-actions {
       gap: 20px;
+      margin-top: 32px;
     }
 
     .rev-action-circle {
