@@ -48,8 +48,24 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
             if (elapsed < minDuration) {
                 animationFrameRef.current = requestAnimationFrame(updateProgress);
             } else {
+                // Preparar la app antes de hacer fade-out del splash
+                const appShell = document.querySelector('.lp-app-shell');
+                if (appShell) {
+                    (appShell as HTMLElement).style.opacity = '0';
+                    (appShell as HTMLElement).style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+                
+                // Fade-out suave del splash
                 setFadeOut(true);
-                setTimeout(onComplete, 600);
+                
+                // Mostrar la app con fade-in suave
+                setTimeout(() => {
+                    if (appShell) {
+                        (appShell as HTMLElement).style.opacity = '1';
+                    }
+                }, 200);
+                
+                setTimeout(onComplete, 800);
             }
         };
 
@@ -217,7 +233,7 @@ const splashStyles = `
 
   .lp-splash.fade-out {
     opacity: 0 !important;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
     pointer-events: none !important;
   }
 

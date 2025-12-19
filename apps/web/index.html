@@ -47,7 +47,7 @@
     html {
       margin: 0 !important;
       padding: 0 !important;
-      background: #000000 !important;
+      background: #020617 !important;
       width: 100% !important;
       height: 100% !important;
       overflow: hidden !important;
@@ -57,7 +57,8 @@
     body {
       margin: 0 !important;
       padding: 0 !important;
-      background: #000000 !important;
+      background: #020617 !important;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%) !important;
       width: 100% !important;
       height: 100% !important;
       min-height: 100vh !important;
@@ -85,7 +86,8 @@
     #root {
       margin: 0 !important;
       padding: 0 !important;
-      background: #000000 !important;
+      background: #020617 !important;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%) !important;
       width: 100% !important;
       height: 100% !important;
       min-height: 100vh !important;
@@ -93,6 +95,8 @@
       overflow: hidden !important;
       position: relative !important;
       /* NO position fixed - causa problemas en iOS PWA */
+      opacity: 1 !important;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     /* Mobile nav critical styles - SEMI-TRANSPARENT PEGADO AL BORDE */

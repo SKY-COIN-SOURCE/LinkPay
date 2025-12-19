@@ -85,7 +85,13 @@ export function AppLayout() {
         <SplashScreen onComplete={handleSplashComplete} minDuration={2500} />
       )}
 
-      <div className={`lp-app-shell ${showSplash ? 'lp-hidden' : ''}`}>
+      <div 
+        className={`lp-app-shell ${showSplash ? 'lp-hidden' : ''}`}
+        style={{
+          opacity: showSplash ? 0 : 1,
+          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
         <style>{layoutStyles}</style>
 
         {/* MOBILE HEADER - Avatar + Settings */}
@@ -285,6 +291,13 @@ const layoutStyles = `
     opacity: 0 !important;
     pointer-events: none !important;
     z-index: -1 !important;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* Fade-in suave cuando aparece la app */
+  .lp-app-shell:not(.lp-hidden) {
+    opacity: 1 !important;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .lp-app-shell.lp-hidden .lp-mobile-nav,
