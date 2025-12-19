@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 // Consejos que rotan mientras carga
 const TIPS = [
@@ -21,10 +22,17 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
     const [currentTip, setCurrentTip] = useState(0);
     const [progress, setProgress] = useState(0);
     const [fadeOut, setFadeOut] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const animationFrameRef = useRef<number>();
     const startTimeRef = useRef<number>(Date.now());
 
     useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+
         // Rotar tips cada 1.5 segundos
         const tipInterval = setInterval(() => {
             setCurrentTip((prev) => (prev + 1) % TIPS.length);
@@ -52,12 +60,36 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [minDuration, onComplete]);
+    }, [minDuration, onComplete, mounted]);
 
     const tip = TIPS[currentTip];
 
-    return (
-        <div className={`lp-splash ${fadeOut ? 'fade-out' : ''}`}>
+    if (!mounted) return null;
+
+    const splashContent = (
+        <div 
+            className={`lp-splash ${fadeOut ? 'fade-out' : ''}`}
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: '100vw',
+                height: '100vh',
+                zIndex: 999999,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#000000',
+                overflow: 'hidden',
+                margin: 0,
+                padding: 0,
+                transform: 'none',
+                transformOrigin: 'center center',
+            }}
+        >
             <style>{splashStyles}</style>
 
             {/* Fondo con gradientes animados */}
@@ -81,6 +113,10 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                                 alt="LinkPay"
                                 className="lp-splash-logo-img"
                                 loading="eager"
+                                onError={(e) => {
+                                    // Fallback si la imagen no carga
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                }}
                             />
                             <div className="lp-splash-logo-shine" />
                         </div>
@@ -125,46 +161,48 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
             </div>
         </div>
     );
+
+    // Renderizar directamente en el body usando Portal para asegurar visibilidad
+    return createPortal(splashContent, document.body);
 }
 
 const splashStyles = `
   /* ============================================
-     SPLASH SCREEN PREMIUM - MARTÍN ANDRIGHETTI
+     SPLASH SCREEN ULTRA PREMIUM - MARTÍN ANDRIGHETTI
      ============================================ */
   
   .lp-splash {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100vh;
-    min-height: 100dvh;
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #000000;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-    /* CRÍTICO: Prevenir cualquier rotación o transformación */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #000000 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
     transform: none !important;
     transform-origin: center center !important;
-    /* Asegurar que esté siempre centrado */
-    text-align: center;
+    text-align: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   /* Extender fondo más abajo en móvil */
   @media (max-width: 768px) {
     .lp-splash {
-      height: 100vh;
-      height: calc(var(--vh, 1vh) * 100);
-      /* Forzar orientación correcta */
+      height: 100vh !important;
+      height: calc(var(--vh, 1vh) * 100) !important;
       transform: none !important;
       transform-origin: center center !important;
     }
@@ -183,9 +221,9 @@ const splashStyles = `
   }
 
   .lp-splash.fade-out {
-    opacity: 0;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
+    opacity: 0 !important;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    pointer-events: none !important;
   }
 
   /* === FONDO ANIMADO PREMIUM === */
@@ -199,6 +237,7 @@ const splashStyles = `
     height: 100%;
     overflow: hidden;
     pointer-events: none;
+    z-index: 1;
   }
 
   /* Grid pattern sutil */
@@ -209,78 +248,79 @@ const splashStyles = `
     right: 0;
     bottom: 0;
     background-image: 
-      linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+      linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
     background-size: 50px 50px;
-    opacity: 0.4;
+    opacity: 0.5;
+    z-index: 1;
   }
 
   .lp-splash-gradient {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(90px);
     will-change: transform, opacity;
-    /* NO usar rotate - solo translate y scale */
+    z-index: 1;
   }
 
   .lp-splash-gradient-1 {
-    width: 400px;
-    height: 400px;
-    top: -100px;
-    left: -100px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0.1) 50%, transparent 70%);
-    animation: splash-gradient-1 12s ease-in-out infinite;
+    width: 450px;
+    height: 450px;
+    top: -120px;
+    left: -120px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(99, 102, 241, 0.12) 50%, transparent 70%);
+    animation: splash-gradient-1 14s ease-in-out infinite;
   }
 
   .lp-splash-gradient-2 {
-    width: 500px;
-    height: 500px;
-    bottom: -150px;
-    right: -150px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 70%);
-    animation: splash-gradient-2 15s ease-in-out infinite;
+    width: 550px;
+    height: 550px;
+    bottom: -180px;
+    right: -180px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 70%);
+    animation: splash-gradient-2 16s ease-in-out infinite;
   }
 
   .lp-splash-gradient-3 {
-    width: 350px;
-    height: 350px;
-    bottom: 20%;
-    left: 10%;
-    background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0.06) 50%, transparent 70%);
-    animation: splash-gradient-3 18s ease-in-out infinite;
+    width: 380px;
+    height: 380px;
+    bottom: 18%;
+    left: 8%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, rgba(34, 197, 94, 0.08) 50%, transparent 70%);
+    animation: splash-gradient-3 20s ease-in-out infinite;
   }
 
   /* Animaciones SIN rotación - solo translate y scale */
   @keyframes splash-gradient-1 {
     0%, 100% { 
       transform: translate(0, 0) scale(1); 
-      opacity: 0.4; 
+      opacity: 0.45; 
     }
     50% { 
-      transform: translate(40px, 30px) scale(1.15); 
-      opacity: 0.6; 
+      transform: translate(45px, 35px) scale(1.18); 
+      opacity: 0.65; 
     }
   }
 
   @keyframes splash-gradient-2 {
     0%, 100% { 
       transform: translate(0, 0) scale(1); 
-      opacity: 0.35; 
+      opacity: 0.4; 
     }
     50% { 
-      transform: translate(-50px, -40px) scale(1.2); 
-      opacity: 0.55; 
+      transform: translate(-55px, -45px) scale(1.22); 
+      opacity: 0.6; 
     }
   }
 
   @keyframes splash-gradient-3 {
     0%, 100% { 
       transform: translate(0, 0) scale(1); 
-      opacity: 0.25; 
+      opacity: 0.3; 
     }
     50% { 
-      transform: translate(30px, -50px) scale(1.25); 
-      opacity: 0.45; 
+      transform: translate(35px, -55px) scale(1.28); 
+      opacity: 0.5; 
     }
   }
 
@@ -293,14 +333,13 @@ const splashStyles = `
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Asegurar centrado perfecto */
     margin: 0 auto;
     padding: 0;
   }
 
   .lp-splash-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -309,20 +348,18 @@ const splashStyles = `
     text-align: center;
     width: 100%;
     max-width: 100%;
-    /* Centrado perfecto */
     margin: 0 auto;
   }
 
   /* Logo Container Premium */
   .lp-splash-logo-container {
     position: relative;
-    width: 140px;
-    height: 140px;
-    margin-bottom: 32px;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Centrado perfecto */
     margin-left: auto;
     margin-right: auto;
   }
@@ -330,17 +367,17 @@ const splashStyles = `
   /* Orb de fondo animado */
   .lp-splash-logo-orb {
     position: absolute;
-    inset: -40px;
+    inset: -45px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(99, 102, 241, 0.2),
-      rgba(168, 85, 247, 0.2),
-      rgba(34, 197, 94, 0.2),
-      rgba(99, 102, 241, 0.2)
+      rgba(99, 102, 241, 0.25),
+      rgba(168, 85, 247, 0.25),
+      rgba(34, 197, 94, 0.25),
+      rgba(99, 102, 241, 0.25)
     );
-    animation: splash-orb-rotate 4s linear infinite;
-    filter: blur(20px);
+    animation: splash-orb-rotate 4.5s linear infinite;
+    filter: blur(22px);
     will-change: transform;
   }
 
@@ -352,38 +389,37 @@ const splashStyles = `
   /* Glow pulsante */
   .lp-splash-logo-glow {
     position: absolute;
-    inset: -25px;
+    inset: -28px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%);
-    animation: splash-glow-pulse 2.5s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.55) 0%, transparent 70%);
+    animation: splash-glow-pulse 2.8s ease-in-out infinite;
     will-change: transform, opacity;
-    filter: blur(15px);
+    filter: blur(18px);
   }
 
   @keyframes splash-glow-pulse {
     0%, 100% {
       transform: scale(1);
-      opacity: 0.5;
+      opacity: 0.55;
     }
     50% {
-      transform: scale(1.3);
-      opacity: 0.9;
+      transform: scale(1.35);
+      opacity: 0.95;
     }
   }
 
   .lp-splash-logo {
     position: relative;
-    width: 120px;
-    height: 120px;
-    border-radius: 28px;
+    width: 130px;
+    height: 130px;
+    border-radius: 30px;
     overflow: hidden;
     box-shadow:
-      0 0 80px rgba(99, 102, 241, 0.6),
-      0 0 40px rgba(168, 85, 247, 0.4),
-      inset 0 0 40px rgba(99, 102, 241, 0.2);
-    animation: splash-logo-float 4s ease-in-out infinite;
+      0 0 90px rgba(99, 102, 241, 0.7),
+      0 0 50px rgba(168, 85, 247, 0.5),
+      inset 0 0 50px rgba(99, 102, 241, 0.25);
+    animation: splash-logo-float 4.5s ease-in-out infinite;
     will-change: transform;
-    /* Centrado perfecto */
     margin: 0 auto;
   }
 
@@ -392,7 +428,7 @@ const splashStyles = `
       transform: translateY(0) scale(1); 
     }
     50% { 
-      transform: translateY(-10px) scale(1.03); 
+      transform: translateY(-12px) scale(1.04); 
     }
   }
 
@@ -409,10 +445,10 @@ const splashStyles = `
     background: linear-gradient(
       135deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.35) 50%,
       transparent 100%
     );
-    animation: splash-logo-shine 3.5s ease-in-out infinite;
+    animation: splash-logo-shine 4s ease-in-out infinite;
     will-change: transform;
   }
 
@@ -427,21 +463,19 @@ const splashStyles = `
 
   /* Título Premium */
   .lp-splash-title-container {
-    margin-bottom: 40px;
+    margin-bottom: 44px;
     position: relative;
-    /* Centrado perfecto */
     margin-left: auto;
     margin-right: auto;
   }
 
   .lp-splash-title {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: 900;
-    letter-spacing: -0.04em;
-    margin: 0 0 10px 0;
+    letter-spacing: -0.05em;
+    margin: 0 0 12px 0;
     position: relative;
     display: inline-block;
-    /* Centrado perfecto */
     margin-left: auto;
     margin-right: auto;
   }
@@ -450,16 +484,17 @@ const splashStyles = `
     background: linear-gradient(
       135deg,
       #ffffff 0%,
-      #a5b4fc 25%,
-      #c084fc 50%,
-      #4ade80 75%,
+      #a5b4fc 20%,
+      #c084fc 40%,
+      #4ade80 60%,
+      #a5b4fc 80%,
       #ffffff 100%
     );
-    background-size: 300% 300%;
+    background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: splash-title-gradient 4s ease infinite;
+    animation: splash-title-gradient 5s ease infinite;
     will-change: background-position;
     display: inline-block;
     position: relative;
@@ -473,52 +508,51 @@ const splashStyles = `
 
   .lp-splash-title-glow {
     position: absolute;
-    inset: -10px;
+    inset: -12px;
     background: linear-gradient(
       135deg,
-      rgba(99, 102, 241, 0.3),
-      rgba(168, 85, 247, 0.3),
-      rgba(34, 197, 94, 0.3)
+      rgba(99, 102, 241, 0.35),
+      rgba(168, 85, 247, 0.35),
+      rgba(34, 197, 94, 0.35)
     );
-    filter: blur(20px);
+    filter: blur(25px);
     z-index: -1;
-    animation: splash-title-glow 3s ease-in-out infinite;
-    opacity: 0.6;
+    animation: splash-title-glow 3.5s ease-in-out infinite;
+    opacity: 0.7;
   }
 
   @keyframes splash-title-glow {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.1); }
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.12); }
   }
 
   .lp-splash-subtitle {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     color: #94a3b8;
     margin: 0;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    opacity: 0.85;
+    opacity: 0.9;
   }
 
   /* Barra de progreso Premium */
   .lp-splash-progress-container {
-    width: 280px;
-    margin-bottom: 40px;
+    width: 300px;
+    margin-bottom: 44px;
     position: relative;
-    /* Centrado perfecto */
     margin-left: auto;
     margin-right: auto;
   }
 
   .lp-splash-progress-track {
     width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    height: 7px;
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     overflow: hidden;
     position: relative;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
   }
 
   .lp-splash-progress-bar {
@@ -526,40 +560,41 @@ const splashStyles = `
     background: linear-gradient(
       90deg,
       #6366f1 0%,
-      #8b5cf6 25%,
-      #a855f7 50%,
-      #22c55e 75%,
+      #8b5cf6 20%,
+      #a855f7 40%,
+      #22c55e 60%,
+      #a855f7 80%,
       #6366f1 100%
     );
-    background-size: 300% 100%;
+    background-size: 400% 100%;
     border-radius: 999px;
     position: relative;
-    transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: splash-progress-gradient 3s linear infinite;
+    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: splash-progress-gradient 3.5s linear infinite;
     will-change: width;
     box-shadow:
-      0 0 20px rgba(99, 102, 241, 0.6),
-      0 0 40px rgba(168, 85, 247, 0.4);
+      0 0 25px rgba(99, 102, 241, 0.7),
+      0 0 50px rgba(168, 85, 247, 0.5);
   }
 
   @keyframes splash-progress-gradient {
     0% { background-position: 0% 0%; }
-    100% { background-position: 300% 0%; }
+    100% { background-position: 400% 0%; }
   }
 
   .lp-splash-progress-shine {
     position: absolute;
-    top: -2px;
+    top: -3px;
     left: 0;
     right: 0;
-    height: 10px;
+    height: 13px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.5) 0%,
       transparent 100%
     );
     border-radius: 999px;
-    animation: splash-progress-shine 2s ease-in-out infinite;
+    animation: splash-progress-shine 2.5s ease-in-out infinite;
     will-change: transform;
   }
 
@@ -570,24 +605,23 @@ const splashStyles = `
 
   .lp-splash-progress-percent {
     position: absolute;
-    top: -26px;
+    top: -28px;
     right: 0;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: #a5b4fc;
-    letter-spacing: 0.1em;
-    text-shadow: 0 0 12px rgba(165, 180, 252, 0.6);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 15px rgba(165, 180, 252, 0.7);
   }
 
   /* Tip rotativo Premium */
   .lp-splash-tip-container {
     width: 100%;
-    max-width: 360px;
-    min-height: 60px;
+    max-width: 380px;
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Centrado perfecto */
     margin-left: auto;
     margin-right: auto;
   }
@@ -595,16 +629,16 @@ const splashStyles = `
   .lp-splash-tip {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 18px 28px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
+    gap: 16px;
+    padding: 20px 32px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 22px;
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
     animation: splash-tip-fade 1.5s ease-in-out;
     will-change: opacity, transform;
   }
@@ -612,7 +646,7 @@ const splashStyles = `
   @keyframes splash-tip-fade {
     0% {
       opacity: 0;
-      transform: translateY(15px) scale(0.95);
+      transform: translateY(18px) scale(0.94);
     }
     15% {
       opacity: 1;
@@ -623,28 +657,28 @@ const splashStyles = `
       transform: translateY(0) scale(1);
     }
     100% {
-      opacity: 0.7;
-      transform: translateY(-8px) scale(0.98);
+      opacity: 0.75;
+      transform: translateY(-10px) scale(0.97);
     }
   }
 
   .lp-splash-tip-icon {
-    font-size: 28px;
+    font-size: 30px;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
-    animation: splash-tip-icon-bounce 2.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6));
+    animation: splash-tip-icon-bounce 2.8s ease-in-out infinite;
     will-change: transform;
   }
 
   @keyframes splash-tip-icon-bounce {
     0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-4px) scale(1.1); }
+    50% { transform: translateY(-5px) scale(1.12); }
   }
 
   .lp-splash-tip-text {
-    font-size: 13px;
+    font-size: 14px;
     color: #cbd5e1;
-    line-height: 1.6;
+    line-height: 1.65;
     text-align: left;
     font-weight: 500;
   }
@@ -652,30 +686,30 @@ const splashStyles = `
   /* Footer Premium */
   .lp-splash-footer {
     position: absolute;
-    bottom: 48px;
+    bottom: 52px;
     left: 0;
     right: 0;
     text-align: center;
-    font-size: 12px;
+    font-size: 13px;
     color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     padding: 0 24px;
-    /* Centrado perfecto */
     margin: 0 auto;
+    z-index: 3;
   }
 
   .lp-splash-footer-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: #6366f1;
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.8);
-    animation: splash-footer-dot-pulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.9);
+    animation: splash-footer-dot-pulse 1.6s ease-in-out infinite;
     will-change: transform, opacity;
   }
 
@@ -685,8 +719,8 @@ const splashStyles = `
       opacity: 1;
     }
     50% {
-      transform: scale(1.4);
-      opacity: 0.7;
+      transform: scale(1.5);
+      opacity: 0.75;
     }
   }
 
@@ -695,12 +729,12 @@ const splashStyles = `
      ============================================ */
   @media (max-width: 768px) {
     .lp-splash {
-      /* Asegurar que ocupe toda la pantalla */
-      height: 100vh;
-      height: calc(var(--vh, 1vh) * 100);
-      /* CRÍTICO: Prevenir cualquier rotación */
+      height: 100vh !important;
+      height: calc(var(--vh, 1vh) * 100) !important;
       transform: none !important;
       transform-origin: center center !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .lp-splash-wrapper {
@@ -718,86 +752,86 @@ const splashStyles = `
     }
 
     .lp-splash-logo-container {
-      width: 120px;
-      height: 120px;
-      margin-bottom: 28px;
-    }
-
-    .lp-splash-logo {
-      width: 100px;
-      height: 100px;
-      border-radius: 24px;
-    }
-
-    .lp-splash-logo-orb {
-      inset: -30px;
-      filter: blur(15px);
-    }
-
-    .lp-splash-logo-glow {
-      inset: -20px;
-      filter: blur(12px);
-    }
-
-    .lp-splash-title {
-      font-size: 40px;
-    }
-
-    .lp-splash-subtitle {
-      font-size: 13px;
-    }
-
-    .lp-splash-progress-container {
-      width: 240px;
+      width: 130px;
+      height: 130px;
       margin-bottom: 32px;
     }
 
+    .lp-splash-logo {
+      width: 110px;
+      height: 110px;
+      border-radius: 26px;
+    }
+
+    .lp-splash-logo-orb {
+      inset: -35px;
+      filter: blur(18px);
+    }
+
+    .lp-splash-logo-glow {
+      inset: -24px;
+      filter: blur(14px);
+    }
+
+    .lp-splash-title {
+      font-size: 44px;
+    }
+
+    .lp-splash-subtitle {
+      font-size: 14px;
+    }
+
+    .lp-splash-progress-container {
+      width: 260px;
+      margin-bottom: 36px;
+    }
+
     .lp-splash-progress-track {
-      height: 5px;
+      height: 6px;
     }
 
     .lp-splash-tip {
-      padding: 16px 24px;
-      max-width: 320px;
-      gap: 12px;
+      padding: 18px 26px;
+      max-width: 340px;
+      gap: 14px;
     }
 
     .lp-splash-tip-icon {
-      font-size: 24px;
+      font-size: 26px;
     }
 
     .lp-splash-tip-text {
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
     .lp-splash-footer {
-      bottom: 40px;
-      font-size: 11px;
+      bottom: 44px;
+      font-size: 12px;
     }
 
     /* Reducir blur en móvil para mejor rendimiento */
     .lp-splash-gradient {
-      filter: blur(50px);
+      filter: blur(55px);
     }
 
     .lp-splash-gradient-1 {
-      width: 300px;
-      height: 300px;
+      width: 320px;
+      height: 320px;
     }
 
     .lp-splash-gradient-2 {
-      width: 350px;
-      height: 350px;
+      width: 380px;
+      height: 380px;
     }
 
     .lp-splash-gradient-3 {
-      width: 250px;
-      height: 250px;
+      width: 270px;
+      height: 270px;
     }
 
     .lp-splash-grid {
-      background-size: 40px 40px;
+      background-size: 45px 45px;
     }
   }
 
