@@ -65,52 +65,55 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 <div className="lp-splash-gradient lp-splash-gradient-1" />
                 <div className="lp-splash-gradient lp-splash-gradient-2" />
                 <div className="lp-splash-gradient lp-splash-gradient-3" />
+                <div className="lp-splash-grid" />
             </div>
 
-            <div className="lp-splash-content">
-                {/* Logo con efectos premium */}
-                <div className="lp-splash-logo-container">
-                    <div className="lp-splash-logo-glow-ring" />
-                    <div className="lp-splash-logo-glow-pulse" />
-                    <div className="lp-splash-logo">
-                        <img
-                            src="/icons/icon-192.png"
-                            alt="LinkPay"
-                            className="lp-splash-logo-img"
-                            loading="eager"
-                        />
-                        <div className="lp-splash-logo-shine" />
-                    </div>
-                </div>
-
-                {/* Nombre de la app con efecto de brillo */}
-                <div className="lp-splash-title-container">
-                    <h1 className="lp-splash-title">
-                        <span className="lp-splash-title-text">LinkPay</span>
-                        <span className="lp-splash-title-shine" />
-                    </h1>
-                    <p className="lp-splash-subtitle">Creator Studio</p>
-                </div>
-
-                {/* Barra de progreso premium */}
-                <div className="lp-splash-progress-container">
-                    <div className="lp-splash-progress-track">
-                        <div
-                            className="lp-splash-progress-bar"
-                            style={{ width: `${progress}%` }}
-                        >
-                            <div className="lp-splash-progress-glow" />
-                            <div className="lp-splash-progress-shine" />
+            {/* Contenido principal - perfectamente centrado */}
+            <div className="lp-splash-wrapper">
+                <div className="lp-splash-content">
+                    {/* Logo con efectos premium */}
+                    <div className="lp-splash-logo-container">
+                        <div className="lp-splash-logo-orb" />
+                        <div className="lp-splash-logo-glow" />
+                        <div className="lp-splash-logo">
+                            <img
+                                src="/icons/icon-192.png"
+                                alt="LinkPay"
+                                className="lp-splash-logo-img"
+                                loading="eager"
+                            />
+                            <div className="lp-splash-logo-shine" />
                         </div>
                     </div>
-                    <div className="lp-splash-progress-percent">{Math.round(progress)}%</div>
-                </div>
 
-                {/* Tip rotativo con animación suave */}
-                <div className="lp-splash-tip-container" key={currentTip}>
-                    <div className="lp-splash-tip">
-                        <span className="lp-splash-tip-icon">{tip.icon}</span>
-                        <span className="lp-splash-tip-text">{tip.text}</span>
+                    {/* Nombre de la app con efecto de brillo */}
+                    <div className="lp-splash-title-container">
+                        <h1 className="lp-splash-title">
+                            <span className="lp-splash-title-text">LinkPay</span>
+                            <span className="lp-splash-title-glow" />
+                        </h1>
+                        <p className="lp-splash-subtitle">Creator Studio</p>
+                    </div>
+
+                    {/* Barra de progreso premium */}
+                    <div className="lp-splash-progress-container">
+                        <div className="lp-splash-progress-track">
+                            <div
+                                className="lp-splash-progress-bar"
+                                style={{ width: `${progress}%` }}
+                            >
+                                <div className="lp-splash-progress-shine" />
+                            </div>
+                        </div>
+                        <div className="lp-splash-progress-percent">{Math.round(progress)}%</div>
+                    </div>
+
+                    {/* Tip rotativo con animación suave */}
+                    <div className="lp-splash-tip-container" key={currentTip}>
+                        <div className="lp-splash-tip">
+                            <span className="lp-splash-tip-icon">{tip.icon}</span>
+                            <span className="lp-splash-tip-text">{tip.text}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,17 +128,22 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
 }
 
 const splashStyles = `
+  /* ============================================
+     SPLASH SCREEN PREMIUM - MARTÍN ANDRIGHETTI
+     ============================================ */
+  
   .lp-splash {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
     min-height: 100dvh;
-    z-index: 9999;
+    z-index: 99999;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -144,9 +152,11 @@ const splashStyles = `
     overflow: hidden;
     margin: 0;
     padding: 0;
-    /* Prevenir rotación y asegurar orientación correcta */
+    /* CRÍTICO: Prevenir cualquier rotación o transformación */
     transform: none !important;
-    transform-origin: center center;
+    transform-origin: center center !important;
+    /* Asegurar que esté siempre centrado */
+    text-align: center;
   }
 
   /* Extender fondo más abajo en móvil */
@@ -154,6 +164,9 @@ const splashStyles = `
     .lp-splash {
       height: 100vh;
       height: calc(var(--vh, 1vh) * 100);
+      /* Forzar orientación correcta */
+      transform: none !important;
+      transform-origin: center center !important;
     }
     
     .lp-splash::after {
@@ -171,7 +184,7 @@ const splashStyles = `
 
   .lp-splash.fade-out {
     opacity: 0;
-    transform: scale(1.05) !important;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
   }
 
@@ -188,56 +201,103 @@ const splashStyles = `
     pointer-events: none;
   }
 
+  /* Grid pattern sutil */
+  .lp-splash-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.4;
+  }
+
   .lp-splash-gradient {
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px);
+    filter: blur(80px);
     will-change: transform, opacity;
+    /* NO usar rotate - solo translate y scale */
   }
 
   .lp-splash-gradient-1 {
-    width: 500px;
-    height: 500px;
-    top: -150px;
-    left: -150px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 70%);
-    animation: splash-gradient-1 8s ease-in-out infinite;
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    left: -100px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0.1) 50%, transparent 70%);
+    animation: splash-gradient-1 12s ease-in-out infinite;
   }
 
   .lp-splash-gradient-2 {
-    width: 600px;
-    height: 600px;
-    bottom: -200px;
-    right: -200px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 70%);
-    animation: splash-gradient-2 10s ease-in-out infinite;
+    width: 500px;
+    height: 500px;
+    bottom: -150px;
+    right: -150px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 70%);
+    animation: splash-gradient-2 15s ease-in-out infinite;
   }
 
   .lp-splash-gradient-3 {
-    width: 400px;
-    height: 400px;
-    bottom: 25%;
-    left: 15%;
-    background: radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, rgba(34, 197, 94, 0.08) 50%, transparent 70%);
-    animation: splash-gradient-3 12s ease-in-out infinite;
+    width: 350px;
+    height: 350px;
+    bottom: 20%;
+    left: 10%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0.06) 50%, transparent 70%);
+    animation: splash-gradient-3 18s ease-in-out infinite;
   }
 
+  /* Animaciones SIN rotación - solo translate y scale */
   @keyframes splash-gradient-1 {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-    50% { transform: translate(30px, 20px) scale(1.1); opacity: 0.7; }
+    0%, 100% { 
+      transform: translate(0, 0) scale(1); 
+      opacity: 0.4; 
+    }
+    50% { 
+      transform: translate(40px, 30px) scale(1.15); 
+      opacity: 0.6; 
+    }
   }
 
   @keyframes splash-gradient-2 {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-    50% { transform: translate(-40px, -30px) scale(1.15); opacity: 0.6; }
+    0%, 100% { 
+      transform: translate(0, 0) scale(1); 
+      opacity: 0.35; 
+    }
+    50% { 
+      transform: translate(-50px, -40px) scale(1.2); 
+      opacity: 0.55; 
+    }
   }
 
   @keyframes splash-gradient-3 {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-    50% { transform: translate(25px, -40px) scale(1.2); opacity: 0.5; }
+    0%, 100% { 
+      transform: translate(0, 0) scale(1); 
+      opacity: 0.25; 
+    }
+    50% { 
+      transform: translate(30px, -50px) scale(1.25); 
+      opacity: 0.45; 
+    }
   }
 
-  /* === CONTENIDO === */
+  /* === CONTENIDO PRINCIPAL - PERFECTAMENTE CENTRADO === */
+  .lp-splash-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Asegurar centrado perfecto */
+    margin: 0 auto;
+    padding: 0;
+  }
+
   .lp-splash-content {
     position: relative;
     z-index: 1;
@@ -245,51 +305,59 @@ const splashStyles = `
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
+    padding: 0 24px;
     text-align: center;
     width: 100%;
     max-width: 100%;
+    /* Centrado perfecto */
+    margin: 0 auto;
   }
 
   /* Logo Container Premium */
   .lp-splash-logo-container {
     position: relative;
-    width: 120px;
-    height: 120px;
-    margin-bottom: 24px;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Centrado perfecto */
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .lp-splash-logo-glow-ring {
+  /* Orb de fondo animado */
+  .lp-splash-logo-orb {
     position: absolute;
-    inset: -25px;
+    inset: -40px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(99, 102, 241, 0.3),
-      rgba(168, 85, 247, 0.3),
-      rgba(34, 197, 94, 0.3),
-      rgba(99, 102, 241, 0.3)
+      rgba(99, 102, 241, 0.2),
+      rgba(168, 85, 247, 0.2),
+      rgba(34, 197, 94, 0.2),
+      rgba(99, 102, 241, 0.2)
     );
-    animation: splash-glow-ring-rotate 3s linear infinite;
-    filter: blur(15px);
+    animation: splash-orb-rotate 4s linear infinite;
+    filter: blur(20px);
     will-change: transform;
   }
 
-  @keyframes splash-glow-ring-rotate {
+  @keyframes splash-orb-rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
 
-  .lp-splash-logo-glow-pulse {
+  /* Glow pulsante */
+  .lp-splash-logo-glow {
     position: absolute;
-    inset: -15px;
+    inset: -25px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
-    animation: splash-glow-pulse 2s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%);
+    animation: splash-glow-pulse 2.5s ease-in-out infinite;
     will-change: transform, opacity;
+    filter: blur(15px);
   }
 
   @keyframes splash-glow-pulse {
@@ -298,28 +366,34 @@ const splashStyles = `
       opacity: 0.5;
     }
     50% {
-      transform: scale(1.2);
-      opacity: 0.8;
+      transform: scale(1.3);
+      opacity: 0.9;
     }
   }
 
   .lp-splash-logo {
     position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 24px;
+    width: 120px;
+    height: 120px;
+    border-radius: 28px;
     overflow: hidden;
     box-shadow:
-      0 0 60px rgba(99, 102, 241, 0.5),
-      0 0 30px rgba(168, 85, 247, 0.3),
-      inset 0 0 30px rgba(99, 102, 241, 0.15);
-    animation: splash-logo-float 3s ease-in-out infinite;
+      0 0 80px rgba(99, 102, 241, 0.6),
+      0 0 40px rgba(168, 85, 247, 0.4),
+      inset 0 0 40px rgba(99, 102, 241, 0.2);
+    animation: splash-logo-float 4s ease-in-out infinite;
     will-change: transform;
+    /* Centrado perfecto */
+    margin: 0 auto;
   }
 
   @keyframes splash-logo-float {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-6px) scale(1.02); }
+    0%, 100% { 
+      transform: translateY(0) scale(1); 
+    }
+    50% { 
+      transform: translateY(-10px) scale(1.03); 
+    }
   }
 
   .lp-splash-logo-img {
@@ -335,48 +409,61 @@ const splashStyles = `
     background: linear-gradient(
       135deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.3) 50%,
       transparent 100%
     );
-    animation: splash-logo-shine 3s ease-in-out infinite;
+    animation: splash-logo-shine 3.5s ease-in-out infinite;
     will-change: transform;
   }
 
   @keyframes splash-logo-shine {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(200%) translateY(200%) rotate(45deg); }
+    0% { 
+      transform: translateX(-100%) translateY(-100%) rotate(45deg); 
+    }
+    100% { 
+      transform: translateX(200%) translateY(200%) rotate(45deg); 
+    }
   }
 
   /* Título Premium */
   .lp-splash-title-container {
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     position: relative;
+    /* Centrado perfecto */
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .lp-splash-title {
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 900;
-    letter-spacing: -0.03em;
-    margin: 0 0 6px 0;
+    letter-spacing: -0.04em;
+    margin: 0 0 10px 0;
     position: relative;
     display: inline-block;
+    /* Centrado perfecto */
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .lp-splash-title-text {
     background: linear-gradient(
       135deg,
       #ffffff 0%,
-      #a5b4fc 30%,
-      #c084fc 60%,
-      #4ade80 100%
+      #a5b4fc 25%,
+      #c084fc 50%,
+      #4ade80 75%,
+      #ffffff 100%
     );
-    background-size: 200% 200%;
+    background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: splash-title-gradient 3s ease infinite;
+    animation: splash-title-gradient 4s ease infinite;
     will-change: background-position;
     display: inline-block;
+    position: relative;
+    z-index: 1;
   }
 
   @keyframes splash-title-gradient {
@@ -384,49 +471,54 @@ const splashStyles = `
     50% { background-position: 100% 50%; }
   }
 
-  .lp-splash-title-shine {
+  .lp-splash-title-glow {
     position: absolute;
-    inset: 0;
+    inset: -10px;
     background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%
+      135deg,
+      rgba(99, 102, 241, 0.3),
+      rgba(168, 85, 247, 0.3),
+      rgba(34, 197, 94, 0.3)
     );
-    animation: splash-title-shine 2.5s ease-in-out infinite;
-    will-change: transform;
+    filter: blur(20px);
+    z-index: -1;
+    animation: splash-title-glow 3s ease-in-out infinite;
+    opacity: 0.6;
   }
 
-  @keyframes splash-title-shine {
-    0% { transform: translateX(-100%) skewX(-15deg); }
-    100% { transform: translateX(200%) skewX(-15deg); }
+  @keyframes splash-title-glow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
   }
 
   .lp-splash-subtitle {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #94a3b8;
     margin: 0;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    opacity: 0.8;
+    opacity: 0.85;
   }
 
   /* Barra de progreso Premium */
   .lp-splash-progress-container {
-    width: 260px;
-    margin-bottom: 32px;
+    width: 280px;
+    margin-bottom: 40px;
     position: relative;
+    /* Centrado perfecto */
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .lp-splash-progress-track {
     width: 100%;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.08);
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 999px;
     overflow: hidden;
     position: relative;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 
   .lp-splash-progress-bar {
@@ -434,37 +526,25 @@ const splashStyles = `
     background: linear-gradient(
       90deg,
       #6366f1 0%,
-      #8b5cf6 30%,
-      #a855f7 60%,
-      #22c55e 100%
+      #8b5cf6 25%,
+      #a855f7 50%,
+      #22c55e 75%,
+      #6366f1 100%
     );
-    background-size: 200% 100%;
+    background-size: 300% 100%;
     border-radius: 999px;
     position: relative;
-    transition: width 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: splash-progress-gradient 2s linear infinite;
+    transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: splash-progress-gradient 3s linear infinite;
     will-change: width;
     box-shadow:
-      0 0 15px rgba(99, 102, 241, 0.5),
-      0 0 30px rgba(168, 85, 247, 0.3);
+      0 0 20px rgba(99, 102, 241, 0.6),
+      0 0 40px rgba(168, 85, 247, 0.4);
   }
 
   @keyframes splash-progress-gradient {
     0% { background-position: 0% 0%; }
-    100% { background-position: 200% 0%; }
-  }
-
-  .lp-splash-progress-glow {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%
-    );
-    animation: splash-progress-shine 1.5s ease-in-out infinite;
-    will-change: transform;
+    100% { background-position: 300% 0%; }
   }
 
   .lp-splash-progress-shine {
@@ -472,13 +552,15 @@ const splashStyles = `
     top: -2px;
     left: 0;
     right: 0;
-    height: 9px;
+    height: 10px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.4) 0%,
       transparent 100%
     );
     border-radius: 999px;
+    animation: splash-progress-shine 2s ease-in-out infinite;
+    will-change: transform;
   }
 
   @keyframes splash-progress-shine {
@@ -488,38 +570,41 @@ const splashStyles = `
 
   .lp-splash-progress-percent {
     position: absolute;
-    top: -22px;
+    top: -26px;
     right: 0;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: #a5b4fc;
     letter-spacing: 0.1em;
-    text-shadow: 0 0 8px rgba(165, 180, 252, 0.4);
+    text-shadow: 0 0 12px rgba(165, 180, 252, 0.6);
   }
 
   /* Tip rotativo Premium */
   .lp-splash-tip-container {
     width: 100%;
-    max-width: 340px;
-    min-height: 56px;
+    max-width: 360px;
+    min-height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Centrado perfecto */
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .lp-splash-tip {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 16px 24px;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
+    gap: 14px;
+    padding: 18px 28px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
     box-shadow:
-      0 6px 24px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
     animation: splash-tip-fade 1.5s ease-in-out;
     will-change: opacity, transform;
   }
@@ -527,7 +612,7 @@ const splashStyles = `
   @keyframes splash-tip-fade {
     0% {
       opacity: 0;
-      transform: translateY(12px) scale(0.96);
+      transform: translateY(15px) scale(0.95);
     }
     15% {
       opacity: 1;
@@ -539,27 +624,27 @@ const splashStyles = `
     }
     100% {
       opacity: 0.7;
-      transform: translateY(-6px) scale(0.98);
+      transform: translateY(-8px) scale(0.98);
     }
   }
 
   .lp-splash-tip-icon {
-    font-size: 24px;
+    font-size: 28px;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.4));
-    animation: splash-tip-icon-bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    animation: splash-tip-icon-bounce 2.5s ease-in-out infinite;
     will-change: transform;
   }
 
   @keyframes splash-tip-icon-bounce {
     0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-3px) scale(1.08); }
+    50% { transform: translateY(-4px) scale(1.1); }
   }
 
   .lp-splash-tip-text {
-    font-size: 12px;
+    font-size: 13px;
     color: #cbd5e1;
-    line-height: 1.5;
+    line-height: 1.6;
     text-align: left;
     font-weight: 500;
   }
@@ -567,11 +652,11 @@ const splashStyles = `
   /* Footer Premium */
   .lp-splash-footer {
     position: absolute;
-    bottom: 40px;
+    bottom: 48px;
     left: 0;
     right: 0;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
     color: #64748b;
     display: flex;
     align-items: center;
@@ -579,15 +664,17 @@ const splashStyles = `
     gap: 8px;
     font-weight: 500;
     letter-spacing: 0.05em;
-    padding: 0 20px;
+    padding: 0 24px;
+    /* Centrado perfecto */
+    margin: 0 auto;
   }
 
   .lp-splash-footer-dot {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: #6366f1;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.8);
     animation: splash-footer-dot-pulse 1.5s ease-in-out infinite;
     will-change: transform, opacity;
   }
@@ -598,114 +685,130 @@ const splashStyles = `
       opacity: 1;
     }
     50% {
-      transform: scale(1.2);
+      transform: scale(1.4);
       opacity: 0.7;
     }
   }
 
-  /* Optimizaciones móvil - MOBILE FIRST */
+  /* ============================================
+     OPTIMIZACIONES MÓVIL - MOBILE FIRST
+     ============================================ */
   @media (max-width: 768px) {
     .lp-splash {
       /* Asegurar que ocupe toda la pantalla */
       height: 100vh;
       height: calc(var(--vh, 1vh) * 100);
-      /* Prevenir cualquier rotación o transformación no deseada */
+      /* CRÍTICO: Prevenir cualquier rotación */
       transform: none !important;
       transform-origin: center center !important;
     }
 
+    .lp-splash-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .lp-splash-content {
-      padding: 0 16px;
+      padding: 0 20px;
       width: 100%;
       max-width: 100%;
     }
 
     .lp-splash-logo-container {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 20px;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 28px;
     }
 
     .lp-splash-logo {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
+      width: 100px;
+      height: 100px;
+      border-radius: 24px;
     }
 
-    .lp-splash-logo-glow-ring {
+    .lp-splash-logo-orb {
+      inset: -30px;
+      filter: blur(15px);
+    }
+
+    .lp-splash-logo-glow {
       inset: -20px;
       filter: blur(12px);
     }
 
-    .lp-splash-logo-glow-pulse {
-      inset: -12px;
-    }
-
     .lp-splash-title {
-      font-size: 36px;
+      font-size: 40px;
     }
 
     .lp-splash-subtitle {
-      font-size: 12px;
+      font-size: 13px;
     }
 
     .lp-splash-progress-container {
-      width: 220px;
-      margin-bottom: 28px;
+      width: 240px;
+      margin-bottom: 32px;
     }
 
     .lp-splash-progress-track {
-      height: 4px;
+      height: 5px;
     }
 
     .lp-splash-tip {
-      padding: 14px 20px;
-      max-width: 300px;
-      gap: 10px;
+      padding: 16px 24px;
+      max-width: 320px;
+      gap: 12px;
     }
 
     .lp-splash-tip-icon {
-      font-size: 20px;
+      font-size: 24px;
     }
 
     .lp-splash-tip-text {
-      font-size: 11px;
-      line-height: 1.4;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .lp-splash-footer {
-      bottom: 32px;
-      font-size: 10px;
+      bottom: 40px;
+      font-size: 11px;
     }
 
     /* Reducir blur en móvil para mejor rendimiento */
     .lp-splash-gradient {
-      filter: blur(60px);
+      filter: blur(50px);
     }
 
     .lp-splash-gradient-1 {
+      width: 300px;
+      height: 300px;
+    }
+
+    .lp-splash-gradient-2 {
       width: 350px;
       height: 350px;
     }
 
-    .lp-splash-gradient-2 {
-      width: 400px;
-      height: 400px;
+    .lp-splash-gradient-3 {
+      width: 250px;
+      height: 250px;
     }
 
-    .lp-splash-gradient-3 {
-      width: 300px;
-      height: 300px;
+    .lp-splash-grid {
+      background-size: 40px 40px;
     }
   }
 
   /* Reducir animaciones en dispositivos con preferencia de movimiento reducido */
   @media (prefers-reduced-motion: reduce) {
     .lp-splash-gradient,
-    .lp-splash-logo-glow-ring,
-    .lp-splash-logo-glow-pulse,
+    .lp-splash-logo-orb,
+    .lp-splash-logo-glow,
     .lp-splash-logo,
     .lp-splash-title-text,
+    .lp-splash-title-glow,
     .lp-splash-progress-bar,
     .lp-splash-tip-icon,
     .lp-splash-footer-dot {
