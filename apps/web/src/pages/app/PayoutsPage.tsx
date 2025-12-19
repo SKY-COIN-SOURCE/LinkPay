@@ -1065,7 +1065,7 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-content {
-      padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
+      padding: 12px 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
       max-width: 100%;
     }
   }
