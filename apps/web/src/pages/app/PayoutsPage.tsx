@@ -204,7 +204,7 @@ export function PayoutsPage() {
         <div className="rev-hero-zone">
           {/* BALANCE */}
           <div className="rev-balance-card">
-            <span className="rev-balance-label">LinkPay · EUR</span>
+            <span className="rev-balance-label">Wallet</span>
             <div className="rev-balance-amount">
               <span className="rev-amount-value">{balance.toFixed(2).split('.')[0]}</span>
               <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
@@ -1070,21 +1070,21 @@ const revStyles = `
     }
   }
 
-  /* ─── HERO ZONE - BALANCE CENTRADO ARRIBA (ESTILO BANCO) ────────────── */
+  /* ─── HERO ZONE - BALANCE MUY ARRIBA (ESTILO BANCO) ─────────────────── */
   .rev-hero-zone {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     flex: 0 0 auto;
-    padding-top: 30px;
+    padding-top: 50px;
     padding-bottom: 20px;
   }
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 24px;
-      padding-bottom: 16px;
+      padding-top: 40px;
+      padding-bottom: 14px;
     }
   }
 
