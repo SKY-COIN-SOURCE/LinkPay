@@ -281,9 +281,10 @@ const layoutStyles = `
 
   /* Hide app shell during splash - completely invisible */
   .lp-app-shell.lp-hidden {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
   }
 
   .lp-app-shell.lp-hidden .lp-mobile-nav,

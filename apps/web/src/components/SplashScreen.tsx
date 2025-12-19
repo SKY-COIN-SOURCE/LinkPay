@@ -25,6 +25,15 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
     const startTimeRef = useRef<number>(Date.now());
 
     useEffect(() => {
+        // Forzar que el splash sea visible inmediatamente
+        const splashEl = document.querySelector('.lp-splash') as HTMLElement;
+        if (splashEl) {
+            splashEl.style.display = 'flex';
+            splashEl.style.visibility = 'visible';
+            splashEl.style.opacity = '1';
+            splashEl.style.zIndex = '999999';
+        }
+
         // Rotar tips cada 1.5 segundos
         const tipInterval = setInterval(() => {
             setCurrentTip((prev) => (prev + 1) % TIPS.length);
@@ -67,6 +76,9 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 bottom: 0,
                 width: '100vw',
                 height: '100vh',
+                height: '100dvh',
+                minHeight: '100vh',
+                minHeight: '100dvh',
                 zIndex: 999999,
                 display: 'flex',
                 flexDirection: 'column',
@@ -79,6 +91,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 transformOrigin: 'center center',
                 visibility: 'visible',
                 opacity: 1,
+                background: '#020617',
             }}
         >
             <style>{splashStyles}</style>
@@ -154,7 +167,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
 const splashStyles = `
   /* ============================================
      SPLASH SCREEN ULTRA PREMIUM - MARTÍN ANDRIGHETTI
-     FONDO PERSONALIZADO PREMIUM
+     FONDO PERSONALIZADO PREMIUM - MOBILE FIRST
      ============================================ */
   
   .lp-splash {
@@ -181,17 +194,24 @@ const splashStyles = `
     text-align: center !important;
     visibility: visible !important;
     opacity: 1 !important;
+    background: #020617 !important;
+    /* Asegurar que esté por encima de TODO */
+    isolation: isolate !important;
   }
 
-  /* Extender fondo más abajo en móvil */
+  /* CRÍTICO: Móvil - asegurar visibilidad */
   @media (max-width: 768px) {
     .lp-splash {
       height: 100vh !important;
       height: calc(var(--vh, 1vh) * 100) !important;
+      height: 100dvh !important;
       transform: none !important;
       transform-origin: center center !important;
       visibility: visible !important;
       opacity: 1 !important;
+      display: flex !important;
+      z-index: 999999 !important;
+      background: #020617 !important;
     }
   }
 
@@ -215,7 +235,7 @@ const splashStyles = `
     z-index: 0;
   }
 
-  /* Base gradient oscuro */
+  /* Base gradient oscuro - VISIBLE DESDE EL INICIO */
   .lp-splash-bg-base {
     position: absolute;
     inset: 0;
@@ -226,6 +246,7 @@ const splashStyles = `
       #0f172a 75%,
       #020617 100%);
     z-index: 1;
+    opacity: 1;
   }
 
   /* Gradientes de luminosidad */
@@ -238,7 +259,8 @@ const splashStyles = `
       radial-gradient(ellipse 90% 70% at 85% 30%, rgba(59, 130, 246, 0.2) 0%, transparent 45%),
       radial-gradient(ellipse 100% 60% at 50% 95%, rgba(34, 197, 94, 0.15) 0%, transparent 50%);
     z-index: 2;
-    animation: splash-bg-fade 1.2s ease-out;
+    opacity: 1;
+    animation: splash-bg-fade 0.5s ease-out;
   }
 
   @keyframes splash-bg-fade {
@@ -722,107 +744,178 @@ const splashStyles = `
   }
 
   /* ============================================
-     OPTIMIZACIONES MÓVIL - MOBILE FIRST
+     OPTIMIZACIONES MÓVIL - MOBILE FIRST CRÍTICO
      ============================================ */
   @media (max-width: 768px) {
     .lp-splash {
       height: 100vh !important;
       height: calc(var(--vh, 1vh) * 100) !important;
+      height: 100dvh !important;
       transform: none !important;
       transform-origin: center center !important;
       visibility: visible !important;
       opacity: 1 !important;
+      display: flex !important;
+      z-index: 999999 !important;
+      background: #020617 !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
     }
 
     .lp-splash-wrapper {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 100% !important;
+      height: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     .lp-splash-content {
       padding: 0 20px;
       width: 100%;
       max-width: 100%;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     .lp-splash-logo-container {
       width: 130px;
       height: 130px;
       margin-bottom: 32px;
+      display: flex !important;
     }
 
     .lp-splash-logo {
       width: 110px;
       height: 110px;
       border-radius: 26px;
+      display: block !important;
+    }
+
+    .lp-splash-logo-img {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .lp-splash-logo-orb {
       inset: -35px;
       filter: blur(18px);
+      display: block !important;
     }
 
     .lp-splash-logo-glow {
       inset: -24px;
       filter: blur(14px);
+      display: block !important;
     }
 
     .lp-splash-title {
       font-size: 44px;
+      display: block !important;
+      visibility: visible !important;
+    }
+
+    .lp-splash-title-text {
+      display: inline-block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .lp-splash-subtitle {
       font-size: 14px;
+      display: block !important;
+      visibility: visible !important;
     }
 
     .lp-splash-progress-container {
       width: 260px;
       margin-bottom: 36px;
+      display: block !important;
+      visibility: visible !important;
     }
 
     .lp-splash-progress-track {
       height: 6px;
+      display: block !important;
+    }
+
+    .lp-splash-progress-bar {
+      display: block !important;
+      visibility: visible !important;
     }
 
     .lp-splash-tip {
       padding: 18px 26px;
       max-width: 340px;
       gap: 14px;
+      display: flex !important;
+      visibility: visible !important;
     }
 
     .lp-splash-tip-icon {
       font-size: 26px;
+      display: inline-block !important;
     }
 
     .lp-splash-tip-text {
       font-size: 13px;
       line-height: 1.6;
+      display: inline-block !important;
     }
 
     .lp-splash-footer {
       bottom: 44px;
       font-size: 12px;
+      display: flex !important;
+      visibility: visible !important;
     }
 
     /* Optimizaciones de fondo en móvil */
+    .lp-splash-bg {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .lp-splash-bg-base {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .lp-splash-bg-gradient {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
     .lp-splash-bg-glow {
       width: 800px;
       height: 800px;
       filter: blur(80px);
+      display: block !important;
+      visibility: visible !important;
     }
 
     .lp-splash-bg-orb {
       width: 400px;
       height: 400px;
       filter: blur(50px);
+      display: block !important;
+      visibility: visible !important;
     }
 
     .lp-splash-bg-particles {
       background-size: 350px 250px;
       opacity: 0.5;
+      display: block !important;
+      visibility: visible !important;
     }
   }
 
