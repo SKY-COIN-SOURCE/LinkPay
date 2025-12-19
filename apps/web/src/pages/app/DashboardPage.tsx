@@ -217,14 +217,14 @@ export function DashboardPage() {
                     <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
                   </div>
                   <div className="lp-substat-box">
-                    <span className="lp-substat-label">CLICKS BIO</span>
-                    <span className="lp-substat-value">{realtimeStats.bioClicks}</span>
+                    <span className="lp-substat-label">REFERIDOS</span>
+                    <span className="lp-substat-value">€0.00</span>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* CARD 2: CLICKS - PURPLE (Compact like RPM) */}
+            {/* CARD 2: CLICKS - PURPLE with breakdown */}
             <motion.div
               className="lp-dashboard-card lp-card-purple"
               variants={cardVariants}
@@ -236,8 +236,16 @@ export function DashboardPage() {
               <div>
                 <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
                 <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
-                <div className="lp-substat-label" style={{ marginTop: '8px' }}>
-                  LINKS + BIO PAGE
+
+                <div className="lp-substats" style={{ gridTemplateColumns: '1fr 1fr', marginTop: '12px' }}>
+                  <div className="lp-substat-box">
+                    <span className="lp-substat-label">LINKS</span>
+                    <span className="lp-substat-value">{realtimeStats.linkClicks}</span>
+                  </div>
+                  <div className="lp-substat-box">
+                    <span className="lp-substat-label">BIO PAGE</span>
+                    <span className="lp-substat-value">{realtimeStats.bioClicks}</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
