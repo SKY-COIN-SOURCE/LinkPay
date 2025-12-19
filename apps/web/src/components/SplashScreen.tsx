@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Consejos que rotan mientras carga - MILES DE CONSEJOS VARIADOS
+// Consejos que rotan mientras carga
 const TIPS = [
     { icon: '💡', text: 'Comparte tus Smart Links en redes sociales para maximizar ganancias' },
     { icon: '🎯', text: 'Personaliza tu BioPage para aumentar la confianza de tus seguidores' },
@@ -22,125 +22,6 @@ const TIPS = [
     { icon: '📸', text: 'Añade imágenes a tus enlaces para aumentar el engagement' },
     { icon: '🎬', text: 'Crea enlaces para tus videos de YouTube y TikTok' },
     { icon: '🛍️', text: 'Monetiza tus recomendaciones de productos con Smart Links' },
-    { icon: '📚', text: 'Organiza tus enlaces en categorías para mejor navegación' },
-    { icon: '🌟', text: 'Destaca tus enlaces más importantes en tu BioPage' },
-    { icon: '🎪', text: 'Crea landing pages personalizadas para eventos especiales' },
-    { icon: '💼', text: 'Usa LinkPay para tu portafolio profesional' },
-    { icon: '🎵', text: 'Comparte tus canciones y álbumes con enlaces directos' },
-    { icon: '📖', text: 'Monetiza tu blog con enlaces a tus artículos' },
-    { icon: '🎮', text: 'Crea enlaces para tus streams y contenido gaming' },
-    { icon: '🏃', text: 'Comparte tus rutinas de ejercicio y planes de entrenamiento' },
-    { icon: '🍳', text: 'Monetiza tus recetas y tutoriales de cocina' },
-    { icon: '✈️', text: 'Comparte tus viajes y recomendaciones de destinos' },
-    { icon: '📝', text: 'Usa QR codes para compartir tus links offline' },
-    { icon: '🎓', text: 'Crea cursos y comparte el material con enlaces protegidos' },
-    { icon: '💻', text: 'Comparte recursos de programación y herramientas útiles' },
-    { icon: '🎭', text: 'Monetiza tu contenido artístico y creativo' },
-    { icon: '📱', text: 'Añade tu BioPage a tu perfil de Instagram' },
-    { icon: '🐦', text: 'Comparte tus Smart Links en Twitter para más alcance' },
-    { icon: '📘', text: 'Añade tus enlaces a tu perfil de Facebook' },
-    { icon: '💬', text: 'Comparte tus links en grupos de Telegram y WhatsApp' },
-    { icon: '🎥', text: 'Incluye tus enlaces en la descripción de tus videos' },
-    { icon: '📧', text: 'Añade tus Smart Links a tu firma de email' },
-    { icon: '🏆', text: 'Los creadores top ganan más de $1000/mes con LinkPay' },
-    { icon: '💳', text: 'Configura tus métodos de pago para recibir ganancias rápido' },
-    { icon: '📅', text: 'Programa tus publicaciones para mantener consistencia' },
-    { icon: '🎨', text: 'Experimenta con diferentes estilos de BioPage' },
-    { icon: '🔔', text: 'Activa notificaciones para estar al día con tus estadísticas' },
-    { icon: '📊', text: 'Revisa tus métricas diarias para optimizar tu estrategia' },
-    { icon: '💡', text: 'Los enlaces cortos son más fáciles de recordar y compartir' },
-    { icon: '🎯', text: 'Enfócate en nichos específicos para mejores resultados' },
-    { icon: '🚀', text: 'Usa A/B testing para encontrar los mejores títulos' },
-    { icon: '💎', text: 'Los usuarios Premium tienen prioridad en soporte' },
-    { icon: '🌟', text: 'Sé consistente con tu marca personal en todos los enlaces' },
-    { icon: '📱', text: 'Prueba tus links en diferentes dispositivos antes de publicar' },
-    { icon: '🔍', text: 'Usa analytics para entender el comportamiento de tu audiencia' },
-    { icon: '💬', text: 'Interactúa con tus seguidores a través de tus BioPages' },
-    { icon: '🎁', text: 'Crea enlaces exclusivos para tus suscriptores más fieles' },
-    { icon: '📈', text: 'Compara tus métricas semana a semana para ver el crecimiento' },
-    { icon: '🌐', text: 'Traduce tus descripciones para llegar a audiencias globales' },
-    { icon: '🎪', text: 'Organiza tus enlaces por temporadas y eventos' },
-    { icon: '💼', text: 'Usa LinkPay para tu negocio y genera ingresos pasivos' },
-    { icon: '🎵', text: 'Comparte playlists y recomendaciones musicales' },
-    { icon: '📖', text: 'Monetiza tus reseñas de libros y recomendaciones' },
-    { icon: '🎮', text: 'Crea enlaces para tus guías de videojuegos' },
-    { icon: '🏃', text: 'Comparte tus logros fitness y motivación' },
-    { icon: '🍳', text: 'Monetiza tus tutoriales de cocina y recetas' },
-    { icon: '✈️', text: 'Comparte tus experiencias de viaje y recomendaciones' },
-    { icon: '📝', text: 'Usa QR codes en eventos físicos para dirigir tráfico online' },
-    { icon: '🎓', text: 'Crea contenido educativo y monetízalo con enlaces' },
-    { icon: '💻', text: 'Comparte recursos técnicos y herramientas para desarrolladores' },
-    { icon: '🎭', text: 'Monetiza tu arte digital y contenido creativo' },
-    { icon: '📱', text: 'Optimiza tu BioPage para que se vea perfecta en móviles' },
-    { icon: '🐦', text: 'Usa hashtags relevantes al compartir en redes sociales' },
-    { icon: '📘', text: 'Crea contenido específico para cada plataforma social' },
-    { icon: '💬', text: 'Responde a comentarios y construye una comunidad activa' },
-    { icon: '🎥', text: 'Incluye llamadas a la acción en tus videos' },
-    { icon: '📧', text: 'Usa email marketing con tus Smart Links' },
-    { icon: '🏆', text: 'Establece metas mensuales de clics y ganancias' },
-    { icon: '💳', text: 'Diversifica tus fuentes de ingresos con múltiples enlaces' },
-    { icon: '📅', text: 'Crea un calendario de contenido para mantenerte organizado' },
-    { icon: '🎨', text: 'Mantén una identidad visual consistente en todos tus enlaces' },
-    { icon: '🔔', text: 'Revisa tus notificaciones regularmente para no perder oportunidades' },
-    { icon: '📊', text: 'Usa gráficos y visualizaciones para entender mejor tus datos' },
-    { icon: '💡', text: 'Los enlaces con emojis reciben 25% más clics' },
-    { icon: '🎯', text: 'Define tu público objetivo para crear contenido más efectivo' },
-    { icon: '🚀', text: 'Colabora con otros creadores para ampliar tu alcance' },
-    { icon: '💎', text: 'Invierte en Premium para desbloquear todo el potencial' },
-    { icon: '🌟', text: 'Sé auténtico - tu audiencia valora la autenticidad' },
-    { icon: '📱', text: 'Asegúrate de que todos tus enlaces funcionen en móviles' },
-    { icon: '🔍', text: 'Investiga qué tipo de contenido funciona mejor en tu nicho' },
-    { icon: '💬', text: 'Crea contenido que invite a la interacción y participación' },
-    { icon: '🎁', text: 'Ofrece valor antes de pedir algo a cambio' },
-    { icon: '📈', text: 'Celebra tus pequeños logros y compártelos con tu audiencia' },
-    { icon: '🌐', text: 'Considera crear contenido en múltiples idiomas' },
-    { icon: '🎪', text: 'Organiza tus enlaces por categorías temáticas' },
-    { icon: '💼', text: 'Trata tu presencia online como un negocio serio' },
-    { icon: '🎵', text: 'Comparte música que inspire y motive a tu audiencia' },
-    { icon: '📖', text: 'Crea contenido educativo que resuelva problemas reales' },
-    { icon: '🎮', text: 'Comparte tus estrategias y tips de gaming' },
-    { icon: '🏃', text: 'Motiva a otros con tu transformación personal' },
-    { icon: '🍳', text: 'Comparte recetas que sean fáciles de seguir' },
-    { icon: '✈️', text: 'Crea guías de viaje detalladas y útiles' },
-    { icon: '📝', text: 'Usa enlaces para crear una biblioteca de recursos' },
-    { icon: '🎓', text: 'Comparte conocimiento y construye autoridad en tu nicho' },
-    { icon: '💻', text: 'Ayuda a otros desarrolladores con recursos útiles' },
-    { icon: '🎭', text: 'Expresa tu creatividad a través de tus enlaces' },
-    { icon: '📱', text: 'Aprovecha las notificaciones push para mantener engagement' },
-    { icon: '🐦', text: 'Usa Twitter para compartir actualizaciones rápidas' },
-    { icon: '📘', text: 'Crea grupos de Facebook para tu comunidad' },
-    { icon: '💬', text: 'Usa Telegram para crear comunidades más íntimas' },
-    { icon: '🎥', text: 'Crea series de videos y compártelas con enlaces' },
-    { icon: '📧', text: 'Construye una lista de email con contenido valioso' },
-    { icon: '🏆', text: 'Participa en desafíos y competiciones de la comunidad' },
-    { icon: '💳', text: 'Diversifica tus métodos de monetización' },
-    { icon: '📅', text: 'Planifica tu contenido con anticipación' },
-    { icon: '🎨', text: 'Experimenta con diferentes formatos de contenido' },
-    { icon: '🔔', text: 'Mantén a tu audiencia informada sobre nuevos enlaces' },
-    { icon: '📊', text: 'Aprende de tus métricas y ajusta tu estrategia' },
-    { icon: '💡', text: 'Los mejores creadores prueban constantemente nuevas ideas' },
-    { icon: '🎯', text: 'Enfócate en crear valor, las ganancias vendrán después' },
-    { icon: '🚀', text: 'No tengas miedo de experimentar con contenido nuevo' },
-    { icon: '💎', text: 'Invierte en herramientas Premium que te ayuden a crecer' },
-    { icon: '🌟', text: 'Sé consistente - la consistencia construye audiencias' },
-    { icon: '📱', text: 'Optimiza cada aspecto de tu presencia móvil' },
-    { icon: '🔍', text: 'Investiga a tus competidores y aprende de ellos' },
-    { icon: '💬', text: 'Construye relaciones genuinas con tu audiencia' },
-    { icon: '🎁', text: 'Sorprende a tu audiencia con contenido inesperado' },
-    { icon: '📈', text: 'Establece KPIs claros y trabaja para alcanzarlos' },
-    { icon: '🌐', text: 'Piensa globalmente pero actúa localmente' },
-    { icon: '🎪', text: 'Crea experiencias memorables para tus seguidores' },
-    { icon: '💼', text: 'Trata cada enlace como una oportunidad de negocio' },
-    { icon: '🎵', text: 'Usa música para crear atmósfera en tu contenido' },
-    { icon: '📖', text: 'Comparte historias que inspiren y motiven' },
-    { icon: '🎮', text: 'Crea contenido gaming que entretenga y eduque' },
-    { icon: '🏃', text: 'Comparte tu viaje personal para inspirar a otros' },
-    { icon: '🍳', text: 'Haz que la cocina sea accesible para todos' },
-    { icon: '✈️', text: 'Ayuda a otros a descubrir nuevos destinos' },
-    { icon: '📝', text: 'Crea recursos descargables y compártelos con enlaces' },
-    { icon: '🎓', text: 'Comparte tu conocimiento y experiencia' },
-    { icon: '💻', text: 'Ayuda a otros a aprender nuevas habilidades técnicas' },
-    { icon: '🎭', text: 'Expresa tu arte de manera única y auténtica' },
 ];
 
 interface SplashScreenProps {
@@ -155,6 +36,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
     const [isVisible, setIsVisible] = useState(false);
     const animationFrameRef = useRef<number>();
     const startTimeRef = useRef<number>(Date.now());
+    const lastUpdateRef = useRef<number>(0);
 
     useEffect(() => {
         // Forzar que el splash sea visible inmediatamente
@@ -171,30 +53,39 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
             setIsVisible(true);
         });
 
-        // Rotar tips cada 1.2 segundos (más rápido para más variedad)
+        // Rotar tips cada 1.5 segundos
         const tipInterval = setInterval(() => {
             setCurrentTip((prev) => (prev + 1) % TIPS.length);
-        }, 1200);
+        }, 1500);
 
-        // Progreso de carga usando requestAnimationFrame para suavidad máxima
+        // Progreso optimizado con throttling para evitar lag
         const updateProgress = () => {
-            const elapsed = Date.now() - startTimeRef.current;
-            // Progreso ultra suave con easing cubic
+            const now = Date.now();
+            const elapsed = now - startTimeRef.current;
+            
+            // Throttle: solo actualizar cada 16ms (60fps)
+            if (now - lastUpdateRef.current < 16 && elapsed < minDuration) {
+                animationFrameRef.current = requestAnimationFrame(updateProgress);
+                return;
+            }
+            
+            lastUpdateRef.current = now;
+            
+            // Progreso suave con easing
             const progressRatio = elapsed / minDuration;
             const easedProgress = progressRatio < 0.5
-                ? 4 * progressRatio * progressRatio * progressRatio
-                : 1 - Math.pow(-2 * progressRatio + 2, 3) / 2;
+                ? 2 * progressRatio * progressRatio
+                : 1 - Math.pow(-2 * progressRatio + 2, 2) / 2;
             const newProgress = Math.min(easedProgress * 100, 100);
             setProgress(newProgress);
 
             if (elapsed < minDuration) {
                 animationFrameRef.current = requestAnimationFrame(updateProgress);
             } else {
-                // CRÍTICO: Pre-cargar y mostrar la app ANTES del fade-out del splash
+                // Pre-cargar y mostrar la app ANTES del fade-out del splash
                 const appShell = document.querySelector('.lp-app-shell') as HTMLElement;
                 const root = document.getElementById('root');
 
-                // Asegurar que la app esté lista y visible
                 if (appShell) {
                     appShell.classList.remove('lp-hidden');
                     appShell.style.visibility = 'visible';
@@ -203,25 +94,21 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                     appShell.style.zIndex = '1';
                 }
 
-                // Asegurar que el root tenga el fondo correcto
                 if (root) {
                     root.style.background = 'linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%)';
                     root.style.opacity = '1';
                 }
 
-                // Iniciar fade-in de la app inmediatamente
                 requestAnimationFrame(() => {
                     if (appShell) {
                         appShell.style.opacity = '1';
                     }
                 });
 
-                // Fade-out suave del splash DESPUÉS de que la app empiece a aparecer
                 setTimeout(() => {
                     setFadeOut(true);
                 }, 50);
 
-                // Completar después de que ambas transiciones terminen
                 setTimeout(onComplete, 650);
             }
         };
@@ -260,8 +147,6 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 overflow: 'hidden',
                 margin: 0,
                 padding: 0,
-                transform: 'none',
-                transformOrigin: 'center center',
                 visibility: 'visible',
                 opacity: 1,
                 background: '#020617',
@@ -269,28 +154,21 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
         >
             <style>{splashStyles}</style>
 
-            {/* FONDO PREMIUM ULTRA MEJORADO - Múltiples capas de profundidad */}
+            {/* FONDO OPTIMIZADO - Menos capas para mejor rendimiento */}
             <div className="lp-splash-bg">
                 <div className="lp-splash-bg-base" />
                 <div className="lp-splash-bg-gradient" />
                 <div className="lp-splash-bg-glow" />
-                <div className="lp-splash-bg-glow-secondary" />
                 <div className="lp-splash-bg-particles" />
-                <div className="lp-splash-bg-particles-secondary" />
-                <div className="lp-splash-bg-orb" />
-                <div className="lp-splash-bg-orb-secondary" />
-                <div className="lp-splash-bg-mesh" />
             </div>
 
-            {/* Contenido principal - perfectamente centrado con animación de entrada */}
+            {/* Contenido principal */}
             <div className="lp-splash-wrapper">
                 <div className={`lp-splash-content ${isVisible ? 'content-visible' : ''}`}>
-                    {/* Logo con efectos premium mejorados */}
+                    {/* Logo con efectos optimizados */}
                     <div className="lp-splash-logo-container">
                         <div className="lp-splash-logo-orb" />
-                        <div className="lp-splash-logo-orb-secondary" />
                         <div className="lp-splash-logo-glow" />
-                        <div className="lp-splash-logo-glow-secondary" />
                         <div className="lp-splash-logo">
                             <img
                                 src="/icons/icon-192.png"
@@ -299,21 +177,19 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                                 loading="eager"
                             />
                             <div className="lp-splash-logo-shine" />
-                            <div className="lp-splash-logo-shine-secondary" />
                         </div>
                     </div>
 
-                    {/* Nombre de la app con efecto de brillo mejorado */}
+                    {/* Título mejorado */}
                     <div className="lp-splash-title-container">
                         <h1 className="lp-splash-title">
                             <span className="lp-splash-title-text">LinkPay</span>
                             <span className="lp-splash-title-glow" />
-                            <span className="lp-splash-title-glow-secondary" />
                         </h1>
                         <p className="lp-splash-subtitle">Creator Studio</p>
                     </div>
 
-                    {/* Barra de progreso premium mejorada */}
+                    {/* Barra de progreso optimizada */}
                     <div className="lp-splash-progress-container">
                         <div className="lp-splash-progress-track">
                             <div
@@ -321,13 +197,12 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                                 style={{ width: `${progress}%` }}
                             >
                                 <div className="lp-splash-progress-shine" />
-                                <div className="lp-splash-progress-glow" />
                             </div>
                         </div>
                         <div className="lp-splash-progress-percent">{Math.round(progress)}%</div>
                     </div>
 
-                    {/* Tip rotativo con animación mejorada */}
+                    {/* Tip rotativo */}
                     <div className="lp-splash-tip-container" key={currentTip}>
                         <div className="lp-splash-tip">
                             <span className="lp-splash-tip-icon">{tip.icon}</span>
@@ -337,10 +212,9 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
                 </div>
             </div>
 
-            {/* Footer con efecto de pulso mejorado */}
+            {/* Footer */}
             <div className="lp-splash-footer">
                 <div className="lp-splash-footer-dot" />
-                <div className="lp-splash-footer-dot-secondary" />
                 <span>Cargando tu panel...</span>
             </div>
         </div>
@@ -349,8 +223,8 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
 
 const splashStyles = `
   /* ============================================
-     SPLASH SCREEN ULTRA PREMIUM - MARTÍN ANDRIGHETTI
-     AUDITORÍA COMPLETA - MEJORAS MASIVAS
+     SPLASH SCREEN OPTIMIZADO - SIN LAG
+     Diseño Premium Mejorado
      ============================================ */
   
   .lp-splash {
@@ -372,30 +246,24 @@ const splashStyles = `
     overflow: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
-    transform: none !important;
-    transform-origin: center center !important;
-    text-align: center !important;
     visibility: visible !important;
     opacity: 1 !important;
     background: #020617 !important;
     isolation: isolate !important;
-    backface-visibility: hidden !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
+    transform: translateZ(0) !important;
+    will-change: opacity !important;
   }
 
   .lp-splash.visible {
-    animation: splash-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: splash-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   @keyframes splash-fade-in {
     from {
       opacity: 0;
-      transform: scale(0.98);
     }
     to {
       opacity: 1;
-      transform: scale(1);
     }
   }
 
@@ -405,7 +273,7 @@ const splashStyles = `
     pointer-events: none !important;
   }
 
-  /* === FONDO PREMIUM ULTRA MEJORADO - MÚLTIPLES CAPAS === */
+  /* === FONDO OPTIMIZADO - Menos capas === */
   .lp-splash-bg {
     position: absolute;
     top: 0;
@@ -417,217 +285,94 @@ const splashStyles = `
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+    transform: translateZ(0);
   }
 
-  /* Base gradient oscuro mejorado */
+  /* Base gradient */
   .lp-splash-bg-base {
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg,
       #020617 0%,
-      #0a0f1f 15%,
-      #0f172a 25%,
-      #1a2332 40%,
+      #0f172a 20%,
       #1e293b 50%,
-      #1a2332 60%,
-      #0f172a 75%,
-      #0a0f1f 85%,
+      #0f172a 80%,
       #020617 100%);
     z-index: 1;
     opacity: 1;
   }
 
-  /* Gradientes de luminosidad mejorados - más capas */
+  /* Gradientes optimizados - menos capas */
   .lp-splash-bg-gradient {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 180% 100% at 50% -25%, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0.2) 25%, transparent 60%),
-      radial-gradient(ellipse 120% 90% at 10% 15%, rgba(168, 85, 247, 0.25) 0%, rgba(168, 85, 247, 0.15) 30%, transparent 55%),
-      radial-gradient(ellipse 110% 80% at 90% 25%, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.15) 35%, transparent 50%),
-      radial-gradient(ellipse 130% 70% at 50% 100%, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 40%, transparent 55%),
-      radial-gradient(ellipse 100% 60% at 25% 60%, rgba(139, 92, 246, 0.15) 0%, transparent 45%),
-      radial-gradient(ellipse 90% 50% at 75% 70%, rgba(236, 72, 153, 0.12) 0%, transparent 40%);
+      radial-gradient(ellipse 150% 90% at 50% -20%, rgba(99, 102, 241, 0.25) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 80% at 20% 30%, rgba(168, 85, 247, 0.2) 0%, transparent 45%),
+      radial-gradient(ellipse 90% 70% at 80% 40%, rgba(59, 130, 246, 0.2) 0%, transparent 40%),
+      radial-gradient(ellipse 110% 60% at 50% 100%, rgba(34, 197, 94, 0.15) 0%, transparent 50%);
     z-index: 2;
     opacity: 1;
-    animation: splash-bg-fade 0.6s ease-out;
   }
 
-  @keyframes splash-bg-fade {
-    from { opacity: 0; transform: scale(1.05); }
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  /* Glow central pulsante mejorado */
+  /* Glow central optimizado */
   .lp-splash-bg-glow {
     position: absolute;
-    top: -300px;
+    top: -200px;
     left: 50%;
-    transform: translateX(-50%);
-    width: 1200px;
-    height: 1200px;
+    transform: translateX(-50%) translateZ(0);
+    width: 900px;
+    height: 900px;
     background: radial-gradient(circle,
-      rgba(99, 102, 241, 0.5) 0%,
-      rgba(168, 85, 247, 0.4) 15%,
-      rgba(59, 130, 246, 0.3) 30%,
-      rgba(34, 197, 94, 0.2) 45%,
-      transparent 70%);
+      rgba(99, 102, 241, 0.4) 0%,
+      rgba(168, 85, 247, 0.3) 20%,
+      transparent 60%);
     pointer-events: none;
     z-index: 3;
-    animation: splash-glow-pulse 5s ease-in-out infinite alternate;
-    filter: blur(100px);
-  }
-
-  .lp-splash-bg-glow-secondary {
-    position: absolute;
-    top: 50%;
-    left: 20%;
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle,
-      rgba(168, 85, 247, 0.3) 0%,
-      rgba(99, 102, 241, 0.2) 25%,
-      transparent 55%);
-    pointer-events: none;
-    z-index: 2;
-    animation: splash-glow-float 8s ease-in-out infinite;
+    animation: splash-glow-pulse 6s ease-in-out infinite;
     filter: blur(80px);
+    will-change: transform, opacity;
   }
 
   @keyframes splash-glow-pulse {
-    0% { 
-      opacity: 0.7; 
-      transform: translateX(-50%) scale(1) rotate(0deg); 
+    0%, 100% { 
+      opacity: 0.6; 
+      transform: translateX(-50%) translateZ(0) scale(1); 
     }
-    100% { 
-      opacity: 1; 
-      transform: translateX(-50%) scale(1.15) rotate(5deg); 
+    50% { 
+      opacity: 0.9; 
+      transform: translateX(-50%) translateZ(0) scale(1.1); 
     }
   }
 
-  @keyframes splash-glow-float {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-    50% { transform: translate(50px, -30px) scale(1.2); opacity: 0.5; }
-  }
-
-  /* Partículas flotantes mejoradas - más partículas */
+  /* Partículas simplificadas */
   .lp-splash-bg-particles {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.7;
+    opacity: 0.5;
     z-index: 2;
     background-image:
-      radial-gradient(2px 2px at 8% 12%, rgba(99, 102, 241, 0.5), transparent),
-      radial-gradient(2px 2px at 18% 25%, rgba(168, 85, 247, 0.4), transparent),
-      radial-gradient(3px 3px at 28% 8%, rgba(59, 130, 246, 0.45), transparent),
-      radial-gradient(2px 2px at 38% 35%, rgba(34, 197, 94, 0.4), transparent),
-      radial-gradient(2px 2px at 48% 18%, rgba(99, 102, 241, 0.3), transparent),
-      radial-gradient(3px 3px at 58% 42%, rgba(168, 85, 247, 0.5), transparent),
-      radial-gradient(2px 2px at 68% 28%, rgba(59, 130, 246, 0.35), transparent),
-      radial-gradient(2px 2px at 78% 52%, rgba(34, 197, 94, 0.4), transparent),
-      radial-gradient(3px 3px at 88% 15%, rgba(99, 102, 241, 0.4), transparent),
-      radial-gradient(2px 2px at 12% 58%, rgba(168, 85, 247, 0.3), transparent),
-      radial-gradient(2px 2px at 22% 72%, rgba(59, 130, 246, 0.4), transparent),
-      radial-gradient(3px 3px at 32% 88%, rgba(34, 197, 94, 0.45), transparent),
-      radial-gradient(2px 2px at 42% 65%, rgba(99, 102, 241, 0.35), transparent),
-      radial-gradient(2px 2px at 52% 78%, rgba(168, 85, 247, 0.4), transparent),
-      radial-gradient(3px 3px at 62% 55%, rgba(59, 130, 246, 0.3), transparent),
-      radial-gradient(2px 2px at 72% 82%, rgba(34, 197, 94, 0.4), transparent),
-      radial-gradient(2px 2px at 82% 68%, rgba(99, 102, 241, 0.35), transparent),
-      radial-gradient(3px 3px at 92% 45%, rgba(168, 85, 247, 0.4), transparent);
-    background-size: 500px 400px;
-    animation: splash-particles-float 30s linear infinite;
-  }
-
-  .lp-splash-bg-particles-secondary {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.4;
-    z-index: 2;
-    background-image:
-      radial-gradient(1px 1px at 15% 20%, rgba(255, 255, 255, 0.3), transparent),
-      radial-gradient(1px 1px at 35% 40%, rgba(255, 255, 255, 0.25), transparent),
-      radial-gradient(2px 2px at 55% 15%, rgba(255, 255, 255, 0.35), transparent),
-      radial-gradient(1px 1px at 75% 50%, rgba(255, 255, 255, 0.3), transparent),
-      radial-gradient(1px 1px at 25% 75%, rgba(255, 255, 255, 0.25), transparent),
-      radial-gradient(2px 2px at 65% 85%, rgba(255, 255, 255, 0.3), transparent);
-    background-size: 600px 500px;
-    animation: splash-particles-float-reverse 35s linear infinite;
+      radial-gradient(2px 2px at 15% 20%, rgba(99, 102, 241, 0.4), transparent),
+      radial-gradient(2px 2px at 35% 40%, rgba(168, 85, 247, 0.3), transparent),
+      radial-gradient(2px 2px at 55% 15%, rgba(59, 130, 246, 0.35), transparent),
+      radial-gradient(2px 2px at 75% 50%, rgba(34, 197, 94, 0.3), transparent),
+      radial-gradient(2px 2px at 25% 70%, rgba(99, 102, 241, 0.25), transparent),
+      radial-gradient(2px 2px at 65% 80%, rgba(168, 85, 247, 0.3), transparent),
+      radial-gradient(2px 2px at 85% 30%, rgba(59, 130, 246, 0.25), transparent),
+      radial-gradient(2px 2px at 45% 90%, rgba(34, 197, 94, 0.3), transparent);
+    background-size: 400px 300px;
+    animation: splash-particles-float 25s linear infinite;
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   @keyframes splash-particles-float {
-    0% { transform: translateY(0) translateX(0); }
-    100% { transform: translateY(-250px) translateX(20px); }
+    0% { transform: translateY(0) translateZ(0); }
+    100% { transform: translateY(-200px) translateZ(0); }
   }
 
-  @keyframes splash-particles-float-reverse {
-    0% { transform: translateY(0) translateX(0); }
-    100% { transform: translateY(200px) translateX(-15px); }
-  }
-
-  /* Orb flotante mejorado */
-  .lp-splash-bg-orb {
-    position: absolute;
-    width: 700px;
-    height: 700px;
-    bottom: -8%;
-    right: -18%;
-    background: radial-gradient(circle,
-      rgba(168, 85, 247, 0.4) 0%,
-      rgba(99, 102, 241, 0.3) 30%,
-      rgba(59, 130, 246, 0.2) 50%,
-      transparent 65%);
-    border-radius: 50%;
-    filter: blur(70px);
-    animation: splash-orb-float 20s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .lp-splash-bg-orb-secondary {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    top: 60%;
-    left: -10%;
-    background: radial-gradient(circle,
-      rgba(34, 197, 94, 0.3) 0%,
-      rgba(59, 130, 246, 0.2) 35%,
-      transparent 60%);
-    border-radius: 50%;
-    filter: blur(60px);
-    animation: splash-orb-float-secondary 15s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  @keyframes splash-orb-float {
-    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    33% { transform: translate(-40px, -50px) scale(1.1) rotate(120deg); }
-    66% { transform: translate(30px, -60px) scale(0.95) rotate(240deg); }
-  }
-
-  @keyframes splash-orb-float-secondary {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(60px, -50px) scale(1.15); }
-  }
-
-  /* Mesh pattern para más profundidad */
-  .lp-splash-bg-mesh {
-    position: absolute;
-    inset: 0;
-    opacity: 0.03;
-    background-image: 
-      linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
-    background-size: 50px 50px;
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  /* === CONTENIDO PRINCIPAL - MEJORADO === */
+  /* === CONTENIDO PRINCIPAL === */
   .lp-splash-wrapper {
     position: relative;
     z-index: 10;
@@ -653,20 +398,20 @@ const splashStyles = `
     max-width: 100%;
     margin: 0 auto;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px) translateZ(0);
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .lp-splash-content.content-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 
-  /* Logo Container Premium Mejorado */
+  /* Logo Container Optimizado */
   .lp-splash-logo-container {
     position: relative;
-    width: 160px;
-    height: 160px;
+    width: 150px;
+    height: 150px;
     margin-bottom: 40px;
     display: flex;
     align-items: center;
@@ -675,117 +420,74 @@ const splashStyles = `
     margin-right: auto;
   }
 
-  /* Orb de fondo animado mejorado */
+  /* Orb de fondo optimizado */
   .lp-splash-logo-orb {
     position: absolute;
-    inset: -50px;
+    inset: -40px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(99, 102, 241, 0.3),
-      rgba(168, 85, 247, 0.3),
-      rgba(34, 197, 94, 0.3),
-      rgba(59, 130, 246, 0.3),
-      rgba(99, 102, 241, 0.3)
-    );
-    animation: splash-orb-rotate 5s linear infinite;
-    filter: blur(25px);
-    will-change: transform;
-  }
-
-  .lp-splash-logo-orb-secondary {
-    position: absolute;
-    inset: -35px;
-    border-radius: 50%;
-    background: conic-gradient(
-      from 180deg,
-      rgba(168, 85, 247, 0.25),
       rgba(99, 102, 241, 0.25),
-      rgba(59, 130, 246, 0.25),
+      rgba(168, 85, 247, 0.25),
       rgba(34, 197, 94, 0.25),
-      rgba(168, 85, 247, 0.25)
+      rgba(99, 102, 241, 0.25)
     );
-    animation: splash-orb-rotate-reverse 6s linear infinite;
+    animation: splash-orb-rotate 6s linear infinite;
     filter: blur(20px);
+    transform: translateZ(0);
     will-change: transform;
   }
 
   @keyframes splash-orb-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from { transform: rotate(0deg) translateZ(0); }
+    to { transform: rotate(360deg) translateZ(0); }
   }
 
-  @keyframes splash-orb-rotate-reverse {
-    from { transform: rotate(360deg); }
-    to { transform: rotate(0deg); }
-  }
-
-  /* Glow pulsante mejorado */
+  /* Glow pulsante optimizado */
   .lp-splash-logo-glow {
-    position: absolute;
-    inset: -32px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, transparent 70%);
-    animation: splash-glow-pulse-logo 3s ease-in-out infinite;
-    will-change: transform, opacity;
-    filter: blur(20px);
-  }
-
-  .lp-splash-logo-glow-secondary {
     position: absolute;
     inset: -25px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, transparent 65%);
-    animation: splash-glow-pulse-logo-secondary 3.5s ease-in-out infinite;
-    will-change: transform, opacity;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%);
+    animation: splash-glow-pulse-logo 3.5s ease-in-out infinite;
     filter: blur(16px);
+    transform: translateZ(0);
+    will-change: transform, opacity;
   }
 
   @keyframes splash-glow-pulse-logo {
     0%, 100% {
-      transform: scale(1);
-      opacity: 0.6;
-    }
-    50% {
-      transform: scale(1.4);
-      opacity: 1;
-    }
-  }
-
-  @keyframes splash-glow-pulse-logo-secondary {
-    0%, 100% {
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
       opacity: 0.5;
     }
     50% {
-      transform: scale(1.3);
-      opacity: 0.9;
+      transform: scale(1.3) translateZ(0);
+      opacity: 0.8;
     }
   }
 
   .lp-splash-logo {
     position: relative;
-    width: 140px;
-    height: 140px;
-    border-radius: 32px;
+    width: 130px;
+    height: 130px;
+    border-radius: 28px;
     overflow: hidden;
     box-shadow:
-      0 0 100px rgba(99, 102, 241, 0.8),
-      0 0 60px rgba(168, 85, 247, 0.6),
-      0 0 30px rgba(59, 130, 246, 0.4),
-      inset 0 0 60px rgba(99, 102, 241, 0.3);
+      0 0 80px rgba(99, 102, 241, 0.6),
+      0 0 40px rgba(168, 85, 247, 0.4),
+      inset 0 0 40px rgba(99, 102, 241, 0.2);
     animation: splash-logo-float 5s ease-in-out infinite;
-    will-change: transform;
     margin: 0 auto;
     transform: translateZ(0);
+    will-change: transform;
   }
 
   @keyframes splash-logo-float {
     0%, 100% { 
-      transform: translateY(0) scale(1) rotate(0deg); 
+      transform: translateY(0) translateZ(0); 
     }
     50% { 
-      transform: translateY(-15px) scale(1.05) rotate(2deg); 
+      transform: translateY(-10px) translateZ(0); 
     }
   }
 
@@ -794,7 +496,6 @@ const splashStyles = `
     height: 100%;
     object-fit: cover;
     display: block;
-    filter: brightness(1.05) contrast(1.05);
   }
 
   .lp-splash-logo-shine {
@@ -803,41 +504,20 @@ const splashStyles = `
     background: linear-gradient(
       135deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.3) 50%,
       transparent 100%
     );
-    animation: splash-logo-shine 4.5s ease-in-out infinite;
-    will-change: transform;
-  }
-
-  .lp-splash-logo-shine-secondary {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      45deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.2) 50%,
-      transparent 100%
-    );
-    animation: splash-logo-shine-secondary 5.5s ease-in-out infinite;
+    animation: splash-logo-shine 5s ease-in-out infinite;
+    transform: translateZ(0);
     will-change: transform;
   }
 
   @keyframes splash-logo-shine {
     0% { 
-      transform: translateX(-100%) translateY(-100%) rotate(45deg); 
+      transform: translateX(-100%) translateY(-100%) rotate(45deg) translateZ(0); 
     }
     100% { 
-      transform: translateX(200%) translateY(200%) rotate(45deg); 
-    }
-  }
-
-  @keyframes splash-logo-shine-secondary {
-    0% { 
-      transform: translateX(200%) translateY(200%) rotate(-45deg); 
-    }
-    100% { 
-      transform: translateX(-100%) translateY(-100%) rotate(-45deg); 
+      transform: translateX(200%) translateY(200%) rotate(45deg) translateZ(0); 
     }
   }
 
@@ -850,38 +530,34 @@ const splashStyles = `
   }
 
   .lp-splash-title {
-    font-size: 56px;
+    font-size: 54px;
     font-weight: 900;
-    letter-spacing: -0.06em;
-    margin: 0 0 14px 0;
+    letter-spacing: -0.05em;
+    margin: 0 0 16px 0;
     position: relative;
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
-    text-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
   }
 
   .lp-splash-title-text {
     background: linear-gradient(
       135deg,
       #ffffff 0%,
-      #a5b4fc 15%,
-      #c084fc 30%,
-      #4ade80 50%,
-      #60a5fa 70%,
-      #a5b4fc 85%,
+      #a5b4fc 20%,
+      #c084fc 40%,
+      #4ade80 60%,
+      #60a5fa 80%,
       #ffffff 100%
     );
-    background-size: 500% 500%;
+    background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: splash-title-gradient 6s ease infinite;
-    will-change: background-position;
+    animation: splash-title-gradient 5s ease infinite;
     display: inline-block;
     position: relative;
     z-index: 1;
-    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.4));
   }
 
   @keyframes splash-title-gradient {
@@ -891,56 +567,37 @@ const splashStyles = `
 
   .lp-splash-title-glow {
     position: absolute;
-    inset: -15px;
+    inset: -12px;
     background: linear-gradient(
       135deg,
-      rgba(99, 102, 241, 0.4),
-      rgba(168, 85, 247, 0.4),
-      rgba(34, 197, 94, 0.4),
-      rgba(59, 130, 246, 0.4)
+      rgba(99, 102, 241, 0.3),
+      rgba(168, 85, 247, 0.3),
+      rgba(34, 197, 94, 0.3)
     );
-    filter: blur(30px);
+    filter: blur(20px);
     z-index: -1;
     animation: splash-title-glow 4s ease-in-out infinite;
-    opacity: 0.8;
-  }
-
-  .lp-splash-title-glow-secondary {
-    position: absolute;
-    inset: -20px;
-    background: radial-gradient(
-      ellipse 120% 100%,
-      rgba(99, 102, 241, 0.25),
-      transparent 70%
-    );
-    filter: blur(40px);
-    z-index: -2;
-    animation: splash-title-glow-secondary 5s ease-in-out infinite;
-    opacity: 0.6;
+    opacity: 0.7;
+    transform: translateZ(0);
+    will-change: transform, opacity;
   }
 
   @keyframes splash-title-glow {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.15); }
-  }
-
-  @keyframes splash-title-glow-secondary {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.2); }
+    0%, 100% { opacity: 0.5; transform: scale(1) translateZ(0); }
+    50% { opacity: 0.9; transform: scale(1.1) translateZ(0); }
   }
 
   .lp-splash-subtitle {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: #94a3b8;
     margin: 0;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    opacity: 0.95;
-    text-shadow: 0 0 15px rgba(148, 163, 184, 0.3);
+    opacity: 0.9;
   }
 
-  /* Barra de progreso Premium Mejorada */
+  /* Barra de progreso Optimizada */
   .lp-splash-progress-container {
     width: 320px;
     margin-bottom: 48px;
@@ -956,9 +613,7 @@ const splashStyles = `
     border-radius: 999px;
     overflow: hidden;
     position: relative;
-    box-shadow: 
-      inset 0 2px 8px rgba(0, 0, 0, 0.6),
-      0 0 20px rgba(99, 102, 241, 0.2);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
   }
 
   .lp-splash-progress-bar {
@@ -966,86 +621,62 @@ const splashStyles = `
     background: linear-gradient(
       90deg,
       #6366f1 0%,
-      #8b5cf6 15%,
-      #a855f7 30%,
-      #22c55e 50%,
-      #60a5fa 70%,
-      #a855f7 85%,
+      #8b5cf6 25%,
+      #a855f7 50%,
+      #22c55e 75%,
       #6366f1 100%
     );
-    background-size: 500% 100%;
+    background-size: 300% 100%;
     border-radius: 999px;
     position: relative;
-    transition: width 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-    animation: splash-progress-gradient 4s linear infinite;
-    will-change: width, transform;
+    transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: splash-progress-gradient 3s linear infinite;
     box-shadow:
-      0 0 30px rgba(99, 102, 241, 0.8),
-      0 0 60px rgba(168, 85, 247, 0.6),
-      inset 0 0 10px rgba(255, 255, 255, 0.2);
+      0 0 20px rgba(99, 102, 241, 0.6),
+      0 0 40px rgba(168, 85, 247, 0.4);
     transform: translateZ(0);
-  }
-
-  .lp-splash-progress-glow {
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent
-    );
-    border-radius: 999px;
-    animation: splash-progress-glow 2s ease-in-out infinite;
-    pointer-events: none;
+    will-change: width;
   }
 
   @keyframes splash-progress-gradient {
     0% { background-position: 0% 0%; }
-    100% { background-position: 500% 0%; }
-  }
-
-  @keyframes splash-progress-glow {
-    0%, 100% { opacity: 0; transform: translateX(-50%); }
-    50% { opacity: 1; transform: translateX(50%); }
+    100% { background-position: 300% 0%; }
   }
 
   .lp-splash-progress-shine {
     position: absolute;
-    top: -4px;
+    top: -3px;
     left: 0;
     right: 0;
-    height: 16px;
+    height: 14px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.6) 0%,
-      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.5) 0%,
       transparent 100%
     );
     border-radius: 999px;
     animation: splash-progress-shine 2.5s ease-in-out infinite;
+    transform: translateZ(0);
     will-change: transform;
   }
 
   @keyframes splash-progress-shine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% { transform: translateX(-100%) translateZ(0); }
+    100% { transform: translateX(100%) translateZ(0); }
   }
 
   .lp-splash-progress-percent {
     position: absolute;
-    top: -32px;
+    top: -30px;
     right: 0;
     font-size: 14px;
     font-weight: 700;
     color: #a5b4fc;
-    letter-spacing: 0.14em;
-    text-shadow: 
-      0 0 20px rgba(165, 180, 252, 0.8),
-      0 0 40px rgba(99, 102, 241, 0.5);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 15px rgba(165, 180, 252, 0.7);
   }
 
-  /* Tip rotativo Premium Mejorado */
+  /* Tip Container Premium */
   .lp-splash-tip-container {
     width: 100%;
     max-width: 400px;
@@ -1063,49 +694,49 @@ const splashStyles = `
     gap: 18px;
     padding: 22px 36px;
     background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 24px;
     box-shadow:
-      0 12px 50px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      0 0 30px rgba(99, 102, 241, 0.2);
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 0 20px rgba(99, 102, 241, 0.15);
     animation: splash-tip-fade 1.2s ease-in-out;
-    will-change: opacity, transform;
     transform: translateZ(0);
   }
 
   @keyframes splash-tip-fade {
     0% {
       opacity: 0;
-      transform: translateY(20px) scale(0.92);
+      transform: translateY(15px) scale(0.95) translateZ(0);
     }
     20% {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0) scale(1) translateZ(0);
     }
     80% {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0) scale(1) translateZ(0);
     }
     100% {
-      opacity: 0.8;
-      transform: translateY(-12px) scale(0.98);
+      opacity: 0.85;
+      transform: translateY(-8px) scale(0.98) translateZ(0);
     }
   }
 
   .lp-splash-tip-icon {
     font-size: 32px;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.7));
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6));
     animation: splash-tip-icon-bounce 3s ease-in-out infinite;
+    transform: translateZ(0);
     will-change: transform;
   }
 
   @keyframes splash-tip-icon-bounce {
-    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
-    50% { transform: translateY(-6px) scale(1.15) rotate(5deg); }
+    0%, 100% { transform: translateY(0) translateZ(0); }
+    50% { transform: translateY(-5px) translateZ(0); }
   }
 
   .lp-splash-tip-text {
@@ -1114,10 +745,9 @@ const splashStyles = `
     line-height: 1.7;
     text-align: left;
     font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 
-  /* Footer Premium Mejorado */
+  /* Footer */
   .lp-splash-footer {
     position: absolute;
     bottom: 56px;
@@ -1142,56 +772,31 @@ const splashStyles = `
     height: 8px;
     border-radius: 50%;
     background: #6366f1;
-    box-shadow: 
-      0 0 20px rgba(99, 102, 241, 1),
-      0 0 40px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.9);
     animation: splash-footer-dot-pulse 1.8s ease-in-out infinite;
-    will-change: transform, opacity;
-  }
-
-  .lp-splash-footer-dot-secondary {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(99, 102, 241, 0.4);
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.8);
-    animation: splash-footer-dot-pulse-secondary 2.2s ease-in-out infinite;
+    transform: translateZ(0);
     will-change: transform, opacity;
   }
 
   @keyframes splash-footer-dot-pulse {
     0%, 100% {
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
       opacity: 1;
     }
     50% {
-      transform: scale(1.6);
+      transform: scale(1.5) translateZ(0);
       opacity: 0.8;
     }
   }
 
-  @keyframes splash-footer-dot-pulse-secondary {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 0.4;
-    }
-    50% {
-      transform: scale(1.8);
-      opacity: 0.7;
-    }
-  }
-
   /* ============================================
-     OPTIMIZACIONES MÓVIL - MOBILE FIRST CRÍTICO
+     OPTIMIZACIONES MÓVIL
      ============================================ */
   @media (max-width: 768px) {
     .lp-splash {
       height: 100vh !important;
       height: calc(var(--vh, 1vh) * 100) !important;
       height: 100dvh !important;
-      transform: none !important;
-      transform-origin: center center !important;
       visibility: visible !important;
       opacity: 1 !important;
       display: flex !important;
@@ -1204,157 +809,65 @@ const splashStyles = `
       bottom: 0 !important;
     }
 
-    .lp-splash-wrapper {
-      width: 100% !important;
-      height: 100% !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-    }
-
     .lp-splash-content {
       padding: 0 20px;
       width: 100%;
       max-width: 100%;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
     }
 
     .lp-splash-logo-container {
       width: 140px;
       height: 140px;
       margin-bottom: 36px;
-      display: flex !important;
     }
 
     .lp-splash-logo {
       width: 120px;
       height: 120px;
-      border-radius: 28px;
-      display: block !important;
-    }
-
-    .lp-splash-logo-img {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-
-    .lp-splash-logo-orb {
-      inset: -40px;
-      filter: blur(20px);
-      display: block !important;
-    }
-
-    .lp-splash-logo-glow {
-      inset: -28px;
-      filter: blur(16px);
-      display: block !important;
+      border-radius: 26px;
     }
 
     .lp-splash-title {
       font-size: 48px;
-      display: block !important;
-      visibility: visible !important;
-    }
-
-    .lp-splash-title-text {
-      display: inline-block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
     }
 
     .lp-splash-subtitle {
       font-size: 14px;
-      display: block !important;
-      visibility: visible !important;
     }
 
     .lp-splash-progress-container {
       width: 280px;
       margin-bottom: 40px;
-      display: block !important;
-      visibility: visible !important;
-    }
-
-    .lp-splash-progress-track {
-      height: 7px;
-      display: block !important;
-    }
-
-    .lp-splash-progress-bar {
-      display: block !important;
-      visibility: visible !important;
     }
 
     .lp-splash-tip {
       padding: 20px 28px;
       max-width: 360px;
       gap: 16px;
-      display: flex !important;
-      visibility: visible !important;
     }
 
     .lp-splash-tip-icon {
       font-size: 28px;
-      display: inline-block !important;
     }
 
     .lp-splash-tip-text {
       font-size: 14px;
-      line-height: 1.65;
-      display: inline-block !important;
     }
 
     .lp-splash-footer {
       bottom: 48px;
       font-size: 13px;
-      display: flex !important;
-      visibility: visible !important;
-    }
-
-    /* Optimizaciones de fondo en móvil */
-    .lp-splash-bg {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-
-    .lp-splash-bg-base {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-
-    .lp-splash-bg-gradient {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
     }
 
     .lp-splash-bg-glow {
-      width: 900px;
-      height: 900px;
-      filter: blur(90px);
-      display: block !important;
-      visibility: visible !important;
-    }
-
-    .lp-splash-bg-orb {
-      width: 450px;
-      height: 450px;
-      filter: blur(55px);
-      display: block !important;
-      visibility: visible !important;
+      width: 700px;
+      height: 700px;
+      filter: blur(60px);
     }
 
     .lp-splash-bg-particles {
-      background-size: 400px 300px;
-      opacity: 0.6;
-      display: block !important;
-      visibility: visible !important;
+      background-size: 350px 250px;
+      opacity: 0.4;
     }
   }
 
@@ -1362,23 +875,15 @@ const splashStyles = `
   @media (prefers-reduced-motion: reduce) {
     .lp-splash-bg-gradient,
     .lp-splash-bg-glow,
-    .lp-splash-bg-glow-secondary,
     .lp-splash-bg-particles,
-    .lp-splash-bg-particles-secondary,
-    .lp-splash-bg-orb,
-    .lp-splash-bg-orb-secondary,
     .lp-splash-logo-orb,
-    .lp-splash-logo-orb-secondary,
     .lp-splash-logo-glow,
-    .lp-splash-logo-glow-secondary,
     .lp-splash-logo,
     .lp-splash-title-text,
     .lp-splash-title-glow,
-    .lp-splash-title-glow-secondary,
     .lp-splash-progress-bar,
     .lp-splash-tip-icon,
-    .lp-splash-footer-dot,
-    .lp-splash-footer-dot-secondary {
+    .lp-splash-footer-dot {
       animation: none;
     }
   }
