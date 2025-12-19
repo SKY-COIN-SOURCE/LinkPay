@@ -82,7 +82,7 @@ export function AppLayout() {
     <>
       {/* SPLASH SCREEN - Solo en primera carga de sesión */}
       {showSplash && (
-        <SplashScreen onComplete={handleSplashComplete} minDuration={1500} />
+        <SplashScreen onComplete={handleSplashComplete} minDuration={2800} />
       )}
 
       <div 
