@@ -1,4 +1,4 @@
-import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P as X}from"./index-D2oCnK59.js";import{P as me}from"./PremiumLoader-DZUEAl-M.js";/* empty css                          *//**
+import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P as X}from"./index-TEkfXJfM.js";import{P as me}from"./PremiumLoader-C2Zd8D87.js";/* empty css                          *//**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
@@ -580,7 +580,7 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     align-items: center;
     gap: 6px;
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 48px;
   }
 
   .rev-balance-label {

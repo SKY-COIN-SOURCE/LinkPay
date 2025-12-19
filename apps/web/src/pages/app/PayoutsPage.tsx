@@ -1118,7 +1118,7 @@ const revStyles = `
     align-items: center;
     gap: 6px;
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 48px;
   }
 
   .rev-balance-label {
