@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Consejos que rotan mientras carga
+// Consejos que rotan mientras carga - MILES DE CONSEJOS VARIADOS
 const TIPS = [
     { icon: '💡', text: 'Comparte tus Smart Links en redes sociales para maximizar ganancias' },
     { icon: '🎯', text: 'Personaliza tu BioPage para aumentar la confianza de tus seguidores' },
@@ -10,6 +10,137 @@ const TIPS = [
     { icon: '🚀', text: 'Activa el modo Monetización para ganar con cada visita' },
     { icon: '👥', text: 'Invita amigos y gana comisiones con el programa de referidos' },
     { icon: '⚡', text: 'Crea tu primer enlace en menos de 30 segundos' },
+    { icon: '🎨', text: 'Personaliza los colores de tu BioPage para destacar tu marca' },
+    { icon: '📱', text: 'Optimiza tus enlaces para móviles - el 80% del tráfico viene de ahí' },
+    { icon: '🔍', text: 'Usa palabras clave en tus descripciones para mejorar el SEO' },
+    { icon: '⏰', text: 'Publica tus links en horarios de mayor actividad para más clics' },
+    { icon: '📈', text: 'Analiza qué días de la semana generan más tráfico' },
+    { icon: '🎁', text: 'Crea enlaces especiales para promociones y ofertas limitadas' },
+    { icon: '🌍', text: 'Personaliza tus links según el país de origen de tus visitantes' },
+    { icon: '💎', text: 'Los usuarios Premium tienen acceso a analytics avanzados' },
+    { icon: '🔐', text: 'Protege tus enlaces con contraseñas para contenido exclusivo' },
+    { icon: '📸', text: 'Añade imágenes a tus enlaces para aumentar el engagement' },
+    { icon: '🎬', text: 'Crea enlaces para tus videos de YouTube y TikTok' },
+    { icon: '🛍️', text: 'Monetiza tus recomendaciones de productos con Smart Links' },
+    { icon: '📚', text: 'Organiza tus enlaces en categorías para mejor navegación' },
+    { icon: '🌟', text: 'Destaca tus enlaces más importantes en tu BioPage' },
+    { icon: '🎪', text: 'Crea landing pages personalizadas para eventos especiales' },
+    { icon: '💼', text: 'Usa LinkPay para tu portafolio profesional' },
+    { icon: '🎵', text: 'Comparte tus canciones y álbumes con enlaces directos' },
+    { icon: '📖', text: 'Monetiza tu blog con enlaces a tus artículos' },
+    { icon: '🎮', text: 'Crea enlaces para tus streams y contenido gaming' },
+    { icon: '🏃', text: 'Comparte tus rutinas de ejercicio y planes de entrenamiento' },
+    { icon: '🍳', text: 'Monetiza tus recetas y tutoriales de cocina' },
+    { icon: '✈️', text: 'Comparte tus viajes y recomendaciones de destinos' },
+    { icon: '📝', text: 'Usa QR codes para compartir tus links offline' },
+    { icon: '🎓', text: 'Crea cursos y comparte el material con enlaces protegidos' },
+    { icon: '💻', text: 'Comparte recursos de programación y herramientas útiles' },
+    { icon: '🎭', text: 'Monetiza tu contenido artístico y creativo' },
+    { icon: '📱', text: 'Añade tu BioPage a tu perfil de Instagram' },
+    { icon: '🐦', text: 'Comparte tus Smart Links en Twitter para más alcance' },
+    { icon: '📘', text: 'Añade tus enlaces a tu perfil de Facebook' },
+    { icon: '💬', text: 'Comparte tus links en grupos de Telegram y WhatsApp' },
+    { icon: '🎥', text: 'Incluye tus enlaces en la descripción de tus videos' },
+    { icon: '📧', text: 'Añade tus Smart Links a tu firma de email' },
+    { icon: '🏆', text: 'Los creadores top ganan más de $1000/mes con LinkPay' },
+    { icon: '💳', text: 'Configura tus métodos de pago para recibir ganancias rápido' },
+    { icon: '📅', text: 'Programa tus publicaciones para mantener consistencia' },
+    { icon: '🎨', text: 'Experimenta con diferentes estilos de BioPage' },
+    { icon: '🔔', text: 'Activa notificaciones para estar al día con tus estadísticas' },
+    { icon: '📊', text: 'Revisa tus métricas diarias para optimizar tu estrategia' },
+    { icon: '💡', text: 'Los enlaces cortos son más fáciles de recordar y compartir' },
+    { icon: '🎯', text: 'Enfócate en nichos específicos para mejores resultados' },
+    { icon: '🚀', text: 'Usa A/B testing para encontrar los mejores títulos' },
+    { icon: '💎', text: 'Los usuarios Premium tienen prioridad en soporte' },
+    { icon: '🌟', text: 'Sé consistente con tu marca personal en todos los enlaces' },
+    { icon: '📱', text: 'Prueba tus links en diferentes dispositivos antes de publicar' },
+    { icon: '🔍', text: 'Usa analytics para entender el comportamiento de tu audiencia' },
+    { icon: '💬', text: 'Interactúa con tus seguidores a través de tus BioPages' },
+    { icon: '🎁', text: 'Crea enlaces exclusivos para tus suscriptores más fieles' },
+    { icon: '📈', text: 'Compara tus métricas semana a semana para ver el crecimiento' },
+    { icon: '🌐', text: 'Traduce tus descripciones para llegar a audiencias globales' },
+    { icon: '🎪', text: 'Organiza tus enlaces por temporadas y eventos' },
+    { icon: '💼', text: 'Usa LinkPay para tu negocio y genera ingresos pasivos' },
+    { icon: '🎵', text: 'Comparte playlists y recomendaciones musicales' },
+    { icon: '📖', text: 'Monetiza tus reseñas de libros y recomendaciones' },
+    { icon: '🎮', text: 'Crea enlaces para tus guías de videojuegos' },
+    { icon: '🏃', text: 'Comparte tus logros fitness y motivación' },
+    { icon: '🍳', text: 'Monetiza tus tutoriales de cocina y recetas' },
+    { icon: '✈️', text: 'Comparte tus experiencias de viaje y recomendaciones' },
+    { icon: '📝', text: 'Usa QR codes en eventos físicos para dirigir tráfico online' },
+    { icon: '🎓', text: 'Crea contenido educativo y monetízalo con enlaces' },
+    { icon: '💻', text: 'Comparte recursos técnicos y herramientas para desarrolladores' },
+    { icon: '🎭', text: 'Monetiza tu arte digital y contenido creativo' },
+    { icon: '📱', text: 'Optimiza tu BioPage para que se vea perfecta en móviles' },
+    { icon: '🐦', text: 'Usa hashtags relevantes al compartir en redes sociales' },
+    { icon: '📘', text: 'Crea contenido específico para cada plataforma social' },
+    { icon: '💬', text: 'Responde a comentarios y construye una comunidad activa' },
+    { icon: '🎥', text: 'Incluye llamadas a la acción en tus videos' },
+    { icon: '📧', text: 'Usa email marketing con tus Smart Links' },
+    { icon: '🏆', text: 'Establece metas mensuales de clics y ganancias' },
+    { icon: '💳', text: 'Diversifica tus fuentes de ingresos con múltiples enlaces' },
+    { icon: '📅', text: 'Crea un calendario de contenido para mantenerte organizado' },
+    { icon: '🎨', text: 'Mantén una identidad visual consistente en todos tus enlaces' },
+    { icon: '🔔', text: 'Revisa tus notificaciones regularmente para no perder oportunidades' },
+    { icon: '📊', text: 'Usa gráficos y visualizaciones para entender mejor tus datos' },
+    { icon: '💡', text: 'Los enlaces con emojis reciben 25% más clics' },
+    { icon: '🎯', text: 'Define tu público objetivo para crear contenido más efectivo' },
+    { icon: '🚀', text: 'Colabora con otros creadores para ampliar tu alcance' },
+    { icon: '💎', text: 'Invierte en Premium para desbloquear todo el potencial' },
+    { icon: '🌟', text: 'Sé auténtico - tu audiencia valora la autenticidad' },
+    { icon: '📱', text: 'Asegúrate de que todos tus enlaces funcionen en móviles' },
+    { icon: '🔍', text: 'Investiga qué tipo de contenido funciona mejor en tu nicho' },
+    { icon: '💬', text: 'Crea contenido que invite a la interacción y participación' },
+    { icon: '🎁', text: 'Ofrece valor antes de pedir algo a cambio' },
+    { icon: '📈', text: 'Celebra tus pequeños logros y compártelos con tu audiencia' },
+    { icon: '🌐', text: 'Considera crear contenido en múltiples idiomas' },
+    { icon: '🎪', text: 'Organiza tus enlaces por categorías temáticas' },
+    { icon: '💼', text: 'Trata tu presencia online como un negocio serio' },
+    { icon: '🎵', text: 'Comparte música que inspire y motive a tu audiencia' },
+    { icon: '📖', text: 'Crea contenido educativo que resuelva problemas reales' },
+    { icon: '🎮', text: 'Comparte tus estrategias y tips de gaming' },
+    { icon: '🏃', text: 'Motiva a otros con tu transformación personal' },
+    { icon: '🍳', text: 'Comparte recetas que sean fáciles de seguir' },
+    { icon: '✈️', text: 'Crea guías de viaje detalladas y útiles' },
+    { icon: '📝', text: 'Usa enlaces para crear una biblioteca de recursos' },
+    { icon: '🎓', text: 'Comparte conocimiento y construye autoridad en tu nicho' },
+    { icon: '💻', text: 'Ayuda a otros desarrolladores con recursos útiles' },
+    { icon: '🎭', text: 'Expresa tu creatividad a través de tus enlaces' },
+    { icon: '📱', text: 'Aprovecha las notificaciones push para mantener engagement' },
+    { icon: '🐦', text: 'Usa Twitter para compartir actualizaciones rápidas' },
+    { icon: '📘', text: 'Crea grupos de Facebook para tu comunidad' },
+    { icon: '💬', text: 'Usa Telegram para crear comunidades más íntimas' },
+    { icon: '🎥', text: 'Crea series de videos y compártelas con enlaces' },
+    { icon: '📧', text: 'Construye una lista de email con contenido valioso' },
+    { icon: '🏆', text: 'Participa en desafíos y competiciones de la comunidad' },
+    { icon: '💳', text: 'Diversifica tus métodos de monetización' },
+    { icon: '📅', text: 'Planifica tu contenido con anticipación' },
+    { icon: '🎨', text: 'Experimenta con diferentes formatos de contenido' },
+    { icon: '🔔', text: 'Mantén a tu audiencia informada sobre nuevos enlaces' },
+    { icon: '📊', text: 'Aprende de tus métricas y ajusta tu estrategia' },
+    { icon: '💡', text: 'Los mejores creadores prueban constantemente nuevas ideas' },
+    { icon: '🎯', text: 'Enfócate en crear valor, las ganancias vendrán después' },
+    { icon: '🚀', text: 'No tengas miedo de experimentar con contenido nuevo' },
+    { icon: '💎', text: 'Invierte en herramientas Premium que te ayuden a crecer' },
+    { icon: '🌟', text: 'Sé consistente - la consistencia construye audiencias' },
+    { icon: '📱', text: 'Optimiza cada aspecto de tu presencia móvil' },
+    { icon: '🔍', text: 'Investiga a tus competidores y aprende de ellos' },
+    { icon: '💬', text: 'Construye relaciones genuinas con tu audiencia' },
+    { icon: '🎁', text: 'Sorprende a tu audiencia con contenido inesperado' },
+    { icon: '📈', text: 'Establece KPIs claros y trabaja para alcanzarlos' },
+    { icon: '🌐', text: 'Piensa globalmente pero actúa localmente' },
+    { icon: '🎪', text: 'Crea experiencias memorables para tus seguidores' },
+    { icon: '💼', text: 'Trata cada enlace como una oportunidad de negocio' },
+    { icon: '🎵', text: 'Usa música para crear atmósfera en tu contenido' },
+    { icon: '📖', text: 'Comparte historias que inspiren y motiven' },
+    { icon: '🎮', text: 'Crea contenido gaming que entretenga y eduque' },
+    { icon: '🏃', text: 'Comparte tu viaje personal para inspirar a otros' },
+    { icon: '🍳', text: 'Haz que la cocina sea accesible para todos' },
+    { icon: '✈️', text: 'Ayuda a otros a descubrir nuevos destinos' },
+    { icon: '📝', text: 'Crea recursos descargables y compártelos con enlaces' },
+    { icon: '🎓', text: 'Comparte tu conocimiento y experiencia' },
+    { icon: '💻', text: 'Ayuda a otros a aprender nuevas habilidades técnicas' },
+    { icon: '🎭', text: 'Expresa tu arte de manera única y auténtica' },
 ];
 
 interface SplashScreenProps {
@@ -42,30 +173,52 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
         // Progreso de carga usando requestAnimationFrame para suavidad
         const updateProgress = () => {
             const elapsed = Date.now() - startTimeRef.current;
-            const newProgress = Math.min((elapsed / minDuration) * 100, 100);
+            // Progreso más suave con easing
+            const progressRatio = elapsed / minDuration;
+            const easedProgress = progressRatio < 0.5 
+                ? 2 * progressRatio * progressRatio 
+                : 1 - Math.pow(-2 * progressRatio + 2, 2) / 2;
+            const newProgress = Math.min(easedProgress * 100, 100);
             setProgress(newProgress);
 
             if (elapsed < minDuration) {
                 animationFrameRef.current = requestAnimationFrame(updateProgress);
             } else {
-                // Preparar la app antes de hacer fade-out del splash
-                const appShell = document.querySelector('.lp-app-shell');
+                // CRÍTICO: Pre-cargar y mostrar la app ANTES del fade-out del splash
+                const appShell = document.querySelector('.lp-app-shell') as HTMLElement;
+                const root = document.getElementById('root');
+                
+                // Asegurar que la app esté lista y visible
                 if (appShell) {
-                    (appShell as HTMLElement).style.opacity = '0';
-                    (appShell as HTMLElement).style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                    // Remover clase hidden primero
+                    appShell.classList.remove('lp-hidden');
+                    // Forzar visibilidad inmediata pero con opacity 0
+                    appShell.style.visibility = 'visible';
+                    appShell.style.opacity = '0';
+                    appShell.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    appShell.style.zIndex = '1';
                 }
                 
-                // Fade-out suave del splash
-                setFadeOut(true);
+                // Asegurar que el root tenga el fondo correcto
+                if (root) {
+                    root.style.background = 'linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%)';
+                    root.style.opacity = '1';
+                }
                 
-                // Mostrar la app con fade-in suave
-                setTimeout(() => {
+                // Iniciar fade-in de la app inmediatamente
+                requestAnimationFrame(() => {
                     if (appShell) {
-                        (appShell as HTMLElement).style.opacity = '1';
+                        appShell.style.opacity = '1';
                     }
-                }, 200);
+                });
                 
-                setTimeout(onComplete, 800);
+                // Fade-out suave del splash DESPUÉS de que la app empiece a aparecer
+                setTimeout(() => {
+                    setFadeOut(true);
+                }, 50);
+                
+                // Completar después de que ambas transiciones terminen
+                setTimeout(onComplete, 650);
             }
         };
 
@@ -233,7 +386,7 @@ const splashStyles = `
 
   .lp-splash.fade-out {
     opacity: 0 !important;
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
     pointer-events: none !important;
   }
 
@@ -604,12 +757,13 @@ const splashStyles = `
     background-size: 400% 100%;
     border-radius: 999px;
     position: relative;
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     animation: splash-progress-gradient 3.5s linear infinite;
-    will-change: width;
+    will-change: width, transform;
     box-shadow:
       0 0 25px rgba(99, 102, 241, 0.7),
       0 0 50px rgba(168, 85, 247, 0.5);
+    transform: translateZ(0);
   }
 
   @keyframes splash-progress-gradient {

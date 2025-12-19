@@ -82,14 +82,15 @@ export function AppLayout() {
     <>
       {/* SPLASH SCREEN - Solo en primera carga de sesión */}
       {showSplash && (
-        <SplashScreen onComplete={handleSplashComplete} minDuration={2500} />
+        <SplashScreen onComplete={handleSplashComplete} minDuration={1500} />
       )}
 
       <div 
         className={`lp-app-shell ${showSplash ? 'lp-hidden' : ''}`}
         style={{
           opacity: showSplash ? 0 : 1,
-          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          visibility: showSplash ? 'hidden' : 'visible',
         }}
       >
         <style>{layoutStyles}</style>
@@ -285,19 +286,19 @@ const layoutStyles = `
         }
       }
 
-  /* Hide app shell during splash - completely invisible */
+  /* Hide app shell during splash - completamente invisible */
   .lp-app-shell.lp-hidden {
-    visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
     z-index: -1 !important;
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   /* Fade-in suave cuando aparece la app */
   .lp-app-shell:not(.lp-hidden) {
     opacity: 1 !important;
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    visibility: visible !important;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .lp-app-shell.lp-hidden .lp-mobile-nav,
