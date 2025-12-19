@@ -271,6 +271,52 @@ export function DashboardPage() {
 
           </motion.div>
 
+          {/* QUICK ACTIONS - Navigation shortcuts */}
+          <motion.div
+            className="lp-quick-actions"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+          >
+            <motion.button
+              className="lp-action-btn"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/app/links/create')}
+            >
+              <LinkIcon size={20} />
+              <span>Crear Link</span>
+            </motion.button>
+            <motion.button
+              className="lp-action-btn"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/app/analytics')}
+            >
+              <BarChart3 size={20} />
+              <span>Analytics</span>
+            </motion.button>
+            <motion.button
+              className="lp-action-btn"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/app/finance')}
+            >
+              <DollarSign size={20} />
+              <span>Finanzas</span>
+            </motion.button>
+            <motion.button
+              className="lp-action-btn"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/app/bio')}
+            >
+              <Share2 size={20} />
+              <span>Bio Page</span>
+            </motion.button>
+          </motion.div>
+
+
           {/* RECENT ACTIVITY - BLUE */}
           <motion.div
             className="lp-dashboard-card lp-recent-card lp-card-blue"

@@ -407,6 +407,75 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUICK ACTIONS - Navigation shortcuts
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lp-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lp-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lp-action-btn svg {
+  color: #6366f1;
+}
+
+.lp-action-btn span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.lp-action-btn:hover {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.lp-action-btn:hover svg {
+  color: #818cf8;
+}
+
+.lp-action-btn:hover span {
+  color: #e2e8f0;
+}
+
+/* Mobile: 2x2 grid */
+@media (max-width: 768px) {
+  .lp-quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .lp-action-btn {
+    padding: 14px 10px;
+  }
+
+  .lp-action-btn span {
+    font-size: 11px;
+  }
+}
+
 .lp-dashboard-card {
   position: relative;
   border-radius: 20px;
