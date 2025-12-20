@@ -886,16 +886,21 @@ export function DashboardPage() {
               {linksExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
 
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
               {linksExpanded && (
                 <motion.div
                   ref={linksDropdownRef}
                   id="links-dropdown"
                   className="lp-d2-links-list"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                  animate={{ height: 'auto', opacity: 1, marginTop: 0 }}
+                  exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    ease: [0.4, 0, 0.2, 1],
+                    height: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+                    opacity: { duration: 0.2 }
+                  }}
                   role="region"
                   aria-label="Lista de enlaces"
                 >

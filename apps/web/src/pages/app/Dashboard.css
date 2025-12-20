@@ -1012,7 +1012,7 @@
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -1060,12 +1060,17 @@
 }
 
 .lp-d2-links-list {
-  padding: 0 12px 12px;
-  overflow: hidden;
+  padding: 12px;
+  padding-top: 0;
+  overflow: visible;
   /* Ensure proper containment to prevent scroll bleed */
-  contain: layout style paint;
+  contain: layout style;
   /* Smooth height transitions */
   will-change: height;
+  /* Asegurar que el contenido no se corte */
+  min-height: 0;
+  /* Asegurar que el contenido sea visible */
+  display: block;
 }
 
 /* Container con scroll para los enlaces - FIXED */
@@ -1074,8 +1079,8 @@
   max-height: min(50vh, 600px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 4px;
-  margin-bottom: 8px;
+  padding: 4px 4px 8px 0;
+  margin: 0;
   /* Scroll suave y premium */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
@@ -1095,7 +1100,8 @@
 /* Adaptar cards de Analytics para Dashboard */
 .lp-d2-links-scroll .lpa-link-cards {
   gap: 10px;
-  padding: 4px 0;
+  padding: 0;
+  margin: 0;
 }
 
 .lp-d2-links-scroll .lpa-link-card {
@@ -1286,13 +1292,27 @@
 
 /* Botón Ver Más - Reutilizando estilo de Analytics */
 .lp-d2-links-list .lpa-links-expand-btn {
-  margin-top: 12px;
+  margin-top: 8px;
   margin-bottom: 8px;
+  width: calc(100% - 0px);
 }
 
 .lp-d2-links-list .lpa-links-expand-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Botón Ver Todos */
+.lp-d2-links-list .lp-d2-view-all {
+  margin-top: 8px;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+/* Mensaje fin de resultados */
+.lp-d2-links-list .lp-d2-end-message {
+  margin-top: 8px;
+  margin-bottom: 0;
 }
 
 /* End message */
