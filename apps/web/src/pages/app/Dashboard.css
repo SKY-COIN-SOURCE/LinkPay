@@ -1080,6 +1080,9 @@
   display: block;
   /* Asegurar que el fondo se extienda */
   background: inherit;
+  /* Asegurar que los botones estén visibles */
+  position: relative;
+  z-index: 1;
 }
 
 .lp-d2-links-content {
@@ -1088,6 +1091,9 @@
   display: block;
   /* Asegurar que el fondo se extienda correctamente */
   background: inherit;
+  /* Asegurar que los botones no queden detrás */
+  position: relative;
+  z-index: 1;
 }
 
 /* Container para los enlaces - SIN SCROLL INTERNO, el dashboard se extiende */
@@ -1297,9 +1303,11 @@
 
 /* Botón Ver Más - Reutilizando estilo de Analytics */
 .lp-d2-links-list .lpa-links-expand-btn {
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
   width: calc(100% - 0px);
+  position: relative;
+  z-index: 10;
 }
 
 .lp-d2-links-list .lpa-links-expand-btn:disabled {
@@ -1309,14 +1317,19 @@
 
 /* Botón Ver Todos */
 .lp-d2-links-list .lp-d2-view-all {
-  margin-top: 8px;
-  margin-bottom: 0;
+  margin-top: 12px;
+  margin-bottom: 20px;
   width: 100%;
+  position: relative;
+  z-index: 10;
 }
 
 /* Mensaje fin de resultados */
 .lp-d2-links-list .lp-d2-end-message {
-  margin-top: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 10;
   margin-bottom: 0;
 }
 
