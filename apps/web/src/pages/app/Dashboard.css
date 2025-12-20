@@ -254,7 +254,8 @@
   display: flex;
   justify-content: center;
   overflow: hidden;
-  overflow-x: hidden; /* BLOQUEAR SCROLL HORIZONTAL */
+  overflow-x: hidden;
+  /* BLOQUEAR SCROLL HORIZONTAL */
   -webkit-overflow-scrolling: touch;
   z-index: 1;
   /* Cuando tiene scroll activo, permitir scroll suave */
@@ -1107,6 +1108,21 @@
   z-index: 1;
 }
 
+/* Container para los botones de acción - SIEMPRE VISIBLE */
+.lp-d2-links-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 12px 100px;
+  /* Extra bottom padding antes del navigation bar */
+  margin-top: 8px;
+  position: relative;
+  z-index: 20;
+  background: inherit;
+  /* Asegurar que no se corte */
+  overflow: visible;
+}
+
 /* Container para los enlaces - SIN SCROLL INTERNO, el dashboard se extiende */
 .lp-d2-links-scroll {
   /* NO max-height - deja que el contenido se muestre completo */
@@ -1316,36 +1332,32 @@
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
 }
 
-/* Botón Ver Más - Reutilizando estilo de Analytics */
-.lp-d2-links-list .lpa-links-expand-btn {
-  margin-top: 12px;
-  margin-bottom: 12px;
-  width: calc(100% - 0px);
+/* Botón Ver Más - Dentro del contenedor de acciones */
+.lp-d2-links-actions .lpa-links-expand-btn {
+  width: 100%;
+  margin: 0;
   position: relative;
   z-index: 10;
 }
 
-.lp-d2-links-list .lpa-links-expand-btn:disabled {
+.lp-d2-links-actions .lpa-links-expand-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* Botón Ver Todos */
-.lp-d2-links-list .lp-d2-view-all {
-  margin-top: 12px;
-  margin-bottom: 20px;
+/* Botón Ver Todos - Dentro del contenedor de acciones */
+.lp-d2-links-actions .lp-d2-view-all {
   width: 100%;
+  margin: 0;
   position: relative;
   z-index: 10;
 }
 
 /* Mensaje fin de resultados */
-.lp-d2-links-list .lp-d2-end-message {
-  margin-top: 12px;
-  margin-bottom: 12px;
+.lp-d2-links-actions .lp-d2-end-message {
+  margin: 0;
   position: relative;
   z-index: 10;
-  margin-bottom: 0;
 }
 
 /* End message */
@@ -1358,6 +1370,36 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.7;
+}
+
+/* Botón Recoger - Cerrar el desplegable */
+.lp-d2-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 12px;
+  color: #a5b4fc;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.lp-d2-collapse-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.15) 100%);
+  border-color: rgba(129, 140, 248, 0.5);
+  color: #c4b5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.lp-d2-collapse-btn:active {
+  transform: translateY(0);
 }
 
 /* Botón Ver Todos */
@@ -1398,9 +1440,10 @@
     font-size: 14px;
   }
 
-  /* Links section mobile */
+  /* Links section mobile - permitir expansión completa */
   .lp-d2-links-scroll {
-    max-height: min(45vh, 500px);
+    /* NO max-height - permitir scroll completo */
+    overflow: visible;
   }
 
   .lp-d2-links-scroll .lpa-link-card {

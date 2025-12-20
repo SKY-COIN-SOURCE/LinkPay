@@ -65,8 +65,7 @@ export function DashboardPage() {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [linksExpanded, setLinksExpanded] = useState(false);
-  const [linksToShow, setLinksToShow] = useState(30); // Paginación de 30 en 30
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const linksToShow = 10; // Solo 10 enlaces en el dashboard
   const dropdownButtonRef = React.useRef<HTMLButtonElement>(null);
   const chartHeaderRef = React.useRef<HTMLDivElement>(null);
   const linksDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -85,7 +84,7 @@ export function DashboardPage() {
   useEffect(() => {
     const handleClickOutside = (event: Event) => {
       const target = event.target as Node;
-      
+
       // Close period dropdown
       if (
         showPeriodDropdown &&
@@ -129,22 +128,7 @@ export function DashboardPage() {
     }
   }, [showPeriodDropdown, linksExpanded]);
 
-  // Load more links handler
-  const handleLoadMore = useCallback(() => {
-    if (isLoadingMore) return;
-    setIsLoadingMore(true);
-    // Simulate slight delay for smooth UX
-    setTimeout(() => {
-      setLinksToShow(prev => prev + 30);
-      setIsLoadingMore(false);
-      // Force recalculation of height after content changes
-      setTimeout(() => {
-        if (linksDropdownRef.current && linksContentRef.current) {
-          linksDropdownRef.current.style.height = `${linksContentRef.current.scrollHeight}px`;
-        }
-      }, 50);
-    }, 150);
-  }, [isLoadingMore]);
+
 
   // Recalculate height when displayed links change - MOVED AFTER displayedLinks declaration
 
@@ -179,16 +163,12 @@ export function DashboardPage() {
     return sortedLinks.slice(0, linksToShow);
   }, [sortedLinks, linksToShow]);
 
-  // Check if there are more links to load
-  const hasMoreLinks = useMemo(() => {
-    return sortedLinks.length > linksToShow;
-  }, [sortedLinks.length, linksToShow]);
 
   // Calculate and extend dashboard when links are expanded - PRODUCTION READY
   const dashboardRef = React.useRef<HTMLDivElement>(null);
   const shellRef = React.useRef<HTMLDivElement>(null);
   const linksSectionRef = React.useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     if (linksExpanded && linksSectionRef.current && dashboardRef.current && shellRef.current) {
       const updateDashboardHeight = () => {
@@ -198,17 +178,17 @@ export function DashboardPage() {
             if (linksSectionRef.current && dashboardRef.current && shellRef.current) {
               // Calculate the height needed for the ENTIRE section (includes toggle + dropdown + buttons)
               const sectionHeight = linksSectionRef.current.scrollHeight;
-              
+
               // Add extra padding for:
               // - Space before navigation bar (180px - nav height + safe area)
               // - Extra breathing room (100px)
               // - Bottom safe area (40px)
               const extraPadding = 320;
               const totalHeight = sectionHeight + extraPadding;
-              
+
               // Apply padding-bottom to dashboard to extend it
               dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
-              
+
               // Enable scroll on shell - BLOQUEAR HORIZONTAL
               shellRef.current.style.overflowY = 'auto';
               shellRef.current.style.overflowX = 'hidden';
@@ -217,14 +197,14 @@ export function DashboardPage() {
           });
         }
       };
-      
+
       // Update with multiple delays to catch all render cycles
       updateDashboardHeight();
       const timeout1 = setTimeout(updateDashboardHeight, 100);
       const timeout2 = setTimeout(updateDashboardHeight, 300);
       const timeout3 = setTimeout(updateDashboardHeight, 600);
       const timeout4 = setTimeout(updateDashboardHeight, 1000);
-      
+
       return () => {
         clearTimeout(timeout1);
         clearTimeout(timeout2);
@@ -925,12 +905,7 @@ export function DashboardPage() {
           >
             <button
               className="lp-d2-links-toggle"
-              onClick={() => {
-                if (linksExpanded) {
-                  setLinksToShow(30); // Reset al cerrar
-                }
-                setLinksExpanded(!linksExpanded);
-              }}
+              onClick={() => setLinksExpanded(!linksExpanded)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
@@ -954,197 +929,167 @@ export function DashboardPage() {
                   id="links-dropdown"
                   className="lp-d2-links-list"
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ 
-                    height: 'auto', 
-                    opacity: 1 
+                  animate={{
+                    height: 'auto',
+                    opacity: 1
                   }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ 
-                    duration: 0.3, 
+                  transition={{
+                    duration: 0.3,
                     ease: [0.4, 0, 0.2, 1]
                   }}
                   role="region"
                   aria-label="Lista de enlaces"
                 >
-                  <div 
+                  <div
                     ref={linksContentRef}
                     className="lp-d2-links-content"
                   >
-                    <div 
+                    <div
                       ref={linksScrollRef}
                       className="lp-d2-links-scroll"
                     >
-                    {displayedLinks.length === 0 ? (
-                      <div className="lpa-empty-links">
-                        <Link2 size={40} className="lpa-empty-icon lpa-3d-icon" />
-                        <div className="lpa-empty-title">Sin enlaces todavía</div>
-                        <div className="lpa-empty-sub">Crea tu primer enlace para empezar</div>
-                      </div>
-                    ) : (
-                      <div className="lpa-link-cards">
-                        <AnimatePresence mode="sync">
-                          {displayedLinks.map((link, i) => {
-                            const clicks = link.views || 0;
-                            const earnings = link.earnings || 0;
-                            const maxEarnings = sortedLinks.reduce((max, l) => Math.max(max, l.earnings || 0), 1);
-                            const pct = maxEarnings > 0 ? (earnings / maxEarnings) * 100 : 0;
-                            const epc = clicks > 0 ? earnings / clicks : 0;
+                      {displayedLinks.length === 0 ? (
+                        <div className="lpa-empty-links">
+                          <Link2 size={40} className="lpa-empty-icon lpa-3d-icon" />
+                          <div className="lpa-empty-title">Sin enlaces todavía</div>
+                          <div className="lpa-empty-sub">Crea tu primer enlace para empezar</div>
+                        </div>
+                      ) : (
+                        <div className="lpa-link-cards">
+                          <AnimatePresence mode="sync">
+                            {displayedLinks.map((link, i) => {
+                              const clicks = link.views || 0;
+                              const earnings = link.earnings || 0;
+                              const maxEarnings = sortedLinks.reduce((max, l) => Math.max(max, l.earnings || 0), 1);
+                              const pct = maxEarnings > 0 ? (earnings / maxEarnings) * 100 : 0;
+                              const epc = clicks > 0 ? earnings / clicks : 0;
 
-                            // Top 3 get medals, rest get number
-                            const medals = [
-                              { emoji: '🥇', name: 'gold', color: '#fbbf24', bg: 'linear-gradient(145deg, #fde047 0%, #fbbf24 30%, #b45309 100%)' },
-                              { emoji: '🥈', name: 'silver', color: '#94a3b8', bg: 'linear-gradient(145deg, #e2e8f0 0%, #94a3b8 30%, #475569 100%)' },
-                              { emoji: '🥉', name: 'bronze', color: '#f97316', bg: 'linear-gradient(145deg, #fdba74 0%, #f97316 30%, #7c2d12 100%)' },
-                            ];
-                            const isTop3 = i < 3;
-                            const medal = isTop3 ? medals[i] : { emoji: `${i + 1}`, name: 'rank', color: '#3b82f6', bg: 'linear-gradient(145deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)' };
+                              // Top 3 get medals, rest get number
+                              const medals = [
+                                { emoji: '🥇', name: 'gold', color: '#fbbf24', bg: 'linear-gradient(145deg, #fde047 0%, #fbbf24 30%, #b45309 100%)' },
+                                { emoji: '🥈', name: 'silver', color: '#94a3b8', bg: 'linear-gradient(145deg, #e2e8f0 0%, #94a3b8 30%, #475569 100%)' },
+                                { emoji: '🥉', name: 'bronze', color: '#f97316', bg: 'linear-gradient(145deg, #fdba74 0%, #f97316 30%, #7c2d12 100%)' },
+                              ];
+                              const isTop3 = i < 3;
+                              const medal = isTop3 ? medals[i] : { emoji: `${i + 1}`, name: 'rank', color: '#3b82f6', bg: 'linear-gradient(145deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)' };
 
-                            return (
-                              <motion.div
-                                className={`lpa-link-card ${isTop3 ? `medal-${medal.name}` : 'rank-card'}`}
-                                key={link.id}
-                                initial={{ opacity: 0, y: 25, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                                transition={{ delay: isTop3 ? 0.1 + i * 0.12 : 0.05, type: 'spring', stiffness: 180, damping: 15 }}
-                                whileHover={{ scale: 1.03, y: -4 }}
-                                whileTap={{ scale: 0.97 }}
-                                layout
-                                onClick={() => {
-                                  const url = `${window.location.origin}/${link.slug}`;
-                                  navigator.clipboard.writeText(url);
-                                }}
-                                role="listitem"
-                              >
-                                {/* 4K DETAIL MEDAL */}
+                              return (
                                 <motion.div
-                                  className={`lpa-medal-3d ${isTop3 ? `medal-${medal.name}` : 'rank-badge'}`}
-                                  style={{ background: medal.bg }}
-                                  whileHover={{
-                                    rotateY: 20,
-                                    rotateX: -10,
-                                    scale: 1.15
+                                  className={`lpa-link-card ${isTop3 ? `medal-${medal.name}` : 'rank-card'}`}
+                                  key={link.id}
+                                  initial={{ opacity: 0, y: 25, scale: 0.9 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                  transition={{ delay: isTop3 ? 0.1 + i * 0.12 : 0.05, type: 'spring', stiffness: 180, damping: 15 }}
+                                  whileHover={{ scale: 1.03, y: -4 }}
+                                  whileTap={{ scale: 0.97 }}
+                                  layout
+                                  onClick={() => {
+                                    const url = `${window.location.origin}/${link.slug}`;
+                                    navigator.clipboard.writeText(url);
                                   }}
-                                  animate={isTop3 ? {
-                                    y: [0, -3, 0],
-                                    rotateY: [0, 4, 0, -4, 0],
-                                    rotateX: [0, -2, 0, 2, 0],
-                                  } : {}}
-                                  transition={isTop3 ? {
-                                    duration: 3.5 + i * 0.5,
-                                    repeat: Infinity,
-                                    ease: 'easeInOut'
-                                  } : {}}
+                                  role="listitem"
                                 >
-                                  <motion.span
-                                    className="lpa-medal-emoji"
+                                  {/* 4K DETAIL MEDAL */}
+                                  <motion.div
+                                    className={`lpa-medal-3d ${isTop3 ? `medal-${medal.name}` : 'rank-badge'}`}
+                                    style={{ background: medal.bg }}
+                                    whileHover={{
+                                      rotateY: 20,
+                                      rotateX: -10,
+                                      scale: 1.15
+                                    }}
                                     animate={isTop3 ? {
-                                      scale: [1, 1.05, 1],
+                                      y: [0, -3, 0],
+                                      rotateY: [0, 4, 0, -4, 0],
+                                      rotateX: [0, -2, 0, 2, 0],
                                     } : {}}
                                     transition={isTop3 ? {
-                                      duration: 2.5 + i * 0.3,
+                                      duration: 3.5 + i * 0.5,
                                       repeat: Infinity,
                                       ease: 'easeInOut'
                                     } : {}}
                                   >
-                                    {medal.emoji}
-                                  </motion.span>
-                                </motion.div>
+                                    <motion.span
+                                      className="lpa-medal-emoji"
+                                      animate={isTop3 ? {
+                                        scale: [1, 1.05, 1],
+                                      } : {}}
+                                      transition={isTop3 ? {
+                                        duration: 2.5 + i * 0.3,
+                                        repeat: Infinity,
+                                        ease: 'easeInOut'
+                                      } : {}}
+                                    >
+                                      {medal.emoji}
+                                    </motion.span>
+                                  </motion.div>
 
-                                {/* Main Content */}
-                                <div className="lpa-link-card-content">
-                                  {/* Header */}
-                                  <div className="lpa-link-card-header">
-                                    <span className="lpa-link-card-title">{link.title || link.slug}</span>
-                                    <span className="lpa-link-card-earnings">{formatMoneyShort(earnings)}</span>
-                                  </div>
-
-                                  {/* Progress Bar */}
-                                  <div className="lpa-link-card-progress">
-                                    <motion.div
-                                      className="lpa-link-card-progress-fill"
-                                      initial={{ width: 0 }}
-                                      animate={{ width: `${pct}%` }}
-                                      transition={{ delay: 0.3 + i * 0.08, duration: 0.6, ease: 'easeOut' }}
-                                      style={{
-                                        background: `linear-gradient(90deg, ${medal.color}, ${medal.color}88)`
-                                      }}
-                                    />
-                                  </div>
-
-                                  {/* Stats Row */}
-                                  <div className="lpa-link-card-stats">
-                                    <div className="lpa-link-card-stat">
-                                      <MousePointer2 size={12} className="lpa-3d-icon-sm" />
-                                      <span>{clicks} clicks</span>
+                                  {/* Main Content */}
+                                  <div className="lpa-link-card-content">
+                                    {/* Header */}
+                                    <div className="lpa-link-card-header">
+                                      <span className="lpa-link-card-title">{link.title || link.slug}</span>
+                                      <span className="lpa-link-card-earnings">{formatMoneyShort(earnings)}</span>
                                     </div>
-                                    {clicks > 0 && (
-                                      <div className="lpa-link-card-stat epc">
-                                        <TrendingUp size={12} className="lpa-3d-icon-sm" />
-                                        <span>€{epc.toFixed(4)}</span>
+
+                                    {/* Progress Bar */}
+                                    <div className="lpa-link-card-progress">
+                                      <motion.div
+                                        className="lpa-link-card-progress-fill"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${pct}%` }}
+                                        transition={{ delay: 0.3 + i * 0.08, duration: 0.6, ease: 'easeOut' }}
+                                        style={{
+                                          background: `linear-gradient(90deg, ${medal.color}, ${medal.color}88)`
+                                        }}
+                                      />
+                                    </div>
+
+                                    {/* Stats Row */}
+                                    <div className="lpa-link-card-stats">
+                                      <div className="lpa-link-card-stat">
+                                        <MousePointer2 size={12} className="lpa-3d-icon-sm" />
+                                        <span>{clicks} clicks</span>
                                       </div>
-                                    )}
-                                    <div className="lpa-link-card-stat slug">
-                                      <ExternalLink size={12} className="lpa-3d-icon-sm" />
-                                      <span>/{link.slug}</span>
+                                      {clicks > 0 && (
+                                        <div className="lpa-link-card-stat epc">
+                                          <TrendingUp size={12} className="lpa-3d-icon-sm" />
+                                          <span>€{epc.toFixed(4)}</span>
+                                        </div>
+                                      )}
+                                      <div className="lpa-link-card-stat slug">
+                                        <ExternalLink size={12} className="lpa-3d-icon-sm" />
+                                        <span>/{link.slug}</span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </AnimatePresence>
-                      </div>
-                    )}
+                                </motion.div>
+                              );
+                            })}
+                          </AnimatePresence>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
-                  </div>
-                  
-                  {/* Botones FUERA del contenedor de scroll - siempre visibles */}
-                  <div className="lp-d2-links-actions">
-                    {/* Botón Ver Más - Reutilizando estilo de Analytics */}
-                    {hasMoreLinks && (
-                      <motion.button
-                        className="lpa-links-expand-btn"
-                        onClick={handleLoadMore}
-                        disabled={isLoadingMore}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        aria-label={`Cargar ${Math.min(30, sortedLinks.length - linksToShow)} enlaces más`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        {isLoadingMore ? (
-                          <>
-                            <motion.div
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            >
-                              <ChevronDown size={18} />
-                            </motion.div>
-                            <span>Cargando...</span>
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown size={18} />
-                            <span>Ver {Math.min(30, sortedLinks.length - linksToShow)} más</span>
-                          </>
-                        )}
-                      </motion.button>
-                    )}
 
-                    {/* Mensaje "Fin de resultados" cuando no hay más */}
-                    {!hasMoreLinks && displayedLinks.length > 0 && (
-                      <motion.div
-                        className="lp-d2-end-message"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      >
-                        <span>Fin de resultados</span>
-                      </motion.div>
-                    )}
+                  {/* Botones - Recoger y Ver todos */}
+                  <div className="lp-d2-links-actions">
+                    {/* Botón Recoger para cerrar el desplegable */}
+                    <motion.button
+                      className="lp-d2-collapse-btn"
+                      onClick={() => setLinksExpanded(false)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      aria-label="Recoger lista de enlaces"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <ChevronUp size={18} />
+                      <span>Recoger</span>
+                    </motion.button>
 
                     {/* Botón Ver Todos en página de enlaces */}
                     {links.length > 0 && (
