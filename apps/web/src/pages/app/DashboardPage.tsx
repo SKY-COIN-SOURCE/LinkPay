@@ -108,81 +108,25 @@ export function DashboardPage() {
     };
   }, [showPeriodDropdown]);
 
-  // Prevent body scroll when links dropdown is open (scroll bleed prevention) - AGGRESSIVE
+  // Prevent body scroll when links dropdown is open (scroll bleed prevention) - CONSERVATIVE
   useEffect(() => {
     if (linksExpanded) {
       // Save current scroll position
       const scrollY = window.scrollY;
-      const scrollX = window.scrollX;
       
-      // Lock body scroll - AGGRESSIVE
+      // Lock body scroll - CONSERVATIVE (only body, no shell manipulation)
+      document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = `-${scrollX}px`;
       document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-      
-      // Also lock html element
-      document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.position = 'fixed';
-      document.documentElement.style.width = '100%';
-      document.documentElement.style.height = '100%';
-      
-      // Prevent scroll on the dashboard shell
-      const shell = document.querySelector('.lp-dashboard-shell');
-      if (shell) {
-        (shell as HTMLElement).style.overflow = 'hidden';
-        (shell as HTMLElement).style.position = 'fixed';
-        (shell as HTMLElement).style.width = '100%';
-        (shell as HTMLElement).style.height = '100%';
-      }
-      
-      // Prevent touch scrolling on mobile
-      const preventTouchScroll = (e: TouchEvent) => {
-        if (linksScrollRef.current?.contains(e.target as Node)) {
-          // Allow scroll inside the dropdown
-          return;
-        }
-        e.preventDefault();
-      };
-      
-      const preventWheelScroll = (e: WheelEvent) => {
-        if (!linksScrollRef.current?.contains(e.target as Node)) {
-          e.preventDefault();
-        }
-      };
-      
-      document.addEventListener('touchmove', preventTouchScroll, { passive: false });
-      document.addEventListener('wheel', preventWheelScroll, { passive: false });
       
       return () => {
         // Restore scroll position
+        document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.top = '';
-        document.body.style.left = '';
         document.body.style.width = '';
-        document.body.style.height = '';
-        document.body.style.overflow = '';
-        document.body.style.touchAction = '';
-        
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.position = '';
-        document.documentElement.style.width = '';
-        document.documentElement.style.height = '';
-        
-        if (shell) {
-          (shell as HTMLElement).style.overflow = '';
-          (shell as HTMLElement).style.position = '';
-          (shell as HTMLElement).style.width = '';
-          (shell as HTMLElement).style.height = '';
-        }
-        
-        document.removeEventListener('touchmove', preventTouchScroll);
-        document.removeEventListener('wheel', preventWheelScroll);
-        
-        window.scrollTo(scrollX, scrollY);
+        window.scrollTo(0, scrollY);
       };
     }
   }, [linksExpanded]);
@@ -997,21 +941,9 @@ export function DashboardPage() {
                       onWheel={(e) => {
                         // Prevent scroll bleed: stop propagation when scrolling inside
                         e.stopPropagation();
-                        const target = e.currentTarget;
-                        const { scrollTop, scrollHeight, clientHeight } = target;
-                        const delta = e.deltaY;
-                        
-                        // Prevent scroll if at boundaries
-                        if ((scrollTop === 0 && delta < 0) || (scrollTop + clientHeight >= scrollHeight && delta > 0)) {
-                          e.preventDefault();
-                        }
                       }}
                       onTouchMove={(e) => {
-                        // Allow touch scroll inside dropdown
-                        e.stopPropagation();
-                      }}
-                      onTouchStart={(e) => {
-                        // Prevent body scroll on touch start
+                        // Allow touch scroll inside dropdown, prevent outside
                         e.stopPropagation();
                       }}
                     >

@@ -1098,7 +1098,7 @@
   /* Scrollbar premium */
   scrollbar-width: thin;
   scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
-  /* Prevent scroll bleed - CRITICAL - AGGRESSIVE */
+  /* Prevent scroll bleed - CRITICAL */
   overscroll-behavior: contain;
   -webkit-overscroll-behavior: contain;
   overscroll-behavior-y: contain;
@@ -1108,7 +1108,7 @@
   /* Smooth rendering */
   transform: translateZ(0);
   will-change: scroll-position;
-  /* Prevent scroll propagation */
+  /* Touch action for mobile */
   touch-action: pan-y;
   /* Asegurar que el scroll esté contenido */
   position: relative;
