@@ -1082,30 +1082,36 @@
 .lp-d2-links-list {
   padding: 0;
   overflow: visible;
-  /* Ensure proper containment to prevent scroll bleed */
-  contain: layout style;
+  /* NO usar contain - causa que el contenido desaparezca */
   /* Smooth height transitions */
-  will-change: height;
-  /* Asegurar que el contenido no se corte */
-  min-height: 0;
-  /* Asegurar que el contenido sea visible */
+  will-change: height, opacity;
+  /* Asegurar que el contenido sea visible SIEMPRE */
   display: block;
+  visibility: visible !important;
   /* Asegurar que el fondo se extienda */
   background: inherit;
   /* Asegurar que los botones estén visibles */
   position: relative;
   z-index: 1;
+  /* Asegurar que no se oculte */
+  min-height: 0;
+  max-height: none;
+  opacity: 1 !important;
 }
 
 .lp-d2-links-content {
   padding: 0 12px 12px;
   overflow: visible;
+  overflow-x: hidden;
   display: block;
+  visibility: visible !important;
   /* Asegurar que el fondo se extienda correctamente */
   background: inherit;
   /* Asegurar que los botones no queden detrás */
   position: relative;
   z-index: 1;
+  /* Asegurar que sea visible */
+  opacity: 1 !important;
 }
 
 /* Container para los botones de acción - SIEMPRE VISIBLE */
@@ -1137,6 +1143,10 @@
   /* Bloquear scroll horizontal */
   max-width: 100%;
   width: 100%;
+  /* Asegurar visibilidad */
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 /* Adaptar cards de Analytics para Dashboard */

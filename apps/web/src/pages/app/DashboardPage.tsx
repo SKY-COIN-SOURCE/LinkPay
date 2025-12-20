@@ -170,30 +170,41 @@ export function DashboardPage() {
   const linksSectionRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (linksExpanded && linksSectionRef.current && dashboardRef.current && shellRef.current) {
+    if (linksExpanded && linksSectionRef.current && dashboardRef.current && shellRef.current && linksDropdownRef.current) {
       const updateDashboardHeight = () => {
-        if (linksSectionRef.current && dashboardRef.current && shellRef.current) {
+        if (linksSectionRef.current && dashboardRef.current && shellRef.current && linksDropdownRef.current) {
           // Wait for next frame to ensure all content is rendered
           requestAnimationFrame(() => {
-            if (linksSectionRef.current && dashboardRef.current && shellRef.current) {
-              // Calculate the height needed for the ENTIRE section (includes toggle + dropdown + buttons)
-              const sectionHeight = linksSectionRef.current.scrollHeight;
+            requestAnimationFrame(() => {
+              if (linksSectionRef.current && dashboardRef.current && shellRef.current && linksDropdownRef.current) {
+                // Asegurar que el dropdown sea visible
+                linksDropdownRef.current.style.visibility = 'visible';
+                linksDropdownRef.current.style.display = 'block';
+                linksDropdownRef.current.style.opacity = '1';
+                
+                // Calculate the height needed for the ENTIRE section (includes toggle + dropdown + buttons)
+                const sectionHeight = linksSectionRef.current.scrollHeight || linksSectionRef.current.offsetHeight;
+                const dropdownHeight = linksDropdownRef.current.scrollHeight || linksDropdownRef.current.offsetHeight;
+                
+                // Usar el mayor de los dos como fallback
+                const finalHeight = Math.max(sectionHeight, dropdownHeight + 50);
 
-              // Add extra padding for:
-              // - Space before navigation bar (180px - nav height + safe area)
-              // - Extra breathing room (100px)
-              // - Bottom safe area (40px)
-              const extraPadding = 320;
-              const totalHeight = sectionHeight + extraPadding;
+                // Add extra padding for:
+                // - Space before navigation bar (180px - nav height + safe area)
+                // - Extra breathing room (100px)
+                // - Bottom safe area (40px)
+                const extraPadding = 320;
+                const totalHeight = finalHeight + extraPadding;
 
-              // Apply padding-bottom to dashboard to extend it
-              dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
+                // Apply padding-bottom to dashboard to extend it
+                dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
 
-              // Enable scroll on shell - BLOQUEAR HORIZONTAL
-              shellRef.current.style.overflowY = 'auto';
-              shellRef.current.style.overflowX = 'hidden';
-              shellRef.current.style.overflow = 'hidden auto';
-            }
+                // Enable scroll on shell - BLOQUEAR HORIZONTAL
+                shellRef.current.style.overflowY = 'auto';
+                shellRef.current.style.overflowX = 'hidden';
+                shellRef.current.style.overflow = 'hidden auto';
+              }
+            });
           });
         }
       };
@@ -931,15 +942,21 @@ export function DashboardPage() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{
                     height: 'auto',
-                    opacity: 1
+                    opacity: 1,
+                    visibility: 'visible'
                   }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{
                     duration: 0.3,
-                    ease: [0.4, 0, 0.2, 1]
+                    ease: [0.4, 0, 0.2, 1],
+                    opacity: { duration: 0.2 }
                   }}
                   role="region"
                   aria-label="Lista de enlaces"
+                  style={{ 
+                    visibility: 'visible',
+                    display: 'block'
+                  }}
                 >
                   <div
                     ref={linksContentRef}
