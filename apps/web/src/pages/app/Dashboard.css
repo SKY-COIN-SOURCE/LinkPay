@@ -256,6 +256,8 @@
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
   z-index: 1;
+  /* Cuando tiene scroll activo, permitir scroll suave */
+  scroll-behavior: smooth;
 }
 
 @media (min-width: 769px) {

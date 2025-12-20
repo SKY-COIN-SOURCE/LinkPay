@@ -189,14 +189,18 @@ export function DashboardPage() {
   const shellRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (linksExpanded && linksContentRef.current && dashboardRef.current && shellRef.current) {
+    if (linksExpanded && linksDropdownRef.current && dashboardRef.current && shellRef.current) {
       const updateDashboardHeight = () => {
-        if (linksContentRef.current && dashboardRef.current && shellRef.current) {
-          // Calculate the height needed for the links content
-          const contentHeight = linksContentRef.current.scrollHeight;
-          // Add extra padding to ensure everything fits
-          const extraPadding = 120; // Extra space for buttons and spacing
-          const totalHeight = contentHeight + extraPadding;
+        if (linksDropdownRef.current && dashboardRef.current && shellRef.current) {
+          // Calculate the height needed for the ENTIRE dropdown (includes buttons)
+          const dropdownHeight = linksDropdownRef.current.scrollHeight;
+          
+          // Add extra padding for:
+          // - Space before navigation bar (150px)
+          // - Extra breathing room (80px)
+          // - Safe area at bottom (40px)
+          const extraPadding = 270;
+          const totalHeight = dropdownHeight + extraPadding;
           
           // Apply padding-bottom to dashboard to extend it
           dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
@@ -204,15 +208,16 @@ export function DashboardPage() {
           // Enable scroll on shell
           shellRef.current.style.overflowY = 'auto';
           shellRef.current.style.overflowX = 'hidden';
+          shellRef.current.style.overflow = 'auto';
         }
       };
       
       // Update immediately
       updateDashboardHeight();
-      // Also update after delays to catch any async rendering
-      const timeout = setTimeout(updateDashboardHeight, 100);
-      const timeout2 = setTimeout(updateDashboardHeight, 300);
-      const timeout3 = setTimeout(updateDashboardHeight, 500);
+      // Also update after delays to catch any async rendering (animations, etc)
+      const timeout = setTimeout(updateDashboardHeight, 150);
+      const timeout2 = setTimeout(updateDashboardHeight, 400);
+      const timeout3 = setTimeout(updateDashboardHeight, 700);
       
       return () => {
         clearTimeout(timeout);
@@ -226,6 +231,7 @@ export function DashboardPage() {
         if (shellRef.current) {
           shellRef.current.style.overflowY = '';
           shellRef.current.style.overflowX = '';
+          shellRef.current.style.overflow = '';
         }
       };
     } else {
@@ -237,6 +243,7 @@ export function DashboardPage() {
       if (shellRef.current) {
         shellRef.current.style.overflowY = '';
         shellRef.current.style.overflowX = '';
+        shellRef.current.style.overflow = '';
       }
     }
   }, [linksExpanded, displayedLinks.length, linksToShow]);
