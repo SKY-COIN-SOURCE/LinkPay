@@ -71,6 +71,7 @@ export function DashboardPage() {
   const chartHeaderRef = React.useRef<HTMLDivElement>(null);
   const linksDropdownRef = React.useRef<HTMLDivElement>(null);
   const linksScrollRef = React.useRef<HTMLDivElement>(null);
+  const linksContentRef = React.useRef<HTMLDivElement>(null);
 
   // Animation skip for cached data
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -156,8 +157,30 @@ export function DashboardPage() {
     setTimeout(() => {
       setLinksToShow(prev => prev + 30);
       setIsLoadingMore(false);
+      // Force recalculation of height after content changes
+      setTimeout(() => {
+        if (linksDropdownRef.current && linksContentRef.current) {
+          linksDropdownRef.current.style.height = `${linksContentRef.current.scrollHeight}px`;
+        }
+      }, 50);
     }, 150);
   }, [isLoadingMore]);
+
+  // Recalculate height when displayed links change
+  useEffect(() => {
+    if (linksExpanded && linksDropdownRef.current && linksContentRef.current) {
+      const updateHeight = () => {
+        if (linksDropdownRef.current && linksContentRef.current) {
+          linksDropdownRef.current.style.height = `${linksContentRef.current.scrollHeight}px`;
+        }
+      };
+      // Update immediately
+      updateHeight();
+      // Also update after a short delay to catch any async rendering
+      const timeout = setTimeout(updateHeight, 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [linksExpanded, displayedLinks.length, linksToShow]);
 
   // Stats from real data
   const stats = useMemo(() => ({
@@ -886,36 +909,41 @@ export function DashboardPage() {
               {linksExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {linksExpanded && (
                 <motion.div
                   ref={linksDropdownRef}
                   id="links-dropdown"
                   className="lp-d2-links-list"
-                  initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                  animate={{ height: 'auto', opacity: 1, marginTop: 0 }}
-                  exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ 
+                    height: 'auto', 
+                    opacity: 1 
+                  }}
+                  exit={{ height: 0, opacity: 0 }}
                   transition={{ 
                     duration: 0.3, 
-                    ease: [0.4, 0, 0.2, 1],
-                    height: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
-                    opacity: { duration: 0.2 }
+                    ease: [0.4, 0, 0.2, 1]
                   }}
                   role="region"
                   aria-label="Lista de enlaces"
                 >
                   <div 
-                    ref={linksScrollRef}
-                    className="lp-d2-links-scroll"
-                    onWheel={(e) => {
-                      // Prevent scroll bleed: stop propagation when scrolling inside
-                      e.stopPropagation();
-                    }}
-                    onTouchMove={(e) => {
-                      // Prevent scroll bleed on touch devices
-                      e.stopPropagation();
-                    }}
+                    ref={linksContentRef}
+                    className="lp-d2-links-content"
                   >
+                    <div 
+                      ref={linksScrollRef}
+                      className="lp-d2-links-scroll"
+                      onWheel={(e) => {
+                        // Prevent scroll bleed: stop propagation when scrolling inside
+                        e.stopPropagation();
+                      }}
+                      onTouchMove={(e) => {
+                        // Prevent scroll bleed on touch devices
+                        e.stopPropagation();
+                      }}
+                    >
                     {displayedLinks.length === 0 ? (
                       <div className="lpa-empty-links">
                         <Link2 size={40} className="lpa-empty-icon lpa-3d-icon" />
@@ -1038,6 +1066,7 @@ export function DashboardPage() {
                         </AnimatePresence>
                       </div>
                     )}
+                    </div>
                   </div>
                   
                   {/* Botón Ver Más - Reutilizando estilo de Analytics */}
