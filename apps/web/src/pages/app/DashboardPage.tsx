@@ -1,30 +1,28 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import { useTranslation } from '../../i18n';
-import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Link as LinkIcon,
-  Copy,
-  TrendingUp,
+  DollarSign,
+  Wallet,
   MousePointer2,
   BarChart3,
-  ArrowRight,
-  DollarSign,
-  Share2
+  Users,
+  Link as LinkIcon,
+  ChevronDown,
+  ChevronUp,
+  TrendingUp,
+  ExternalLink,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from '../../lib/linkService';
-import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { useCachedDashboard, useCachedPayouts } from '../../context/DataCacheContext';
 import { PremiumLoader } from '../../components/PremiumLoader';
-import { useCachedDashboard } from '../../context/DataCacheContext';
+import './Dashboard.css';
 
-// Hook para animar números (Count Up) - Optimizado para no re-animar en navegación
-function useCountTo(end: number, duration = 2000, skip = false) {
+// Hook para animar números
+function useCountTo(end: number, duration = 1200, skip = false) {
   const [count, setCount] = useState(skip ? end : 0);
 
   useEffect(() => {
-    // Si skip es true, mostrar valor final inmediatamente (datos cacheados)
     if (skip) {
       setCount(end);
       return;
@@ -36,11 +34,8 @@ function useCountTo(end: number, duration = 2000, skip = false) {
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      // EaseOutExpo function
       const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-
       setCount(end * ease);
-
       if (progress < 1) {
         animationFrame = requestAnimationFrame(step);
       }
@@ -53,318 +48,271 @@ function useCountTo(end: number, duration = 2000, skip = false) {
   return count;
 }
 
+// Tipos de período temporal
+type TimePeriod = 'today' | 'week' | 'month' | 'all';
+
 export function DashboardPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // USAR DATOS CACHEADOS - Navegación instantánea
-  // ═══════════════════════════════════════════════════════════════════════════
-  const { data: dashboardData, links, loading, isRefreshing, refresh } = useCachedDashboard();
+  // Data hooks
+  const { data: dashboardData, links, loading } = useCachedDashboard();
+  const { balance } = useCachedPayouts();
 
-  // User info for greeting
-  const [userName, setUserName] = useState<string>('');
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        const name = user.email.split('@')[0];
-        setUserName(name.charAt(0).toUpperCase() + name.slice(1));
-      }
-    };
-    getUser();
-  }, []);
+  // UI State
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
+  const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
+  const [linksExpanded, setLinksExpanded] = useState(false);
 
-  // Determinar si debemos animar o mostrar valores instantáneamente
+  // Animation skip for cached data
   const [hasAnimated, setHasAnimated] = useState(false);
-  const skipAnimation = useMemo(() => {
-    return dashboardData !== null && !hasAnimated;
-  }, []);
+  const skipAnimation = useMemo(() => dashboardData !== null && !hasAnimated, []);
 
   useEffect(() => {
-    if (!loading && dashboardData) {
-      setHasAnimated(true);
-    }
+    if (!loading && dashboardData) setHasAnimated(true);
   }, [loading, dashboardData]);
 
-  // Stats calculados
-  const realtimeStats = useMemo(() => ({
+  // Stats from real data
+  const stats = useMemo(() => ({
     totalRevenue: dashboardData?.totalRevenue ?? 0,
-    linkRevenue: dashboardData?.linkRevenue ?? 0,
-    bioRevenue: dashboardData?.bioRevenue ?? 0,
     totalClicks: dashboardData?.totalClicks ?? 0,
     linkClicks: dashboardData?.linkClicks ?? 0,
     bioClicks: dashboardData?.bioClicks ?? 0,
   }), [dashboardData]);
 
-  // Calculate real RPM
+  // Calculate RPM
   const rpm = useMemo(() => {
-    if (realtimeStats.totalClicks === 0) return 0;
-    return (realtimeStats.totalRevenue / realtimeStats.totalClicks) * 1000;
-  }, [realtimeStats.totalRevenue, realtimeStats.totalClicks]);
+    if (stats.totalClicks === 0) return 0;
+    return (stats.totalRevenue / stats.totalClicks) * 1000;
+  }, [stats.totalRevenue, stats.totalClicks]);
+
+  // Top performing link
+  const topLink = useMemo(() => {
+    if (!links || links.length === 0) return null;
+    return [...links].sort((a, b) => (b.earnings || 0) - (a.earnings || 0))[0];
+  }, [links]);
 
   // Animated values
-  const animatedRevenue = useCountTo(realtimeStats.totalRevenue, 1500, skipAnimation);
-  const animatedClicks = useCountTo(realtimeStats.totalClicks, 1500, skipAnimation);
-  const animatedRpm = useCountTo(rpm, 1500, skipAnimation);
+  const animatedRevenue = useCountTo(stats.totalRevenue, 1200, skipAnimation);
+  const animatedBalance = useCountTo(balance, 1200, skipAnimation);
+  const animatedClicks = useCountTo(stats.totalClicks, 1200, skipAnimation);
+  const animatedRpm = useCountTo(rpm, 1200, skipAnimation);
 
-  // Visual Trigger State
-  const [revenueIncreased, setRevenueIncreased] = useState(false);
-
-  const triggerRevenuePulse = () => {
-    setRevenueIncreased(true);
-    setTimeout(() => setRevenueIncreased(false), 2000);
-  };
-
-  const copyReferral = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const refLink = `${window.location.origin}/register?ref=${user.id}`;
-      navigator.clipboard.writeText(refLink);
-      alert(t('dashboard.stats.referrals.copy_alert'));
+  // Chart data from timeline (simplified)
+  const chartData = useMemo(() => {
+    const timeline = dashboardData?.timeline || [];
+    if (timeline.length === 0) {
+      // Fallback data for visual
+      return Array.from({ length: 7 }, (_, i) => ({ day: i, value: Math.random() * 0.01 }));
     }
-  };
+    return timeline.slice(-7).map((t: any, i: number) => ({
+      day: i,
+      value: t.revenue || 0
+    }));
+  }, [dashboardData?.timeline]);
 
-  const visibleLinks = links.slice(0, 5);
-
-  const gridVariants: any = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05, delayChildren: 0.06 }
-    }
-  };
-
-  const cardVariants: any = {
-    hidden: { opacity: 0, y: 20, scale: 0.97 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { type: "spring", stiffness: 180, damping: 22 }
-    }
+  // Period labels
+  const periodLabels: Record<TimePeriod, string> = {
+    today: 'Hoy',
+    week: 'Semana',
+    month: 'Mes',
+    all: 'Total'
   };
 
   if (loading) {
-    return <PremiumLoader size="medium" text="LINKPAY" subtext="Preparando tu dashboard..." />;
+    return <PremiumLoader size="medium" text="LINKPAY" subtext="Cargando dashboard..." />;
   }
 
   return (
     <>
-      {/* BACKGROUND - Same structure as Wallet */}
+      {/* Background */}
       <div className="lp-bg">
         <div className="lp-bg-gradient" />
         <div className="lp-bg-glow" />
       </div>
 
       <div className="lp-dashboard-shell">
-        <div className="lp-dashboard-inner">
+        <div className="lp-dashboard-2">
 
-          {/* WELCOME HEADER */}
-          <motion.div
-            className="lp-welcome-header"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="lp-welcome-title">
-              {userName ? `Hola, ${userName} 👋` : 'Bienvenido 👋'}
-            </h1>
-            <p className="lp-welcome-subtitle">
-              {realtimeStats.totalRevenue > 0 ? 'Tu cuenta está generando ingresos 🔥' : 'Tu panel de control'}
-            </p>
-          </motion.div>
-
-          {/* METRICS GRID */}
-          <motion.div
-            className="lp-dashboard-grid"
-            variants={gridVariants}
-            initial="hidden"
-            animate="visible"
-          >
-
-            {/* CARD 1: REVENUE + REFERRALS */}
+          {/* ROW 1: EARNINGS + BALANCE */}
+          <div className="lp-d2-row-top">
+            {/* EARNINGS CARD with dropdown */}
             <motion.div
-              className={`lp-dashboard-card lp-card-green ${revenueIncreased ? 'pulse-green' : ''}`}
-              variants={cardVariants}
-              whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.25)" }}
+              className="lp-d2-card lp-d2-earnings"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
             >
-              <div className="lp-stat-header">
-                <div className="lp-stat-icon"><DollarSign size={24} /></div>
-                <div className="lp-trend-badge"><TrendingUp size={12} /> LIVE</div>
+              <div className="lp-d2-card-header">
+                <DollarSign size={18} className="lp-d2-icon green" />
+                <span className="lp-d2-label">INGRESOS</span>
               </div>
-              <div>
-                <div className="lp-stat-label">{t('dashboard.stats.revenue.label')}</div>
-                <div className="lp-stat-value">€{animatedRevenue.toFixed(4)}</div>
+              <div className="lp-d2-value green">{animatedRevenue.toFixed(4)}</div>
+              <button
+                className="lp-d2-dropdown-btn"
+                onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+              >
+                {periodLabels[timePeriod]}
+                <ChevronDown size={14} className={showPeriodDropdown ? 'rotated' : ''} />
+              </button>
 
-                {/* Mini Sparkline */}
-                <div className="h-1 w-full bg-slate-800/50 rounded-full mt-2 mb-4 overflow-hidden">
+              <AnimatePresence>
+                {showPeriodDropdown && (
                   <motion.div
-                    className="h-full bg-green-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 2, ease: "circOut" }}
-                  />
-                </div>
-
-                <div className="lp-substats" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-                  <div className="lp-substat-box">
-                    <span className="lp-substat-label">{t('dashboard.stats.revenue.links')}</span>
-                    <span className="lp-substat-value">€{realtimeStats.linkRevenue.toFixed(4)}</span>
-                  </div>
-                  <div className="lp-substat-box">
-                    <span className="lp-substat-label">{t('dashboard.stats.revenue.bio')}</span>
-                    <span className="lp-substat-value">€{realtimeStats.bioRevenue.toFixed(4)}</span>
-                  </div>
-                  <div className="lp-substat-box">
-                    <span className="lp-substat-label">REFERIDOS</span>
-                    <span className="lp-substat-value">€0.00</span>
-                  </div>
-                </div>
-              </div>
+                    className="lp-d2-dropdown"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                  >
+                    {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
+                      <button
+                        key={p}
+                        className={`lp-d2-dropdown-item ${timePeriod === p ? 'active' : ''}`}
+                        onClick={() => { setTimePeriod(p); setShowPeriodDropdown(false); }}
+                      >
+                        {periodLabels[p]}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
 
-            {/* CARD 2: CLICKS - PURPLE with breakdown */}
+            {/* BALANCE CARD */}
             <motion.div
-              className="lp-dashboard-card lp-card-purple"
-              variants={cardVariants}
-              whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(168, 85, 247, 0.25)" }}
-            >
-              <div className="lp-stat-header">
-                <div className="lp-stat-icon"><MousePointer2 size={24} /></div>
-              </div>
-              <div>
-                <div className="lp-stat-label">{t('dashboard.stats.clicks.label')}</div>
-                <div className="lp-stat-value">{animatedClicks.toFixed(0)}</div>
-
-                <div className="lp-substats" style={{ gridTemplateColumns: '1fr 1fr', marginTop: '12px' }}>
-                  <div className="lp-substat-box">
-                    <span className="lp-substat-label">LINKS</span>
-                    <span className="lp-substat-value">{realtimeStats.linkClicks}</span>
-                  </div>
-                  <div className="lp-substat-box">
-                    <span className="lp-substat-label">BIO PAGE</span>
-                    <span className="lp-substat-value">{realtimeStats.bioClicks}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* CARD 3: RPM - Compact */}
-            <motion.div
-              className="lp-dashboard-card lp-card-orange"
-              variants={cardVariants}
-              whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
-            >
-              <div className="lp-stat-header">
-                <div className="lp-stat-icon"><BarChart3 size={24} /></div>
-              </div>
-              <div>
-                <div className="lp-stat-label">RPM MEDIO</div>
-                <div className="lp-stat-value">€{animatedRpm.toFixed(2)}</div>
-                <div className="lp-substat-label" style={{ marginTop: '8px' }}>
-                  POR 1000 VISITAS
-                </div>
-              </div>
-            </motion.div>
-
-
-          </motion.div>
-
-          {/* QUICK ACTIONS - Navigation shortcuts */}
-          <motion.div
-            className="lp-quick-actions"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.4 }}
-          >
-            <motion.button
-              className="lp-action-btn"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/app/links/create')}
-            >
-              <LinkIcon size={20} />
-              <span>Crear Link</span>
-            </motion.button>
-            <motion.button
-              className="lp-action-btn"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/app/analytics')}
-            >
-              <BarChart3 size={20} />
-              <span>Analytics</span>
-            </motion.button>
-            <motion.button
-              className="lp-action-btn"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              className="lp-d2-card lp-d2-balance"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
               onClick={() => navigate('/app/finance')}
             >
-              <DollarSign size={20} />
-              <span>Finanzas</span>
-            </motion.button>
-            <motion.button
-              className="lp-action-btn"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/app/bio')}
-            >
-              <Share2 size={20} />
-              <span>Bio Page</span>
-            </motion.button>
+              <div className="lp-d2-card-header">
+                <Wallet size={18} className="lp-d2-icon blue" />
+                <span className="lp-d2-label">BALANCE</span>
+              </div>
+              <div className="lp-d2-value blue">{animatedBalance.toFixed(2)}</div>
+              <span className="lp-d2-hint">Disponible</span>
+            </motion.div>
+          </div>
+
+          {/* ROW 2: CHART */}
+          <motion.div
+            className="lp-d2-chart-card"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="lp-d2-chart-header">
+              <TrendingUp size={16} className="lp-d2-icon green" />
+              <span>Ingresos - Ultimos 7 dias</span>
+            </div>
+            <div className="lp-d2-chart">
+              <ResponsiveContainer width="100%" height={80}>
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    fill="url(#chartGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </motion.div>
 
-
-          {/* RECENT ACTIVITY - BLUE */}
+          {/* ROW 3: STATS (4 columns) */}
           <motion.div
-            className="lp-dashboard-card lp-recent-card lp-card-blue"
-            initial={{ opacity: 0, y: 15 }}
+            className="lp-d2-stats-row"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.4 }}
+            transition={{ delay: 0.25 }}
           >
-            <div className="flex justify-between items-center mb-4">
-              <div className="lp-stat-label">ACTIVIDAD RECIENTE</div>
-              <motion.button
-                whileHover={{ x: 4, color: "#818cf8" }}
-                onClick={() => navigate('/app/links')}
-                className="text-sm font-semibold text-indigo-400 flex items-center gap-1 transition-colors"
-                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                {t('dashboard.recent.view_all')} <ArrowRight size={14} />
-              </motion.button>
+            {/* CLICKS */}
+            <div className="lp-d2-stat purple">
+              <MousePointer2 size={20} />
+              <span className="lp-d2-stat-value">{animatedClicks.toFixed(0)}</span>
+              <span className="lp-d2-stat-label">CLICKS</span>
             </div>
 
-            <div className="lp-recent-list">
-              {visibleLinks.map((link, i) => (
-                <motion.div
-                  key={link.id}
-                  className="lp-recent-item"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + (i * 0.05) }}
-                  whileHover={{ backgroundColor: "rgba(255,255,255,0.06)", scale: 1.005 }}
-                >
-                  <div className="lp-link-icon-circle">
-                    <LinkIcon size={16} />
-                  </div>
-                  <div className="lp-link-info">
-                    <span className="lp-link-alias">/{link.slug}</span>
-                    <span className="lp-link-url">{link.original_url}</span>
-                  </div>
-                  <div className="text-right min-w-[80px]">
-                    <div className="lp-link-money">€{(link.earnings || 0).toFixed(4)}</div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{link.views || 0} clicks</div>
-                  </div>
-                </motion.div>
-              ))}
-              {visibleLinks.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8', fontSize: '14px', fontStyle: 'italic' }}>
-                  {t('dashboard.recent.empty_desc') || 'No links yet.'}
-                </div>
-              )}
+            {/* RPM */}
+            <div className="lp-d2-stat orange">
+              <BarChart3 size={20} />
+              <span className="lp-d2-stat-value">{animatedRpm.toFixed(2)}</span>
+              <span className="lp-d2-stat-label">RPM</span>
             </div>
+
+            {/* REFERIDOS */}
+            <div className="lp-d2-stat cyan">
+              <Users size={20} />
+              <span className="lp-d2-stat-value">0</span>
+              <span className="lp-d2-stat-label">REFERIDOS</span>
+            </div>
+
+            {/* TOP LINK */}
+            <div
+              className="lp-d2-stat indigo"
+              onClick={() => topLink && navigate('/app/links')}
+            >
+              <LinkIcon size={20} />
+              <span className="lp-d2-stat-value">{topLink ? `/${topLink.slug}` : '-'}</span>
+              <span className="lp-d2-stat-label">TOP LINK</span>
+            </div>
+          </motion.div>
+
+          {/* ROW 4: COLLAPSIBLE LINKS */}
+          <motion.div
+            className="lp-d2-links-section"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <button
+              className="lp-d2-links-toggle"
+              onClick={() => setLinksExpanded(!linksExpanded)}
+            >
+              <LinkIcon size={18} />
+              <span>Mis Enlaces</span>
+              <span className="lp-d2-links-count">{links.length}</span>
+              {linksExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+
+            <AnimatePresence>
+              {linksExpanded && (
+                <motion.div
+                  className="lp-d2-links-list"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                >
+                  {links.slice(0, 5).map((link, i) => (
+                    <div key={link.id} className="lp-d2-link-item">
+                      <div className="lp-d2-link-info">
+                        <span className="lp-d2-link-slug">/{link.slug}</span>
+                        <span className="lp-d2-link-clicks">{link.views || 0} clicks</span>
+                      </div>
+                      <span className="lp-d2-link-earn">{(link.earnings || 0).toFixed(4)}</span>
+                    </div>
+                  ))}
+                  {links.length === 0 && (
+                    <div className="lp-d2-empty">No tienes enlaces aun</div>
+                  )}
+                  {links.length > 5 && (
+                    <button
+                      className="lp-d2-view-all"
+                      onClick={() => navigate('/app/links')}
+                    >
+                      Ver todos <ExternalLink size={14} />
+                    </button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
         </div>
