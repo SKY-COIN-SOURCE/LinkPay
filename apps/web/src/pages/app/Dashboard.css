@@ -912,18 +912,20 @@
   align-items: center;
   justify-content: center;
   padding: 14px 10px;
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .lp-d2-stat:hover {
-  background: rgba(15, 23, 42, 0.5);
-  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.75);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .lp-d2-stat svg {
@@ -948,22 +950,24 @@
 }
 
 .lp-d2-stat-value {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.3px;
   font-feature-settings: 'tnum';
   text-align: center;
   line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .lp-d2-stat-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
+  color: #cbd5e1;
+  letter-spacing: 0.8px;
+  margin-top: 5px;
   text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Stat colors */
@@ -983,14 +987,15 @@
   border-top: 2px solid #6366f1;
 }
 
-/* LINKS SECTION - Collapsible - Subtle Glass */
+/* LINKS SECTION - Collapsible - Premium Glass */
 .lp-d2-links-section {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
   overflow: hidden;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .lp-d2-links-toggle {
@@ -1003,13 +1008,14 @@
   border: none;
   color: #ffffff;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .lp-d2-links-toggle:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .lp-d2-links-toggle svg:first-child {
