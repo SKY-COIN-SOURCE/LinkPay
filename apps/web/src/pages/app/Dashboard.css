@@ -367,11 +367,11 @@
   gap: 12px;
 }
 
-/* Base Card Style - Glassmorphism Translucent */
+/* Base Card Style - Fully Transparent (Experiment) */
 .lp-d2-card {
   position: relative;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: transparent;
+  border: none;
   border-radius: 18px;
   padding: 16px 18px;
   display: flex;
@@ -379,21 +379,11 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: all 0.3s ease;
 }
 
 .lp-d2-card:hover {
-  background: rgba(15, 23, 42, 0.6);
-  border-color: rgba(148, 163, 184, 0.25);
   transform: translateY(-2px);
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Make headers centered for both cards */
@@ -922,17 +912,14 @@
   align-items: center;
   justify-content: center;
   padding: 14px 10px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  border: none;
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .lp-d2-stat:hover {
-  background: rgba(15, 23, 42, 0.6);
   transform: translateY(-1px);
 }
 
@@ -993,14 +980,12 @@
   border-top: 2px solid #6366f1;
 }
 
-/* LINKS SECTION - Collapsible */
+/* LINKS SECTION - Collapsible - Transparent */
 .lp-d2-links-section {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  border: none;
   border-radius: 14px;
   overflow: hidden;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .lp-d2-links-toggle {
