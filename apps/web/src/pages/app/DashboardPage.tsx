@@ -62,8 +62,9 @@ export function DashboardPage() {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [linksExpanded, setLinksExpanded] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; right: number } | null>(null);
+  const [linksToShow, setLinksToShow] = useState(30); // Paginación de 30 en 30
   const dropdownButtonRef = React.useRef<HTMLButtonElement>(null);
+  const chartHeaderRef = React.useRef<HTMLDivElement>(null);
 
   // Animation skip for cached data
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -75,12 +76,13 @@ export function DashboardPage() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: Event) => {
+      const target = event.target as Node;
       if (
         showPeriodDropdown &&
         dropdownButtonRef.current &&
-        !dropdownButtonRef.current.contains(event.target as Node) &&
-        !(event.target as HTMLElement).closest('.lp-d2-dropdown')
+        !dropdownButtonRef.current.contains(target) &&
+        !(target as HTMLElement).closest?.('.lp-d2-dropdown')
       ) {
         setShowPeriodDropdown(false);
       }
@@ -138,7 +140,7 @@ export function DashboardPage() {
         if (!isNaN(isoDate.getTime()) && item.date.includes('-')) {
           return isoDate;
         }
-        
+
         // Try parsing as day-month format (es-ES format like "15 dic")
         const parts = item.date.trim().split(' ');
         if (parts.length === 2) {
@@ -227,7 +229,7 @@ export function DashboardPage() {
       }
 
       const d = parseDate(item);
-      
+
       if (timePeriod === 'today') {
         // For today, show the day name and date since we only have daily data
         // Or show a time indicator if it's today's data
@@ -235,7 +237,7 @@ export function DashboardPage() {
         today.setHours(0, 0, 0, 0);
         const itemDay = new Date(d);
         itemDay.setHours(0, 0, 0, 0);
-        
+
         if (itemDay.getTime() === today.getTime()) {
           return 'Hoy';
         }
@@ -281,9 +283,9 @@ export function DashboardPage() {
     };
 
     // Prepare chart data with proper date objects and labels
-    let chartPoints: { 
-      date: Date; 
-      value: number; 
+    let chartPoints: {
+      date: Date;
+      value: number;
       label: string;
       fullDate: string;
     }[];
@@ -311,9 +313,9 @@ export function DashboardPage() {
           date,
           value: 0,
           label: generateLabel({ date: date.toISOString() }, i),
-          fullDate: date.toLocaleDateString('es-ES', { 
-            year: 'numeric', 
-            month: 'short', 
+          fullDate: date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
             day: 'numeric',
             ...(timePeriod === 'today' ? { hour: '2-digit', minute: '2-digit' } : {})
           })
@@ -327,9 +329,9 @@ export function DashboardPage() {
           date,
           value: t.earnings || 0,
           label: generateLabel(t, i),
-          fullDate: date.toLocaleDateString('es-ES', { 
-            year: 'numeric', 
-            month: 'short', 
+          fullDate: date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
             day: 'numeric',
             ...(timePeriod === 'today' ? { hour: '2-digit', minute: '2-digit' } : {})
           })
@@ -339,32 +341,32 @@ export function DashboardPage() {
 
     // Calculate smart Y-axis domain for better visualization
     const values = chartPoints.map(p => p.value).filter(v => v > 0);
-    const maxValue = values.length > 0 
+    const maxValue = values.length > 0
       ? Math.max(...values)
       : 0;
     const minValue = values.length > 0
       ? Math.min(...values)
       : 0;
-    
+
     // Add padding to domain (10% above max, ensure minimum range)
     // If all values are the same, create a small range for visibility
     let yDomainMax = maxValue > 0 ? maxValue * 1.1 : 0.1;
     let yDomainMin = Math.max(0, minValue > 0 ? Math.max(0, minValue * 0.95) : 0);
-    
+
     // Ensure minimum range if all values are similar
     if (maxValue > 0 && Math.abs(yDomainMax - yDomainMin) < maxValue * 0.1) {
       yDomainMax = maxValue * 1.15;
       yDomainMin = Math.max(0, maxValue * 0.85);
     }
-    
+
     // Ensure we always have a visible range
     if (yDomainMax === yDomainMin && yDomainMax > 0) {
       yDomainMax = yDomainMax * 1.1;
       yDomainMin = yDomainMin * 0.9;
     }
 
-    return { 
-      filteredRevenue: revenue, 
+    return {
+      filteredRevenue: revenue,
       chartData: chartPoints,
       yDomain: [yDomainMin, yDomainMax]
     };
@@ -376,28 +378,28 @@ export function DashboardPage() {
   // Memoized tooltip component for performance
   const CustomTooltip = useCallback(({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null;
-    
+
     const data = payload[0].payload as { fullDate?: string; date?: Date };
     const value = payload[0].value as number;
-    
+
     // Format date if fullDate is not available
     let displayDate = data.fullDate || label;
     if (!displayDate && data.date) {
-      displayDate = data.date.toLocaleDateString('es-ES', { 
-        year: 'numeric', 
-        month: 'short', 
+      displayDate = data.date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
         day: 'numeric',
         ...(timePeriod === 'today' ? { hour: '2-digit', minute: '2-digit' } : {})
       });
     }
-    
+
     return (
       <div style={{
         background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.99) 0%, rgba(30, 41, 59, 0.97) 100%)',
         border: '1px solid rgba(74, 222, 128, 0.5)',
         borderRadius: '14px',
         padding: '14px 18px',
-        boxShadow: 
+        boxShadow:
           '0 12px 48px rgba(0, 0, 0, 0.7), ' +
           '0 0 0 1px rgba(255, 255, 255, 0.08) inset, ' +
           '0 0 40px rgba(34, 197, 94, 0.25), ' +
@@ -420,10 +422,10 @@ export function DashboardPage() {
           background: 'linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.6), transparent)',
           opacity: 0.8
         }} />
-        
-        <div style={{ 
-          color: '#94a3b8', 
-          fontSize: '11px', 
+
+        <div style={{
+          color: '#94a3b8',
+          fontSize: '11px',
           marginBottom: '10px',
           fontWeight: 500,
           letterSpacing: '0.03em',
@@ -431,9 +433,9 @@ export function DashboardPage() {
         }}>
           {displayDate || 'Fecha no disponible'}
         </div>
-        <div style={{ 
-          color: '#4ade80', 
-          fontWeight: 900, 
+        <div style={{
+          color: '#4ade80',
+          fontWeight: 900,
           fontSize: '20px',
           display: 'flex',
           alignItems: 'baseline',
@@ -451,9 +453,9 @@ export function DashboardPage() {
           }}>
             €{value.toFixed(4)}
           </span>
-          <span style={{ 
-            color: '#64748b', 
-            fontSize: '10px', 
+          <span style={{
+            color: '#64748b',
+            fontSize: '10px',
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
@@ -531,193 +533,180 @@ export function DashboardPage() {
             transition={{ delay: 0.2 }}
             key={timePeriod}
           >
-            <div className="lp-d2-chart-header">
+            <div className="lp-d2-chart-header" ref={chartHeaderRef}>
               <div className="lp-d2-chart-title">
                 <TrendingUp size={16} className="lp-d2-icon green" />
                 <span>Ingresos</span>
               </div>
-              <motion.button
-                ref={dropdownButtonRef}
-                className="lp-d2-dropdown-btn"
-                onClick={() => {
-                  if (dropdownButtonRef.current) {
-                    const rect = dropdownButtonRef.current.getBoundingClientRect();
-                    setDropdownPosition({
-                      top: rect.bottom + 8,
-                      right: window.innerWidth - rect.right
-                    });
-                  }
-                  setShowPeriodDropdown(!showPeriodDropdown);
-                }}
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-              >
-                {periodLabels[timePeriod]}
-                <ChevronDown size={14} className={showPeriodDropdown ? 'rotated' : ''} />
-              </motion.button>
-              <AnimatePresence>
-                {showPeriodDropdown && dropdownPosition && (
-                  <motion.div
-                    className="lp-d2-dropdown lp-d2-dropdown-chart"
-                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    style={{
-                      position: 'fixed',
-                      top: `${dropdownPosition.top}px`,
-                      right: `${dropdownPosition.right}px`,
-                      zIndex: 9999
-                    }}
-                  >
-                    {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
-                      <motion.button
-                        key={p}
-                        className={`lp-d2-dropdown-item ${timePeriod === p ? 'active' : ''}`}
-                        onClick={() => { setTimePeriod(p); setShowPeriodDropdown(false); }}
-                        whileHover={{ x: 2 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ duration: 0.15 }}
-                      >
-                        {periodLabels[p]}
-                      </motion.button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="lp-d2-time-dropdown-wrapper">
+                <motion.button
+                  ref={dropdownButtonRef}
+                  className="lp-d2-dropdown-btn"
+                  onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {periodLabels[timePeriod]}
+                  <ChevronDown size={14} className={showPeriodDropdown ? 'rotated' : ''} />
+                </motion.button>
+                <AnimatePresence>
+                  {showPeriodDropdown && (
+                    <motion.div
+                      className="lp-d2-dropdown lp-d2-dropdown-time"
+                      initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
+                        <motion.button
+                          key={p}
+                          className={`lp-d2-dropdown-item ${timePeriod === p ? 'active' : ''}`}
+                          onClick={() => { setTimePeriod(p); setShowPeriodDropdown(false); }}
+                          whileHover={{ x: 2 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.15 }}
+                        >
+                          {periodLabels[p]}
+                        </motion.button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
             <AnimatePresence mode="wait">
-              <motion.div 
+              <motion.div
                 className={`lp-d2-chart ${loading ? 'loading' : ''}`}
                 key={`chart-${timePeriod}-${chartData.length}`}
                 initial={{ opacity: 0, scale: 0.96, y: 4 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                transition={{ 
-                  duration: 0.45, 
+                transition={{
+                  duration: 0.45,
                   ease: [0.4, 0, 0.2, 1],
                   opacity: { duration: 0.35 }
                 }}
               >
-              {chartData.length === 0 || chartData.every(p => p.value === 0) ? (
-                <motion.div 
-                  className="lp-d2-chart-empty"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <BarChart3 size={32} />
-                  <span>No hay datos disponibles para este período</span>
-                </motion.div>
-              ) : (
-                <ResponsiveContainer width="100%" height={180}>
-                  <AreaChart 
-                    data={chartData} 
-                    margin={{ top: 12, right: 10, left: 2, bottom: 10 }}
+                {chartData.length === 0 || chartData.every(p => p.value === 0) ? (
+                  <motion.div
+                    className="lp-d2-chart-empty"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
                   >
-                    <defs>
-                      {/* Enhanced gradient with multiple stops for smoother fade */}
-                      <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#22c55e" stopOpacity={0.65} />
-                        <stop offset="30%" stopColor="#22c55e" stopOpacity={0.4} />
-                        <stop offset="60%" stopColor="#22c55e" stopOpacity={0.2} />
-                        <stop offset="100%" stopColor="#22c55e" stopOpacity={0.05} />
-                      </linearGradient>
-                      {/* Glow filter for the line stroke */}
-                      <filter id="chartGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                      {/* Subtle shadow for depth */}
-                      <filter id="chartShadow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>
-                        <feOffset dx="0" dy="1" result="offsetblur"/>
-                        <feComponentTransfer>
-                          <feFuncA type="linear" slope="0.3"/>
-                        </feComponentTransfer>
-                        <feMerge>
-                          <feMergeNode/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                    </defs>
-                    <CartesianGrid 
-                      strokeDasharray="4 4" 
-                      stroke="rgba(148, 163, 184, 0.18)" 
-                      vertical={false}
-                      horizontal={true}
-                      strokeWidth={1}
-                      strokeOpacity={0.6}
-                    />
-                    <XAxis
-                      dataKey="label"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600, fontFamily: 'Inter, -apple-system, sans-serif' }}
-                      interval="preserveStartEnd"
-                      minTickGap={12}
-                      height={34}
-                      style={{ userSelect: 'none' }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600, fontFamily: 'Inter, -apple-system, sans-serif' }}
-                      tickFormatter={(value) => {
-                        if (value === 0) return '€0';
-                        if (value < 0.01) return `€${value.toFixed(4)}`;
-                        if (value < 1) return `€${value.toFixed(2)}`;
-                        return `€${value.toFixed(2)}`;
-                      }}
-                      width={60}
-                      domain={yDomain}
-                      style={{ userSelect: 'none' }}
-                    />
-                    <Tooltip
-                      content={CustomTooltip}
-                      cursor={{ 
-                        stroke: '#22c55e', 
-                        strokeWidth: 2.5, 
-                        strokeDasharray: '8 5', 
-                        opacity: 0.75,
-                        strokeLinecap: 'round',
-                        strokeLinejoin: 'round'
-                      }}
-                      animationDuration={300}
-                      animationEasing="ease-out"
-                      allowEscapeViewBox={{ x: false, y: false }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#22c55e"
-                      strokeWidth={3.5}
-                      fill="url(#chartGradient)"
-                      dot={false}
-                      activeDot={{ 
-                        r: 5, 
-                        fill: '#22c55e', 
-                        stroke: '#fff', 
-                        strokeWidth: 2,
-                        style: { 
-                          filter: 'drop-shadow(0 0 6px rgba(34, 197, 94, 0.8))',
-                          transition: 'none'
-                        }
-                      }}
-                      isAnimationActive={true}
-                      animationDuration={800}
-                      animationEasing="ease-out"
-                      connectNulls={false}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
+                    <BarChart3 size={32} />
+                    <span>No hay datos disponibles para este período</span>
+                  </motion.div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={180}>
+                    <AreaChart
+                      data={chartData}
+                      margin={{ top: 12, right: 10, left: 2, bottom: 10 }}
+                    >
+                      <defs>
+                        {/* Enhanced gradient with multiple stops for smoother fade */}
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#22c55e" stopOpacity={0.65} />
+                          <stop offset="30%" stopColor="#22c55e" stopOpacity={0.4} />
+                          <stop offset="60%" stopColor="#22c55e" stopOpacity={0.2} />
+                          <stop offset="100%" stopColor="#22c55e" stopOpacity={0.05} />
+                        </linearGradient>
+                        {/* Glow filter for the line stroke */}
+                        <filter id="chartGlow" x="-50%" y="-50%" width="200%" height="200%">
+                          <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                          <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                        {/* Subtle shadow for depth */}
+                        <filter id="chartShadow" x="-50%" y="-50%" width="200%" height="200%">
+                          <feGaussianBlur in="SourceAlpha" stdDeviation="1" />
+                          <feOffset dx="0" dy="1" result="offsetblur" />
+                          <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3" />
+                          </feComponentTransfer>
+                          <feMerge>
+                            <feMergeNode />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="4 4"
+                        stroke="rgba(148, 163, 184, 0.18)"
+                        vertical={false}
+                        horizontal={true}
+                        strokeWidth={1}
+                        strokeOpacity={0.6}
+                      />
+                      <XAxis
+                        dataKey="label"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600, fontFamily: 'Inter, -apple-system, sans-serif' }}
+                        interval="preserveStartEnd"
+                        minTickGap={12}
+                        height={34}
+                        style={{ userSelect: 'none' }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600, fontFamily: 'Inter, -apple-system, sans-serif' }}
+                        tickFormatter={(value) => {
+                          if (value === 0) return '€0';
+                          if (value < 0.01) return `€${value.toFixed(4)}`;
+                          if (value < 1) return `€${value.toFixed(2)}`;
+                          return `€${value.toFixed(2)}`;
+                        }}
+                        width={60}
+                        domain={yDomain}
+                        style={{ userSelect: 'none' }}
+                      />
+                      <Tooltip
+                        content={CustomTooltip}
+                        cursor={{
+                          stroke: '#22c55e',
+                          strokeWidth: 2.5,
+                          strokeDasharray: '8 5',
+                          opacity: 0.75,
+                          strokeLinecap: 'round',
+                          strokeLinejoin: 'round'
+                        }}
+                        animationDuration={300}
+                        animationEasing="ease-out"
+                        allowEscapeViewBox={{ x: false, y: false }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#22c55e"
+                        strokeWidth={3.5}
+                        fill="url(#chartGradient)"
+                        dot={false}
+                        activeDot={{
+                          r: 5,
+                          fill: '#22c55e',
+                          stroke: '#fff',
+                          strokeWidth: 2,
+                          style: {
+                            filter: 'drop-shadow(0 0 6px rgba(34, 197, 94, 0.8))',
+                            transition: 'none'
+                          }
+                        }}
+                        isAnimationActive={true}
+                        animationDuration={800}
+                        animationEasing="ease-out"
+                        connectNulls={false}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -770,7 +759,12 @@ export function DashboardPage() {
           >
             <button
               className="lp-d2-links-toggle"
-              onClick={() => setLinksExpanded(!linksExpanded)}
+              onClick={() => {
+                if (linksExpanded) {
+                  setLinksToShow(30); // Reset al cerrar
+                }
+                setLinksExpanded(!linksExpanded);
+              }}
             >
               <LinkIcon size={18} />
               <span>Mis Enlaces</span>
@@ -785,25 +779,55 @@ export function DashboardPage() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                 >
-                  {links.slice(0, 5).map((link, i) => (
-                    <div key={link.id} className="lp-d2-link-item">
-                      <div className="lp-d2-link-info">
-                        <span className="lp-d2-link-slug">/{link.slug}</span>
-                        <span className="lp-d2-link-clicks">{link.views || 0} clicks</span>
-                      </div>
-                      <span className="lp-d2-link-earn">{(link.earnings || 0).toFixed(4)}</span>
-                    </div>
-                  ))}
-                  {links.length === 0 && (
-                    <div className="lp-d2-empty">No tienes enlaces aun</div>
+                  <div className="lp-d2-links-scroll">
+                    {/* Ordenar por views (clicks) descendente y mostrar linksToShow */}
+                    {[...links]
+                      .sort((a, b) => (b.views || 0) - (a.views || 0))
+                      .slice(0, linksToShow)
+                      .map((link, i) => (
+                        <motion.div
+                          key={link.id}
+                          className="lp-d2-link-item"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                        >
+                          <div className="lp-d2-link-info">
+                            <span className="lp-d2-link-slug">/{link.slug}</span>
+                            <span className="lp-d2-link-clicks">{link.views || 0} clicks</span>
+                          </div>
+                          <span className="lp-d2-link-earn">{(link.earnings || 0).toFixed(4)}</span>
+                        </motion.div>
+                      ))}
+                    {links.length === 0 && (
+                      <div className="lp-d2-empty">No tienes enlaces aún</div>
+                    )}
+                  </div>
+                  {/* Botón Ver Más - Solo si hay más enlaces */}
+                  {links.length > linksToShow && (
+                    <motion.button
+                      className="lp-d2-load-more"
+                      onClick={() => setLinksToShow(prev => prev + 30)}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span>Ver más</span>
+                      <span className="lp-d2-load-more-count">
+                        +{Math.min(30, links.length - linksToShow)} enlaces
+                      </span>
+                    </motion.button>
                   )}
-                  {links.length > 5 && (
+                  {/* Botón Ver Todos en página de enlaces */}
+                  {links.length > 0 && (
                     <button
                       className="lp-d2-view-all"
                       onClick={() => navigate('/app/links')}
                     >
-                      Ver todos <ExternalLink size={14} />
+                      Ver todos en Enlaces <ExternalLink size={14} />
                     </button>
                   )}
                 </motion.div>
