@@ -125,7 +125,7 @@ export function DashboardPage() {
     // Calculate filtered revenue
     const revenue = timePeriod === 'all'
       ? (dashboardData?.totalRevenue ?? 0)
-      : filtered.reduce((acc: number, item: any) => acc + (item.revenue || 0), 0);
+      : filtered.reduce((acc: number, item: any) => acc + (item.earnings || 0), 0);
 
     // Prepare chart data
     let chartPoints: { day: number; value: number }[];
@@ -137,7 +137,7 @@ export function DashboardPage() {
       // Map filtered data to chart points
       chartPoints = filtered.map((t: any, i: number) => ({
         day: i,
-        value: t.revenue || 0
+        value: t.earnings || 0
       }));
     }
 
