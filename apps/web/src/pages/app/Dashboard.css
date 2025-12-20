@@ -367,15 +367,23 @@
   gap: 12px;
 }
 
-/* Base Card Style - Transparent */
+/* Base Card Style - Fully Transparent */
 .lp-d2-card {
   position: relative;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: transparent;
+  border: none;
   border-radius: 16px;
   padding: 14px 16px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Make headers centered for both cards */
+.lp-d2-card .lp-d2-card-header {
+  justify-content: center;
 }
 
 .lp-d2-card-header {
@@ -547,11 +555,25 @@
 .lp-d2-chart-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.lp-d2-chart-title {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #e2e8f0;
-  margin-bottom: 10px;
+}
+
+/* Dropdown positioned in chart header */
+.lp-d2-dropdown-chart {
+  right: 0;
+  left: auto;
+  min-width: 120px;
 }
 
 .lp-d2-chart {

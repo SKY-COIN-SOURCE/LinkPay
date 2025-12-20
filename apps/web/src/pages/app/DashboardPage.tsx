@@ -135,7 +135,7 @@ export function DashboardPage() {
 
           {/* ROW 1: EARNINGS + BALANCE */}
           <div className="lp-d2-row-top">
-            {/* EARNINGS CARD with dropdown */}
+            {/* EARNINGS CARD - Centered like balance */}
             <motion.div
               className="lp-d2-card lp-d2-earnings"
               initial={{ opacity: 0, y: 10 }}
@@ -147,34 +147,7 @@ export function DashboardPage() {
                 <span className="lp-d2-label">INGRESOS</span>
               </div>
               <div className="lp-d2-value green">{animatedRevenue.toFixed(4)}</div>
-              <button
-                className="lp-d2-dropdown-btn"
-                onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
-              >
-                {periodLabels[timePeriod]}
-                <ChevronDown size={14} className={showPeriodDropdown ? 'rotated' : ''} />
-              </button>
-
-              <AnimatePresence>
-                {showPeriodDropdown && (
-                  <motion.div
-                    className="lp-d2-dropdown"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                  >
-                    {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
-                      <button
-                        key={p}
-                        className={`lp-d2-dropdown-item ${timePeriod === p ? 'active' : ''}`}
-                        onClick={() => { setTimePeriod(p); setShowPeriodDropdown(false); }}
-                      >
-                        {periodLabels[p]}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <span className="lp-d2-hint">{periodLabels[timePeriod]}</span>
             </motion.div>
 
             {/* BALANCE CARD */}
@@ -194,7 +167,7 @@ export function DashboardPage() {
             </motion.div>
           </div>
 
-          {/* ROW 2: CHART */}
+          {/* ROW 2: CHART with time selector */}
           <motion.div
             className="lp-d2-chart-card"
             initial={{ opacity: 0, y: 10 }}
@@ -202,8 +175,37 @@ export function DashboardPage() {
             transition={{ delay: 0.2 }}
           >
             <div className="lp-d2-chart-header">
-              <TrendingUp size={16} className="lp-d2-icon green" />
-              <span>Ingresos - Ultimos 7 dias</span>
+              <div className="lp-d2-chart-title">
+                <TrendingUp size={16} className="lp-d2-icon green" />
+                <span>Ingresos</span>
+              </div>
+              <button
+                className="lp-d2-dropdown-btn"
+                onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+              >
+                {periodLabels[timePeriod]}
+                <ChevronDown size={14} className={showPeriodDropdown ? 'rotated' : ''} />
+              </button>
+              <AnimatePresence>
+                {showPeriodDropdown && (
+                  <motion.div
+                    className="lp-d2-dropdown lp-d2-dropdown-chart"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                  >
+                    {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
+                      <button
+                        key={p}
+                        className={`lp-d2-dropdown-item ${timePeriod === p ? 'active' : ''}`}
+                        onClick={() => { setTimePeriod(p); setShowPeriodDropdown(false); }}
+                      >
+                        {periodLabels[p]}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             <div className="lp-d2-chart">
               <ResponsiveContainer width="100%" height={80}>
