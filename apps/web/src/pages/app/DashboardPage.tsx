@@ -8,6 +8,7 @@ import {
   BarChart3,
   Users,
   Link as LinkIcon,
+  Link2,
   ChevronDown,
   ChevronUp,
   TrendingUp,
@@ -18,6 +19,7 @@ import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianG
 import { useCachedDashboard, useCachedPayouts } from '../../context/DataCacheContext';
 import { PremiumLoader } from '../../components/PremiumLoader';
 import './Dashboard.css';
+import '../app/Analytics.css'; // Importar estilos de Analytics para reutilizar cards
 
 // Hook para animar números
 function useCountTo(end: number, duration = 1200, skip = false) {
@@ -192,6 +194,15 @@ export function DashboardPage() {
   const hasMoreLinks = useMemo(() => {
     return sortedLinks.length > linksToShow;
   }, [sortedLinks.length, linksToShow]);
+
+  // Format money helper (from Analytics)
+  const formatMoneyShort = useCallback((v: number) => {
+    if (v === 0) return '€0';
+    if (v < 0.01) return `€${v.toFixed(4)}`;
+    if (v < 1) return `€${v.toFixed(2)}`;
+    if (v < 1000) return `€${v.toFixed(2)}`;
+    return `€${(v / 1000).toFixed(1)}k`;
+  }, []);
 
   // Animated values (balance, clicks, rpm - not affected by period filter)
   const animatedBalance = useCountTo(balance, 1200, skipAnimation);
@@ -901,93 +912,156 @@ export function DashboardPage() {
                     }}
                   >
                     {displayedLinks.length === 0 ? (
-                      <motion.div
-                        className="lp-d2-empty-state"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                      >
-                        <LinkIcon size={32} className="lp-d2-empty-icon" />
-                        <span className="lp-d2-empty-title">No tienes enlaces aún</span>
-                        <span className="lp-d2-empty-subtitle">Crea tu primer enlace para empezar</span>
-                        <motion.button
-                          className="lp-d2-empty-cta"
-                          onClick={() => navigate('/app/links')}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          Crear enlace
-                        </motion.button>
-                      </motion.div>
+                      <div className="lpa-empty-links">
+                        <Link2 size={40} className="lpa-empty-icon lpa-3d-icon" />
+                        <div className="lpa-empty-title">Sin enlaces todavía</div>
+                        <div className="lpa-empty-sub">Crea tu primer enlace para empezar</div>
+                      </div>
                     ) : (
-                      displayedLinks.map((link, i) => (
-                        <motion.div
-                          key={link.id}
-                          className="lp-d2-link-item"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: Math.min(i * 0.02, 0.3) }}
-                          role="listitem"
-                        >
-                          <div className="lp-d2-link-info">
-                            <span className="lp-d2-link-slug" title={link.title || link.slug}>
-                              {link.title ? link.title : `/${link.slug}`}
-                            </span>
-                            <span className="lp-d2-link-clicks">{link.views || 0} clicks</span>
-                          </div>
-                          <div className="lp-d2-link-actions">
-                            <span className="lp-d2-link-earn">{(link.earnings || 0).toFixed(4)}</span>
-                            <motion.button
-                              className="lp-d2-link-copy"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const url = `${window.location.origin}/${link.slug}`;
-                                navigator.clipboard.writeText(url);
-                                // Visual feedback (opcional: podrías añadir un toast)
-                              }}
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              aria-label={`Copiar enlace ${link.slug}`}
-                              title="Copiar enlace"
-                            >
-                              <Copy size={14} />
-                            </motion.button>
-                          </div>
-                        </motion.div>
-                      ))
+                      <div className="lpa-link-cards">
+                        <AnimatePresence mode="sync">
+                          {displayedLinks.map((link, i) => {
+                            const clicks = link.views || 0;
+                            const earnings = link.earnings || 0;
+                            const maxEarnings = sortedLinks.reduce((max, l) => Math.max(max, l.earnings || 0), 1);
+                            const pct = maxEarnings > 0 ? (earnings / maxEarnings) * 100 : 0;
+                            const epc = clicks > 0 ? earnings / clicks : 0;
+
+                            // Top 3 get medals, rest get number
+                            const medals = [
+                              { emoji: '🥇', name: 'gold', color: '#fbbf24', bg: 'linear-gradient(145deg, #fde047 0%, #fbbf24 30%, #b45309 100%)' },
+                              { emoji: '🥈', name: 'silver', color: '#94a3b8', bg: 'linear-gradient(145deg, #e2e8f0 0%, #94a3b8 30%, #475569 100%)' },
+                              { emoji: '🥉', name: 'bronze', color: '#f97316', bg: 'linear-gradient(145deg, #fdba74 0%, #f97316 30%, #7c2d12 100%)' },
+                            ];
+                            const isTop3 = i < 3;
+                            const medal = isTop3 ? medals[i] : { emoji: `${i + 1}`, name: 'rank', color: '#3b82f6', bg: 'linear-gradient(145deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)' };
+
+                            return (
+                              <motion.div
+                                className={`lpa-link-card ${isTop3 ? `medal-${medal.name}` : 'rank-card'}`}
+                                key={link.id}
+                                initial={{ opacity: 0, y: 25, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                transition={{ delay: isTop3 ? 0.1 + i * 0.12 : 0.05, type: 'spring', stiffness: 180, damping: 15 }}
+                                whileHover={{ scale: 1.03, y: -4 }}
+                                whileTap={{ scale: 0.97 }}
+                                layout
+                                onClick={() => {
+                                  const url = `${window.location.origin}/${link.slug}`;
+                                  navigator.clipboard.writeText(url);
+                                }}
+                                role="listitem"
+                              >
+                                {/* 4K DETAIL MEDAL */}
+                                <motion.div
+                                  className={`lpa-medal-3d ${isTop3 ? `medal-${medal.name}` : 'rank-badge'}`}
+                                  style={{ background: medal.bg }}
+                                  whileHover={{
+                                    rotateY: 20,
+                                    rotateX: -10,
+                                    scale: 1.15
+                                  }}
+                                  animate={isTop3 ? {
+                                    y: [0, -3, 0],
+                                    rotateY: [0, 4, 0, -4, 0],
+                                    rotateX: [0, -2, 0, 2, 0],
+                                  } : {}}
+                                  transition={isTop3 ? {
+                                    duration: 3.5 + i * 0.5,
+                                    repeat: Infinity,
+                                    ease: 'easeInOut'
+                                  } : {}}
+                                >
+                                  <motion.span
+                                    className="lpa-medal-emoji"
+                                    animate={isTop3 ? {
+                                      scale: [1, 1.05, 1],
+                                    } : {}}
+                                    transition={isTop3 ? {
+                                      duration: 2.5 + i * 0.3,
+                                      repeat: Infinity,
+                                      ease: 'easeInOut'
+                                    } : {}}
+                                  >
+                                    {medal.emoji}
+                                  </motion.span>
+                                </motion.div>
+
+                                {/* Main Content */}
+                                <div className="lpa-link-card-content">
+                                  {/* Header */}
+                                  <div className="lpa-link-card-header">
+                                    <span className="lpa-link-card-title">{link.title || link.slug}</span>
+                                    <span className="lpa-link-card-earnings">{formatMoneyShort(earnings)}</span>
+                                  </div>
+
+                                  {/* Progress Bar */}
+                                  <div className="lpa-link-card-progress">
+                                    <motion.div
+                                      className="lpa-link-card-progress-fill"
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${pct}%` }}
+                                      transition={{ delay: 0.3 + i * 0.08, duration: 0.6, ease: 'easeOut' }}
+                                      style={{
+                                        background: `linear-gradient(90deg, ${medal.color}, ${medal.color}88)`
+                                      }}
+                                    />
+                                  </div>
+
+                                  {/* Stats Row */}
+                                  <div className="lpa-link-card-stats">
+                                    <div className="lpa-link-card-stat">
+                                      <MousePointer2 size={12} className="lpa-3d-icon-sm" />
+                                      <span>{clicks} clicks</span>
+                                    </div>
+                                    {clicks > 0 && (
+                                      <div className="lpa-link-card-stat epc">
+                                        <TrendingUp size={12} className="lpa-3d-icon-sm" />
+                                        <span>€{epc.toFixed(4)}</span>
+                                      </div>
+                                    )}
+                                    <div className="lpa-link-card-stat slug">
+                                      <ExternalLink size={12} className="lpa-3d-icon-sm" />
+                                      <span>/{link.slug}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </div>
                     )}
                   </div>
                   
-                  {/* Botón Ver Más - Solo si hay más enlaces */}
+                  {/* Botón Ver Más - Reutilizando estilo de Analytics */}
                   {hasMoreLinks && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
+                    <motion.button
+                      className="lpa-links-expand-btn"
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      aria-label={`Cargar ${Math.min(30, sortedLinks.length - linksToShow)} enlaces más`}
                     >
-                      <motion.button
-                        className="lp-d2-load-more"
-                        onClick={handleLoadMore}
-                        disabled={isLoadingMore}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        aria-label={`Cargar ${Math.min(30, sortedLinks.length - linksToShow)} enlaces más`}
-                      >
-                        {isLoadingMore ? (
-                          <>
-                            <span className="lp-d2-loading-spinner" />
-                            <span>Cargando...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Ver más</span>
-                            <span className="lp-d2-load-more-count">
-                              +{Math.min(30, sortedLinks.length - linksToShow)} enlaces
-                            </span>
-                          </>
-                        )}
-                      </motion.button>
-                    </motion.div>
+                      {isLoadingMore ? (
+                        <>
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          >
+                            <ChevronDown size={18} />
+                          </motion.div>
+                          <span>Cargando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown size={18} />
+                          <span>Ver {Math.min(30, sortedLinks.length - linksToShow)} más</span>
+                        </>
+                      )}
+                    </motion.button>
                   )}
 
                   {/* Mensaje "Fin de resultados" cuando no hay más */}

@@ -1071,7 +1071,7 @@
 /* Container con scroll para los enlaces - FIXED */
 .lp-d2-links-scroll {
   /* Fixed max-height to prevent infinite growth */
-  max-height: min(45vh, 500px);
+  max-height: min(50vh, 600px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -1090,6 +1090,43 @@
   /* Smooth rendering */
   transform: translateZ(0);
   will-change: scroll-position;
+}
+
+/* Adaptar cards de Analytics para Dashboard */
+.lp-d2-links-scroll .lpa-link-cards {
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.lp-d2-links-scroll .lpa-link-card {
+  padding: 14px;
+  border-radius: 16px;
+}
+
+.lp-d2-links-scroll .lpa-medal-3d {
+  width: 50px;
+  height: 50px;
+}
+
+.lp-d2-links-scroll .lpa-medal-3d .lpa-medal-emoji {
+  font-size: 28px;
+}
+
+.lp-d2-links-scroll .lpa-link-card-title {
+  font-size: 14px;
+}
+
+.lp-d2-links-scroll .lpa-link-card-earnings {
+  font-size: 15px;
+}
+
+.lp-d2-links-scroll .lpa-link-card-stat {
+  font-size: 10px;
+}
+
+.lp-d2-links-scroll .lpa-link-card-stat svg {
+  width: 11px;
+  height: 11px;
 }
 
 .lp-d2-links-scroll::-webkit-scrollbar {
@@ -1247,63 +1284,15 @@
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
 }
 
-/* Botón Ver Más - Premium */
-.lp-d2-load-more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
+/* Botón Ver Más - Reutilizando estilo de Analytics */
+.lp-d2-links-list .lpa-links-expand-btn {
+  margin-top: 12px;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: 10px;
-  color: #a5b4fc;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
 }
 
-.lp-d2-load-more:disabled {
+.lp-d2-links-list .lpa-links-expand-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-}
-
-.lp-d2-load-more:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.15) 100%);
-  border-color: rgba(129, 140, 248, 0.5);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
-}
-
-.lp-d2-load-more:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.lp-d2-load-more-count {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* Loading spinner */
-.lp-d2-loading-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(99, 102, 241, 0.3);
-  border-top-color: #a5b4fc;
-  border-radius: 50%;
-  animation: lp-spin 0.6s linear infinite;
-}
-
-@keyframes lp-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* End message */
@@ -1358,46 +1347,37 @@
 
   /* Links section mobile */
   .lp-d2-links-scroll {
-    max-height: min(40vh, 400px);
+    max-height: min(45vh, 500px);
   }
 
-  .lp-d2-link-item {
-    padding: 8px 10px;
-    gap: 8px;
+  .lp-d2-links-scroll .lpa-link-card {
+    padding: 12px;
   }
 
-  .lp-d2-link-slug {
-    font-size: 12px;
+  .lp-d2-links-scroll .lpa-medal-3d {
+    width: 44px;
+    height: 44px;
   }
 
-  .lp-d2-link-clicks {
-    font-size: 9px;
+  .lp-d2-links-scroll .lpa-medal-3d .lpa-medal-emoji {
+    font-size: 24px;
   }
 
-  .lp-d2-link-earn {
-    font-size: 12px;
+  .lp-d2-links-scroll .lpa-link-card-title {
+    font-size: 13px;
   }
 
-  .lp-d2-link-copy {
-    width: 24px;
-    height: 24px;
-  }
-
-  .lp-d2-link-copy svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .lp-d2-empty-state {
-    padding: 30px 16px;
-  }
-
-  .lp-d2-empty-title {
+  .lp-d2-links-scroll .lpa-link-card-earnings {
     font-size: 14px;
   }
 
-  .lp-d2-empty-subtitle {
-    font-size: 11px;
+  .lp-d2-links-scroll .lpa-link-card-stat {
+    font-size: 9px;
+  }
+
+  .lp-d2-links-scroll .lpa-link-card-stat svg {
+    width: 10px;
+    height: 10px;
   }
 }
 
