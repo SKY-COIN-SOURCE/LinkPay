@@ -13,7 +13,7 @@ import {
   TrendingUp,
   ExternalLink,
 } from 'lucide-react';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useCachedDashboard, useCachedPayouts } from '../../context/DataCacheContext';
 import { PremiumLoader } from '../../components/PremiumLoader';
 import './Dashboard.css';
@@ -127,17 +127,38 @@ export function DashboardPage() {
       ? (dashboardData?.totalRevenue ?? 0)
       : filtered.reduce((acc: number, item: any) => acc + (item.earnings || 0), 0);
 
-    // Prepare chart data
-    let chartPoints: { day: number; value: number }[];
+    // Generate date labels based on period
+    const generateLabel = (index: number, item?: any) => {
+      if (item?.date) {
+        const d = new Date(item.date);
+        if (timePeriod === 'today') return `${d.getHours()}h`;
+        if (timePeriod === 'week') return ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'][d.getDay()];
+        if (timePeriod === 'month') return `${d.getDate()}`;
+        return `${d.getDate()}/${d.getMonth() + 1}`;
+      }
+      // Fallback labels
+      if (timePeriod === 'today') return `${index}h`;
+      if (timePeriod === 'week') return ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'][index % 7];
+      if (timePeriod === 'month') return `${index + 1}`;
+      return `${index + 1}`;
+    };
+
+    // Prepare chart data with labels
+    let chartPoints: { day: number; value: number; label: string }[];
     if (filtered.length === 0) {
       // Fallback: generate placeholder points
       const numPoints = timePeriod === 'today' ? 24 : timePeriod === 'week' ? 7 : timePeriod === 'month' ? 30 : 7;
-      chartPoints = Array.from({ length: numPoints }, (_, i) => ({ day: i, value: 0 }));
+      chartPoints = Array.from({ length: numPoints }, (_, i) => ({
+        day: i,
+        value: 0,
+        label: generateLabel(i)
+      }));
     } else {
-      // Map filtered data to chart points
+      // Map filtered data to chart points with labels
       chartPoints = filtered.map((t: any, i: number) => ({
         day: i,
-        value: t.earnings || 0
+        value: t.earnings || 0,
+        label: generateLabel(i, t)
       }));
     }
 
@@ -245,20 +266,48 @@ export function DashboardPage() {
               </AnimatePresence>
             </div>
             <div className="lp-d2-chart">
-              <ResponsiveContainer width="100%" height={80}>
-                <AreaChart data={chartData}>
+              <ResponsiveContainer width="100%" height={180}>
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.5} />
+                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0.05} />
                     </linearGradient>
                   </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.1)" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    tickFormatter={(value) => `€${value.toFixed(2)}`}
+                    width={50}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'rgba(15, 23, 42, 0.95)',
+                      border: '1px solid rgba(74, 222, 128, 0.3)',
+                      borderRadius: '10px',
+                      padding: '10px 14px'
+                    }}
+                    labelStyle={{ color: '#94a3b8', fontSize: '11px', marginBottom: '4px' }}
+                    itemStyle={{ color: '#4ade80', fontWeight: 700, fontSize: '14px' }}
+                    formatter={(value: number) => [`€${value.toFixed(4)}`, 'Ingresos']}
+                  />
                   <Area
                     type="monotone"
                     dataKey="value"
                     stroke="#22c55e"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     fill="url(#chartGradient)"
+                    dot={false}
+                    activeDot={{ r: 6, fill: '#22c55e', stroke: '#fff', strokeWidth: 2 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
