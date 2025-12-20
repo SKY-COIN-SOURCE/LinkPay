@@ -91,24 +91,61 @@ export function DashboardPage() {
     return [...links].sort((a, b) => (b.earnings || 0) - (a.earnings || 0))[0];
   }, [links]);
 
-  // Animated values
-  const animatedRevenue = useCountTo(stats.totalRevenue, 1200, skipAnimation);
+  // Animated values (balance, clicks, rpm - not affected by period filter)
   const animatedBalance = useCountTo(balance, 1200, skipAnimation);
   const animatedClicks = useCountTo(stats.totalClicks, 1200, skipAnimation);
   const animatedRpm = useCountTo(rpm, 1200, skipAnimation);
 
-  // Chart data from timeline (simplified)
-  const chartData = useMemo(() => {
+  // Filter revenue and chart data by selected time period
+  const { filteredRevenue, chartData } = useMemo(() => {
     const timeline = dashboardData?.timeline || [];
-    if (timeline.length === 0) {
-      // Fallback data for visual
-      return Array.from({ length: 7 }, (_, i) => ({ day: i, value: Math.random() * 0.01 }));
+    const now = new Date();
+
+    // Filter timeline by period
+    const filterByPeriod = (data: any[]) => {
+      if (timePeriod === 'all') return data;
+
+      const cutoff = new Date();
+      if (timePeriod === 'today') {
+        cutoff.setHours(0, 0, 0, 0); // Start of today
+      } else if (timePeriod === 'week') {
+        cutoff.setDate(now.getDate() - 7);
+      } else if (timePeriod === 'month') {
+        cutoff.setDate(now.getDate() - 30);
+      }
+
+      return data.filter((item: any) => {
+        const itemDate = new Date(item.date || item.created_at);
+        return itemDate >= cutoff;
+      });
+    };
+
+    const filtered = filterByPeriod(timeline);
+
+    // Calculate filtered revenue
+    const revenue = timePeriod === 'all'
+      ? (dashboardData?.totalRevenue ?? 0)
+      : filtered.reduce((acc: number, item: any) => acc + (item.revenue || 0), 0);
+
+    // Prepare chart data
+    let chartPoints: { day: number; value: number }[];
+    if (filtered.length === 0) {
+      // Fallback: generate placeholder points
+      const numPoints = timePeriod === 'today' ? 24 : timePeriod === 'week' ? 7 : timePeriod === 'month' ? 30 : 7;
+      chartPoints = Array.from({ length: numPoints }, (_, i) => ({ day: i, value: 0 }));
+    } else {
+      // Map filtered data to chart points
+      chartPoints = filtered.map((t: any, i: number) => ({
+        day: i,
+        value: t.revenue || 0
+      }));
     }
-    return timeline.slice(-7).map((t: any, i: number) => ({
-      day: i,
-      value: t.revenue || 0
-    }));
-  }, [dashboardData?.timeline]);
+
+    return { filteredRevenue: revenue, chartData: chartPoints };
+  }, [dashboardData?.timeline, dashboardData?.totalRevenue, timePeriod]);
+
+  // Animated revenue (responds to period filter)
+  const animatedRevenue = useCountTo(filteredRevenue, 800, false);
 
   // Period labels
   const periodLabels: Record<TimePeriod, string> = {
