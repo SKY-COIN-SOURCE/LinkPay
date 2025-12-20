@@ -912,14 +912,17 @@
   align-items: center;
   justify-content: center;
   padding: 14px 10px;
-  background: transparent;
-  border: none;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .lp-d2-stat:hover {
+  background: rgba(15, 23, 42, 0.5);
   transform: translateY(-1px);
 }
 
@@ -980,12 +983,14 @@
   border-top: 2px solid #6366f1;
 }
 
-/* LINKS SECTION - Collapsible - Transparent */
+/* LINKS SECTION - Collapsible - Subtle Glass */
 .lp-d2-links-section {
-  background: transparent;
-  border: none;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 14px;
   overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .lp-d2-links-toggle {
