@@ -12,6 +12,7 @@ import {
   ChevronUp,
   TrendingUp,
   ExternalLink,
+  Copy,
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useCachedDashboard, useCachedPayouts } from '../../context/DataCacheContext';
@@ -63,8 +64,11 @@ export function DashboardPage() {
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [linksExpanded, setLinksExpanded] = useState(false);
   const [linksToShow, setLinksToShow] = useState(30); // Paginación de 30 en 30
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const dropdownButtonRef = React.useRef<HTMLButtonElement>(null);
   const chartHeaderRef = React.useRef<HTMLDivElement>(null);
+  const linksDropdownRef = React.useRef<HTMLDivElement>(null);
+  const linksScrollRef = React.useRef<HTMLDivElement>(null);
 
   // Animation skip for cached data
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -74,15 +78,17 @@ export function DashboardPage() {
     if (!loading && dashboardData) setHasAnimated(true);
   }, [loading, dashboardData]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: Event) => {
       const target = event.target as Node;
+      
+      // Close period dropdown
       if (
         showPeriodDropdown &&
         dropdownButtonRef.current &&
         !dropdownButtonRef.current.contains(target) &&
-        !(target as HTMLElement).closest?.('.lp-d2-dropdown')
+        !(target as HTMLElement).closest?.('.lp-d2-dropdown-time')
       ) {
         setShowPeriodDropdown(false);
       }
@@ -98,6 +104,58 @@ export function DashboardPage() {
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [showPeriodDropdown]);
+
+  // Prevent body scroll when links dropdown is open (scroll bleed prevention)
+  useEffect(() => {
+    if (linksExpanded) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore scroll position
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [linksExpanded]);
+
+  // Handle keyboard navigation (ESC to close)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showPeriodDropdown) {
+          setShowPeriodDropdown(false);
+        }
+        if (linksExpanded) {
+          setLinksExpanded(false);
+        }
+      }
+    };
+
+    if (showPeriodDropdown || linksExpanded) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showPeriodDropdown, linksExpanded]);
+
+  // Load more links handler
+  const handleLoadMore = useCallback(() => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+    // Simulate slight delay for smooth UX
+    setTimeout(() => {
+      setLinksToShow(prev => prev + 30);
+      setIsLoadingMore(false);
+    }, 150);
+  }, [isLoadingMore]);
 
   // Stats from real data
   const stats = useMemo(() => ({
@@ -118,6 +176,22 @@ export function DashboardPage() {
     if (!links || links.length === 0) return null;
     return [...links].sort((a, b) => (b.earnings || 0) - (a.earnings || 0))[0];
   }, [links]);
+
+  // Sorted links by views (descending) for dropdown
+  const sortedLinks = useMemo(() => {
+    if (!links || links.length === 0) return [];
+    return [...links].sort((a, b) => (b.views || 0) - (a.views || 0));
+  }, [links]);
+
+  // Links to display (paginated)
+  const displayedLinks = useMemo(() => {
+    return sortedLinks.slice(0, linksToShow);
+  }, [sortedLinks, linksToShow]);
+
+  // Check if there are more links to load
+  const hasMoreLinks = useMemo(() => {
+    return sortedLinks.length > linksToShow;
+  }, [sortedLinks.length, linksToShow]);
 
   // Animated values (balance, clicks, rpm - not affected by period filter)
   const animatedBalance = useCountTo(balance, 1200, skipAnimation);
@@ -543,6 +617,15 @@ export function DashboardPage() {
                   ref={dropdownButtonRef}
                   className="lp-d2-dropdown-btn"
                   onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setShowPeriodDropdown(!showPeriodDropdown);
+                    }
+                  }}
+                  aria-expanded={showPeriodDropdown}
+                  aria-haspopup="true"
+                  aria-label={`Período seleccionado: ${periodLabels[timePeriod]}`}
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.2 }}
@@ -558,12 +641,23 @@ export function DashboardPage() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -5, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
+                      role="menu"
+                      aria-label="Seleccionar período"
                     >
                       {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
                         <motion.button
                           key={p}
                           className={`lp-d2-dropdown-item ${timePeriod === p ? 'active' : ''}`}
                           onClick={() => { setTimePeriod(p); setShowPeriodDropdown(false); }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setTimePeriod(p);
+                              setShowPeriodDropdown(false);
+                            }
+                          }}
+                          role="menuitem"
+                          aria-label={periodLabels[p]}
                           whileHover={{ x: 2 }}
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.15 }}
@@ -765,6 +859,15 @@ export function DashboardPage() {
                 }
                 setLinksExpanded(!linksExpanded);
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setLinksExpanded(!linksExpanded);
+                }
+              }}
+              aria-expanded={linksExpanded}
+              aria-controls="links-dropdown"
+              aria-label={`${linksExpanded ? 'Cerrar' : 'Abrir'} lista de enlaces`}
             >
               <LinkIcon size={18} />
               <span>Mis Enlaces</span>
@@ -775,60 +878,140 @@ export function DashboardPage() {
             <AnimatePresence>
               {linksExpanded && (
                 <motion.div
+                  ref={linksDropdownRef}
+                  id="links-dropdown"
                   className="lp-d2-links-list"
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  role="region"
+                  aria-label="Lista de enlaces"
                 >
-                  <div className="lp-d2-links-scroll">
-                    {/* Ordenar por views (clicks) descendente y mostrar linksToShow */}
-                    {[...links]
-                      .sort((a, b) => (b.views || 0) - (a.views || 0))
-                      .slice(0, linksToShow)
-                      .map((link, i) => (
+                  <div 
+                    ref={linksScrollRef}
+                    className="lp-d2-links-scroll"
+                    onWheel={(e) => {
+                      // Prevent scroll bleed: stop propagation when scrolling inside
+                      e.stopPropagation();
+                    }}
+                    onTouchMove={(e) => {
+                      // Prevent scroll bleed on touch devices
+                      e.stopPropagation();
+                    }}
+                  >
+                    {displayedLinks.length === 0 ? (
+                      <motion.div
+                        className="lp-d2-empty-state"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        <LinkIcon size={32} className="lp-d2-empty-icon" />
+                        <span className="lp-d2-empty-title">No tienes enlaces aún</span>
+                        <span className="lp-d2-empty-subtitle">Crea tu primer enlace para empezar</span>
+                        <motion.button
+                          className="lp-d2-empty-cta"
+                          onClick={() => navigate('/app/links')}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Crear enlace
+                        </motion.button>
+                      </motion.div>
+                    ) : (
+                      displayedLinks.map((link, i) => (
                         <motion.div
                           key={link.id}
                           className="lp-d2-link-item"
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                          role="listitem"
                         >
                           <div className="lp-d2-link-info">
-                            <span className="lp-d2-link-slug">/{link.slug}</span>
+                            <span className="lp-d2-link-slug" title={link.title || link.slug}>
+                              {link.title ? link.title : `/${link.slug}`}
+                            </span>
                             <span className="lp-d2-link-clicks">{link.views || 0} clicks</span>
                           </div>
-                          <span className="lp-d2-link-earn">{(link.earnings || 0).toFixed(4)}</span>
+                          <div className="lp-d2-link-actions">
+                            <span className="lp-d2-link-earn">{(link.earnings || 0).toFixed(4)}</span>
+                            <motion.button
+                              className="lp-d2-link-copy"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const url = `${window.location.origin}/${link.slug}`;
+                                navigator.clipboard.writeText(url);
+                                // Visual feedback (opcional: podrías añadir un toast)
+                              }}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              aria-label={`Copiar enlace ${link.slug}`}
+                              title="Copiar enlace"
+                            >
+                              <Copy size={14} />
+                            </motion.button>
+                          </div>
                         </motion.div>
-                      ))}
-                    {links.length === 0 && (
-                      <div className="lp-d2-empty">No tienes enlaces aún</div>
+                      ))
                     )}
                   </div>
+                  
                   {/* Botón Ver Más - Solo si hay más enlaces */}
-                  {links.length > linksToShow && (
-                    <motion.button
-                      className="lp-d2-load-more"
-                      onClick={() => setLinksToShow(prev => prev + 30)}
+                  {hasMoreLinks && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <motion.button
+                        className="lp-d2-load-more"
+                        onClick={handleLoadMore}
+                        disabled={isLoadingMore}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        aria-label={`Cargar ${Math.min(30, sortedLinks.length - linksToShow)} enlaces más`}
+                      >
+                        {isLoadingMore ? (
+                          <>
+                            <span className="lp-d2-loading-spinner" />
+                            <span>Cargando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Ver más</span>
+                            <span className="lp-d2-load-more-count">
+                              +{Math.min(30, sortedLinks.length - linksToShow)} enlaces
+                            </span>
+                          </>
+                        )}
+                      </motion.button>
+                    </motion.div>
+                  )}
+
+                  {/* Mensaje "Fin de resultados" cuando no hay más */}
+                  {!hasMoreLinks && displayedLinks.length > 0 && (
+                    <motion.div
+                      className="lp-d2-end-message"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                     >
-                      <span>Ver más</span>
-                      <span className="lp-d2-load-more-count">
-                        +{Math.min(30, links.length - linksToShow)} enlaces
-                      </span>
-                    </motion.button>
+                      <span>Fin de resultados</span>
+                    </motion.div>
                   )}
+
                   {/* Botón Ver Todos en página de enlaces */}
                   {links.length > 0 && (
-                    <button
+                    <motion.button
                       className="lp-d2-view-all"
                       onClick={() => navigate('/app/links')}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      aria-label="Ver todos los enlaces en la página de enlaces"
                     >
                       Ver todos en Enlaces <ExternalLink size={14} />
-                    </button>
+                    </motion.button>
                   )}
                 </motion.div>
               )}
