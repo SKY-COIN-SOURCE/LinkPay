@@ -358,6 +358,8 @@
   max-width: 500px;
   margin: 0 auto;
   width: 100%;
+  /* Transición suave para el padding cuando se extiende */
+  transition: padding-bottom 0.3s ease;
 }
 
 /* TOP ROW: Earnings + Balance */
@@ -1021,6 +1023,8 @@
   isolation: isolate;
   /* Asegurar que el fondo se extienda con el contenido */
   z-index: 1;
+  /* El fondo se extiende con el contenido */
+  min-height: fit-content;
 }
 
 .lp-d2-links-toggle {
@@ -1084,33 +1088,14 @@
   background: inherit;
 }
 
-/* Container con scroll para los enlaces - FIXED */
+/* Container para los enlaces - SIN SCROLL INTERNO, el dashboard se extiende */
 .lp-d2-links-scroll {
-  /* Fixed max-height to prevent infinite growth */
-  max-height: min(60vh, 700px);
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* NO max-height - deja que el contenido se muestre completo */
+  overflow: visible;
   padding: 4px 4px 8px 0;
   margin: 0;
-  /* Scroll suave y premium */
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  /* Scrollbar premium */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
-  /* Prevent scroll bleed - CRITICAL */
-  overscroll-behavior: contain;
-  -webkit-overscroll-behavior: contain;
-  overscroll-behavior-y: contain;
-  overscroll-behavior-x: none;
-  /* Ensure proper containment */
-  contain: layout style paint;
   /* Smooth rendering */
   transform: translateZ(0);
-  will-change: scroll-position;
-  /* Touch action for mobile */
-  touch-action: pan-y;
-  /* Asegurar que el scroll esté contenido */
   position: relative;
   z-index: 10;
 }

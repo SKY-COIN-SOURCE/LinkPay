@@ -108,28 +108,7 @@ export function DashboardPage() {
     };
   }, [showPeriodDropdown]);
 
-  // Prevent body scroll when links dropdown is open (scroll bleed prevention) - CONSERVATIVE
-  useEffect(() => {
-    if (linksExpanded) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      
-      // Lock body scroll - CONSERVATIVE (only body, no shell manipulation)
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      
-      return () => {
-        // Restore scroll position
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [linksExpanded]);
+  // NO bloqueamos el scroll - dejamos que el dashboard se extienda naturalmente
 
   // Handle keyboard navigation (ESC to close)
   useEffect(() => {
@@ -205,19 +184,60 @@ export function DashboardPage() {
     return sortedLinks.length > linksToShow;
   }, [sortedLinks.length, linksToShow]);
 
-  // Recalculate height when displayed links change
+  // Calculate and extend dashboard when links are expanded
+  const dashboardRef = React.useRef<HTMLDivElement>(null);
+  const shellRef = React.useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
-    if (linksExpanded && linksDropdownRef.current && linksContentRef.current) {
-      const updateHeight = () => {
-        if (linksDropdownRef.current && linksContentRef.current) {
-          linksDropdownRef.current.style.height = `${linksContentRef.current.scrollHeight}px`;
+    if (linksExpanded && linksContentRef.current && dashboardRef.current && shellRef.current) {
+      const updateDashboardHeight = () => {
+        if (linksContentRef.current && dashboardRef.current && shellRef.current) {
+          // Calculate the height needed for the links content
+          const contentHeight = linksContentRef.current.scrollHeight;
+          // Add extra padding to ensure everything fits
+          const extraPadding = 120; // Extra space for buttons and spacing
+          const totalHeight = contentHeight + extraPadding;
+          
+          // Apply padding-bottom to dashboard to extend it
+          dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
+          
+          // Enable scroll on shell
+          shellRef.current.style.overflowY = 'auto';
+          shellRef.current.style.overflowX = 'hidden';
         }
       };
+      
       // Update immediately
-      updateHeight();
-      // Also update after a short delay to catch any async rendering
-      const timeout = setTimeout(updateHeight, 100);
-      return () => clearTimeout(timeout);
+      updateDashboardHeight();
+      // Also update after delays to catch any async rendering
+      const timeout = setTimeout(updateDashboardHeight, 100);
+      const timeout2 = setTimeout(updateDashboardHeight, 300);
+      const timeout3 = setTimeout(updateDashboardHeight, 500);
+      
+      return () => {
+        clearTimeout(timeout);
+        clearTimeout(timeout2);
+        clearTimeout(timeout3);
+        // Reset padding when closed
+        if (dashboardRef.current) {
+          dashboardRef.current.style.paddingBottom = '';
+        }
+        // Reset shell overflow
+        if (shellRef.current) {
+          shellRef.current.style.overflowY = '';
+          shellRef.current.style.overflowX = '';
+        }
+      };
+    } else {
+      // Reset padding when closed
+      if (dashboardRef.current) {
+        dashboardRef.current.style.paddingBottom = '';
+      }
+      // Reset shell overflow
+      if (shellRef.current) {
+        shellRef.current.style.overflowY = '';
+        shellRef.current.style.overflowX = '';
+      }
     }
   }, [linksExpanded, displayedLinks.length, linksToShow]);
 
@@ -599,8 +619,8 @@ export function DashboardPage() {
         <div className="lp-bg-glow" />
       </div>
 
-      <div className="lp-dashboard-shell">
-        <div className="lp-dashboard-2">
+      <div className="lp-dashboard-shell" ref={shellRef}>
+        <div className="lp-dashboard-2" ref={dashboardRef}>
 
           {/* ROW 1: EARNINGS + BALANCE */}
           <div className="lp-d2-row-top">
@@ -938,14 +958,6 @@ export function DashboardPage() {
                     <div 
                       ref={linksScrollRef}
                       className="lp-d2-links-scroll"
-                      onWheel={(e) => {
-                        // Prevent scroll bleed: stop propagation when scrolling inside
-                        e.stopPropagation();
-                      }}
-                      onTouchMove={(e) => {
-                        // Allow touch scroll inside dropdown, prevent outside
-                        e.stopPropagation();
-                      }}
                     >
                     {displayedLinks.length === 0 ? (
                       <div className="lpa-empty-links">
