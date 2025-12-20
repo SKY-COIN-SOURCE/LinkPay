@@ -1012,7 +1012,7 @@
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
-  overflow: visible;
+  overflow: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -1073,9 +1073,9 @@
 }
 
 .lp-d2-links-content {
-  padding: 12px;
-  padding-top: 0;
+  padding: 0 12px 12px;
   overflow: visible;
+  display: block;
 }
 
 /* Container con scroll para los enlaces - FIXED */
