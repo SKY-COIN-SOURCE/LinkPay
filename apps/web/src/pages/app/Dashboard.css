@@ -254,10 +254,14 @@
   display: flex;
   justify-content: center;
   overflow: hidden;
+  overflow-x: hidden; /* BLOQUEAR SCROLL HORIZONTAL */
   -webkit-overflow-scrolling: touch;
   z-index: 1;
   /* Cuando tiene scroll activo, permitir scroll suave */
   scroll-behavior: smooth;
+  /* Bloquear scroll horizontal completamente */
+  max-width: 100vw;
+  position: relative;
 }
 
 @media (min-width: 769px) {
@@ -362,6 +366,10 @@
   width: 100%;
   /* Transición suave para el padding cuando se extiende */
   transition: padding-bottom 0.3s ease;
+  /* Bloquear scroll horizontal */
+  overflow-x: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* TOP ROW: Earnings + Balance */
@@ -1027,6 +1035,9 @@
   z-index: 1;
   /* El fondo se extiende con el contenido */
   min-height: fit-content;
+  /* Bloquear scroll horizontal */
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .lp-d2-links-toggle {
@@ -1100,12 +1111,16 @@
 .lp-d2-links-scroll {
   /* NO max-height - deja que el contenido se muestre completo */
   overflow: visible;
-  padding: 4px 4px 8px 0;
+  overflow-x: hidden;
+  padding: 4px 4px 0 0;
   margin: 0;
   /* Smooth rendering */
   transform: translateZ(0);
   position: relative;
   z-index: 10;
+  /* Bloquear scroll horizontal */
+  max-width: 100%;
+  width: 100%;
 }
 
 /* Adaptar cards de Analytics para Dashboard */

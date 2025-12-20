@@ -184,45 +184,52 @@ export function DashboardPage() {
     return sortedLinks.length > linksToShow;
   }, [sortedLinks.length, linksToShow]);
 
-  // Calculate and extend dashboard when links are expanded
+  // Calculate and extend dashboard when links are expanded - PRODUCTION READY
   const dashboardRef = React.useRef<HTMLDivElement>(null);
   const shellRef = React.useRef<HTMLDivElement>(null);
+  const linksSectionRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (linksExpanded && linksDropdownRef.current && dashboardRef.current && shellRef.current) {
+    if (linksExpanded && linksSectionRef.current && dashboardRef.current && shellRef.current) {
       const updateDashboardHeight = () => {
-        if (linksDropdownRef.current && dashboardRef.current && shellRef.current) {
-          // Calculate the height needed for the ENTIRE dropdown (includes buttons)
-          const dropdownHeight = linksDropdownRef.current.scrollHeight;
-          
-          // Add extra padding for:
-          // - Space before navigation bar (150px)
-          // - Extra breathing room (80px)
-          // - Safe area at bottom (40px)
-          const extraPadding = 270;
-          const totalHeight = dropdownHeight + extraPadding;
-          
-          // Apply padding-bottom to dashboard to extend it
-          dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
-          
-          // Enable scroll on shell
-          shellRef.current.style.overflowY = 'auto';
-          shellRef.current.style.overflowX = 'hidden';
-          shellRef.current.style.overflow = 'auto';
+        if (linksSectionRef.current && dashboardRef.current && shellRef.current) {
+          // Wait for next frame to ensure all content is rendered
+          requestAnimationFrame(() => {
+            if (linksSectionRef.current && dashboardRef.current && shellRef.current) {
+              // Calculate the height needed for the ENTIRE section (includes toggle + dropdown + buttons)
+              const sectionHeight = linksSectionRef.current.scrollHeight;
+              
+              // Add extra padding for:
+              // - Space before navigation bar (180px - nav height + safe area)
+              // - Extra breathing room (100px)
+              // - Bottom safe area (40px)
+              const extraPadding = 320;
+              const totalHeight = sectionHeight + extraPadding;
+              
+              // Apply padding-bottom to dashboard to extend it
+              dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
+              
+              // Enable scroll on shell - BLOQUEAR HORIZONTAL
+              shellRef.current.style.overflowY = 'auto';
+              shellRef.current.style.overflowX = 'hidden';
+              shellRef.current.style.overflow = 'hidden auto';
+            }
+          });
         }
       };
       
-      // Update immediately
+      // Update with multiple delays to catch all render cycles
       updateDashboardHeight();
-      // Also update after delays to catch any async rendering (animations, etc)
-      const timeout = setTimeout(updateDashboardHeight, 150);
-      const timeout2 = setTimeout(updateDashboardHeight, 400);
-      const timeout3 = setTimeout(updateDashboardHeight, 700);
+      const timeout1 = setTimeout(updateDashboardHeight, 100);
+      const timeout2 = setTimeout(updateDashboardHeight, 300);
+      const timeout3 = setTimeout(updateDashboardHeight, 600);
+      const timeout4 = setTimeout(updateDashboardHeight, 1000);
       
       return () => {
-        clearTimeout(timeout);
+        clearTimeout(timeout1);
         clearTimeout(timeout2);
         clearTimeout(timeout3);
+        clearTimeout(timeout4);
         // Reset padding when closed
         if (dashboardRef.current) {
           dashboardRef.current.style.paddingBottom = '';
@@ -910,6 +917,7 @@ export function DashboardPage() {
 
           {/* ROW 4: COLLAPSIBLE LINKS */}
           <motion.div
+            ref={linksSectionRef}
             className="lp-d2-links-section"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1091,58 +1099,69 @@ export function DashboardPage() {
                     </div>
                   </div>
                   
-                  {/* Botón Ver Más - Reutilizando estilo de Analytics */}
-                  {hasMoreLinks && (
-                    <motion.button
-                      className="lpa-links-expand-btn"
-                      onClick={handleLoadMore}
-                      disabled={isLoadingMore}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      aria-label={`Cargar ${Math.min(30, sortedLinks.length - linksToShow)} enlaces más`}
-                    >
-                      {isLoadingMore ? (
-                        <>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          >
+                  </div>
+                  
+                  {/* Botones FUERA del contenedor de scroll - siempre visibles */}
+                  <div className="lp-d2-links-actions">
+                    {/* Botón Ver Más - Reutilizando estilo de Analytics */}
+                    {hasMoreLinks && (
+                      <motion.button
+                        className="lpa-links-expand-btn"
+                        onClick={handleLoadMore}
+                        disabled={isLoadingMore}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        aria-label={`Cargar ${Math.min(30, sortedLinks.length - linksToShow)} enlaces más`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        {isLoadingMore ? (
+                          <>
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            >
+                              <ChevronDown size={18} />
+                            </motion.div>
+                            <span>Cargando...</span>
+                          </>
+                        ) : (
+                          <>
                             <ChevronDown size={18} />
-                          </motion.div>
-                          <span>Cargando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown size={18} />
-                          <span>Ver {Math.min(30, sortedLinks.length - linksToShow)} más</span>
-                        </>
-                      )}
-                    </motion.button>
-                  )}
+                            <span>Ver {Math.min(30, sortedLinks.length - linksToShow)} más</span>
+                          </>
+                        )}
+                      </motion.button>
+                    )}
 
-                  {/* Mensaje "Fin de resultados" cuando no hay más */}
-                  {!hasMoreLinks && displayedLinks.length > 0 && (
-                    <motion.div
-                      className="lp-d2-end-message"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <span>Fin de resultados</span>
-                    </motion.div>
-                  )}
+                    {/* Mensaje "Fin de resultados" cuando no hay más */}
+                    {!hasMoreLinks && displayedLinks.length > 0 && (
+                      <motion.div
+                        className="lp-d2-end-message"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <span>Fin de resultados</span>
+                      </motion.div>
+                    )}
 
-                  {/* Botón Ver Todos en página de enlaces */}
-                  {links.length > 0 && (
-                    <motion.button
-                      className="lp-d2-view-all"
-                      onClick={() => navigate('/app/links')}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      aria-label="Ver todos los enlaces en la página de enlaces"
-                    >
-                      Ver todos en Enlaces <ExternalLink size={14} />
-                    </motion.button>
-                  )}
+                    {/* Botón Ver Todos en página de enlaces */}
+                    {links.length > 0 && (
+                      <motion.button
+                        className="lp-d2-view-all"
+                        onClick={() => navigate('/app/links')}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        aria-label="Ver todos los enlaces en la página de enlaces"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        Ver todos en Enlaces <ExternalLink size={14} />
+                      </motion.button>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
