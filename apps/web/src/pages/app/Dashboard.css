@@ -523,22 +523,24 @@
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* CHART CARD */
+/* CHART CARD - Premium visible */
 .lp-d2-chart-card {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 14px 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .lp-d2-chart-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: #64748b;
-  margin-bottom: 8px;
+  color: #e2e8f0;
+  margin-bottom: 10px;
 }
 
 .lp-d2-chart {
@@ -631,10 +633,12 @@
 
 /* LINKS SECTION - Collapsible */
 .lp-d2-links-section {
-  background: rgba(15, 23, 42, 0.35);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
   overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .lp-d2-links-toggle {
@@ -642,18 +646,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 16px;
+  padding: 16px;
   background: transparent;
   border: none;
-  color: #94a3b8;
-  font-size: 13px;
+  color: #ffffff;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .lp-d2-links-toggle:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .lp-d2-links-toggle svg:first-child {
