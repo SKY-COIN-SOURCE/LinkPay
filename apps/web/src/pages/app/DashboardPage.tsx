@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, memo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -62,6 +62,8 @@ export function DashboardPage() {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [linksExpanded, setLinksExpanded] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; right: number } | null>(null);
+  const dropdownButtonRef = React.useRef<HTMLButtonElement>(null);
 
   // Animation skip for cached data
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -70,6 +72,30 @@ export function DashboardPage() {
   useEffect(() => {
     if (!loading && dashboardData) setHasAnimated(true);
   }, [loading, dashboardData]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showPeriodDropdown &&
+        dropdownButtonRef.current &&
+        !dropdownButtonRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('.lp-d2-dropdown')
+      ) {
+        setShowPeriodDropdown(false);
+      }
+    };
+
+    if (showPeriodDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [showPeriodDropdown]);
 
   // Stats from real data
   const stats = useMemo(() => ({
@@ -511,8 +537,18 @@ export function DashboardPage() {
                 <span>Ingresos</span>
               </div>
               <motion.button
+                ref={dropdownButtonRef}
                 className="lp-d2-dropdown-btn"
-                onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+                onClick={() => {
+                  if (dropdownButtonRef.current) {
+                    const rect = dropdownButtonRef.current.getBoundingClientRect();
+                    setDropdownPosition({
+                      top: rect.bottom + 8,
+                      right: window.innerWidth - rect.right
+                    });
+                  }
+                  setShowPeriodDropdown(!showPeriodDropdown);
+                }}
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2 }}
@@ -521,12 +557,19 @@ export function DashboardPage() {
                 <ChevronDown size={14} className={showPeriodDropdown ? 'rotated' : ''} />
               </motion.button>
               <AnimatePresence>
-                {showPeriodDropdown && (
+                {showPeriodDropdown && dropdownPosition && (
                   <motion.div
                     className="lp-d2-dropdown lp-d2-dropdown-chart"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
+                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    style={{
+                      position: 'fixed',
+                      top: `${dropdownPosition.top}px`,
+                      right: `${dropdownPosition.right}px`,
+                      zIndex: 9999
+                    }}
                   >
                     {(['today', 'week', 'month', 'all'] as TimePeriod[]).map(p => (
                       <motion.button
@@ -568,7 +611,7 @@ export function DashboardPage() {
                   <span>No hay datos disponibles para este período</span>
                 </motion.div>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={180}>
                   <AreaChart 
                     data={chartData} 
                     margin={{ top: 12, right: 10, left: 2, bottom: 10 }}
@@ -656,14 +699,13 @@ export function DashboardPage() {
                       fill="url(#chartGradient)"
                       dot={false}
                       activeDot={{ 
-                        r: 10, 
+                        r: 5, 
                         fill: '#22c55e', 
                         stroke: '#fff', 
-                        strokeWidth: 4,
+                        strokeWidth: 2,
                         style: { 
-                          filter: 'drop-shadow(0 0 14px rgba(34, 197, 94, 1)) drop-shadow(0 0 8px rgba(74, 222, 128, 0.8))',
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                          animation: 'lp-dot-pulse 2.5s ease-in-out infinite'
+                          filter: 'drop-shadow(0 0 6px rgba(34, 197, 94, 0.8))',
+                          transition: 'none'
                         }
                       }}
                       isAnimationActive={true}
