@@ -1020,47 +1020,71 @@
   border-top: 2px solid #6366f1;
 }
 
-/* LINKS SECTION - Collapsible - Premium Glass */
-.lp-d2-links-section {
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 14px;
-  overflow: visible;
-  overflow-x: hidden;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+/* ═══════════════════════════════════════════════════════════════════════════
+   LINKS WRAPPER - Static outer container, never animated
+   Button is a SIBLING to the dropdown, not inside it
+   ═══════════════════════════════════════════════════════════════════════════ */
+.lp-d2-links-wrapper {
   position: relative;
   z-index: 10;
-  min-height: fit-content;
-  max-width: 100%;
+  width: 100%;
 }
 
+/* Toggle button - ALWAYS visible, never inside animated container */
 .lp-d2-links-toggle {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  /* CRÍTICO: Fondo sólido para que el botón sea siempre visible */
   background: rgba(15, 23, 42, 0.95);
-  border: none;
-  border-radius: 14px 14px 0 0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  /* Sticky para que siempre sea visible al hacer scroll */
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  /* Normal positioning - NOT sticky, NOT affected by overflow */
+  position: relative;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* When dropdown is open, change border-radius for visual connection */
+.lp-d2-links-wrapper:has(.lp-d2-links-section) .lp-d2-links-toggle {
+  border-radius: 14px 14px 0 0;
+  border-bottom-color: transparent;
 }
 
 .lp-d2-links-toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.95);
 }
+
+.lp-d2-links-toggle:active {
+  transform: scale(0.99);
+}
+
+/* LINKS SECTION - The animated dropdown container */
+.lp-d2-links-section {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -1px;
+  /* Overlap with button border */
+  overflow: hidden;
+  /* Let Framer Motion control overflow during animation */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
 
 .lp-d2-links-toggle svg:first-child {
   color: #6366f1;
@@ -1080,39 +1104,9 @@
   border-radius: 10px;
 }
 
-.lp-d2-links-list {
-  padding: 0;
-  overflow: visible;
-  /* NO usar contain - causa que el contenido desaparezca */
-  /* Smooth height transitions */
-  will-change: height, opacity;
-  /* Asegurar que el contenido sea visible SIEMPRE */
-  display: block;
-  visibility: visible !important;
-  /* Asegurar que el fondo se extienda */
-  background: inherit;
-  /* CRÍTICO: z-index MENOR que el botón toggle (999) para que el botón siempre esté visible */
-  position: relative;
-  z-index: 1;
-  /* Asegurar que no se oculte */
-  min-height: 0;
-  max-height: none;
-  opacity: 1 !important;
-}
-
+/* Links content container */
 .lp-d2-links-content {
-  padding: 0 12px 12px;
-  overflow: visible;
-  overflow-x: hidden;
-  display: block;
-  visibility: visible !important;
-  /* Asegurar que el fondo se extienda correctamente */
-  background: inherit;
-  /* Asegurar que los botones no queden detrás */
-  position: relative;
-  z-index: 1;
-  /* Asegurar que sea visible */
-  opacity: 1 !important;
+  padding: 12px;
 }
 
 /* Container para los botones de acción - SIEMPRE VISIBLE */
@@ -1454,9 +1448,6 @@
   /* MÓVIL: Botón toggle con fondo más opaco para mejor visibilidad */
   .lp-d2-links-toggle {
     background: rgba(15, 23, 42, 0.98);
-    position: sticky;
-    top: 0;
-    z-index: 100;
   }
 
   /* Links section mobile - permitir expansión completa */

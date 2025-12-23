@@ -906,11 +906,12 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* ROW 4: COLLAPSIBLE LINKS - No animation wrapper to prevent mobile stacking context issues */}
+          {/* ROW 4: COLLAPSIBLE LINKS - Button OUTSIDE animated container to prevent mobile visibility issues */}
           <div
             ref={linksSectionRef}
-            className="lp-d2-links-section"
+            className="lp-d2-links-wrapper"
           >
+            {/* Toggle button - OUTSIDE animation context, never affected by Framer Motion */}
             <button
               className="lp-d2-links-toggle"
               onClick={() => setLinksExpanded(!linksExpanded)}
@@ -930,18 +931,15 @@ export function DashboardPage() {
               {linksExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
 
+            {/* Dropdown - animated separately, button is completely outside this */}
             <AnimatePresence>
               {linksExpanded && (
                 <motion.div
                   ref={linksDropdownRef}
                   id="links-dropdown"
-                  className="lp-d2-links-list"
+                  className="lp-d2-links-section"
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{
-                    height: 'auto',
-                    opacity: 1,
-                    visibility: 'visible'
-                  }}
+                  animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{
                     duration: 0.3,
@@ -950,10 +948,6 @@ export function DashboardPage() {
                   }}
                   role="region"
                   aria-label="Lista de enlaces"
-                  style={{
-                    visibility: 'visible',
-                    display: 'block'
-                  }}
                 >
                   <div
                     ref={linksContentRef}
