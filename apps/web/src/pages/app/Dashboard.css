@@ -20,6 +20,13 @@
       #020617 100%);
 }
 
+/* Desktop: offset for sidebar */
+@media (min-width: 769px) {
+  .lp-bg {
+    left: 260px;
+  }
+}
+
 .lp-bg-gradient {
   position: absolute;
   inset: 0;
@@ -249,6 +256,8 @@
 
 /* SHELL & INNER - Using 100dvh like BioPage to prevent viewport shifts */
 .lp-dashboard-shell {
+  position: fixed;
+  inset: 0;
   height: 100dvh;
   width: 100%;
   display: flex;
@@ -260,14 +269,13 @@
   z-index: 1;
   /* Cuando tiene scroll activo, permitir scroll suave */
   scroll-behavior: smooth;
-  /* Bloquear scroll horizontal completamente */
-  max-width: 100vw;
-  position: relative;
 }
 
 @media (min-width: 769px) {
   .lp-dashboard-shell {
     left: 260px;
+    width: calc(100% - 260px);
+    justify-content: flex-start;
   }
 }
 
@@ -666,89 +674,21 @@
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
 }
 
-/* CHART CARD - Premium visible with enhanced visual depth */
+/* CHART CARD - Clean and minimal */
 .lp-d2-chart-card {
   position: relative;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 60%),
-    radial-gradient(ellipse at top left, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  border-top: 3px solid rgba(34, 197, 94, 0.8);
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-top: 2px solid rgba(34, 197, 94, 0.6);
   border-radius: 18px;
   padding: 16px 18px;
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  box-shadow:
-    0 0 60px rgba(34, 197, 94, 0.15),
-    0 20px 40px -12px rgba(0, 0, 0, 0.75),
-    0 4px 8px -4px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 30px rgba(34, 197, 94, 0.08);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   /* IMPORTANTE: overflow visible para que el dropdown no se corte */
   overflow: visible;
-  transform: translateY(-2px);
-}
-
-/* Animated glow effect on chart card */
-.lp-d2-chart-card::before {
-  content: "";
-  position: absolute;
-  top: -60%;
-  left: -60%;
-  width: 220%;
-  height: 220%;
-  background: radial-gradient(circle,
-      rgba(34, 197, 94, 0.12) 0%,
-      rgba(16, 185, 129, 0.06) 40%,
-      transparent 70%);
-  opacity: 0;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  pointer-events: none;
-  z-index: 0;
-  transform: scale(0.8);
-  animation: lp-chart-glow-pulse 4s ease-in-out infinite;
-}
-
-.lp-d2-chart-card:hover::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Subtle border glow on hover */
-.lp-d2-chart-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  padding: 1px;
-  background: linear-gradient(135deg,
-      rgba(74, 222, 128, 0.4) 0%,
-      rgba(34, 197, 94, 0.2) 50%,
-      rgba(74, 222, 128, 0.4) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.lp-d2-chart-card:hover::after {
-  opacity: 1;
 }
 
 .lp-d2-chart-card:hover {
-  border-color: rgba(148, 163, 184, 0.3);
-  border-top-color: rgba(74, 222, 128, 0.95);
-  box-shadow:
-    0 0 100px rgba(34, 197, 94, 0.25),
-    0 30px 60px -15px rgba(0, 0, 0, 0.85),
-    0 6px 16px -4px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 0 40px rgba(34, 197, 94, 0.12);
-  transform: translateY(-4px) scale(1.005);
+  border-color: rgba(148, 163, 184, 0.25);
 }
 
 @keyframes lp-chart-glow-pulse {
@@ -945,20 +885,16 @@
   align-items: center;
   justify-content: center;
   padding: 14px 10px;
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.25s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .lp-d2-stat:hover {
-  background: rgba(15, 23, 42, 0.75);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(148, 163, 184, 0.3);
 }
 
 .lp-d2-stat svg {
@@ -2273,26 +2209,32 @@
 
 @media (min-width: 769px) {
 
-  /* Main Dashboard Container - Expand for desktop */
+  /* Main Dashboard Container - Fill available space after sidebar */
   .lp-dashboard-2 {
-    max-width: 1000px;
-    padding: 40px 32px 60px;
-    gap: 20px;
+    max-width: 100%;
+    width: 100%;
+    padding: 40px 48px 60px 40px;
+    gap: 24px;
+    margin: 0;
+    align-items: stretch;
   }
 
-  /* TOP ROW: Earnings + Balance - Side by side, equal width */
+  /* TOP ROW: Earnings + Balance - Wider layout */
   .lp-d2-row-top {
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 32px;
+    width: 100%;
   }
 
   /* Cards - More spacious on desktop */
   .lp-d2-card {
-    padding: 24px 28px;
-    border-radius: 20px;
+    padding: 32px 40px;
+    border-radius: 24px;
     background: rgba(15, 23, 42, 0.4);
     border: 1px solid rgba(99, 102, 241, 0.15);
     backdrop-filter: blur(20px);
+    min-height: 140px;
   }
 
   .lp-d2-card:hover {
@@ -2303,33 +2245,36 @@
 
   /* Larger values on desktop */
   .lp-d2-value {
-    font-size: 36px;
+    font-size: 42px;
   }
 
   .lp-d2-value.green {
-    font-size: 40px;
+    font-size: 48px;
   }
 
   .lp-d2-label {
-    font-size: 12px;
+    font-size: 13px;
+    letter-spacing: 1px;
   }
 
-  /* Stats Row - 4 columns on desktop */
+  /* Stats Row - 4 columns, full width on desktop */
   .lp-d2-stats-row {
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 20px;
+    width: 100%;
   }
 
   .lp-d2-stat-card {
     padding: 20px;
     border-radius: 16px;
-    background: rgba(15, 23, 42, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.15);
   }
 
   .lp-d2-stat-card:hover {
     transform: translateY(-2px);
-    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(148, 163, 184, 0.25);
   }
 
   .lp-d2-stat-value {
@@ -2338,37 +2283,41 @@
 
   .lp-d2-stat-label {
     font-size: 11px;
+    letter-spacing: 0.5px;
   }
 
   /* Chart Section - Full width with better proportions */
   .lp-d2-chart-section {
-    padding: 24px;
-    border-radius: 20px;
-    background: rgba(15, 23, 42, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    width: 100%;
+    padding: 28px 32px;
+    border-radius: 24px;
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.15);
   }
 
   .lp-d2-chart-header {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
 
   .lp-d2-chart-title {
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
   }
 
   /* Time period buttons - More spacious */
   .lp-d2-period-tabs {
-    gap: 8px;
+    gap: 10px;
   }
 
   .lp-d2-period-tab {
-    padding: 8px 16px;
+    padding: 10px 20px;
     font-size: 13px;
+    border-radius: 10px;
   }
 
   /* Chart container - Taller on desktop */
   .lp-d2-chart-container {
-    height: 280px;
+    height: 320px;
   }
 
   /* Links section */
