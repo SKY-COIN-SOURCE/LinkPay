@@ -176,32 +176,42 @@ export function DashboardPage() {
         if (!linksSectionRef.current || !dashboardRef.current || !shellRef.current) return;
 
         requestAnimationFrame(() => {
-          if (!linksSectionRef.current || !dashboardRef.current || !shellRef.current) return;
+          requestAnimationFrame(() => {
+            if (!linksSectionRef.current || !dashboardRef.current || !shellRef.current) return;
 
-          // Calcular altura exacta necesaria
-          const sectionHeight = linksSectionRef.current.scrollHeight;
-          const extraPadding = 100; // Solo para navigation bar
+            // Calcular altura exacta necesaria - incluye botón toggle + dropdown + acciones
+            const sectionHeight = linksSectionRef.current.scrollHeight || linksSectionRef.current.offsetHeight;
+            // Padding mínimo: navigation bar (90px) + espacio respirable (40px)
+            const extraPadding = 130;
 
-          dashboardRef.current.style.paddingBottom = `${sectionHeight + extraPadding}px`;
-          shellRef.current.style.overflow = 'hidden auto';
+            dashboardRef.current.style.paddingBottom = `${sectionHeight + extraPadding}px`;
+            // Permitir scroll suave
+            shellRef.current.style.overflowY = 'auto';
+            shellRef.current.style.overflowX = 'hidden';
+          });
         });
       };
 
       // Actualizar altura después de animación
       updateHeight();
-      const timeout = setTimeout(updateHeight, 350); // Después de la animación de 300ms
+      const timeout1 = setTimeout(updateHeight, 350); // Después de la animación de 300ms
+      const timeout2 = setTimeout(updateHeight, 500); // Segundo check para asegurar
 
       return () => {
-        clearTimeout(timeout);
+        clearTimeout(timeout1);
+        clearTimeout(timeout2);
         if (dashboardRef.current) dashboardRef.current.style.paddingBottom = '';
-        if (shellRef.current) shellRef.current.style.overflow = '';
+        if (shellRef.current) {
+          shellRef.current.style.overflowY = '';
+          shellRef.current.style.overflowX = '';
+        }
       };
     } else {
-      // Cuando está cerrado: bloquear scroll y resetear
+      // Cuando está cerrado: resetear padding
       if (dashboardRef.current) dashboardRef.current.style.paddingBottom = '';
       if (shellRef.current) {
-        shellRef.current.style.overflow = 'hidden';
-        shellRef.current.scrollTop = 0;
+        shellRef.current.style.overflowY = 'auto';
+        shellRef.current.style.overflowX = 'hidden';
       }
     }
   }, [linksExpanded]);
