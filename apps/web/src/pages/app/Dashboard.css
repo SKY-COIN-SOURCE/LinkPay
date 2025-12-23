@@ -1109,39 +1109,19 @@
   padding: 12px;
 }
 
-/* Container para los botones de acción - SIEMPRE VISIBLE */
+/* Container para los botones de acción */
 .lp-d2-links-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 12px 100px;
-  /* Extra bottom padding antes del navigation bar */
-  margin-top: 8px;
-  position: relative;
-  z-index: 20;
-  background: inherit;
-  /* Asegurar que no se corte */
-  overflow: visible;
+  gap: 10px;
+  padding: 12px;
+  padding-top: 8px;
 }
 
-/* Container para los enlaces - SIN SCROLL INTERNO, el dashboard se extiende */
+/* Container para los enlaces */
 .lp-d2-links-scroll {
-  /* NO max-height - deja que el contenido se muestre completo */
   overflow: visible;
-  overflow-x: hidden;
-  padding: 4px 4px 0 0;
-  margin: 0;
-  /* Smooth rendering */
-  transform: translateZ(0);
-  position: relative;
-  z-index: 10;
-  /* Bloquear scroll horizontal */
-  max-width: 100%;
-  width: 100%;
-  /* Asegurar visibilidad */
-  visibility: visible !important;
-  display: block !important;
-  opacity: 1 !important;
+  padding: 4px 0 0 0;
 }
 
 /* Adaptar cards de Analytics para Dashboard */

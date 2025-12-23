@@ -65,7 +65,7 @@ export function DashboardPage() {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [linksExpanded, setLinksExpanded] = useState(false);
-  const linksToShow = 5; // Solo 5 enlaces en el dashboard para mantenerlo limpio
+  const linksToShow = 3; // Solo TOP 3 enlaces en el dashboard - limpio y premium
   const dropdownButtonRef = React.useRef<HTMLButtonElement>(null);
   const chartHeaderRef = React.useRef<HTMLDivElement>(null);
   const linksDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -170,80 +170,41 @@ export function DashboardPage() {
   const linksSectionRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (linksExpanded && linksSectionRef.current && dashboardRef.current && shellRef.current && linksDropdownRef.current) {
-      const updateDashboardHeight = () => {
-        if (linksSectionRef.current && dashboardRef.current && shellRef.current && linksDropdownRef.current) {
-          // Wait for next frame to ensure all content is rendered
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              if (linksSectionRef.current && dashboardRef.current && shellRef.current && linksDropdownRef.current) {
-                // Asegurar que el dropdown sea visible
-                linksDropdownRef.current.style.visibility = 'visible';
-                linksDropdownRef.current.style.display = 'block';
-                linksDropdownRef.current.style.opacity = '1';
+    if (linksExpanded && linksSectionRef.current && dashboardRef.current && shellRef.current) {
+      // Cuando está expandido: permitir scroll y ajustar altura
+      const updateHeight = () => {
+        if (!linksSectionRef.current || !dashboardRef.current || !shellRef.current) return;
 
-                // Calculate the height needed for the ENTIRE section (includes toggle + dropdown + buttons)
-                const sectionHeight = linksSectionRef.current.scrollHeight || linksSectionRef.current.offsetHeight;
-                const dropdownHeight = linksDropdownRef.current.scrollHeight || linksDropdownRef.current.offsetHeight;
+        requestAnimationFrame(() => {
+          if (!linksSectionRef.current || !dashboardRef.current || !shellRef.current) return;
 
-                // Usar el mayor de los dos como fallback
-                const finalHeight = Math.max(sectionHeight, dropdownHeight + 50);
+          // Calcular altura exacta necesaria
+          const sectionHeight = linksSectionRef.current.scrollHeight;
+          const extraPadding = 100; // Solo para navigation bar
 
-                // Padding mínimo - solo espacio para navigation bar
-                const extraPadding = 80;
-                const totalHeight = finalHeight + extraPadding;
-
-                // Apply padding-bottom to dashboard to extend it
-                dashboardRef.current.style.paddingBottom = `${totalHeight}px`;
-
-                // Enable scroll on shell - BLOQUEAR HORIZONTAL
-                shellRef.current.style.overflowY = 'auto';
-                shellRef.current.style.overflowX = 'hidden';
-                shellRef.current.style.overflow = 'hidden auto';
-              }
-            });
-          });
-        }
+          dashboardRef.current.style.paddingBottom = `${sectionHeight + extraPadding}px`;
+          shellRef.current.style.overflow = 'hidden auto';
+        });
       };
 
-      // Update with multiple delays to catch all render cycles
-      updateDashboardHeight();
-      const timeout1 = setTimeout(updateDashboardHeight, 100);
-      const timeout2 = setTimeout(updateDashboardHeight, 300);
-      const timeout3 = setTimeout(updateDashboardHeight, 600);
-      const timeout4 = setTimeout(updateDashboardHeight, 1000);
+      // Actualizar altura después de animación
+      updateHeight();
+      const timeout = setTimeout(updateHeight, 350); // Después de la animación de 300ms
 
       return () => {
-        clearTimeout(timeout1);
-        clearTimeout(timeout2);
-        clearTimeout(timeout3);
-        clearTimeout(timeout4);
-        // Reset padding when closed
-        if (dashboardRef.current) {
-          dashboardRef.current.style.paddingBottom = '';
-        }
-        // Reset shell overflow
-        if (shellRef.current) {
-          shellRef.current.style.overflowY = '';
-          shellRef.current.style.overflowX = '';
-          shellRef.current.style.overflow = '';
-        }
+        clearTimeout(timeout);
+        if (dashboardRef.current) dashboardRef.current.style.paddingBottom = '';
+        if (shellRef.current) shellRef.current.style.overflow = '';
       };
     } else {
-      // Reset padding when closed
-      if (dashboardRef.current) {
-        dashboardRef.current.style.paddingBottom = '';
-      }
-      // BLOQUEAR scroll completamente cuando está cerrado
+      // Cuando está cerrado: bloquear scroll y resetear
+      if (dashboardRef.current) dashboardRef.current.style.paddingBottom = '';
       if (shellRef.current) {
         shellRef.current.style.overflow = 'hidden';
-        shellRef.current.style.overflowY = 'hidden';
-        shellRef.current.style.overflowX = 'hidden';
-        // Scroll al inicio
         shellRef.current.scrollTop = 0;
       }
     }
-  }, [linksExpanded, displayedLinks.length, linksToShow]);
+  }, [linksExpanded]);
 
   // Format money helper (from Analytics)
   const formatMoneyShort = useCallback((v: number) => {
