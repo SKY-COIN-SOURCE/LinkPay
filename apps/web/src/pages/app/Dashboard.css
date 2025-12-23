@@ -661,10 +661,14 @@
   transform: translateX(1px) scale(0.98);
 }
 
-/* Earnings card - Fondo translúcido desde el icono hacia abajo */
+/* Earnings card - Fondo translúcido desde el icono hacia abajo (igual que tarjetas de abajo) */
 .lp-d2-earnings {
   position: relative;
   overflow: visible;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .lp-d2-earnings::after {
@@ -673,24 +677,14 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    transparent 28px,
-    rgba(15, 23, 42, 0.75) 28px,
-    rgba(15, 23, 42, 0.85) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 18px;
+  height: 28px;
+  background: transparent;
+  border-radius: 18px 18px 0 0;
   z-index: -1;
   pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Balance card clickable and centered - Fondo translúcido desde el icono hacia abajo */
+/* Balance card clickable and centered - Fondo translúcido desde el icono hacia abajo (igual que tarjetas de abajo) */
 .lp-d2-balance {
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease;
@@ -701,6 +695,10 @@
   text-align: center;
   position: relative;
   overflow: visible;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .lp-d2-balance::after {
@@ -709,21 +707,11 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    transparent 28px,
-    rgba(15, 23, 42, 0.75) 28px,
-    rgba(15, 23, 42, 0.85) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 18px;
+  height: 28px;
+  background: transparent;
+  border-radius: 18px 18px 0 0;
   z-index: -1;
   pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .lp-d2-balance .lp-d2-card-header {
@@ -732,15 +720,7 @@
 
 .lp-d2-balance:hover {
   transform: translateY(-2px);
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-}
-
-.lp-d2-balance:hover::after {
-  border-color: rgba(59, 130, 246, 0.2);
-  box-shadow: 
-    0 8px 30px rgba(59, 130, 246, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(148, 163, 184, 0.3);
 }
 
 /* CHART CARD - Clean and minimal */
