@@ -1068,21 +1068,23 @@
   transform: scale(0.99);
 }
 
-/* LINKS SECTION - The animated dropdown container */
+/* LINKS SECTION - Animated dropdown with GPU acceleration */
 .lp-d2-links-section {
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-top: none;
   border-radius: 0 0 14px 14px;
   margin-top: -1px;
-  /* Overlap with button border */
   overflow: hidden;
-  /* Let Framer Motion control overflow during animation */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   position: relative;
   z-index: 1;
+  /* GPU acceleration for smooth animations */
+  transform: translateZ(0);
+  will-change: height, opacity;
+  contain: layout style;
 }
 
 

@@ -939,118 +939,75 @@ export function DashboardPage() {
                         </div>
                       ) : (
                         <div className="lpa-link-cards">
-                          <AnimatePresence mode="sync">
-                            {displayedLinks.map((link, i) => {
-                              const clicks = link.views || 0;
-                              const earnings = link.earnings || 0;
-                              const maxEarnings = sortedLinks.reduce((max, l) => Math.max(max, l.earnings || 0), 1);
-                              const pct = maxEarnings > 0 ? (earnings / maxEarnings) * 100 : 0;
-                              const epc = clicks > 0 ? earnings / clicks : 0;
+                          {displayedLinks.map((link, i) => {
+                            const clicks = link.views || 0;
+                            const earnings = link.earnings || 0;
+                            const maxEarnings = sortedLinks.reduce((max, l) => Math.max(max, l.earnings || 0), 1);
+                            const pct = maxEarnings > 0 ? (earnings / maxEarnings) * 100 : 0;
+                            const epc = clicks > 0 ? earnings / clicks : 0;
 
-                              // Top 3 get medals, rest get number
-                              const medals = [
-                                { emoji: '🥇', name: 'gold', color: '#fbbf24', bg: 'linear-gradient(145deg, #fde047 0%, #fbbf24 30%, #b45309 100%)' },
-                                { emoji: '🥈', name: 'silver', color: '#94a3b8', bg: 'linear-gradient(145deg, #e2e8f0 0%, #94a3b8 30%, #475569 100%)' },
-                                { emoji: '🥉', name: 'bronze', color: '#f97316', bg: 'linear-gradient(145deg, #fdba74 0%, #f97316 30%, #7c2d12 100%)' },
-                              ];
-                              const isTop3 = i < 3;
-                              const medal = isTop3 ? medals[i] : { emoji: `${i + 1}`, name: 'rank', color: '#3b82f6', bg: 'linear-gradient(145deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)' };
+                            // Top 3 get medals
+                            const medals = [
+                              { emoji: '🥇', name: 'gold', color: '#fbbf24' },
+                              { emoji: '🥈', name: 'silver', color: '#94a3b8' },
+                              { emoji: '🥉', name: 'bronze', color: '#f97316' },
+                            ];
+                            const medal = medals[i];
 
-                              return (
-                                <motion.div
-                                  className={`lpa-link-card ${isTop3 ? `medal-${medal.name}` : 'rank-card'}`}
-                                  key={link.id}
-                                  initial={{ opacity: 0, y: 25, scale: 0.9 }}
-                                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                                  transition={{ delay: isTop3 ? 0.1 + i * 0.12 : 0.05, type: 'spring', stiffness: 180, damping: 15 }}
-                                  whileHover={{ scale: 1.03, y: -4 }}
-                                  whileTap={{ scale: 0.97 }}
-                                  layout
-                                  onClick={() => {
-                                    const url = `${window.location.origin}/${link.slug}`;
-                                    navigator.clipboard.writeText(url);
-                                  }}
-                                  role="listitem"
-                                >
-                                  {/* 4K DETAIL MEDAL */}
-                                  <motion.div
-                                    className={`lpa-medal-3d ${isTop3 ? `medal-${medal.name}` : 'rank-badge'}`}
-                                    style={{ background: medal.bg }}
-                                    whileHover={{
-                                      rotateY: 20,
-                                      rotateX: -10,
-                                      scale: 1.15
-                                    }}
-                                    animate={isTop3 ? {
-                                      y: [0, -3, 0],
-                                      rotateY: [0, 4, 0, -4, 0],
-                                      rotateX: [0, -2, 0, 2, 0],
-                                    } : {}}
-                                    transition={isTop3 ? {
-                                      duration: 3.5 + i * 0.5,
-                                      repeat: Infinity,
-                                      ease: 'easeInOut'
-                                    } : {}}
-                                  >
-                                    <motion.span
-                                      className="lpa-medal-emoji"
-                                      animate={isTop3 ? {
-                                        scale: [1, 1.05, 1],
-                                      } : {}}
-                                      transition={isTop3 ? {
-                                        duration: 2.5 + i * 0.3,
-                                        repeat: Infinity,
-                                        ease: 'easeInOut'
-                                      } : {}}
-                                    >
-                                      {medal.emoji}
-                                    </motion.span>
-                                  </motion.div>
+                            return (
+                              <div
+                                className={`lpa-link-card medal-${medal.name}`}
+                                key={link.id}
+                                onClick={() => {
+                                  const url = `${window.location.origin}/${link.slug}`;
+                                  navigator.clipboard.writeText(url);
+                                }}
+                              >
+                                {/* Medal - Static, no animations */}
+                                <div className={`lpa-medal-3d medal-${medal.name}`}>
+                                  <span className="lpa-medal-emoji">{medal.emoji}</span>
+                                </div>
 
-                                  {/* Main Content */}
-                                  <div className="lpa-link-card-content">
-                                    {/* Header */}
-                                    <div className="lpa-link-card-header">
-                                      <span className="lpa-link-card-title">{link.title || link.slug}</span>
-                                      <span className="lpa-link-card-earnings">{formatMoneyShort(earnings)}</span>
+                                {/* Main Content */}
+                                <div className="lpa-link-card-content">
+                                  <div className="lpa-link-card-header">
+                                    <span className="lpa-link-card-title">{link.title || link.slug}</span>
+                                    <span className="lpa-link-card-earnings">{formatMoneyShort(earnings)}</span>
+                                  </div>
+
+                                  {/* Progress Bar - CSS transition */}
+                                  <div className="lpa-link-card-progress">
+                                    <div
+                                      className="lpa-link-card-progress-fill"
+                                      style={{
+                                        width: `${pct}%`,
+                                        background: `linear-gradient(90deg, ${medal.color}, ${medal.color}88)`,
+                                        transition: 'width 0.5s ease-out'
+                                      }}
+                                    />
+                                  </div>
+
+                                  {/* Stats Row */}
+                                  <div className="lpa-link-card-stats">
+                                    <div className="lpa-link-card-stat">
+                                      <MousePointer2 size={12} />
+                                      <span>{clicks} clicks</span>
                                     </div>
-
-                                    {/* Progress Bar */}
-                                    <div className="lpa-link-card-progress">
-                                      <motion.div
-                                        className="lpa-link-card-progress-fill"
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${pct}%` }}
-                                        transition={{ delay: 0.3 + i * 0.08, duration: 0.6, ease: 'easeOut' }}
-                                        style={{
-                                          background: `linear-gradient(90deg, ${medal.color}, ${medal.color}88)`
-                                        }}
-                                      />
-                                    </div>
-
-                                    {/* Stats Row */}
-                                    <div className="lpa-link-card-stats">
-                                      <div className="lpa-link-card-stat">
-                                        <MousePointer2 size={12} className="lpa-3d-icon-sm" />
-                                        <span>{clicks} clicks</span>
+                                    {clicks > 0 && (
+                                      <div className="lpa-link-card-stat epc">
+                                        <TrendingUp size={12} />
+                                        <span>€{epc.toFixed(4)}</span>
                                       </div>
-                                      {clicks > 0 && (
-                                        <div className="lpa-link-card-stat epc">
-                                          <TrendingUp size={12} className="lpa-3d-icon-sm" />
-                                          <span>€{epc.toFixed(4)}</span>
-                                        </div>
-                                      )}
-                                      <div className="lpa-link-card-stat slug">
-                                        <ExternalLink size={12} className="lpa-3d-icon-sm" />
-                                        <span>/{link.slug}</span>
-                                      </div>
+                                    )}
+                                    <div className="lpa-link-card-stat slug">
+                                      <ExternalLink size={12} />
+                                      <span>/{link.slug}</span>
                                     </div>
                                   </div>
-                                </motion.div>
-                              );
-                            })}
-                          </AnimatePresence>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
