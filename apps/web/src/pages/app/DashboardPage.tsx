@@ -347,6 +347,16 @@ export function DashboardPage() {
 
     const filtered = filterByPeriod(timeline);
 
+    // DEBUG: Log timeline and filtered data
+    console.log('[Dashboard Debug]', {
+      timePeriod,
+      timelineLength: timeline.length,
+      timelineSample: timeline.slice(0, 3),
+      filteredLength: filtered.length,
+      filteredSample: filtered.slice(0, 3),
+      todayStr: now.toISOString().slice(0, 10),
+    });
+
     // Calculate filtered revenue
     const revenue = timePeriod === 'all'
       ? (dashboardData?.totalRevenue ?? 0)
