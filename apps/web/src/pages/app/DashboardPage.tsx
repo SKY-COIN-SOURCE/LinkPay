@@ -65,7 +65,7 @@ export function DashboardPage() {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [linksExpanded, setLinksExpanded] = useState(false);
-  const linksToShow = 10; // Solo 10 enlaces en el dashboard
+  const linksToShow = 5; // Solo 5 enlaces en el dashboard para mantenerlo limpio
   const dropdownButtonRef = React.useRef<HTMLButtonElement>(null);
   const chartHeaderRef = React.useRef<HTMLDivElement>(null);
   const linksDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -189,8 +189,8 @@ export function DashboardPage() {
                 // Usar el mayor de los dos como fallback
                 const finalHeight = Math.max(sectionHeight, dropdownHeight + 50);
 
-                // Padding mínimo - solo espacio para navigation bar (80px) + safe area (40px)
-                const extraPadding = 120;
+                // Padding mínimo - solo espacio para navigation bar
+                const extraPadding = 80;
                 const totalHeight = finalHeight + extraPadding;
 
                 // Apply padding-bottom to dashboard to extend it
@@ -234,11 +234,13 @@ export function DashboardPage() {
       if (dashboardRef.current) {
         dashboardRef.current.style.paddingBottom = '';
       }
-      // Reset shell overflow
+      // BLOQUEAR scroll completamente cuando está cerrado
       if (shellRef.current) {
-        shellRef.current.style.overflowY = '';
-        shellRef.current.style.overflowX = '';
-        shellRef.current.style.overflow = '';
+        shellRef.current.style.overflow = 'hidden';
+        shellRef.current.style.overflowY = 'hidden';
+        shellRef.current.style.overflowX = 'hidden';
+        // Scroll al inicio
+        shellRef.current.scrollTop = 0;
       }
     }
   }, [linksExpanded, displayedLinks.length, linksToShow]);
@@ -252,17 +254,18 @@ export function DashboardPage() {
 
   // Función para colapsar con scroll suave hacia arriba - UX Premium
   const collapseWithScroll = useCallback(() => {
-    // Primero hacer scroll suave hacia el botón toggle
-    if (linksSectionRef.current) {
-      linksSectionRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-    // Después de un pequeño delay para que el scroll inicie, cerrar el dropdown
+    // Cerrar el dropdown primero
+    setLinksExpanded(false);
+
+    // Después hacer scroll suave al inicio de la página
     setTimeout(() => {
-      setLinksExpanded(false);
-    }, 150);
+      if (shellRef.current) {
+        shellRef.current.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   }, []);
 
   // Animated values (balance, clicks, rpm - not affected by period filter)
