@@ -189,11 +189,8 @@ export function DashboardPage() {
                 // Usar el mayor de los dos como fallback
                 const finalHeight = Math.max(sectionHeight, dropdownHeight + 50);
 
-                // Add extra padding for:
-                // - Space before navigation bar (180px - nav height + safe area)
-                // - Extra breathing room (100px)
-                // - Bottom safe area (40px)
-                const extraPadding = 320;
+                // Padding mínimo - solo espacio para navigation bar (80px) + safe area (40px)
+                const extraPadding = 120;
                 const totalHeight = finalHeight + extraPadding;
 
                 // Apply padding-bottom to dashboard to extend it
@@ -248,11 +245,24 @@ export function DashboardPage() {
 
   // Format money helper (from Analytics)
   const formatMoneyShort = useCallback((v: number) => {
-    if (v === 0) return '€0';
-    if (v < 0.01) return `€${v.toFixed(4)}`;
-    if (v < 1) return `€${v.toFixed(2)}`;
-    if (v < 1000) return `€${v.toFixed(2)}`;
-    return `€${(v / 1000).toFixed(1)}k`;
+    if (v >= 1000) return `€${(v / 1000).toFixed(1)}k`;
+    if (v >= 1) return `€${v.toFixed(2)}`;
+    return `€${v.toFixed(4)}`;
+  }, []);
+
+  // Función para colapsar con scroll suave hacia arriba - UX Premium
+  const collapseWithScroll = useCallback(() => {
+    // Primero hacer scroll suave hacia el botón toggle
+    if (linksSectionRef.current) {
+      linksSectionRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    // Después de un pequeño delay para que el scroll inicie, cerrar el dropdown
+    setTimeout(() => {
+      setLinksExpanded(false);
+    }, 150);
   }, []);
 
   // Animated values (balance, clicks, rpm - not affected by period filter)
@@ -914,11 +924,11 @@ export function DashboardPage() {
             {/* Toggle button - OUTSIDE animation context, never affected by Framer Motion */}
             <button
               className="lp-d2-links-toggle"
-              onClick={() => setLinksExpanded(!linksExpanded)}
+              onClick={() => linksExpanded ? collapseWithScroll() : setLinksExpanded(true)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  setLinksExpanded(!linksExpanded);
+                  linksExpanded ? collapseWithScroll() : setLinksExpanded(true);
                 }
               }}
               aria-expanded={linksExpanded}
@@ -1084,10 +1094,10 @@ export function DashboardPage() {
 
                   {/* Botones - Recoger y Ver todos */}
                   <div className="lp-d2-links-actions">
-                    {/* Botón Recoger para cerrar el desplegable */}
+                    {/* Botón Recoger para cerrar el desplegable con scroll suave */}
                     <motion.button
                       className="lp-d2-collapse-btn"
-                      onClick={() => setLinksExpanded(false)}
+                      onClick={collapseWithScroll}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       aria-label="Recoger lista de enlaces"
