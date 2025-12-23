@@ -635,7 +635,46 @@ export function DashboardPage() {
             </motion.div>
           </div>
 
-          {/* ROW 2: CHART with time selector */}
+          {/* ROW 2: STATS (4 columns) - Métricas clave primero */}
+          <motion.div
+            className="lp-d2-stats-row"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            {/* CLICKS */}
+            <div className="lp-d2-stat purple">
+              <MousePointer2 size={20} />
+              <span className="lp-d2-stat-value">{animatedClicks.toFixed(0)}</span>
+              <span className="lp-d2-stat-label">CLICKS</span>
+            </div>
+
+            {/* RPM */}
+            <div className="lp-d2-stat orange">
+              <BarChart3 size={20} />
+              <span className="lp-d2-stat-value">{animatedRpm.toFixed(2)}</span>
+              <span className="lp-d2-stat-label">RPM</span>
+            </div>
+
+            {/* REFERIDOS */}
+            <div className="lp-d2-stat cyan">
+              <Users size={20} />
+              <span className="lp-d2-stat-value">0</span>
+              <span className="lp-d2-stat-label">REFERIDOS</span>
+            </div>
+
+            {/* TOP LINK */}
+            <div
+              className="lp-d2-stat indigo"
+              onClick={() => topLink && navigate('/app/links')}
+            >
+              <LinkIcon size={20} />
+              <span className="lp-d2-stat-value">{topLink ? `/${topLink.slug}` : '-'}</span>
+              <span className="lp-d2-stat-label">TOP LINK</span>
+            </div>
+          </motion.div>
+
+          {/* ROW 3: CHART with time selector */}
           <motion.div
             className="lp-d2-chart-card"
             initial={{ opacity: 0, y: 10 }}
@@ -839,45 +878,6 @@ export function DashboardPage() {
                 )}
               </motion.div>
             </AnimatePresence>
-          </motion.div>
-
-          {/* ROW 3: STATS (4 columns) */}
-          <motion.div
-            className="lp-d2-stats-row"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            {/* CLICKS */}
-            <div className="lp-d2-stat purple">
-              <MousePointer2 size={20} />
-              <span className="lp-d2-stat-value">{animatedClicks.toFixed(0)}</span>
-              <span className="lp-d2-stat-label">CLICKS</span>
-            </div>
-
-            {/* RPM */}
-            <div className="lp-d2-stat orange">
-              <BarChart3 size={20} />
-              <span className="lp-d2-stat-value">{animatedRpm.toFixed(2)}</span>
-              <span className="lp-d2-stat-label">RPM</span>
-            </div>
-
-            {/* REFERIDOS */}
-            <div className="lp-d2-stat cyan">
-              <Users size={20} />
-              <span className="lp-d2-stat-value">0</span>
-              <span className="lp-d2-stat-label">REFERIDOS</span>
-            </div>
-
-            {/* TOP LINK */}
-            <div
-              className="lp-d2-stat indigo"
-              onClick={() => topLink && navigate('/app/links')}
-            >
-              <LinkIcon size={20} />
-              <span className="lp-d2-stat-value">{topLink ? `/${topLink.slug}` : '-'}</span>
-              <span className="lp-d2-stat-label">TOP LINK</span>
-            </div>
           </motion.div>
 
           {/* ROW 4: COLLAPSIBLE LINKS - Button OUTSIDE animated container to prevent mobile visibility issues */}
