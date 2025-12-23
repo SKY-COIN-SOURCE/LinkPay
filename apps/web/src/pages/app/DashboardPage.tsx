@@ -181,11 +181,11 @@ export function DashboardPage() {
                 linksDropdownRef.current.style.visibility = 'visible';
                 linksDropdownRef.current.style.display = 'block';
                 linksDropdownRef.current.style.opacity = '1';
-                
+
                 // Calculate the height needed for the ENTIRE section (includes toggle + dropdown + buttons)
                 const sectionHeight = linksSectionRef.current.scrollHeight || linksSectionRef.current.offsetHeight;
                 const dropdownHeight = linksDropdownRef.current.scrollHeight || linksDropdownRef.current.offsetHeight;
-                
+
                 // Usar el mayor de los dos como fallback
                 const finalHeight = Math.max(sectionHeight, dropdownHeight + 50);
 
@@ -906,13 +906,10 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* ROW 4: COLLAPSIBLE LINKS */}
-          <motion.div
+          {/* ROW 4: COLLAPSIBLE LINKS - No animation wrapper to prevent mobile stacking context issues */}
+          <div
             ref={linksSectionRef}
             className="lp-d2-links-section"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
           >
             <button
               className="lp-d2-links-toggle"
@@ -953,7 +950,7 @@ export function DashboardPage() {
                   }}
                   role="region"
                   aria-label="Lista de enlaces"
-                  style={{ 
+                  style={{
                     visibility: 'visible',
                     display: 'block'
                   }}
@@ -1127,7 +1124,7 @@ export function DashboardPage() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
         </div>
       </div>

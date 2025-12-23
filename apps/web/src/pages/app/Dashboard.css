@@ -1026,46 +1026,36 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 14px;
   overflow: visible;
+  overflow-x: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  /* Prevent scroll bleed */
   position: relative;
-  /* Asegurar que el fondo se extienda con el contenido */
-  z-index: 1;
-  /* El fondo se extiende con el contenido */
+  z-index: 10;
   min-height: fit-content;
-  /* Bloquear scroll horizontal */
-  overflow-x: hidden;
   max-width: 100%;
-  /* Asegurar visibilidad */
-  visibility: visible !important;
-  /* CRÍTICO: No usar contain ni isolation aquí - permite que el botón sea visible */
 }
 
 .lp-d2-links-toggle {
   width: 100%;
-  display: flex !important;
+  display: flex;
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  background: transparent;
+  /* CRÍTICO: Fondo sólido para que el botón sea siempre visible */
+  background: rgba(15, 23, 42, 0.95);
   border: none;
+  border-radius: 14px 14px 0 0;
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  /* CRÍTICO: Botón SIEMPRE visible, fuera del contexto de animación */
-  position: relative;
-  z-index: 999;
-  visibility: visible !important;
-  opacity: 1 !important;
-  /* Asegurar que no se oculte por overflow */
-  overflow: visible;
-  /* Asegurar que esté por encima de todo */
-  isolation: isolate;
+  /* Sticky para que siempre sea visible al hacer scroll */
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .lp-d2-links-toggle:hover {
@@ -1461,16 +1451,12 @@
     font-size: 14px;
   }
 
-  /* CRÍTICO MÓVIL: Botón toggle SIEMPRE visible */
+  /* MÓVIL: Botón toggle con fondo más opaco para mejor visibilidad */
   .lp-d2-links-toggle {
-    position: relative !important;
-    z-index: 999 !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    display: flex !important;
-    overflow: visible !important;
-    /* Asegurar que no se oculte por ningún overflow del padre */
-    isolation: isolate !important;
+    background: rgba(15, 23, 42, 0.98);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
   /* Links section mobile - permitir expansión completa */
