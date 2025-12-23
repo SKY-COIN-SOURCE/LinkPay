@@ -56,8 +56,8 @@ export type TopLink = {
 export type AnalyticsResponse = {
   range: TimeRange;
   summary: AnalyticsSummary;
-  timeseries: { date: string; earnings: number; clicks: number }[];
-  clicksByDay: { date: string; clicks: number }[];
+  timeseries: { date: string; isoDate: string; earnings: number; clicks: number }[];
+  clicksByDay: { date: string; isoDate: string; clicks: number }[];
   countries: CountryStat[];
   devices: DeviceStat[];
   topLinks: TopLink[];
@@ -367,28 +367,30 @@ export const AnalyticsService = {
     const { topLinks } = events.length
       ? buildTopLinks(events, since, until)
       : {
-          topLinks: links
-            .map((l: any) => ({
-              id: l.id,
-              slug: l.slug,
-              title: l.title,
-              earnings: l.earnings || 0,
-              clicks: l.views || 0,
-              ctr: 0,
-              sparkline: Array(14).fill(0),
-            }))
-            .sort((a: any, b: any) => b.earnings - a.earnings)
-            .slice(0, 5),
-        };
+        topLinks: links
+          .map((l: any) => ({
+            id: l.id,
+            slug: l.slug,
+            title: l.title,
+            earnings: l.earnings || 0,
+            clicks: l.views || 0,
+            ctr: 0,
+            sparkline: Array(14).fill(0),
+          }))
+          .sort((a: any, b: any) => b.earnings - a.earnings)
+          .slice(0, 5),
+      };
 
     const timeseries = dailyNow.map((d) => ({
       date: formatDateKey(new Date(d.day)),
+      isoDate: d.day,  // ISO format "YYYY-MM-DD" for reliable filtering
       earnings: Number(d.earnings || 0),
       clicks: Number(d.clicks || 0),
     }));
 
     const clicksByDay = dailyNow.map((d) => ({
       date: formatDateKey(new Date(d.day)),
+      isoDate: d.day,  // ISO format for filtering
       clicks: Number(d.clicks || 0),
     }));
 

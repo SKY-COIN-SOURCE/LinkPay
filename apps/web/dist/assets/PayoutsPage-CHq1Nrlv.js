@@ -1,24 +1,24 @@
-import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P as X}from"./index-DD_I70sm.js";import{P as me}from"./PremiumLoader-WaEaEQ_x.js";/* empty css                          *//**
+import{d as h,b as me,r,j as e,X as Z,B as d,D as ge,k as G,l as J,F as K,P as Q}from"./index-D-0HiMVS.js";import{P as be}from"./PremiumLoader-DeyQUAuK.js";/* empty css                          */import{C as fe}from"./chevron-down-BQ4tECBt.js";/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const ge=[["path",{d:"M17 7 7 17",key:"15tmo1"}],["path",{d:"M17 17H7V7",key:"1org7z"}]],A=v("arrow-down-left",ge);/**
+ */const ue=[["path",{d:"M17 7 7 17",key:"15tmo1"}],["path",{d:"M17 17H7V7",key:"1org7z"}]],E=h("arrow-down-left",ue);/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const fe=[["path",{d:"M10 12h4",key:"a56b0p"}],["path",{d:"M10 8h4",key:"1sr2af"}],["path",{d:"M14 21v-3a2 2 0 0 0-4 0v3",key:"1rgiei"}],["path",{d:"M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2",key:"secmi2"}],["path",{d:"M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16",key:"16ra0t"}]],be=v("building-2",fe);/**
+ */const he=[["path",{d:"M10 12h4",key:"a56b0p"}],["path",{d:"M10 8h4",key:"1sr2af"}],["path",{d:"M14 21v-3a2 2 0 0 0-4 0v3",key:"1rgiei"}],["path",{d:"M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2",key:"secmi2"}],["path",{d:"M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16",key:"16ra0t"}]],ve=h("building-2",he);/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const he=[["path",{d:"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",key:"1357e3"}],["path",{d:"M3 3v5h5",key:"1xhq8a"}],["path",{d:"M12 7v5l4 2",key:"1fdv2h"}]],ue=v("history",he);/**
+ */const ye=[["path",{d:"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",key:"1357e3"}],["path",{d:"M3 3v5h5",key:"1xhq8a"}],["path",{d:"M12 7v5l4 2",key:"1fdv2h"}]],we=h("history",ye);/**
  * @license lucide-react v0.554.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const ve=[["path",{d:"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",key:"1ffxy3"}],["path",{d:"m21.854 2.147-10.94 10.939",key:"12cjpa"}]],u=v("send",ve),C={isValidEmail:n=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n),isValidIBAN:n=>{const o=n.replace(/\s/g,"").toUpperCase();return o.length<15||o.length>34||!/^[A-Z]{2}/.test(o)?!1:/^[A-Z0-9]+$/.test(o)},isValidCrypto:n=>{const o=/^0x[a-fA-F0-9]{40}$/.test(n),y=/^(1|3|bc1)[a-zA-Z0-9]{25,39}$/.test(n);return o||y}};function ke(){const{balance:n,history:o,loading:y,refresh:M}=ce(),[Q,x]=t.useState(!1),[ee,m]=t.useState(!1),[w,I]=t.useState(""),[r,O]=t.useState("PayPal"),[g,f]=t.useState(""),[ae,te]=t.useState(""),[L,l]=t.useState(""),[T,D]=t.useState(!1),[j,N]=t.useState(!1),[R,B]=t.useState(""),[b,F]=t.useState(""),[k,_]=t.useState(""),[re,U]=t.useState(""),[H,p]=t.useState(""),[W,$]=t.useState(!1),[z,S]=t.useState(!1),[c,ie]=t.useState({paypal:"",bank:""}),[E,ne]=t.useState(10),oe=10,V=5,Y=10,q=r==="PayPal"?V:Y;t.useEffect(()=>{(async()=>{const{data:{user:i}}=await K.auth.getUser();if(i){const{data:s}=await K.from("profiles").select("paypal_email, bank_details").eq("id",i.id).single();s&&(ie({paypal:s.paypal_email||"",bank:s.bank_details||""}),s.paypal_email&&f(s.paypal_email))}})()},[]),t.useEffect(()=>{r==="PayPal"&&c.paypal&&f(c.paypal),r==="Bank"&&c.bank&&f(c.bank)},[r,c]);const se=async()=>{l(""),N(!1);const a=parseFloat(w);if(!w||isNaN(a)||a<=0)return l("Introduce una cantidad válida.");if(a>n)return l("Saldo insuficiente.");if(a<q)return l(`Mínimo ${r==="PayPal"?"PayPal":"transferencia"}: €${q}`);if(r==="PayPal"){if(!C.isValidEmail(g))return l("Introduce un email de PayPal válido.")}else if(!C.isValidIBAN(g))return l("Introduce un IBAN válido.");D(!0);try{await X.requestPayout(a,r,g),N(!0),B("¡Listo! Tu solicitud está en proceso."),I(""),M(),setTimeout(()=>{N(!1),x(!1),B("")},2400)}catch(i){l(i.message||"Error al procesar el retiro.")}finally{D(!1)}},le=async()=>{p(""),S(!1);const a=parseFloat(k);if(!b||!C.isValidEmail(b))return p("Introduce un email válido.");if(!k||isNaN(a)||a<=0)return p("Introduce una cantidad válida.");if(a>n)return p("Saldo insuficiente.");$(!0);try{await X.sendMoney(b,a),S(!0),_(""),F(""),U(""),M(),setTimeout(()=>{S(!1),m(!1)},2e3)}catch(i){p(i.message||"Error al enviar.")}finally{$(!1)}};return y?e.jsx(me,{size:"medium",text:"FINANZAS",subtext:"Cargando tu billetera..."}):e.jsxs("div",{className:"rev-shell",children:[e.jsx("style",{children:ye}),e.jsxs("div",{className:"rev-bg",children:[e.jsx("div",{className:"rev-bg-gradient"}),e.jsx("div",{className:"rev-bg-glow"})]}),e.jsxs("div",{className:"rev-content",children:[e.jsxs("div",{className:"rev-hero-zone",children:[e.jsxs("div",{className:"rev-balance-card",children:[e.jsx("span",{className:"rev-balance-label",children:"Wallet · EUR"}),e.jsxs("div",{className:"rev-balance-amount",children:[e.jsx("span",{className:"rev-amount-value",children:n.toFixed(2).split(".")[0]}),e.jsxs("span",{className:"rev-amount-decimal",children:[",",n.toFixed(2).split(".")[1]," €"]})]})]}),e.jsxs("div",{className:"rev-actions",children:[e.jsxs("button",{className:"rev-action-item",onClick:()=>x(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(A,{size:18})}),e.jsx("span",{children:"Solicitar retiro"})]}),e.jsxs("button",{className:"rev-action-item",onClick:()=>m(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(u,{size:18})}),e.jsx("span",{children:"Enviar interno"})]})]})]}),e.jsxs("section",{className:"rev-transactions",onScroll:a=>{const i=a.target;i.scrollHeight-i.scrollTop-i.clientHeight<100&&E<o.length&&ne(h=>Math.min(h+oe,o.length))},children:[e.jsx("h3",{className:"rev-section-title",children:"Actividad reciente"}),o.length===0?e.jsxs("div",{className:"rev-empty",children:[e.jsx(ue,{size:32}),e.jsx("p",{children:"Sin movimientos aún"}),e.jsx("span",{children:"Tus transacciones aparecerán aquí"})]}):e.jsxs("div",{className:"rev-tx-list",children:[o.slice(0,E).map(a=>{const i=a.is_negative,s=a.type==="withdrawal"?"Retiro":i?"Envío":"Recibido",h=["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#ec4899"],de=a.id.charCodeAt(0)%h.length,pe=h[de],Z=a.status==="pending"?"Pendiente":a.status==="failed"?"Rechazado":"";return e.jsxs("div",{className:"rev-tx-item",children:[e.jsxs("div",{className:"rev-tx-left",children:[e.jsx("div",{className:"rev-tx-avatar",style:{background:pe},children:a.type==="withdrawal"?e.jsx(A,{size:18,color:"#fff"}):e.jsx(u,{size:18,color:"#fff"})}),e.jsxs("div",{className:"rev-tx-info",children:[e.jsx("span",{className:"rev-tx-name",children:s}),e.jsx("span",{className:"rev-tx-date",children:a.date})]})]}),e.jsxs("div",{className:"rev-tx-right",children:[e.jsxs("span",{className:`rev-tx-amount ${i?"negative":"positive"}`,children:[i?"-":"+",Number(a.amount).toFixed(2)," €"]}),Z&&e.jsx("span",{className:`rev-tx-status ${a.status}`,children:Z})]})]},a.id)}),E<o.length&&e.jsx("div",{className:"rev-tx-loading",children:e.jsx(P,{size:20,className:"rev-spin"})})]})]})]}),Q&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>x(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>x(!1),children:e.jsx(G,{size:22})}),e.jsx("div",{className:"lp-modal-icon withdraw",children:e.jsx(A,{size:28})}),e.jsx("h2",{children:"Retirar fondos"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Recibe tu dinero en PayPal o cuenta bancaria"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:w,onChange:a=>I(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[n.toFixed(2)," €"]})]})]}),R&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:20}),e.jsx("span",{children:R})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Método de pago"}),e.jsxs("div",{className:"lp-method-grid",children:[e.jsxs("button",{className:`lp-method-card ${r==="PayPal"?"active":""}`,onClick:()=>O("PayPal"),children:[e.jsx("div",{className:"lp-method-icon paypal",children:e.jsx(xe,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"PayPal"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",V,"€"]})]}),r==="PayPal"&&e.jsx(d,{size:18,className:"lp-method-check"})]}),e.jsxs("button",{className:`lp-method-card ${r==="Bank"?"active":""}`,onClick:()=>O("Bank"),children:[e.jsx("div",{className:"lp-method-icon bank",children:e.jsx(be,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"Transferencia"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",Y,"€"]})]}),r==="Bank"&&e.jsx(d,{size:18,className:"lp-method-check"})]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:r==="PayPal"?"Email de PayPal":"Número IBAN"}),e.jsx("input",{type:r==="PayPal"?"email":"text",value:g,onChange:a=>f(r==="Bank"?a.target.value.toUpperCase():a.target.value),placeholder:r==="PayPal"?"tu@email.com":"ES00 0000 0000 0000 0000 0000",className:"lp-input"})]}),r==="Bank"&&e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Titular de la cuenta"}),e.jsx("input",{type:"text",value:ae,onChange:a=>te(a.target.value),placeholder:"Nombre y apellidos",className:"lp-input"})]}),L&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(J,{size:18}),e.jsx("span",{children:L})]}),j&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Solicitud enviada correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary",onClick:se,disabled:T||j,children:T?e.jsx(P,{className:"lp-spin",size:20}):j?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Solicitar retiro"})})})]})}),ee&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>m(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>m(!1),children:e.jsx(G,{size:22})}),e.jsx("div",{className:"lp-modal-icon send",children:e.jsx(u,{size:28})}),e.jsx("h2",{children:"Enviar dinero"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Transfiere fondos a otro usuario de LinkPay"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Destinatario"}),e.jsxs("div",{className:"lp-input-icon-wrapper",children:[e.jsx("input",{type:"email",value:b,onChange:a=>F(a.target.value),placeholder:"email@ejemplo.com",className:"lp-input with-icon"}),e.jsx(u,{size:18,className:"lp-input-icon"})]})]}),e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:k,onChange:a=>_(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[n.toFixed(2)," €"]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsxs("label",{children:["Nota ",e.jsx("span",{className:"lp-optional",children:"(opcional)"})]}),e.jsx("input",{type:"text",value:re,onChange:a=>U(a.target.value),placeholder:"Ej: Pago por colaboración",className:"lp-input"})]}),H&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(J,{size:18}),e.jsx("span",{children:H})]}),z&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Dinero enviado correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary blue",onClick:le,disabled:W||z,children:W?e.jsx(P,{className:"lp-spin",size:20}):z?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Enviar ahora"})})})]})})]})}const ye=`
+ */const je=[["path",{d:"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",key:"1ffxy3"}],["path",{d:"m21.854 2.147-10.94 10.939",key:"12cjpa"}]],u=h("send",je),C={isValidEmail:i=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(i),isValidIBAN:i=>{const n=i.replace(/\s/g,"").toUpperCase();return n.length<15||n.length>34||!/^[A-Z]{2}/.test(n)?!1:/^[A-Z0-9]+$/.test(n)},isValidCrypto:i=>{const n=/^0x[a-fA-F0-9]{40}$/.test(i),v=/^(1|3|bc1)[a-zA-Z0-9]{25,39}$/.test(i);return n||v}};function Ce(){const{balance:i,history:n,loading:v,refresh:A}=me(),[ee,x]=r.useState(!1),[ae,m]=r.useState(!1),[y,P]=r.useState(""),[t,M]=r.useState("PayPal"),[g,b]=r.useState(""),[re,te]=r.useState(""),[T,s]=r.useState(""),[O,I]=r.useState(!1),[w,j]=r.useState(!1),[L,R]=r.useState(""),[f,D]=r.useState(""),[N,B]=r.useState(""),[ie,F]=r.useState(""),[U,p]=r.useState(""),[_,V]=r.useState(!1),[k,z]=r.useState(!1),[c,ne]=r.useState({paypal:"",bank:""}),[S,oe]=r.useState(30),Y=30,W=5,$=10,H=t==="PayPal"?W:$;r.useEffect(()=>{(async()=>{const{data:{user:o}}=await K.auth.getUser();if(o){const{data:l}=await K.from("profiles").select("paypal_email, bank_details").eq("id",o.id).single();l&&(ne({paypal:l.paypal_email||"",bank:l.bank_details||""}),l.paypal_email&&b(l.paypal_email))}})()},[]),r.useEffect(()=>{t==="PayPal"&&c.paypal&&b(c.paypal),t==="Bank"&&c.bank&&b(c.bank)},[t,c]);const se=async()=>{s(""),j(!1);const a=parseFloat(y);if(!y||isNaN(a)||a<=0)return s("Introduce una cantidad válida.");if(a>i)return s("Saldo insuficiente.");if(a<H)return s(`Mínimo ${t==="PayPal"?"PayPal":"transferencia"}: €${H}`);if(t==="PayPal"){if(!C.isValidEmail(g))return s("Introduce un email de PayPal válido.")}else if(!C.isValidIBAN(g))return s("Introduce un IBAN válido.");I(!0);try{await Q.requestPayout(a,t,g),j(!0),R("¡Listo! Tu solicitud está en proceso."),P(""),A(),setTimeout(()=>{j(!1),x(!1),R("")},2400)}catch(o){s(o.message||"Error al procesar el retiro.")}finally{I(!1)}},le=async()=>{p(""),z(!1);const a=parseFloat(N);if(!f||!C.isValidEmail(f))return p("Introduce un email válido.");if(!N||isNaN(a)||a<=0)return p("Introduce una cantidad válida.");if(a>i)return p("Saldo insuficiente.");V(!0);try{await Q.sendMoney(f,a),z(!0),B(""),D(""),F(""),A(),setTimeout(()=>{z(!1),m(!1)},2e3)}catch(o){p(o.message||"Error al enviar.")}finally{V(!1)}};if(v)return e.jsx(be,{size:"medium",text:"FINANZAS",subtext:"Cargando tu billetera..."});const de=Math.max(n.length-S,0),pe=Math.min(Y,de);return e.jsxs("div",{className:"rev-shell",children:[e.jsx("style",{children:Ne}),e.jsxs("div",{className:"rev-bg",children:[e.jsx("div",{className:"rev-bg-gradient"}),e.jsx("div",{className:"rev-bg-glow"})]}),e.jsxs("div",{className:"rev-content",children:[e.jsxs("div",{className:"rev-hero-zone",children:[e.jsxs("div",{className:"rev-balance-card",children:[e.jsx("span",{className:"rev-balance-label",children:"Personal · EUR"}),e.jsxs("div",{className:"rev-balance-amount",children:[e.jsx("span",{className:"rev-amount-value",children:i.toFixed(2).split(".")[0]}),e.jsxs("span",{className:"rev-amount-decimal",children:[",",i.toFixed(2).split(".")[1]," €"]})]})]}),e.jsxs("div",{className:"rev-actions",children:[e.jsxs("button",{className:"rev-action-item",onClick:()=>x(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(E,{size:22})}),e.jsxs("span",{children:["Solicitar",e.jsx("br",{}),"retiro"]})]}),e.jsxs("button",{className:"rev-action-item",onClick:()=>m(!0),children:[e.jsx("div",{className:"rev-action-circle",children:e.jsx(u,{size:22})}),e.jsxs("span",{children:["Enviar",e.jsx("br",{}),"interno"]})]})]})]}),e.jsxs("section",{className:"rev-transactions",children:[e.jsx("h3",{className:"rev-section-title",children:"Actividad reciente"}),n.length===0?e.jsxs("div",{className:"rev-empty",children:[e.jsx(we,{size:32}),e.jsx("p",{children:"Sin movimientos aún"}),e.jsx("span",{children:"Tus transacciones aparecerán aquí"})]}):e.jsxs("div",{className:"rev-tx-list",children:[n.slice(0,S).map(a=>{const o=a.is_negative,l=a.type==="withdrawal"?"Retiro":o?"Envío":"Recibido",q=["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#ec4899"],ce=a.id.charCodeAt(0)%q.length,xe=q[ce],X=a.status==="pending"?"Pendiente":a.status==="failed"?"Rechazado":"";return e.jsxs("div",{className:"rev-tx-item",children:[e.jsxs("div",{className:"rev-tx-left",children:[e.jsx("div",{className:"rev-tx-avatar",style:{background:xe},children:a.type==="withdrawal"?e.jsx(E,{size:18,color:"#fff"}):e.jsx(u,{size:18,color:"#fff"})}),e.jsxs("div",{className:"rev-tx-info",children:[e.jsx("span",{className:"rev-tx-name",children:l}),e.jsx("span",{className:"rev-tx-date",children:a.date})]})]}),e.jsxs("div",{className:"rev-tx-right",children:[e.jsxs("span",{className:`rev-tx-amount ${o?"negative":"positive"}`,children:[o?"-":"+",Number(a.amount).toFixed(2)," €"]}),X&&e.jsx("span",{className:`rev-tx-status ${a.status}`,children:X})]})]},a.id)}),S<n.length&&e.jsxs("button",{type:"button",className:"rev-tx-more",onClick:()=>oe(a=>Math.min(a+Y,n.length)),children:["Mostrar ",pe," más",e.jsx(fe,{size:16})]})]})]})]}),ee&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>x(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>x(!1),children:e.jsx(Z,{size:22})}),e.jsx("div",{className:"lp-modal-icon withdraw",children:e.jsx(E,{size:28})}),e.jsx("h2",{children:"Retirar fondos"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Recibe tu dinero en PayPal o cuenta bancaria"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:y,onChange:a=>P(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[i.toFixed(2)," €"]})]})]}),L&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:20}),e.jsx("span",{children:L})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Método de pago"}),e.jsxs("div",{className:"lp-method-grid",children:[e.jsxs("button",{className:`lp-method-card ${t==="PayPal"?"active":""}`,onClick:()=>M("PayPal"),children:[e.jsx("div",{className:"lp-method-icon paypal",children:e.jsx(ge,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"PayPal"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",W,"€"]})]}),t==="PayPal"&&e.jsx(d,{size:18,className:"lp-method-check"})]}),e.jsxs("button",{className:`lp-method-card ${t==="Bank"?"active":""}`,onClick:()=>M("Bank"),children:[e.jsx("div",{className:"lp-method-icon bank",children:e.jsx(ve,{size:20})}),e.jsxs("div",{className:"lp-method-info",children:[e.jsx("span",{className:"lp-method-name",children:"Transferencia"}),e.jsxs("span",{className:"lp-method-min",children:["Mín. ",$,"€"]})]}),t==="Bank"&&e.jsx(d,{size:18,className:"lp-method-check"})]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:t==="PayPal"?"Email de PayPal":"Número IBAN"}),e.jsx("input",{type:t==="PayPal"?"email":"text",value:g,onChange:a=>b(t==="Bank"?a.target.value.toUpperCase():a.target.value),placeholder:t==="PayPal"?"tu@email.com":"ES00 0000 0000 0000 0000 0000",className:"lp-input"})]}),t==="Bank"&&e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Titular de la cuenta"}),e.jsx("input",{type:"text",value:re,onChange:a=>te(a.target.value),placeholder:"Nombre y apellidos",className:"lp-input"})]}),T&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(G,{size:18}),e.jsx("span",{children:T})]}),w&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Solicitud enviada correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary",onClick:se,disabled:O||w,children:O?e.jsx(J,{className:"lp-spin",size:20}):w?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Solicitar retiro"})})})]})}),ae&&e.jsx("div",{className:"lp-modal-overlay",onClick:()=>m(!1),children:e.jsxs("div",{className:"lp-modal",onClick:a=>a.stopPropagation(),children:[e.jsxs("div",{className:"lp-modal-header",children:[e.jsx("button",{className:"lp-modal-close",onClick:()=>m(!1),children:e.jsx(Z,{size:22})}),e.jsx("div",{className:"lp-modal-icon send",children:e.jsx(u,{size:28})}),e.jsx("h2",{children:"Enviar dinero"}),e.jsx("p",{className:"lp-modal-subtitle",children:"Transfiere fondos a otro usuario de LinkPay"})]}),e.jsxs("div",{className:"lp-modal-body",children:[e.jsxs("div",{className:"lp-field",children:[e.jsx("label",{children:"Destinatario"}),e.jsxs("div",{className:"lp-input-icon-wrapper",children:[e.jsx("input",{type:"email",value:f,onChange:a=>D(a.target.value),placeholder:"email@ejemplo.com",className:"lp-input with-icon"}),e.jsx(u,{size:18,className:"lp-input-icon"})]})]}),e.jsxs("div",{className:"lp-amount-hero",children:[e.jsxs("div",{className:"lp-amount-row",children:[e.jsx("input",{type:"number",inputMode:"decimal",value:N,onChange:a=>B(a.target.value),placeholder:"0",className:"lp-amount-input"}),e.jsx("span",{className:"lp-amount-currency",children:"EUR"})]}),e.jsxs("div",{className:"lp-amount-available",children:["Disponible: ",e.jsxs("strong",{children:[i.toFixed(2)," €"]})]})]}),e.jsxs("div",{className:"lp-field",children:[e.jsxs("label",{children:["Nota ",e.jsx("span",{className:"lp-optional",children:"(opcional)"})]}),e.jsx("input",{type:"text",value:ie,onChange:a=>F(a.target.value),placeholder:"Ej: Pago por colaboración",className:"lp-input"})]}),U&&e.jsxs("div",{className:"lp-error-banner",children:[e.jsx(G,{size:18}),e.jsx("span",{children:U})]}),k&&e.jsxs("div",{className:"lp-success-banner",children:[e.jsx(d,{size:18}),e.jsx("span",{children:"¡Dinero enviado correctamente!"})]})]}),e.jsx("div",{className:"lp-modal-footer",children:e.jsx("button",{className:"lp-btn-primary blue",onClick:le,disabled:_||k,children:_?e.jsx(J,{className:"lp-spin",size:20}):k?e.jsxs(e.Fragment,{children:[e.jsx(d,{size:20})," Enviado"]}):e.jsx(e.Fragment,{children:"Enviar ahora"})})})]})})]})}const Ne=`
   /* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
   .rev-spin, .lp-spin { animation: rev-spin 1s linear infinite; }
   @keyframes rev-spin { 100% { transform: rotate(360deg); } }
@@ -479,36 +479,95 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     }
   }
 
-  /* ─── BACKGROUND ─────────────────────────────────────────────────────────── */
+  /* ─── BACKGROUND - STUNNING UNDERWATER EFFECT ────────────────────────────── */
   .rev-bg {
     position: fixed;
     inset: 0;
     z-index: 0;
     background: linear-gradient(180deg, 
-      #0a1628 0%, 
-      #0d1f3c 30%,
-      #0f172a 100%
+      #001a2c 0%, 
+      #003352 25%,
+      #004d7a 50%,
+      #003352 75%,
+      #001a2c 100%
     );
+    overflow: hidden;
   }
 
   .rev-bg-gradient {
     position: absolute;
     inset: 0;
     background: 
-      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(6, 78, 125, 0.5) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 40% at 40% 10%, rgba(14, 116, 144, 0.3) 0%, transparent 40%);
-    animation: rev-fade-up 1s ease-out;
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(0, 180, 216, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 50% at 20% 20%, rgba(0, 119, 182, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse 80% 60% at 80% 30%, rgba(72, 202, 228, 0.25) 0%, transparent 40%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(0, 150, 199, 0.2) 0%, transparent 50%);
+    animation: rev-fade-up 1.2s ease-out;
   }
 
   .rev-bg-glow {
     position: absolute;
-    top: -100px;
+    top: -150px;
     left: 50%;
     transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(72, 202, 228, 0.35) 0%, rgba(0, 180, 216, 0.15) 30%, transparent 60%);
+    pointer-events: none;
+    animation: rev-glow-pulse 4s ease-in-out infinite alternate;
+  }
+
+  /* Floating particles effect */
+  .rev-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.7;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1px 1px at 25% 35%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(2px 2px at 40% 15%, rgba(72, 202, 228, 0.9), transparent),
+      radial-gradient(1px 1px at 55% 45%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1px 1px at 70% 25%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(2px 2px at 85% 50%, rgba(0, 180, 216, 0.8), transparent),
+      radial-gradient(1px 1px at 10% 70%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1px 1px at 30% 80%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(2px 2px at 60% 75%, rgba(144, 224, 239, 0.7), transparent),
+      radial-gradient(1px 1px at 80% 85%, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 350px 250px;
+    animation: rev-particles-float 20s linear infinite;
+  }
+
+  /* Secondary floating orb */
+  .rev-bg::after {
+    content: "";
+    position: absolute;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+    bottom: 10%;
+    right: -100px;
+    background: radial-gradient(circle, rgba(0, 180, 216, 0.25) 0%, rgba(72, 202, 228, 0.1) 40%, transparent 60%);
+    border-radius: 50%;
+    filter: blur(40px);
+    animation: rev-orb-float 15s ease-in-out infinite;
     pointer-events: none;
+  }
+
+  @keyframes rev-glow-pulse {
+    0% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  }
+
+  @keyframes rev-particles-float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-250px); }
+  }
+
+  @keyframes rev-orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-30px, -50px) scale(1.05); }
+    66% { transform: translate(-60px, 20px) scale(0.95); }
   }
 
   /* ─── CONTENT CONTAINER ─────────────────────────────────────────────────── */
@@ -527,7 +586,7 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
 
   @media (max-width: 768px) {
     .rev-content {
-      padding: calc(48px + env(safe-area-inset-top, 0px)) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
+      padding: 12px 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
       max-width: 100%;
     }
   }
@@ -545,8 +604,8 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 12px;
-      padding-bottom: 12px;
+      padding-top: 32px;
+      padding-bottom: 36px;
     }
   }
 
@@ -578,9 +637,15 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .rev-balance-card {
+      margin-bottom: 12px;
+    }
   }
 
   .rev-balance-label {
@@ -610,7 +675,53 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     margin-left: 2px;
   }
 
-  /* Removed wallet selector/dots */
+  /* ─── CUENTAS BUTTON (REVOLUT STYLE) ──────────────────────────────────── */
+  .rev-cuentas-btn {
+    margin-top: 12px;
+    padding: 10px 24px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .rev-cuentas-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    transform: scale(1.02);
+  }
+
+  .rev-cuentas-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* ─── DOTS INDICATOR (REVOLUT STYLE) ─────────────────────────────────── */
+  .rev-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 20px 0 28px;
+  }
+
+  .rev-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .rev-dot.active {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+  }
 
   /* ─── QUICK ACTIONS - COMPACTO ─────────────────────────────────────────── */
   .rev-actions {
@@ -722,7 +833,7 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
 
   /* ─── TRANSACTIONS - PANEL INFERIOR EXPANDIDO ───────────────────────────── */
   .rev-transactions {
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(0, 30, 50, 0.4);
     border-radius: 24px 24px 0 0;
     padding: 20px 16px 30px;
     margin: 0 -12px;
@@ -730,15 +841,18 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     min-height: 200px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   @media (max-width: 768px) {
     .rev-transactions {
-      min-height: 180px;
-      padding: 18px 14px 100px;
+      flex: 1;
+      min-height: 280px;
+      padding: 20px 16px 120px;
+      display: flex;
+      flex-direction: column;
     }
   }
 
@@ -747,6 +861,29 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     justify-content: center;
     padding: 20px 0;
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  .rev-tx-more {
+    width: 100%;
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(15, 23, 42, 0.45);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .rev-tx-more:hover {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(255, 255, 255, 0.28);
   }
 
   .rev-section-title {
@@ -766,6 +903,8 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     text-align: center;
     padding: 50px 20px;
     color: rgba(255, 255, 255, 0.4);
+    flex: 1;
+    min-height: 180px;
   }
 
   .rev-empty p {
@@ -782,6 +921,8 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
   .rev-tx-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   .rev-tx-item {
@@ -1110,9 +1251,14 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
     background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
   }
 
-  /* ─── MOBILE ADJUSTMENTS ─────────────────────────────────────────────────── */
+  /* ─── MOBILE ADJUSTMENTS - REVOLUT PERFECT ─────────────────────────────── */
   @media (max-width: 768px) {
     .rev-shell { left: 0; }
+    
+    .rev-hero-zone {
+      padding-top: 8px;
+      padding-bottom: 0;
+    }
     
     .rev-amount-value {
       font-size: 48px;
@@ -1122,13 +1268,43 @@ import{d as v,B as ce,r as t,j as e,l as P,X as G,D as d,F as xe,k as J,G as K,P
       font-size: 28px;
     }
 
+    .rev-cuentas-btn {
+      margin-top: 8px;
+      padding: 8px 20px;
+      font-size: 13px;
+    }
+
+    .rev-dots {
+      margin: 16px 0 20px;
+    }
+
     .rev-actions {
-      gap: 20px;
+      gap: 32px;
+      margin-top: 0;
+      padding: 0;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .rev-action-item {
+      min-width: 60px;
+      padding: 4px;
     }
 
     .rev-action-circle {
       width: 52px;
       height: 52px;
     }
+
+    .rev-action-item span {
+      font-size: 10px;
+      text-align: center;
+      line-height: 1.2;
+      margin-top: 4px;
+    }
+
+    .rev-transactions {
+      margin-top: 32px;
+    }
   }
-`;export{ke as PayoutsPage};
+`;export{Ce as PayoutsPage};

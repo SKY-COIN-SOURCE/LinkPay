@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content, height=device-height" />
   <meta name="admaven-placement" content="BqjwFrjC5" />
 
   <!-- SEO & Social -->
@@ -40,42 +40,109 @@
 
   <!-- Critical CSS to prevent layout shift on mobile nav -->
   <style>
-    html,
-    body,
-    #root {
-      margin: 0;
-      padding: 0;
-      background: #020617;
-      min-height: 100vh;
-      min-height: 100dvh;
+    * {
+      box-sizing: border-box;
     }
 
-    /* Mobile nav critical styles - BULLETPROOF bottom coverage */
+    html {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #020617 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+      /* NO position fixed - causa problemas en iOS PWA */
+    }
+
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #020617 !important;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%) !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+      overflow: hidden !important;
+      /* NO position fixed - causa problemas en iOS PWA */
+      position: relative !important;
+    }
+
+    /* Extender body más abajo para cubrir cualquier espacio en móvil */
+    @media (max-width: 768px) {
+      body::after {
+        content: "" !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -200px !important;
+        height: 200px !important;
+        background: #000000 !important;
+        z-index: 999999 !important;
+        pointer-events: none !important;
+      }
+    }
+
+    #root {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #020617 !important;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 25%, #1e293b 50%, #0f172a 75%, #020617 100%) !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+      overflow: hidden !important;
+      position: relative !important;
+      /* NO position fixed - causa problemas en iOS PWA */
+      opacity: 1 !important;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Mobile nav critical styles - SEMI-TRANSPARENT PEGADO AL BORDE */
     @media (max-width: 768px) {
       .lp-mobile-nav {
         position: fixed !important;
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        background: #020617 !important;
+        padding: 0 !important;
+        margin: 0 !important;
         z-index: 60 !important;
+        background: transparent !important;
       }
 
-      /* Extend background 200px below to cover any home indicator gap */
       .lp-mobile-nav::after {
+        bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+        height: calc(100% + env(safe-area-inset-bottom, 0px)) !important;
         content: "" !important;
         position: absolute !important;
         left: 0 !important;
         right: 0 !important;
         bottom: -200px !important;
-        height: 200px !important;
-        background: #020617 !important;
+        height: calc(100% + 200px) !important;
+        background: rgba(2, 6, 23, 0.75) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
         z-index: -1 !important;
+        pointer-events: none !important;
+      }
+
+      .lp-mobile-nav-inner {
+        background: transparent !important;
+        padding-top: 10px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        padding-bottom: 10px !important;
+        margin: 0 !important;
+        min-height: 70px !important;
+        position: relative !important;
+        z-index: 1 !important;
       }
     }
   </style>
-  <script type="module" crossorigin src="/assets/index-DD_I70sm.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DSVD2ZHZ.css">
+  <script type="module" crossorigin src="/assets/index-D-0HiMVS.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Cb48V52v.css">
 </head>
 
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>

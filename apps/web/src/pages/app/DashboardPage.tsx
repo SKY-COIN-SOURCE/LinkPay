@@ -244,11 +244,18 @@ export function DashboardPage() {
     // We need to reconstruct the full date. Since we only have day/month,
     // we assume it's in the current year or recent past
     const parseDate = (item: any): Date => {
+      // PRIORITY 1: Use isoDate if available (new reliable format "YYYY-MM-DD")
+      if (item.isoDate) {
+        return new Date(item.isoDate + 'T00:00:00');
+      }
+
       if (item.date) {
         // Try ISO format first (YYYY-MM-DD)
-        const isoDate = new Date(item.date);
-        if (!isNaN(isoDate.getTime()) && item.date.includes('-')) {
-          return isoDate;
+        if (item.date.includes('-') && item.date.length >= 10) {
+          const isoDate = new Date(item.date);
+          if (!isNaN(isoDate.getTime())) {
+            return isoDate;
+          }
         }
 
         // Try parsing as day-month format (es-ES format like "15 dic")
@@ -261,11 +268,12 @@ export function DashboardPage() {
           };
           const month = monthMap[parts[1].toLowerCase()];
           if (month !== undefined && !isNaN(day) && day >= 1 && day <= 31) {
-            // Try current year first
+            // Use current year, but if the date is in the future by more than 1 day, use last year
             let year = now.getFullYear();
             const testDate = new Date(year, month, day);
-            // If the date is in the future, use last year
-            if (testDate > now) {
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            if (testDate > tomorrow) {
               year = year - 1;
             }
             return new Date(year, month, day);
@@ -290,38 +298,50 @@ export function DashboardPage() {
         });
       }
 
-      const cutoff = new Date();
+      // Get today's date string in ISO format for exact comparison
+      const todayStr = now.toISOString().slice(0, 10); // "2024-12-23"
+
       if (timePeriod === 'today') {
-        // For today, get today's date (data is aggregated by day)
-        cutoff.setHours(0, 0, 0, 0);
-        cutoff.setMinutes(0, 0, 0);
-        cutoff.setSeconds(0, 0);
-        cutoff.setMilliseconds(0);
-      } else if (timePeriod === 'week') {
-        // Last 7 days
-        cutoff.setDate(now.getDate() - 7);
-        cutoff.setHours(0, 0, 0, 0);
-      } else if (timePeriod === 'month') {
-        // Last 30 days
-        cutoff.setDate(now.getDate() - 30);
-        cutoff.setHours(0, 0, 0, 0);
+        // EXACT match for today using isoDate string comparison (most reliable)
+        const filtered = data.filter((item: any) => {
+          // Use isoDate directly if available (new format)
+          if (item.isoDate) {
+            return item.isoDate === todayStr;
+          }
+          // Fallback: parse and compare
+          const itemDate = parseDate(item);
+          const itemStr = itemDate.toISOString().slice(0, 10);
+          return itemStr === todayStr;
+        });
+        return filtered;
       }
 
+      // For week/month, use cutoff date
+      const cutoff = new Date(now);
+      if (timePeriod === 'week') {
+        cutoff.setDate(now.getDate() - 6); // Last 7 days including today
+      } else if (timePeriod === 'month') {
+        cutoff.setDate(now.getDate() - 29); // Last 30 days including today
+      }
+      cutoff.setHours(0, 0, 0, 0);
+      const cutoffStr = cutoff.toISOString().slice(0, 10);
+
       const filtered = data.filter((item: any) => {
+        // Use isoDate directly if available
+        if (item.isoDate) {
+          return item.isoDate >= cutoffStr && item.isoDate <= todayStr;
+        }
+        // Fallback: parse and compare
         const itemDate = parseDate(item);
-        // Normalize to start of day for comparison
-        const itemDay = new Date(itemDate);
-        itemDay.setHours(0, 0, 0, 0);
-        const cutoffDay = new Date(cutoff);
-        cutoffDay.setHours(0, 0, 0, 0);
-        return itemDay >= cutoffDay && itemDay <= now;
+        const itemStr = itemDate.toISOString().slice(0, 10);
+        return itemStr >= cutoffStr && itemStr <= todayStr;
       });
 
       // Sort by date ascending
       return filtered.sort((a, b) => {
-        const dateA = parseDate(a);
-        const dateB = parseDate(b);
-        return dateA.getTime() - dateB.getTime();
+        const dateA = a.isoDate || parseDate(a).toISOString().slice(0, 10);
+        const dateB = b.isoDate || parseDate(b).toISOString().slice(0, 10);
+        return dateA.localeCompare(dateB);
       });
     };
 
