@@ -914,7 +914,7 @@ export function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <button
+            <motion.button
               className="lp-d2-links-toggle"
               onClick={() => setLinksExpanded(!linksExpanded)}
               onKeyDown={(e) => {
@@ -926,12 +926,23 @@ export function DashboardPage() {
               aria-expanded={linksExpanded}
               aria-controls="links-dropdown"
               aria-label={`${linksExpanded ? 'Cerrar' : 'Abrir'} lista de enlaces`}
+              style={{
+                visibility: 'visible',
+                opacity: 1,
+                display: 'flex',
+                zIndex: 100,
+                position: 'relative'
+              }}
+              animate={{
+                opacity: 1,
+                visibility: 'visible'
+              }}
             >
               <LinkIcon size={18} />
               <span>Mis Enlaces</span>
               <span className="lp-d2-links-count">{links.length}</span>
               {linksExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            </button>
+            </motion.button>
 
             <AnimatePresence>
               {linksExpanded && (

@@ -1031,7 +1031,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   /* Prevent scroll bleed */
   position: relative;
-  isolation: isolate;
+  /* NO usar isolation: isolate - puede ocultar el botón */
   /* Asegurar que el fondo se extienda con el contenido */
   z-index: 1;
   /* El fondo se extiende con el contenido */
@@ -1039,6 +1039,8 @@
   /* Bloquear scroll horizontal */
   overflow-x: hidden;
   max-width: 100%;
+  /* Asegurar visibilidad */
+  visibility: visible !important;
 }
 
 .lp-d2-links-toggle {
@@ -1055,6 +1057,12 @@
   cursor: pointer;
   transition: background 0.2s ease;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  /* Asegurar que el botón SIEMPRE sea visible */
+  position: relative;
+  z-index: 100;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
 }
 
 .lp-d2-links-toggle:hover {
@@ -1090,9 +1098,9 @@
   visibility: visible !important;
   /* Asegurar que el fondo se extienda */
   background: inherit;
-  /* Asegurar que los botones estén visibles */
+  /* Asegurar que los botones estén visibles - z-index MENOR que el toggle */
   position: relative;
-  z-index: 1;
+  z-index: 10;
   /* Asegurar que no se oculte */
   min-height: 0;
   max-height: none;
