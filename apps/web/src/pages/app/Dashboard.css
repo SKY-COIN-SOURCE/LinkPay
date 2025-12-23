@@ -269,9 +269,9 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  overflow: hidden;
   overflow-x: hidden;
-  /* BLOQUEAR SCROLL HORIZONTAL */
+  overflow-y: auto;
+  /* Permitir scroll vertical como Analytics */
   -webkit-overflow-scrolling: touch;
   z-index: 1;
   /* Cuando tiene scroll activo, permitir scroll suave */
@@ -376,8 +376,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* Padding ajustado - el header ya está manejado por lp-dashboard-inner */
-  padding: 0 16px 120px;
+  /* Padding ajustado - en móvil empieza debajo del header transparente (igual que Analytics) */
+  padding: calc(48px + env(safe-area-inset-top, 12px) + 12px) 16px 120px;
   max-width: 500px;
   margin: 0 auto;
   width: 100%;
