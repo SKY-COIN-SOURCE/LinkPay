@@ -1031,7 +1031,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   /* Prevent scroll bleed */
   position: relative;
-  /* NO usar isolation: isolate - puede ocultar el botón */
   /* Asegurar que el fondo se extienda con el contenido */
   z-index: 1;
   /* El fondo se extiende con el contenido */
@@ -1041,11 +1040,12 @@
   max-width: 100%;
   /* Asegurar visibilidad */
   visibility: visible !important;
+  /* CRÍTICO: No usar contain ni isolation aquí - permite que el botón sea visible */
 }
 
 .lp-d2-links-toggle {
   width: 100%;
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
@@ -1057,12 +1057,15 @@
   cursor: pointer;
   transition: background 0.2s ease;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  /* Asegurar que el botón SIEMPRE sea visible */
+  /* CRÍTICO: Botón SIEMPRE visible, fuera del contexto de animación */
   position: relative;
-  z-index: 100;
+  z-index: 999;
   visibility: visible !important;
   opacity: 1 !important;
-  display: flex !important;
+  /* Asegurar que no se oculte por overflow */
+  overflow: visible;
+  /* Asegurar que esté por encima de todo */
+  isolation: isolate;
 }
 
 .lp-d2-links-toggle:hover {
@@ -1098,9 +1101,9 @@
   visibility: visible !important;
   /* Asegurar que el fondo se extienda */
   background: inherit;
-  /* Asegurar que los botones estén visibles - z-index MENOR que el toggle */
+  /* CRÍTICO: z-index MENOR que el botón toggle (999) para que el botón siempre esté visible */
   position: relative;
-  z-index: 10;
+  z-index: 1;
   /* Asegurar que no se oculte */
   min-height: 0;
   max-height: none;
@@ -1456,6 +1459,18 @@
 
   .lp-d2-stat-value {
     font-size: 14px;
+  }
+
+  /* CRÍTICO MÓVIL: Botón toggle SIEMPRE visible */
+  .lp-d2-links-toggle {
+    position: relative !important;
+    z-index: 999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+    overflow: visible !important;
+    /* Asegurar que no se oculte por ningún overflow del padre */
+    isolation: isolate !important;
   }
 
   /* Links section mobile - permitir expansión completa */
