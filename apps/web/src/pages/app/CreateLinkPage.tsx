@@ -861,8 +861,8 @@ const createLinkStyles = `
       /* Reset mobile */
       bottom: auto;
       right: auto;
-      /* Align with content cards - slightly right and higher */
-      top: 45%;
+      /* Align with content cards - higher position */
+      top: 38%;
       left: calc(192px + (100vw - 192px - 440px) / 2 + 40px);
       transform: translateY(-50%);
       /* Fixed size */
