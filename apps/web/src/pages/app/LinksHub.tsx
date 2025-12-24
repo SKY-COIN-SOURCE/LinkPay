@@ -44,27 +44,97 @@ export function LinksHub() {
 }
 
 const linksHubStyles = `
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LINKS HUB - PREMIUM VIBRANT BACKGROUND
+     Matching Analytics/Wallet/Dashboard quality
+     ═══════════════════════════════════════════════════════════════════════════ */
+
   .lp-links-hub-shell {
-    min-height: 100dvh;
-    background: linear-gradient(180deg, #0a0f1a 0%, #020617 50%, #000000 100%);
-    position: relative;
+    position: fixed;
+    inset: 0;
     overflow-x: hidden;
-    /* Block horizontal scroll on mobile */
-    max-width: 100vw;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    /* Vibrant Purple-Cyan-Green Gradient - Premium */
+    background: linear-gradient(180deg,
+      #1a1040 0%,
+      #1e1650 15%,
+      #201a55 30%,
+      #1a2050 50%,
+      #152545 70%,
+      #0f1a35 85%,
+      #0a1020 100%);
   }
 
-  /* Tabs Bar - Transparent like header */
+  /* Gradient Overlay - Fluorescent accents */
+  .lp-links-hub-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 100% 50% at 50% 0%, rgba(139, 92, 246, 0.35) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 60% at 15% 40%, rgba(34, 211, 238, 0.25) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 85% 35%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
+      radial-gradient(ellipse 50% 40% at 20% 85%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 50% at 80% 90%, rgba(168, 85, 247, 0.18) 0%, transparent 50%);
+  }
+
+  /* Floating Particles - Animated like Analytics/Wallet */
+  .lp-links-hub-shell::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.6;
+    background-image:
+      radial-gradient(1.5px 1.5px at 10% 15%, rgba(139, 92, 246, 0.8), transparent),
+      radial-gradient(1px 1px at 25% 28%, rgba(34, 211, 238, 0.7), transparent),
+      radial-gradient(2px 2px at 42% 10%, rgba(16, 185, 129, 0.75), transparent),
+      radial-gradient(1px 1px at 60% 38%, rgba(168, 85, 247, 0.6), transparent),
+      radial-gradient(1.5px 1.5px at 78% 18%, rgba(34, 197, 94, 0.7), transparent),
+      radial-gradient(1px 1px at 88% 42%, rgba(99, 102, 241, 0.65), transparent),
+      radial-gradient(1.5px 1.5px at 15% 62%, rgba(34, 211, 238, 0.6), transparent),
+      radial-gradient(1px 1px at 35% 72%, rgba(16, 185, 129, 0.65), transparent),
+      radial-gradient(2px 2px at 55% 68%, rgba(139, 92, 246, 0.7), transparent),
+      radial-gradient(1px 1px at 72% 78%, rgba(34, 197, 94, 0.6), transparent),
+      radial-gradient(1.5px 1.5px at 85% 58%, rgba(168, 85, 247, 0.65), transparent),
+      radial-gradient(1px 1px at 5% 88%, rgba(99, 102, 241, 0.55), transparent);
+    background-size: 400px 300px;
+    animation: lp-links-particles-float 25s linear infinite;
+  }
+
+  @keyframes lp-links-particles-float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-300px); }
+  }
+
+  /* Desktop: offset for sidebar */
+  @media (min-width: 769px) {
+    .lp-links-hub-shell {
+      left: 260px;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TABS BAR - Transparente, solo los botones son opacos
+     ═══════════════════════════════════════════════════════════════════════════ */
+
   .lp-links-tabs-bar {
     position: sticky;
-    top: 0;
+    /* Empieza debajo del MobileHeader (48px + safe-area) */
+    top: calc(48px + env(safe-area-inset-top, 0px));
     z-index: 50;
     display: flex;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: 10px;
+    /* Padding generoso para respiro visual */
+    padding: 16px 16px 16px;
+    /* TRANSPARENTE - el fondo se ve a través */
     background: transparent;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    /* Sin borde ni sombra en el contenedor */
   }
 
   .lp-links-tab {
@@ -73,40 +143,53 @@ const linksHubStyles = `
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    background: rgba(15, 23, 42, 0.5);
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    /* BOTONES OPACOS con glassmorphism */
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
     color: #94a3b8;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .lp-links-tab:hover {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(139, 92, 246, 0.4);
     color: #e5e7eb;
   }
 
   .lp-links-tab.active {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.2) 100%);
-    border-color: rgba(99, 102, 241, 0.5);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.35) 0%, rgba(99, 102, 241, 0.3) 100%);
+    border-color: rgba(139, 92, 246, 0.6);
     color: #f9fafb;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    box-shadow: 
+      0 0 30px rgba(139, 92, 246, 0.3),
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   .lp-links-tab.active svg {
-    color: #a5b4fc;
+    color: #c4b5fd;
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
   }
 
-  /* Content Wrapper */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CONTENT WRAPPER
+     ═══════════════════════════════════════════════════════════════════════════ */
+
   .lp-links-content-wrapper {
     position: relative;
+    z-index: 1;
   }
 
-  /* Tab Content */
   .lp-tab-content {
     display: none;
   }
@@ -127,6 +210,7 @@ const linksHubStyles = `
     inset: auto !important;
     min-height: auto !important;
     height: auto !important;
+    background: transparent !important;
   }
 
   /* LinksPage shell */
@@ -139,21 +223,25 @@ const linksHubStyles = `
     inset: auto !important;
     min-height: auto !important;
     height: auto !important;
+    background: transparent !important;
   }
 
   /* Hide duplicate backgrounds from child pages */
   .lp-links-content-wrapper .lp-bg,
+  .lp-links-content-wrapper .lp-create-bg,
   .lp-links-content-wrapper .lp-create-bg::before,
-  .lp-links-content-wrapper .lp-create-bg::after {
+  .lp-links-content-wrapper .lp-create-bg::after,
+  .lp-links-content-wrapper .lp-premium-bg::before,
+  .lp-links-content-wrapper .lp-premium-bg::after {
     display: none !important;
   }
 
-  /* Remove padding-top from inner containers since tabs handle it */
-  /* Add padding-bottom for bottom nav bar clearance */
+  /* Adjust padding for inner containers */
   .lp-links-content-wrapper .lp-create-inner,
   .lp-links-content-wrapper .lp-links-inner {
-    padding-top: 16px !important;
-    padding-bottom: 120px !important;
+    padding-top: 20px !important;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px) + 20px) !important;
+    background: transparent !important;
   }
 
   /* ===== PREMIUM CARD ANIMATIONS - MATCHING DASHBOARD ===== */
