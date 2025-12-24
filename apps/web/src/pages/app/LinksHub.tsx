@@ -49,8 +49,7 @@ export function LinksHub() {
 
 const linksHubStyles = `
   /* ═══════════════════════════════════════════════════════════════════════════
-     LINKS HUB - UNIQUE WARM PALETTE (Coral/Pink/Orange)
-     Different from Dashboard (purple/green), Analytics (cyan/green), Wallet (blue)
+     LINKS HUB - VIBRANT WARM PALETTE (Coral/Pink/Orange) - FLUORESCENT
      ═══════════════════════════════════════════════════════════════════════════ */
 
   .lp-links-hub-shell {
@@ -60,18 +59,19 @@ const linksHubStyles = `
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     
-    /* Warm Coral/Pink/Orange Gradient - Unique personality */
-    background: linear-gradient(180deg,
-      #2a1520 0%,
-      #301825 15%,
-      #351a28 30%,
-      #2d1a2a 50%,
-      #251a28 70%,
-      #1a1420 85%,
-      #0f0d12 100%);
+    /* Brighter Warm Gradient - Less black, more color */
+    background: linear-gradient(160deg,
+      #3d1f2a 0%,
+      #4a2035 12%,
+      #522540 25%,
+      #4d2842 40%,
+      #452538 55%,
+      #3a2030 70%,
+      #2d1a28 85%,
+      #1a1218 100%);
   }
 
-  /* Gradient Overlay - Warm coral/pink/orange accents */
+  /* Gradient Overlay - INTENSE fluorescent warm accents */
   .lp-links-hub-shell::before {
     content: "";
     position: fixed;
@@ -79,39 +79,41 @@ const linksHubStyles = `
     z-index: 0;
     pointer-events: none;
     background:
-      /* Top center glow - coral/pink */
-      radial-gradient(ellipse 100% 50% at 50% 0%, rgba(251, 113, 133, 0.35) 0%, transparent 50%),
-      /* Left accent - warm orange */
-      radial-gradient(ellipse 60% 60% at 15% 40%, rgba(251, 146, 60, 0.28) 0%, transparent 50%),
-      /* Right accent - hot pink/magenta */
-      radial-gradient(ellipse 50% 50% at 85% 35%, rgba(236, 72, 153, 0.25) 0%, transparent 45%),
-      /* Bottom left - peach */
-      radial-gradient(ellipse 50% 40% at 20% 85%, rgba(253, 186, 116, 0.22) 0%, transparent 50%),
-      /* Bottom right - rose */
-      radial-gradient(ellipse 60% 50% at 80% 90%, rgba(244, 114, 182, 0.2) 0%, transparent 50%);
+      /* Top center glow - INTENSE coral/pink */
+      radial-gradient(ellipse 120% 60% at 50% 0%, rgba(251, 113, 133, 0.55) 0%, transparent 55%),
+      /* Left accent - VIBRANT orange */
+      radial-gradient(ellipse 70% 70% at 10% 35%, rgba(251, 146, 60, 0.45) 0%, transparent 55%),
+      /* Right accent - HOT pink/magenta */
+      radial-gradient(ellipse 60% 60% at 90% 30%, rgba(236, 72, 153, 0.4) 0%, transparent 50%),
+      /* Center glow - warm fusion */
+      radial-gradient(ellipse 80% 50% at 50% 50%, rgba(253, 186, 116, 0.25) 0%, transparent 50%),
+      /* Bottom left - bright peach */
+      radial-gradient(ellipse 60% 50% at 15% 80%, rgba(253, 186, 116, 0.35) 0%, transparent 55%),
+      /* Bottom right - rose glow */
+      radial-gradient(ellipse 70% 60% at 85% 85%, rgba(244, 114, 182, 0.35) 0%, transparent 55%);
   }
 
-  /* Floating Particles - Warm colors */
+  /* Floating Particles - BRIGHT warm colors */
   .lp-links-hub-shell::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.65;
+    opacity: 0.8;
     background-image:
-      radial-gradient(1.5px 1.5px at 10% 15%, rgba(251, 113, 133, 0.85), transparent),
-      radial-gradient(1px 1px at 25% 28%, rgba(251, 146, 60, 0.75), transparent),
-      radial-gradient(2px 2px at 42% 10%, rgba(236, 72, 153, 0.8), transparent),
-      radial-gradient(1px 1px at 60% 38%, rgba(253, 186, 116, 0.65), transparent),
-      radial-gradient(1.5px 1.5px at 78% 18%, rgba(244, 114, 182, 0.7), transparent),
-      radial-gradient(1px 1px at 88% 42%, rgba(251, 113, 133, 0.65), transparent),
-      radial-gradient(1.5px 1.5px at 15% 62%, rgba(251, 146, 60, 0.6), transparent),
-      radial-gradient(1px 1px at 35% 72%, rgba(236, 72, 153, 0.65), transparent),
-      radial-gradient(2px 2px at 55% 68%, rgba(253, 186, 116, 0.7), transparent),
-      radial-gradient(1px 1px at 72% 78%, rgba(244, 114, 182, 0.6), transparent),
-      radial-gradient(1.5px 1.5px at 85% 58%, rgba(251, 113, 133, 0.65), transparent),
-      radial-gradient(1px 1px at 5% 88%, rgba(251, 146, 60, 0.55), transparent);
+      radial-gradient(2px 2px at 10% 15%, rgba(251, 113, 133, 1), transparent),
+      radial-gradient(1.5px 1.5px at 25% 28%, rgba(251, 146, 60, 0.95), transparent),
+      radial-gradient(2.5px 2.5px at 42% 10%, rgba(236, 72, 153, 1), transparent),
+      radial-gradient(1.5px 1.5px at 60% 38%, rgba(253, 186, 116, 0.9), transparent),
+      radial-gradient(2px 2px at 78% 18%, rgba(244, 114, 182, 0.95), transparent),
+      radial-gradient(1.5px 1.5px at 88% 42%, rgba(251, 113, 133, 0.9), transparent),
+      radial-gradient(2px 2px at 15% 62%, rgba(251, 146, 60, 0.85), transparent),
+      radial-gradient(1.5px 1.5px at 35% 72%, rgba(236, 72, 153, 0.9), transparent),
+      radial-gradient(2.5px 2.5px at 55% 68%, rgba(253, 186, 116, 0.95), transparent),
+      radial-gradient(1.5px 1.5px at 72% 78%, rgba(244, 114, 182, 0.85), transparent),
+      radial-gradient(2px 2px at 85% 58%, rgba(251, 113, 133, 0.9), transparent),
+      radial-gradient(1.5px 1.5px at 5% 88%, rgba(251, 146, 60, 0.8), transparent);
     background-size: 400px 300px;
     animation: lp-links-particles-float 25s linear infinite;
   }
