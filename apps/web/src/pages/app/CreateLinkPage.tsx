@@ -80,7 +80,7 @@ export function CreateLinkPage() {
 
       const shortUrl = `${window.location.origin}/l/${data.slug}`;
       setResult({ ...data, short_url: shortUrl });
-      
+
       // Refrescar caché en background para que los datos estén actualizados
       refreshLinks();
       refreshDashboard();
@@ -499,7 +499,7 @@ const createLinkStyles = `
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     SHELL - GALAXY BACKGROUND - VISUAL DRUG
+     SHELL - Transparente (hereda fondo de LinksHub)
      ═══════════════════════════════════════════════════════════════════════════ */
   
   .lp-create-shell {
@@ -507,52 +507,13 @@ const createLinkStyles = `
     min-height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     color: #fff;
-    isolation: isolate;
     overflow-x: hidden;
     max-width: 100vw;
+    /* TRANSPARENTE - hereda el fondo vibrante de LinksHub */
+    background: transparent;
   }
 
-  /* Floating Orb 1 - INTENSE CYAN (Top-left) */
-  .lp-create-shell::before {
-    content: "";
-    position: absolute;
-    width: 700px;
-    height: 700px;
-    top: -200px;
-    left: -250px;
-    background: radial-gradient(circle, 
-      rgba(34, 211, 238, 0.6) 0%, 
-      rgba(34, 211, 238, 0.3) 25%,
-      rgba(6, 182, 212, 0.15) 50%, 
-      transparent 70%);
-    filter: blur(40px);
-    border-radius: 50%;
-    pointer-events: none;
-    will-change: transform;
-    animation: lp-orb-float-1 10s ease-in-out infinite;
-    z-index: 0;
-  }
-
-  /* Floating Orb 2 - INTENSE PURPLE/MAGENTA (Bottom-right) */
-  .lp-create-shell::after {
-    content: "";
-    position: absolute;
-    width: 800px;
-    height: 800px;
-    bottom: -300px;
-    right: -300px;
-    background: radial-gradient(circle, 
-      rgba(168, 85, 247, 0.55) 0%, 
-      rgba(236, 72, 153, 0.3) 25%,
-      rgba(139, 92, 246, 0.15) 50%, 
-      transparent 70%);
-    filter: blur(50px);
-    border-radius: 50%;
-    pointer-events: none;
-    will-change: transform;
-    animation: lp-orb-float-2 13s ease-in-out infinite;
-    z-index: 0;
-  }
+  /* SIN ORBS NI EFECTOS PROPIOS - LinksHub provee el fondo */
 
   /* ═══════════════════════════════════════════════════════════════════════════
      INNER CONTAINER - AMBIENT EFFECTS

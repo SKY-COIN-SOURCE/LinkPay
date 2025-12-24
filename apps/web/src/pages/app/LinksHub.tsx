@@ -49,8 +49,8 @@ export function LinksHub() {
 
 const linksHubStyles = `
   /* ═══════════════════════════════════════════════════════════════════════════
-     LINKS HUB - PREMIUM VIBRANT BACKGROUND
-     Matching Analytics/Wallet/Dashboard quality
+     LINKS HUB - UNIQUE WARM PALETTE (Coral/Pink/Orange)
+     Different from Dashboard (purple/green), Analytics (cyan/green), Wallet (blue)
      ═══════════════════════════════════════════════════════════════════════════ */
 
   .lp-links-hub-shell {
@@ -60,18 +60,18 @@ const linksHubStyles = `
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     
-    /* Vibrant Purple-Cyan-Green Gradient - Premium */
+    /* Warm Coral/Pink/Orange Gradient - Unique personality */
     background: linear-gradient(180deg,
-      #1a1040 0%,
-      #1e1650 15%,
-      #201a55 30%,
-      #1a2050 50%,
-      #152545 70%,
-      #0f1a35 85%,
-      #0a1020 100%);
+      #2a1520 0%,
+      #301825 15%,
+      #351a28 30%,
+      #2d1a2a 50%,
+      #251a28 70%,
+      #1a1420 85%,
+      #0f0d12 100%);
   }
 
-  /* Gradient Overlay - Fluorescent accents */
+  /* Gradient Overlay - Warm coral/pink/orange accents */
   .lp-links-hub-shell::before {
     content: "";
     position: fixed;
@@ -79,34 +79,39 @@ const linksHubStyles = `
     z-index: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 100% 50% at 50% 0%, rgba(139, 92, 246, 0.35) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 60% at 15% 40%, rgba(34, 211, 238, 0.25) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 50% at 85% 35%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
-      radial-gradient(ellipse 50% 40% at 20% 85%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 50% at 80% 90%, rgba(168, 85, 247, 0.18) 0%, transparent 50%);
+      /* Top center glow - coral/pink */
+      radial-gradient(ellipse 100% 50% at 50% 0%, rgba(251, 113, 133, 0.35) 0%, transparent 50%),
+      /* Left accent - warm orange */
+      radial-gradient(ellipse 60% 60% at 15% 40%, rgba(251, 146, 60, 0.28) 0%, transparent 50%),
+      /* Right accent - hot pink/magenta */
+      radial-gradient(ellipse 50% 50% at 85% 35%, rgba(236, 72, 153, 0.25) 0%, transparent 45%),
+      /* Bottom left - peach */
+      radial-gradient(ellipse 50% 40% at 20% 85%, rgba(253, 186, 116, 0.22) 0%, transparent 50%),
+      /* Bottom right - rose */
+      radial-gradient(ellipse 60% 50% at 80% 90%, rgba(244, 114, 182, 0.2) 0%, transparent 50%);
   }
 
-  /* Floating Particles - Animated like Analytics/Wallet */
+  /* Floating Particles - Warm colors */
   .lp-links-hub-shell::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 0.65;
     background-image:
-      radial-gradient(1.5px 1.5px at 10% 15%, rgba(139, 92, 246, 0.8), transparent),
-      radial-gradient(1px 1px at 25% 28%, rgba(34, 211, 238, 0.7), transparent),
-      radial-gradient(2px 2px at 42% 10%, rgba(16, 185, 129, 0.75), transparent),
-      radial-gradient(1px 1px at 60% 38%, rgba(168, 85, 247, 0.6), transparent),
-      radial-gradient(1.5px 1.5px at 78% 18%, rgba(34, 197, 94, 0.7), transparent),
-      radial-gradient(1px 1px at 88% 42%, rgba(99, 102, 241, 0.65), transparent),
-      radial-gradient(1.5px 1.5px at 15% 62%, rgba(34, 211, 238, 0.6), transparent),
-      radial-gradient(1px 1px at 35% 72%, rgba(16, 185, 129, 0.65), transparent),
-      radial-gradient(2px 2px at 55% 68%, rgba(139, 92, 246, 0.7), transparent),
-      radial-gradient(1px 1px at 72% 78%, rgba(34, 197, 94, 0.6), transparent),
-      radial-gradient(1.5px 1.5px at 85% 58%, rgba(168, 85, 247, 0.65), transparent),
-      radial-gradient(1px 1px at 5% 88%, rgba(99, 102, 241, 0.55), transparent);
+      radial-gradient(1.5px 1.5px at 10% 15%, rgba(251, 113, 133, 0.85), transparent),
+      radial-gradient(1px 1px at 25% 28%, rgba(251, 146, 60, 0.75), transparent),
+      radial-gradient(2px 2px at 42% 10%, rgba(236, 72, 153, 0.8), transparent),
+      radial-gradient(1px 1px at 60% 38%, rgba(253, 186, 116, 0.65), transparent),
+      radial-gradient(1.5px 1.5px at 78% 18%, rgba(244, 114, 182, 0.7), transparent),
+      radial-gradient(1px 1px at 88% 42%, rgba(251, 113, 133, 0.65), transparent),
+      radial-gradient(1.5px 1.5px at 15% 62%, rgba(251, 146, 60, 0.6), transparent),
+      radial-gradient(1px 1px at 35% 72%, rgba(236, 72, 153, 0.65), transparent),
+      radial-gradient(2px 2px at 55% 68%, rgba(253, 186, 116, 0.7), transparent),
+      radial-gradient(1px 1px at 72% 78%, rgba(244, 114, 182, 0.6), transparent),
+      radial-gradient(1.5px 1.5px at 85% 58%, rgba(251, 113, 133, 0.65), transparent),
+      radial-gradient(1px 1px at 5% 88%, rgba(251, 146, 60, 0.55), transparent);
     background-size: 400px 300px;
     animation: lp-links-particles-float 25s linear infinite;
   }
@@ -183,24 +188,24 @@ const linksHubStyles = `
   }
 
   .lp-links-tab:hover {
-    background: rgba(15, 23, 42, 0.9);
-    border-color: rgba(139, 92, 246, 0.4);
-    color: #e5e7eb;
+    background: rgba(25, 20, 28, 0.95);
+    border-color: rgba(251, 113, 133, 0.4);
+    color: #fecdd3;
   }
 
   .lp-links-tab.active {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.35) 0%, rgba(99, 102, 241, 0.3) 100%);
-    border-color: rgba(139, 92, 246, 0.6);
-    color: #f9fafb;
+    background: linear-gradient(135deg, rgba(251, 113, 133, 0.3) 0%, rgba(244, 114, 182, 0.25) 100%);
+    border-color: rgba(251, 113, 133, 0.6);
+    color: #fff;
     box-shadow: 
-      0 0 30px rgba(139, 92, 246, 0.3),
+      0 0 30px rgba(251, 113, 133, 0.25),
       0 4px 15px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   .lp-links-tab.active svg {
-    color: #c4b5fd;
-    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
+    color: #fda4af;
+    filter: drop-shadow(0 0 6px rgba(251, 113, 133, 0.5));
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
