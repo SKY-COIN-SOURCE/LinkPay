@@ -12,31 +12,35 @@ export function LinksHub() {
     <div className="lp-links-hub-shell">
       <style>{linksHubStyles}</style>
 
-      {/* Premium Tabs */}
-      <div className="lp-links-tabs-bar">
-        <button
-          className={`lp-links-tab ${activeTab === 'create' ? 'active' : ''}`}
-          onClick={() => setActiveTab('create')}
-        >
-          <PlusSquare size={18} />
-          <span>Crear Link</span>
-        </button>
-        <button
-          className={`lp-links-tab ${activeTab === 'list' ? 'active' : ''}`}
-          onClick={() => setActiveTab('list')}
-        >
-          <Link2 size={18} />
-          <span>Mis Enlaces</span>
-        </button>
-      </div>
+      {/* Inner container - starts below MobileHeader like Analytics */}
+      <div className="lp-links-hub-inner">
 
-      {/* Content - renders actual pages */}
-      <div className="lp-links-content-wrapper">
-        <div className={`lp-tab-content ${activeTab === 'create' ? 'active' : ''}`}>
-          <CreateLinkPage />
+        {/* Tabs Bar - Transparent background, opaque buttons */}
+        <div className="lp-links-tabs-bar">
+          <button
+            className={`lp-links-tab ${activeTab === 'create' ? 'active' : ''}`}
+            onClick={() => setActiveTab('create')}
+          >
+            <PlusSquare size={18} />
+            <span>Crear Link</span>
+          </button>
+          <button
+            className={`lp-links-tab ${activeTab === 'list' ? 'active' : ''}`}
+            onClick={() => setActiveTab('list')}
+          >
+            <Link2 size={18} />
+            <span>Mis Enlaces</span>
+          </button>
         </div>
-        <div className={`lp-tab-content ${activeTab === 'list' ? 'active' : ''}`}>
-          <LinksPage />
+
+        {/* Content - renders actual pages */}
+        <div className="lp-links-content-wrapper">
+          <div className={`lp-tab-content ${activeTab === 'create' ? 'active' : ''}`}>
+            <CreateLinkPage />
+          </div>
+          <div className={`lp-tab-content ${activeTab === 'list' ? 'active' : ''}`}>
+            <LinksPage />
+          </div>
         </div>
       </div>
     </div>
@@ -120,21 +124,39 @@ const linksHubStyles = `
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     TABS BAR - Transparente, solo los botones son opacos
+     INNER - Content container, starts below MobileHeader (like Analytics)
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  .lp-links-hub-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    
+    /* Start below MobileHeader (48px + safe area) - EXACTLY like Analytics */
+    padding: calc(48px + env(safe-area-inset-top, 12px) + 12px) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
+    
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', system-ui, sans-serif;
+  }
+
+  @media (min-width: 769px) {
+    .lp-links-hub-inner {
+      max-width: 800px;
+      padding: 24px 24px 100px 24px;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TABS BAR - Transparente, botones opacos (como lpa-range-bar pero transparente)
      ═══════════════════════════════════════════════════════════════════════════ */
 
   .lp-links-tabs-bar {
-    position: sticky;
-    /* Empieza debajo del MobileHeader (48px + safe-area) */
-    top: calc(48px + env(safe-area-inset-top, 0px));
-    z-index: 50;
     display: flex;
-    gap: 10px;
-    /* Padding generoso para respiro visual */
-    padding: 16px 16px 16px;
-    /* TRANSPARENTE - el fondo se ve a través */
+    gap: 8px;
+    /* TRANSPARENTE - el fondo vibrante se ve a través */
     background: transparent;
-    /* Sin borde ni sombra en el contenedor */
+    margin-bottom: 16px;
   }
 
   .lp-links-tab {
