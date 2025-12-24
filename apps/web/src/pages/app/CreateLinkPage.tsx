@@ -132,7 +132,7 @@ export function CreateLinkPage({ onSwitchToList }: CreateLinkPageProps) {
 
         {showConfetti && (
           <div className="lp-confetti">
-            <Confetti numberOfPieces={200} recycle={false} />
+            <Confetti numberOfPieces={100} recycle={false} />
           </div>
         )}
 
@@ -372,6 +372,7 @@ export function CreateLinkPage({ onSwitchToList }: CreateLinkPageProps) {
                         <label>Límite de clics</label>
                         <input
                           type="number"
+                          min="1"
                           value={maxClicks}
                           onChange={(e) => setMaxClicks(e.target.value)}
                           placeholder="Sin límite"
@@ -618,14 +619,17 @@ const createLinkStyles = `
       radial-gradient(circle at 100% 100%, rgba(244, 114, 182, 0.15) 0%, transparent 40%);
   }
 
-  /* Alias Card - ORANGE accent */
-  .lp-card-alias {
+  /* Alias Card - ORANGE accent - TRULY TRANSPARENT glassmorphism */
+  .lp-card-v2.lp-card-alias {
     border-top: 3px solid rgba(251, 146, 60, 0.8);
+    /* Complete override for transparency */
+    background: none !important;
+    background-color: rgba(30, 20, 28, 0.35) !important;
+    background-image: none !important;
     box-shadow:
-      0 0 50px rgba(251, 146, 60, 0.12),
-      0 0 20px rgba(253, 186, 116, 0.08),
-      0 18px 45px -12px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(251, 146, 60, 0.12);
+      0 0 25px rgba(251, 146, 60, 0.06),
+      0 10px 30px -8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .lp-alias-label {
@@ -725,8 +729,11 @@ const createLinkStyles = `
     align-items: center;
     gap: 12px;
     padding: 14px;
-    background: rgba(30, 20, 28, 0.9);
-    border: 1px solid rgba(251, 113, 133, 0.15);
+    /* TRANSPARENT glassmorphism */
+    background: rgba(30, 20, 28, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.25s;
@@ -738,11 +745,9 @@ const createLinkStyles = `
   }
 
   .lp-mode-btn.active {
-    border-color: rgba(251, 113, 133, 0.5);
-    background: 
-      linear-gradient(135deg, rgba(251, 113, 133, 0.15) 0%, rgba(244, 114, 182, 0.1) 100%),
-      rgba(30, 20, 28, 0.95);
-    box-shadow: 0 0 35px rgba(251, 113, 133, 0.15);
+    border-color: rgba(251, 113, 133, 0.4);
+    background: rgba(251, 113, 133, 0.15);
+    box-shadow: 0 0 25px rgba(251, 113, 133, 0.12);
   }
 
   .lp-mode-icon {
@@ -861,9 +866,9 @@ const createLinkStyles = `
       /* Reset mobile */
       bottom: auto;
       right: auto;
-      /* Align with content cards - higher position */
-      top: 30%;
-      left: calc(192px + (100vw - 192px - 440px) / 2 + 40px);
+      /* Align with content cards - centered */
+      top: 27%;
+      left: calc(192px + (100vw - 192px - 440px) / 2 + 30px);
       transform: translateY(-50%);
       /* Fixed size */
       width: 440px;
