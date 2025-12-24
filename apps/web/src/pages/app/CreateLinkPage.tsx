@@ -855,18 +855,17 @@ const createLinkStyles = `
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* Desktop: Center in CONTENT AREA (right of 192px sidebar) */
+  /* Desktop: CENTERED - simple inset + margin auto */
   @media (min-width: 769px) {
     .lp-modal {
-      /* Position in center of content area */
+      /* Remove mobile positioning */
       bottom: auto;
-      top: 50%;
-      /* Content area starts at 192px, so center is (192 + (100vw - 192) / 2) */
-      left: calc(192px + (100vw - 192px) / 2);
-      right: auto;
-      transform: translate(-50%, -50%);
+      /* Simple centering */
+      inset: 0;
+      margin: auto;
+      /* Fixed size, not full screen */
       width: 440px;
-      max-width: calc(100vw - 192px - 40px);
+      height: fit-content;
       max-height: 75vh;
       border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.12);
