@@ -516,58 +516,20 @@ const createLinkStyles = `
   /* SIN ORBS NI EFECTOS PROPIOS - LinksHub provee el fondo */
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     INNER CONTAINER - AMBIENT EFFECTS
+     INNER CONTAINER - Transparente, sin efectos propios
      ═══════════════════════════════════════════════════════════════════════════ */
   
   .lp-create-inner {
     position: relative;
     max-width: 480px;
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0 14px;
     z-index: 1;
+    /* TRANSPARENTE - el fondo viene de LinksHub */
+    background: transparent;
   }
 
-  /* Ambient pulse glow - INTENSIFIED */
-  .lp-create-inner::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200%;
-    height: 200%;
-    background:
-      radial-gradient(ellipse 60% 50% at 25% 15%, rgba(34, 211, 238, 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 60% at 75% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
-      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    animation: lp-ambient-pulse 6s ease-in-out infinite alternate;
-  }
-
-  /* Star particles - MORE VISIBLE */
-  .lp-create-inner::after {
-    content: "";
-    position: absolute;
-    inset: -150px;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.8;
-    background-image:
-      radial-gradient(2px 2px at 15px 25px, rgba(255, 255, 255, 0.95), transparent),
-      radial-gradient(1px 1px at 35px 65px, rgba(255, 255, 255, 0.7), transparent),
-      radial-gradient(2px 2px at 75px 45px, rgba(34, 211, 238, 1), transparent),
-      radial-gradient(3px 3px at 115px 75px, rgba(168, 85, 247, 0.9), transparent),
-      radial-gradient(1px 1px at 165px 35px, rgba(255, 255, 255, 0.8), transparent),
-      radial-gradient(2px 2px at 205px 95px, rgba(236, 72, 153, 0.85), transparent),
-      radial-gradient(1px 1px at 55px 115px, rgba(255, 255, 255, 0.6), transparent),
-      radial-gradient(2px 2px at 145px 15px, rgba(34, 197, 94, 0.8), transparent),
-      radial-gradient(1px 1px at 255px 55px, rgba(255, 255, 255, 0.75), transparent),
-      radial-gradient(3px 3px at 295px 85px, rgba(99, 102, 241, 0.9), transparent);
-    background-size: 320px 140px;
-    animation: lp-particles-drift 20s linear infinite;
-  }
+  /* SIN ::before ni ::after - LinksHub provee TODOS los efectos */
 
   /* ═══════════════════════════════════════════════════════════════════════════
      FORM
@@ -581,72 +543,69 @@ const createLinkStyles = `
     z-index: 2;
   }
 
-  /* ─── CARDS - PREMIUM ANIMATED ────────────────────────────────────────────── */
+  /* ─── CARDS - WARM CORAL/PINK/ORANGE PALETTE ─────────────────────────────── */
   .lp-card-v2 {
     position: relative;
     background: 
-      linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 30%, transparent 60%),
-      radial-gradient(ellipse at top left, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-    border: 1px solid rgba(148, 163, 184, 0.25);
-    border-radius: 20px;
-    padding: 18px;
-    backdrop-filter: blur(20px) saturate(1.3);
-    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, transparent 70%),
+      rgba(30, 20, 28, 0.85);
+    border: 1px solid rgba(251, 113, 133, 0.25);
+    border-radius: 18px;
+    padding: 16px;
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
     overflow: hidden;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateY(-2px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow:
-      0 0 50px rgba(99, 102, 241, 0.1),
-      0 0 20px rgba(99, 102, 241, 0.06),
-      0 20px 45px -12px rgba(0, 0, 0, 0.65),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    animation: lp-card-breathe 5s ease-in-out infinite;
+      0 0 40px rgba(251, 113, 133, 0.08),
+      0 16px 40px -12px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .lp-card-v2:focus-within {
-    border-color: rgba(139, 92, 246, 0.6);
-    transform: translateY(-5px) scale(1.01);
+    border-color: rgba(251, 113, 133, 0.5);
+    transform: translateY(-3px);
     box-shadow:
-      0 0 80px rgba(139, 92, 246, 0.2),
-      0 0 35px rgba(139, 92, 246, 0.12),
-      0 30px 60px -15px rgba(0, 0, 0, 0.75),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      0 0 60px rgba(251, 113, 133, 0.15),
+      0 0 30px rgba(244, 114, 182, 0.1),
+      0 24px 50px -15px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   .lp-card-glow {
     position: absolute;
     inset: -80%;
     background: 
-      radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.25) 0%, transparent 40%),
-      radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
+      radial-gradient(circle at 50% 0%, rgba(251, 113, 133, 0.2) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, rgba(251, 146, 60, 0.12) 0%, transparent 40%);
     pointer-events: none;
     animation: lp-glow-pulse 4s ease-in-out infinite;
   }
 
-  /* URL Card - Blue/Cyan accent with dramatic glow */
+  /* URL Card - CORAL accent */
   .lp-card-url {
-    border-top: 3px solid rgba(34, 211, 238, 0.8);
+    border-top: 3px solid rgba(251, 113, 133, 0.8);
     box-shadow:
-      0 0 60px rgba(34, 211, 238, 0.12),
-      0 0 25px rgba(59, 130, 246, 0.08),
-      0 22px 50px -12px rgba(0, 0, 0, 0.7),
-      inset 0 1px 0 rgba(34, 211, 238, 0.15);
+      0 0 50px rgba(251, 113, 133, 0.12),
+      0 0 20px rgba(244, 114, 182, 0.08),
+      0 18px 45px -12px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(251, 113, 133, 0.12);
   }
 
   .lp-card-url .lp-card-glow {
     background: 
-      radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.3) 0%, transparent 40%),
-      radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.2) 0%, transparent 40%);
+      radial-gradient(circle at 50% 0%, rgba(251, 113, 133, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(244, 114, 182, 0.15) 0%, transparent 40%);
   }
 
-  /* Alias Card - Purple/Violet accent with dramatic glow */
+  /* Alias Card - ORANGE accent */
   .lp-card-alias {
-    border-top: 3px solid rgba(168, 85, 247, 0.8);
+    border-top: 3px solid rgba(251, 146, 60, 0.8);
     box-shadow:
-      0 0 60px rgba(168, 85, 247, 0.12),
-      0 0 25px rgba(139, 92, 246, 0.08),
-      0 22px 50px -12px rgba(0, 0, 0, 0.7),
-      inset 0 1px 0 rgba(168, 85, 247, 0.15);
+      0 0 50px rgba(251, 146, 60, 0.12),
+      0 0 20px rgba(253, 186, 116, 0.08),
+      0 18px 45px -12px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(251, 146, 60, 0.12);
   }
 
   .lp-alias-label {
@@ -660,7 +619,7 @@ const createLinkStyles = `
   }
 
   .lp-alias-label svg {
-    color: #8b5cf6;
+    color: #fb923c;
   }
 
   /* ─── INPUT GROUP ────────────────────────────────────────────────────────── */
@@ -673,14 +632,15 @@ const createLinkStyles = `
   }
 
   .lp-input-icon {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
-    color: #60a5fa;
+    /* Coral/Pink gradient */
+    background: linear-gradient(135deg, rgba(251, 113, 133, 0.35) 0%, rgba(244, 114, 182, 0.25) 100%);
+    color: #fda4af;
     flex-shrink: 0;
   }
 
@@ -733,7 +693,7 @@ const createLinkStyles = `
     color: rgba(255, 255, 255, 0.3);
   }
 
-  /* ─── MODE SELECTOR ──────────────────────────────────────────────────────── */
+  /* ─── MODE SELECTOR - WARM PALETTE ──────────────────────────────────────── */
   .lp-mode-section {
     display: flex;
     gap: 10px;
@@ -745,8 +705,8 @@ const createLinkStyles = `
     align-items: center;
     gap: 12px;
     padding: 14px;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(148, 163, 184, 0.15);
+    background: rgba(30, 20, 28, 0.9);
+    border: 1px solid rgba(251, 113, 133, 0.15);
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.25s;
@@ -758,16 +718,16 @@ const createLinkStyles = `
   }
 
   .lp-mode-btn.active {
-    border-color: rgba(139, 92, 246, 0.6);
+    border-color: rgba(251, 113, 133, 0.5);
     background: 
-      linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%),
-      rgba(15, 23, 42, 0.95);
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+      linear-gradient(135deg, rgba(251, 113, 133, 0.15) 0%, rgba(244, 114, 182, 0.1) 100%),
+      rgba(30, 20, 28, 0.95);
+    box-shadow: 0 0 35px rgba(251, 113, 133, 0.15);
   }
 
   .lp-mode-icon {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -781,7 +741,7 @@ const createLinkStyles = `
   }
 
   .lp-mode-icon.turbo {
-    background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(234, 88, 12, 0.2) 100%);
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.35) 0%, rgba(253, 186, 116, 0.25) 100%);
     color: #fb923c;
   }
 
@@ -807,10 +767,11 @@ const createLinkStyles = `
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    /* Coral check badge */
+    background: linear-gradient(135deg, #fb7185 0%, #f472b6 100%);
     display: flex;
     align-items: center;
     justify-content: center;
