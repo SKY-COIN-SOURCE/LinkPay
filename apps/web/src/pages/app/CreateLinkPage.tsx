@@ -861,9 +861,9 @@ const createLinkStyles = `
       /* Reset mobile */
       bottom: auto;
       right: auto;
-      /* Center exactly in content area: sidebar + (remaining / 2) - (modal width / 2) */
-      top: 50%;
-      left: calc(192px + (100vw - 192px - 440px) / 2);
+      /* Align with content cards - slightly right and higher */
+      top: 45%;
+      left: calc(192px + (100vw - 192px - 440px) / 2 + 40px);
       transform: translateY(-50%);
       /* Fixed size */
       width: 440px;
