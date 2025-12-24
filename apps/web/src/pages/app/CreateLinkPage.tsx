@@ -827,59 +827,90 @@ const createLinkStyles = `
   .lp-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     z-index: 1000;
   }
 
+  /* Mobile-first: Full width bottom sheet */
   .lp-modal {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
-    max-height: 75vh;
-    background: rgba(28, 18, 25, 0.98);
+    left: 0;
+    right: 0;
+    max-height: 85vh;
+    background: linear-gradient(180deg, #2a1a24 0%, #1e1219 100%);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
-    border: 1px solid rgba(251, 113, 133, 0.2);
+    border: 1px solid rgba(251, 113, 133, 0.15);
     border-bottom: none;
-    padding: 16px 20px calc(90px + env(safe-area-inset-bottom, 20px));
+    padding: 12px 16px calc(100px + env(safe-area-inset-bottom, 20px));
     z-index: 1001;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* Subtle glow only at top edge inside */
     box-shadow:
-      inset 0 1px 0 rgba(251, 113, 133, 0.15),
-      0 -4px 20px rgba(0, 0, 0, 0.3);
+      0 -10px 40px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
-  /* Subtle top highlight only - no external glow */
+  /* Desktop: Centered modal with max-width */
+  @media (min-width: 769px) {
+    .lp-modal {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 520px;
+      max-height: 70vh;
+      bottom: 50%;
+      transform: translate(-50%, 50%);
+      border-radius: 20px;
+      border: 1px solid rgba(251, 113, 133, 0.2);
+      padding: 20px 24px 30px;
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(251, 113, 133, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* Subtle top highlight */
   .lp-modal-glow {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 80px;
-    background: linear-gradient(180deg, rgba(251, 113, 133, 0.08) 0%, transparent 100%);
+    height: 60px;
+    background: linear-gradient(180deg, rgba(251, 113, 133, 0.06) 0%, transparent 100%);
     pointer-events: none;
     border-radius: 24px 24px 0 0;
   }
 
-  /* Handle bar - Minimal */
+  @media (min-width: 769px) {
+    .lp-modal-glow {
+      border-radius: 20px 20px 0 0;
+    }
+  }
+
+  /* Handle bar - Mobile only */
   .lp-modal-handle {
     display: flex;
     justify-content: center;
-    padding: 4px 0 16px;
+    padding: 4px 0 14px;
   }
 
   .lp-modal-handle-bar {
-    width: 40px;
+    width: 36px;
     height: 4px;
-    background: rgba(251, 113, 133, 0.4);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 999px;
+  }
+
+  @media (min-width: 769px) {
+    .lp-modal-handle {
+      display: none;
+    }
   }
 
   /* Header */
