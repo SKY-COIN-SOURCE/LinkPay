@@ -479,11 +479,11 @@
   text-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
 }
 
-.lp-d2-value::before {
+.lp-d2-value::after {
   content: '€';
   font-size: 16px;
   opacity: 0.7;
-  margin-right: 2px;
+  margin-left: 2px;
 }
 
 .lp-d2-hint {
@@ -661,30 +661,18 @@
   transform: translateX(1px) scale(0.98);
 }
 
-/* Earnings card - Fondo translúcido desde el icono hacia abajo (igual que tarjetas de abajo) */
+/* Earnings card - Fondo translúcido con borde superior verde */
 .lp-d2-earnings {
   position: relative;
   overflow: visible;
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(148, 163, 184, 0.15);
+  border-top: 2px solid #22c55e;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-.lp-d2-earnings::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 28px;
-  background: transparent;
-  border-radius: 18px 18px 0 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Balance card clickable and centered - Fondo translúcido desde el icono hacia abajo (igual que tarjetas de abajo) */
+/* Balance card - Fondo translúcido con borde superior azul */
 .lp-d2-balance {
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease;
@@ -697,21 +685,9 @@
   overflow: visible;
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(148, 163, 184, 0.15);
+  border-top: 2px solid #3b82f6;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-}
-
-.lp-d2-balance::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 28px;
-  background: transparent;
-  border-radius: 18px 18px 0 0;
-  z-index: -1;
-  pointer-events: none;
 }
 
 .lp-d2-balance .lp-d2-card-header {
