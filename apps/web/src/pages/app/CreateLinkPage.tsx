@@ -860,9 +860,10 @@ const createLinkStyles = `
     .lp-modal {
       /* Remove mobile positioning */
       bottom: auto;
-      /* Simple centering */
+      /* Simple centering with offset for sidebar */
       inset: 0;
       margin: auto;
+      margin-left: calc(50% + 96px - 220px); /* Offset half of sidebar (192px/2 = 96px) */
       /* Fixed size, not full screen */
       width: 440px;
       height: fit-content;
