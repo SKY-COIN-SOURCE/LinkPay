@@ -8,6 +8,11 @@ type TabType = 'create' | 'list';
 export function LinksHub() {
   const [activeTab, setActiveTab] = useState<TabType>('create');
 
+  // Function to switch to list tab (passed to CreateLinkPage)
+  const switchToList = () => {
+    setActiveTab('list');
+  };
+
   return (
     <div className="lp-links-hub-shell">
       <style>{linksHubStyles}</style>
@@ -36,7 +41,7 @@ export function LinksHub() {
         {/* Content - renders actual pages */}
         <div className="lp-links-content-wrapper">
           <div className={`lp-tab-content ${activeTab === 'create' ? 'active' : ''}`}>
-            <CreateLinkPage />
+            <CreateLinkPage onSwitchToList={switchToList} />
           </div>
           <div className={`lp-tab-content ${activeTab === 'list' ? 'active' : ''}`}>
             <LinksPage />

@@ -28,7 +28,11 @@ import { useToast } from '../../components/ui/Toast';
    Mobile-first, minimal text, maximum visual impact
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export function CreateLinkPage() {
+interface CreateLinkPageProps {
+  onSwitchToList?: () => void;
+}
+
+export function CreateLinkPage({ onSwitchToList }: CreateLinkPageProps) {
   const navigate = useNavigate();
   const { refreshLinks, refreshDashboard } = useDataCache();
   const toast = useToast();
@@ -162,7 +166,16 @@ export function CreateLinkPage() {
               <button onClick={resetForm} className="lp-btn-ghost">
                 Crear otro
               </button>
-              <button onClick={() => navigate('/app/links')} className="lp-btn-primary">
+              <button
+                onClick={() => {
+                  if (onSwitchToList) {
+                    onSwitchToList();
+                  } else {
+                    navigate('/app/links');
+                  }
+                }}
+                className="lp-btn-primary"
+              >
                 Mis enlaces <ArrowRight size={16} />
               </button>
             </div>
@@ -808,15 +821,15 @@ const createLinkStyles = `
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     PREMIUM ADVANCED OPTIONS MODAL - DARK GLASS MORPHISM
+     PREMIUM ADVANCED OPTIONS MODAL - WARM CORAL PALETTE
      ═══════════════════════════════════════════════════════════════════════════ */
 
   .lp-modal-backdrop {
     position: fixed;
     inset: 0;
     background: 
-      radial-gradient(circle at 50% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-      rgba(0, 0, 0, 0.85);
+      radial-gradient(circle at 50% 100%, rgba(251, 113, 133, 0.1) 0%, transparent 50%),
+      rgba(20, 10, 15, 0.9);
     backdrop-filter: blur(12px) saturate(1.2);
     -webkit-backdrop-filter: blur(12px) saturate(1.2);
     z-index: 1000;
@@ -830,48 +843,47 @@ const createLinkStyles = `
     max-height: 80vh;
     background: 
       linear-gradient(180deg, 
-        rgba(30, 41, 59, 0.98) 0%, 
-        rgba(20, 30, 48, 0.99) 50%,
-        rgba(15, 23, 42, 1) 100%);
-    border-top-left-radius: 32px;
-    border-top-right-radius: 32px;
-    border: 1px solid rgba(139, 92, 246, 0.3);
+        rgba(40, 25, 35, 0.98) 0%, 
+        rgba(30, 20, 28, 0.99) 50%,
+        rgba(25, 15, 22, 1) 100%);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    border: 1px solid rgba(251, 113, 133, 0.25);
     border-bottom: none;
     padding: 12px 20px calc(100px + env(safe-area-inset-bottom, 20px));
     z-index: 1001;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     box-shadow:
-      0 -30px 120px rgba(139, 92, 246, 0.35),
-      0 -15px 60px rgba(99, 102, 241, 0.2),
-      0 -8px 30px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 0 80px rgba(139, 92, 246, 0.05);
+      0 -30px 100px rgba(251, 113, 133, 0.2),
+      0 -15px 50px rgba(244, 114, 182, 0.15),
+      0 -8px 30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
-  /* Multiple glow orbs */
+  /* Coral glow orbs */
   .lp-modal-glow {
     position: absolute;
-    top: -120px;
+    top: -100px;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;
-    height: 250px;
+    width: 350px;
+    height: 200px;
     background: 
-      radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.5) 0%, transparent 50%),
-      radial-gradient(ellipse at 30% 60%, rgba(59, 130, 246, 0.3) 0%, transparent 40%),
-      radial-gradient(ellipse at 70% 60%, rgba(236, 72, 153, 0.25) 0%, transparent 40%);
-    filter: blur(35px);
+      radial-gradient(ellipse at 50% 80%, rgba(251, 113, 133, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 30% 60%, rgba(251, 146, 60, 0.25) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 60%, rgba(244, 114, 182, 0.3) 0%, transparent 40%);
+    filter: blur(30px);
     pointer-events: none;
     animation: lp-modal-glow-pulse 3s ease-in-out infinite alternate;
   }
 
   @keyframes lp-modal-glow-pulse {
-    0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
-    100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+    0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    100% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
   }
 
-  /* Handle bar - Enhanced */
+  /* Handle bar - Coral */
   .lp-modal-handle {
     display: flex;
     justify-content: center;
@@ -879,11 +891,11 @@ const createLinkStyles = `
   }
 
   .lp-modal-handle-bar {
-    width: 48px;
+    width: 44px;
     height: 5px;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.6), rgba(99, 102, 241, 0.8), rgba(139, 92, 246, 0.6));
+    background: linear-gradient(90deg, rgba(251, 113, 133, 0.5), rgba(244, 114, 182, 0.7), rgba(251, 113, 133, 0.5));
     border-radius: 999px;
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 12px rgba(251, 113, 133, 0.4);
   }
 
   /* Header */
@@ -897,27 +909,27 @@ const createLinkStyles = `
   }
 
   .lp-modal-icon {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(99, 102, 241, 0.2) 100%);
-    border: 1px solid rgba(139, 92, 246, 0.4);
-    color: #a5b4fc;
-    box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+    background: linear-gradient(135deg, rgba(251, 113, 133, 0.25) 0%, rgba(244, 114, 182, 0.2) 100%);
+    border: 1px solid rgba(251, 113, 133, 0.3);
+    color: #fda4af;
+    box-shadow: 0 0 20px rgba(251, 113, 133, 0.2);
   }
 
   .lp-modal-header h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
-    color: #f1f5f9;
+    color: #fff;
   }
 
   .lp-modal-header p {
-    margin: 4px 0 0;
+    margin: 3px 0 0;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.5);
   }
@@ -937,27 +949,27 @@ const createLinkStyles = `
     align-items: center;
     gap: 14px;
     padding: 14px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.15);
-    border-radius: 16px;
+    background: rgba(30, 20, 28, 0.7);
+    border: 1px solid rgba(251, 113, 133, 0.15);
+    border-radius: 14px;
     transition: all 0.25s;
   }
 
   .lp-modal-field:focus-within {
-    border-color: rgba(139, 92, 246, 0.5);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
-    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(251, 113, 133, 0.4);
+    box-shadow: 0 0 25px rgba(251, 113, 133, 0.12);
+    background: rgba(40, 25, 35, 0.7);
   }
 
   .lp-modal-field-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(99, 102, 241, 0.15);
-    color: #a5b4fc;
+    background: rgba(251, 113, 133, 0.15);
+    color: #fda4af;
     flex-shrink: 0;
   }
 
@@ -970,8 +982,8 @@ const createLinkStyles = `
     display: block;
     font-size: 12px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 5px;
   }
 
   .lp-modal-field-content input {
@@ -979,7 +991,7 @@ const createLinkStyles = `
     background: transparent;
     border: none;
     outline: none;
-    font-size: 16px;
+    font-size: 15px;
     color: #fff;
     padding: 0;
   }
@@ -993,10 +1005,10 @@ const createLinkStyles = `
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 16px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.15);
-    border-radius: 16px;
+    padding: 14px;
+    background: rgba(30, 20, 28, 0.7);
+    border: 1px solid rgba(251, 113, 133, 0.15);
+    border-radius: 14px;
     cursor: pointer;
     transition: all 0.25s;
   }
@@ -1013,7 +1025,7 @@ const createLinkStyles = `
     display: block;
     font-size: 14px;
     font-weight: 600;
-    color: #f1f5f9;
+    color: #fff;
   }
 
   .lp-modal-toggle-content p {
@@ -1022,12 +1034,12 @@ const createLinkStyles = `
     color: rgba(255, 255, 255, 0.5);
   }
 
-  /* Premium toggle */
+  /* Premium toggle - Coral */
   .lp-modal-toggle {
-    width: 52px;
-    height: 30px;
+    width: 50px;
+    height: 28px;
     border-radius: 999px;
-    background: rgba(100, 116, 139, 0.4);
+    background: rgba(100, 90, 95, 0.4);
     padding: 3px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1035,13 +1047,13 @@ const createLinkStyles = `
   }
 
   .lp-modal-toggle.on {
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, #fb7185 0%, #f472b6 100%);
+    box-shadow: 0 0 18px rgba(251, 113, 133, 0.4);
   }
 
   .lp-modal-toggle-thumb {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -1052,7 +1064,7 @@ const createLinkStyles = `
     transform: translateX(22px);
   }
 
-  /* Apply button */
+  /* Apply button - Coral */
   .lp-modal-close-btn {
     display: flex;
     align-items: center;
@@ -1061,7 +1073,7 @@ const createLinkStyles = `
     width: 100%;
     margin-top: 20px;
     padding: 16px;
-    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+    background: linear-gradient(135deg, #fb7185 0%, #f472b6 100%);
     border: none;
     border-radius: 14px;
     color: #fff;
@@ -1070,8 +1082,8 @@ const createLinkStyles = `
     cursor: pointer;
     transition: all 0.25s;
     box-shadow:
-      0 0 40px rgba(34, 197, 94, 0.3),
-      0 12px 30px -8px rgba(16, 185, 129, 0.4);
+      0 0 35px rgba(251, 113, 133, 0.25),
+      0 10px 25px -8px rgba(244, 114, 182, 0.35);
     position: relative;
     z-index: 1;
   }
