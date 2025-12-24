@@ -23,14 +23,14 @@ export function LinksPage() {
   // DATOS CACHEADOS - Navegación instantánea
   // ═══════════════════════════════════════════════════════════════════════════
   const { links, loading, refresh } = useCachedLinks();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [animatedCount, setAnimatedCount] = useState(0);
   const prevCountRef = useRef(0);
-  
+
   // Estado local para eliminar links (actualización optimista)
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
-  
+
   // Links filtrados (excluyendo los eliminados localmente)
   const activeLinks = links.filter(l => !deletedIds.has(l.id));
 
@@ -414,34 +414,38 @@ const linksStyles = `
   }
 
   .lp-links-shell {
-    position: fixed;
-    inset: 0;
+    position: relative;
     display: flex;
     justify-content: center;
-    overflow-y: auto;
+    overflow-y: visible;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    padding-top: env(safe-area-inset-top, 0);
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    /* Transparente - hereda fondo de LinksHub */
+    background: transparent;
     z-index: 1;
   }
 
-  /* respetar sidebar en escritorio */
-  @media (min-width: 769px) {
-    .lp-links-shell {
-      left: 260px;
-    }
-  }
+  /* LinksHub maneja el sidebar offset - no duplicar aquí */
 
   .lp-links-inner {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 1080px;
-    padding: 26px 16px 100px 16px;
+    max-width: 600px;
+    /* Mobile-first padding optimizado */
+    padding: 8px 14px 20px 14px;
     margin: 0 auto;
-    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', system-ui, sans-serif;
     color: #e5e7eb;
+    /* Transparente - hereda fondo de LinksHub */
+    background: transparent;
+  }
+
+  @media (min-width: 769px) {
+    .lp-links-inner {
+      max-width: 800px;
+      padding: 20px 24px 40px 24px;
+    }
   }
 
   /* HEADER */
@@ -996,23 +1000,47 @@ const linksStyles = `
     display: none;
   }
 
+  /* ═══════════════════════════════════════════════════════════════════════════
+     MOBILE LINK CARDS - Premium Mobile-First Design
+     ═══════════════════════════════════════════════════════════════════════════ */
+
   .lp-link-card {
-    border-radius: 16px;
-    padding: 10px 10px 10px;
-    margin-bottom: 12px;
-    border: 1px solid rgba(30,64,175,0.8);
-    background: radial-gradient(circle at 0% 0%, rgba(30,64,175,0.7), rgba(15,23,42,0.96));
+    position: relative;
+    border-radius: 18px;
+    padding: 14px 14px 12px;
+    margin-bottom: 14px;
+    /* Premium glassmorphism background */
+    background: 
+      linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%),
+      rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid rgba(139, 92, 246, 0.25);
     box-shadow:
-      0 16px 40px rgba(15,23,42,1),
-      0 0 0 1px rgba(15,23,42,1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+      0 0 40px rgba(139, 92, 246, 0.1),
+      0 16px 40px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Subtle float animation */
+    animation: lp-link-card-float 8s ease-in-out infinite;
+  }
+
+  @keyframes lp-link-card-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
   }
 
   .lp-link-card:hover {
-    transform: translateY(-2px) scale(1.01);
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(139, 92, 246, 0.5);
     box-shadow:
-      0 22px 60px rgba(15,23,42,1),
-      0 0 0 1px rgba(191,219,254,0.7);
+      0 0 60px rgba(139, 92, 246, 0.2),
+      0 24px 60px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .lp-link-card:active {
+    transform: scale(0.98);
   }
 
   .lp-link-card-top {
@@ -1035,16 +1063,18 @@ const linksStyles = `
   }
 
   .lp-link-card-bottom {
-    margin-top: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   .lp-link-card-stats {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
     align-items: center;
   }
@@ -1053,32 +1083,36 @@ const linksStyles = `
   .lp-chip-money {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    gap: 5px;
+    padding: 5px 10px;
     border-radius: 999px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
   }
 
   .lp-chip-stat {
-    background: rgba(15,23,42,0.96);
-    border: 1px solid rgba(148,163,184,0.7);
-    color: #cbd5f5;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #e2e8f0;
   }
 
   .lp-chip-stat svg {
-    color: #9ca3af;
+    color: #a5b4fc;
   }
 
   .lp-chip-money {
-    background: rgba(22,163,74,0.16);
-    border: 1px solid rgba(34,197,94,0.8);
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.5);
     color: #bbf7d0;
+    /* Green glow */
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
   }
 
   .lp-link-card-actions {
     display: inline-flex;
-    gap: 6px;
+    gap: 8px;
   }
 
   /* RESPONSIVE */
