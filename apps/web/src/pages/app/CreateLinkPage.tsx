@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
 import { useDataCache } from '../../context/DataCacheContext';
+import { useToast } from '../../components/ui/Toast';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CREATE LINK - Integrated with LinksHub
@@ -30,6 +31,7 @@ import { useDataCache } from '../../context/DataCacheContext';
 export function CreateLinkPage() {
   const navigate = useNavigate();
   const { refreshLinks, refreshDashboard } = useDataCache();
+  const toast = useToast();
 
   // Core States
   const [url, setUrl] = useState('');
@@ -84,9 +86,13 @@ export function CreateLinkPage() {
       // Refrescar caché en background para que los datos estén actualizados
       refreshLinks();
       refreshDashboard();
+
+      toast.success('¡Link creado exitosamente!');
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message?.includes('alias') ? 'Alias ocupado' : err.message || 'Error');
+      const errorMessage = err.message?.includes('alias') ? 'Alias ocupado' : err.message || 'Error';
+      setErrorMsg(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -96,6 +102,7 @@ export function CreateLinkPage() {
     if (result) {
       navigator.clipboard.writeText(result.short_url);
       setCopied(true);
+      toast.success('¡Enlace copiado al portapapeles!');
       setTimeout(() => setCopied(false), 2000);
     }
   };
