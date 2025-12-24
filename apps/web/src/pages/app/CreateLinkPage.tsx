@@ -862,7 +862,7 @@ const createLinkStyles = `
       bottom: auto;
       right: auto;
       /* Align with content cards - higher position */
-      top: 38%;
+      top: 30%;
       left: calc(192px + (100vw - 192px - 440px) / 2 + 40px);
       transform: translateY(-50%);
       /* Fixed size */
