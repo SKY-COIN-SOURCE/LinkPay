@@ -821,89 +821,76 @@ const createLinkStyles = `
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     PREMIUM ADVANCED OPTIONS MODAL - WARM CORAL PALETTE
+     ADVANCED OPTIONS MODAL - Transparent Glassmorphism (Friendly)
      ═══════════════════════════════════════════════════════════════════════════ */
 
   .lp-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 1000;
   }
 
-  /* Mobile-first: Full width bottom sheet */
+  /* Mobile: Full width bottom sheet */
   .lp-modal {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    max-height: 85vh;
-    background: linear-gradient(180deg, #2a1a24 0%, #1e1219 100%);
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    border: 1px solid rgba(251, 113, 133, 0.15);
+    max-height: 80vh;
+    /* Transparent glassmorphism - see background through */
+    background: rgba(30, 20, 28, 0.85);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-bottom: none;
-    padding: 12px 16px calc(100px + env(safe-area-inset-bottom, 20px));
+    padding: 16px 20px calc(100px + env(safe-area-inset-bottom, 20px));
     z-index: 1001;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    box-shadow:
-      0 -10px 40px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* Desktop: Centered modal with max-width */
+  /* Desktop: Centered floating modal */
   @media (min-width: 769px) {
     .lp-modal {
+      bottom: auto;
+      top: 50%;
       left: 50%;
       right: auto;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 520px;
-      max-height: 70vh;
-      bottom: 50%;
-      transform: translate(-50%, 50%);
-      border-radius: 20px;
-      border: 1px solid rgba(251, 113, 133, 0.2);
-      padding: 20px 24px 30px;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 440px;
+      max-height: 80vh;
+      border-radius: 24px;
+      border: 1px solid rgba(251, 113, 133, 0.15);
+      padding: 24px;
       box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(251, 113, 133, 0.1),
+        0 25px 80px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
   }
 
-  /* Subtle top highlight */
+  /* Remove glow - keep it clean */
   .lp-modal-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: linear-gradient(180deg, rgba(251, 113, 133, 0.06) 0%, transparent 100%);
-    pointer-events: none;
-    border-radius: 24px 24px 0 0;
-  }
-
-  @media (min-width: 769px) {
-    .lp-modal-glow {
-      border-radius: 20px 20px 0 0;
-    }
+    display: none;
   }
 
   /* Handle bar - Mobile only */
   .lp-modal-handle {
     display: flex;
     justify-content: center;
-    padding: 4px 0 14px;
+    padding: 0 0 16px;
   }
 
   .lp-modal-handle-bar {
-    width: 36px;
+    width: 40px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 999px;
   }
 
@@ -917,34 +904,30 @@ const createLinkStyles = `
   .lp-modal-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
-    position: relative;
-    z-index: 1;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
   .lp-modal-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(251, 113, 133, 0.25) 0%, rgba(244, 114, 182, 0.2) 100%);
-    border: 1px solid rgba(251, 113, 133, 0.3);
+    background: rgba(251, 113, 133, 0.15);
     color: #fda4af;
-    box-shadow: 0 0 20px rgba(251, 113, 133, 0.2);
   }
 
   .lp-modal-header h3 {
     margin: 0;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     color: #fff;
   }
 
   .lp-modal-header p {
-    margin: 3px 0 0;
+    margin: 2px 0 0;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.5);
   }
@@ -953,37 +936,34 @@ const createLinkStyles = `
   .lp-modal-fields {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
+    gap: 10px;
   }
 
-  /* Individual field */
+  /* Individual field - More transparent */
   .lp-modal-field {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px;
-    background: rgba(30, 20, 28, 0.7);
-    border: 1px solid rgba(251, 113, 133, 0.15);
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
-    transition: all 0.25s;
+    transition: all 0.2s ease;
   }
 
   .lp-modal-field:focus-within {
-    border-color: rgba(251, 113, 133, 0.4);
-    box-shadow: 0 0 25px rgba(251, 113, 133, 0.12);
-    background: rgba(40, 25, 35, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(251, 113, 133, 0.3);
   }
 
   .lp-modal-field-icon {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(251, 113, 133, 0.15);
+    background: rgba(251, 113, 133, 0.12);
     color: #fda4af;
     flex-shrink: 0;
   }
@@ -996,9 +976,9 @@ const createLinkStyles = `
   .lp-modal-field-content label {
     display: block;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 5px;
+    margin-bottom: 3px;
   }
 
   .lp-modal-field-content input {
@@ -1019,13 +999,13 @@ const createLinkStyles = `
   .lp-modal-toggle-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px;
-    background: rgba(30, 20, 28, 0.7);
-    border: 1px solid rgba(251, 113, 133, 0.15);
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     cursor: pointer;
-    transition: all 0.25s;
+    transition: all 0.2s ease;
   }
 
   .lp-modal-toggle-row:active {
@@ -1046,24 +1026,23 @@ const createLinkStyles = `
   .lp-modal-toggle-content p {
     margin: 2px 0 0;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.45);
   }
 
-  /* Premium toggle - Coral */
+  /* Toggle switch */
   .lp-modal-toggle {
-    width: 50px;
-    height: 28px;
+    width: 48px;
+    height: 26px;
     border-radius: 999px;
-    background: rgba(100, 90, 95, 0.4);
-    padding: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s ease;
     flex-shrink: 0;
   }
 
   .lp-modal-toggle.on {
-    background: linear-gradient(135deg, #fb7185 0%, #f472b6 100%);
-    box-shadow: 0 0 18px rgba(251, 113, 133, 0.4);
+    background: #fb7185;
   }
 
   .lp-modal-toggle-thumb {
@@ -1071,36 +1050,35 @@ const createLinkStyles = `
     height: 22px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.25s ease;
   }
 
   .lp-modal-toggle.on .lp-modal-toggle-thumb {
     transform: translateX(22px);
   }
 
-  /* Apply button - Coral */
+  /* Apply button */
   .lp-modal-close-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     width: 100%;
-    margin-top: 20px;
-    padding: 16px;
-    background: linear-gradient(135deg, #fb7185 0%, #f472b6 100%);
+    margin-top: 16px;
+    padding: 14px;
+    background: #fb7185;
     border: none;
     border-radius: 14px;
     color: #fff;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s;
-    box-shadow:
-      0 0 35px rgba(251, 113, 133, 0.25),
-      0 10px 25px -8px rgba(244, 114, 182, 0.35);
-    position: relative;
-    z-index: 1;
+    transition: all 0.2s ease;
+  }
+
+  .lp-modal-close-btn:hover {
+    background: #f472b6;
   }
 
   .lp-modal-close-btn:active {
