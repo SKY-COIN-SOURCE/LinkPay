@@ -841,7 +841,7 @@ const createLinkStyles = `
     right: 0;
     max-height: 80vh;
     /* Transparent glassmorphism - see background through */
-    background: rgba(30, 20, 28, 0.85);
+    background: rgba(30, 20, 28, 0.92);
     backdrop-filter: blur(20px) saturate(1.2);
     -webkit-backdrop-filter: blur(20px) saturate(1.2);
     border-top-left-radius: 28px;
@@ -855,23 +855,26 @@ const createLinkStyles = `
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* Desktop: Centered floating modal */
+  /* Desktop: Centered floating modal in VIEWPORT */
   @media (min-width: 769px) {
     .lp-modal {
+      /* Reset mobile positioning */
       bottom: auto;
+      left: 0;
+      right: 0;
+      /* Center in viewport */
       top: 50%;
-      left: 50%;
-      right: auto;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 440px;
-      max-height: 80vh;
-      border-radius: 24px;
-      border: 1px solid rgba(251, 113, 133, 0.15);
+      margin: 0 auto;
+      transform: translateY(-50%);
+      width: 440px;
+      max-width: calc(100vw - 40px);
+      max-height: 75vh;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       padding: 24px;
       box-shadow:
-        0 25px 80px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 25px 80px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
   }
 
