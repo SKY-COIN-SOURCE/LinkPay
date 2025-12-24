@@ -827,75 +827,59 @@ const createLinkStyles = `
   .lp-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: 
-      radial-gradient(circle at 50% 100%, rgba(251, 113, 133, 0.1) 0%, transparent 50%),
-      rgba(20, 10, 15, 0.9);
-    backdrop-filter: blur(12px) saturate(1.2);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 1000;
   }
 
   .lp-modal {
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
-    max-height: 80vh;
-    background: 
-      linear-gradient(180deg, 
-        rgba(40, 25, 35, 0.98) 0%, 
-        rgba(30, 20, 28, 0.99) 50%,
-        rgba(25, 15, 22, 1) 100%);
-    border-top-left-radius: 28px;
-    border-top-right-radius: 28px;
-    border: 1px solid rgba(251, 113, 133, 0.25);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    max-height: 75vh;
+    background: rgba(28, 18, 25, 0.98);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border: 1px solid rgba(251, 113, 133, 0.2);
     border-bottom: none;
-    padding: 12px 20px calc(100px + env(safe-area-inset-bottom, 20px));
+    padding: 16px 20px calc(90px + env(safe-area-inset-bottom, 20px));
     z-index: 1001;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* Subtle glow only at top edge inside */
     box-shadow:
-      0 -30px 100px rgba(251, 113, 133, 0.2),
-      0 -15px 50px rgba(244, 114, 182, 0.15),
-      0 -8px 30px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      inset 0 1px 0 rgba(251, 113, 133, 0.15),
+      0 -4px 20px rgba(0, 0, 0, 0.3);
   }
 
-  /* Coral glow orbs */
+  /* Subtle top highlight only - no external glow */
   .lp-modal-glow {
     position: absolute;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 350px;
-    height: 200px;
-    background: 
-      radial-gradient(ellipse at 50% 80%, rgba(251, 113, 133, 0.4) 0%, transparent 50%),
-      radial-gradient(ellipse at 30% 60%, rgba(251, 146, 60, 0.25) 0%, transparent 40%),
-      radial-gradient(ellipse at 70% 60%, rgba(244, 114, 182, 0.3) 0%, transparent 40%);
-    filter: blur(30px);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(180deg, rgba(251, 113, 133, 0.08) 0%, transparent 100%);
     pointer-events: none;
-    animation: lp-modal-glow-pulse 3s ease-in-out infinite alternate;
+    border-radius: 24px 24px 0 0;
   }
 
-  @keyframes lp-modal-glow-pulse {
-    0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-    100% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
-  }
-
-  /* Handle bar - Coral */
+  /* Handle bar - Minimal */
   .lp-modal-handle {
     display: flex;
     justify-content: center;
-    padding: 8px 0 20px;
+    padding: 4px 0 16px;
   }
 
   .lp-modal-handle-bar {
-    width: 44px;
-    height: 5px;
-    background: linear-gradient(90deg, rgba(251, 113, 133, 0.5), rgba(244, 114, 182, 0.7), rgba(251, 113, 133, 0.5));
+    width: 40px;
+    height: 4px;
+    background: rgba(251, 113, 133, 0.4);
     border-radius: 999px;
-    box-shadow: 0 0 12px rgba(251, 113, 133, 0.4);
   }
 
   /* Header */
