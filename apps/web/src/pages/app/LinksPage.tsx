@@ -142,223 +142,191 @@ export function LinksPage() {
   };
 
   return (
-    <div className="lp-links-shell lp-premium-bg">
+    <div className="lp-links-shell">
       <style>{linksStyles}</style>
-      <div className="lp-links-inner lp-premium-inner">
+      <div className="lp-links-inner">
 
-        {/* FILTROS / BUSCADOR */}
-        <section className="lp-links-card lp-links-card-filters">
-          <div className="lp-links-filters-row">
-            <div className="lp-links-search">
-              <Search className="lp-links-search-icon" size={16} />
-              <input
-                placeholder="Buscar por slug o URL…"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <button
-              type="button"
-              onClick={refresh}
-              className="lp-links-refresh"
-            >
-              <Zap size={16} />
-              Refrescar
-            </button>
+        {/* SEARCH BAR - Minimal, transparent */}
+        <div className="lp-search-container">
+          <div className="lp-search-bar">
+            <Search className="lp-search-icon" size={18} />
+            <input
+              placeholder="Buscar enlaces..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <div className="lp-links-meta">
-            <span className="lp-links-count">
-              <span className="lp-links-count-glow" />
-              <strong>{animatedCount}</strong>
-              <span className="lp-links-count-label">enlaces visibles</span>
-            </span>
-            <span className="lp-links-meta-pill">
-              <Filter size={12} />
-              Filtro instantáneo
-            </span>
+          <button type="button" onClick={refresh} className="lp-refresh-btn">
+            <Zap size={16} />
+          </button>
+        </div>
+
+        {/* STATS ROW - Clean minimal */}
+        <div className="lp-stats-row">
+          <span className="lp-stat-count">
+            <strong>{animatedCount}</strong> enlaces
+          </span>
+        </div>
+
+        {/* LINKS LIST - Direct, no wrapper card */}
+        {loading ? (
+          <div className="lp-loading-state">
+            <Loader2 size={24} className="spin" />
+            <span>Cargando...</span>
           </div>
-        </section>
-
-        {/* LISTADO */}
-        <section className="lp-links-card lp-links-card-main">
-          <div className="lp-links-card-header">
-            <div className="lp-links-card-icon">
-              <BarChart2 size={18} />
-            </div>
-            <div className="lp-links-card-title">
-              <h3>Todos tus enlaces</h3>
-              <p>
-                Vista avanzada con visitas, revenue y modo de monetización de
-                cada Smart Link.
-              </p>
-            </div>
+        ) : filteredLinks.length === 0 ? (
+          <div className="lp-empty-state">
+            <ExternalLink size={32} />
+            <p>No hay enlaces aún</p>
+            <span>Crea tu primer link desde "Crear Link"</span>
           </div>
-
-          {loading ? (
-            <div className="lp-links-loading">
-              <div className="lp-links-orb">
-                <Loader2 size={22} className="spin" />
-              </div>
-              <p>Cargando enlaces…</p>
-            </div>
-          ) : filteredLinks.length === 0 ? (
-            <div className="lp-links-empty">
-              <div className="lp-links-empty-icon">
-                <ExternalLink size={24} />
-              </div>
-              <p className="lp-links-empty-title">No hay enlaces aún.</p>
-              <p className="lp-links-empty-sub">
-                Crea tu primer Smart Link desde la pestaña <strong>Crear Link</strong>.
-              </p>
-            </div>
-          ) : (
-            <div className="lp-links-table-wrapper">
-              {/* DESKTOP TABLE */}
-              <table className="lp-links-table lp-desktop-only">
-                <thead>
-                  <tr>
-                    <th>Enlace</th>
-                    <th>Modo</th>
-                    <th>Visitas</th>
-                    <th>Revenue</th>
-                    <th className="lp-th-right">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredLinks.map((link) => (
-                    <tr key={link.id}>
-                      <td>
-                        <div className="lp-link-main">
-                          <div className="lp-link-slug-row">
-                            <span className="lp-link-slug">/{link.slug}</span>
-                            {link.password && (
-                              <Lock
-                                size={12}
-                                className="lp-link-flag lp-link-flag-orange"
-                              />
-                            )}
-                            {link.expires_at && (
-                              <Clock
-                                size={12}
-                                className="lp-link-flag lp-link-flag-red"
-                              />
-                            )}
-                            {link.is_private && (
-                              <EyeOff
-                                size={12}
-                                className="lp-link-flag lp-link-flag-purple"
-                              />
-                            )}
-                          </div>
-                          <span className="lp-link-url">
-                            {link.original_url}
-                          </span>
-                        </div>
-                      </td>
-                      <td>{renderModeBadge(link.monetization_mode || 'standard')}</td>
-                      <td>
-                        <div className="lp-link-visits">
-                          <BarChart2 size={15} />
-                          {link.views}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="lp-link-revenue">
-                          €{(link.earnings || 0).toFixed(4)}
-                        </div>
-                      </td>
-                      <td className="lp-td-right">
-                        <div className="lp-link-actions">
-                          <button
-                            type="button"
-                            onClick={() => copyLink(link.slug)}
-                            className="lp-btn-ghost"
-                          >
-                            <Copy size={15} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(link.id)}
-                            className="lp-btn-danger"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* MOBILE CARDS */}
-              <div className="lp-links-list lp-mobile-only">
+        ) : (
+          <div className="lp-links-list">
+            {/* DESKTOP TABLE */}
+            <table className="lp-links-table lp-desktop-only">
+              <thead>
+                <tr>
+                  <th>Enlace</th>
+                  <th>Modo</th>
+                  <th>Visitas</th>
+                  <th>Revenue</th>
+                  <th className="lp-th-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
                 {filteredLinks.map((link) => (
-                  <div key={link.id} className="lp-link-card">
-                    <div className="lp-link-card-top">
-                      <div className="lp-link-card-main">
+                  <tr key={link.id}>
+                    <td>
+                      <div className="lp-link-main">
                         <div className="lp-link-slug-row">
                           <span className="lp-link-slug">/{link.slug}</span>
                           {link.password && (
                             <Lock
-                              size={11}
+                              size={12}
                               className="lp-link-flag lp-link-flag-orange"
                             />
                           )}
                           {link.expires_at && (
                             <Clock
-                              size={11}
+                              size={12}
                               className="lp-link-flag lp-link-flag-red"
                             />
                           )}
                           {link.is_private && (
                             <EyeOff
-                              size={11}
+                              size={12}
                               className="lp-link-flag lp-link-flag-purple"
                             />
                           )}
                         </div>
-                        <span className="lp-link-url lp-link-url-mobile">
+                        <span className="lp-link-url">
                           {link.original_url}
                         </span>
                       </div>
-                      <div className="lp-link-card-mode">
-                        {renderModeBadge(link.monetization_mode || 'standard')}
+                    </td>
+                    <td>{renderModeBadge(link.monetization_mode || 'standard')}</td>
+                    <td>
+                      <div className="lp-link-visits">
+                        <BarChart2 size={15} />
+                        {link.views}
                       </div>
-                    </div>
-
-                    <div className="lp-link-card-bottom">
-                      <div className="lp-link-card-stats">
-                        <span className="lp-chip-stat">
-                          <BarChart2 size={12} />
-                          {link.views} visitas
-                        </span>
-                        <span className="lp-chip-money">
-                          €{(link.earnings || 0).toFixed(4)}
-                        </span>
+                    </td>
+                    <td>
+                      <div className="lp-link-revenue">
+                        €{(link.earnings || 0).toFixed(4)}
                       </div>
-                      <div className="lp-link-card-actions">
+                    </td>
+                    <td className="lp-td-right">
+                      <div className="lp-link-actions">
                         <button
                           type="button"
                           onClick={() => copyLink(link.slug)}
                           className="lp-btn-ghost"
                         >
-                          <Copy size={14} />
+                          <Copy size={15} />
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(link.id)}
                           className="lp-btn-danger"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={15} />
                         </button>
                       </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* MOBILE CARDS */}
+            <div className="lp-links-list lp-mobile-only">
+              {filteredLinks.map((link) => (
+                <div key={link.id} className="lp-link-card">
+                  <div className="lp-link-card-top">
+                    <div className="lp-link-card-main">
+                      <div className="lp-link-slug-row">
+                        <span className="lp-link-slug">/{link.slug}</span>
+                        {link.password && (
+                          <Lock
+                            size={11}
+                            className="lp-link-flag lp-link-flag-orange"
+                          />
+                        )}
+                        {link.expires_at && (
+                          <Clock
+                            size={11}
+                            className="lp-link-flag lp-link-flag-red"
+                          />
+                        )}
+                        {link.is_private && (
+                          <EyeOff
+                            size={11}
+                            className="lp-link-flag lp-link-flag-purple"
+                          />
+                        )}
+                      </div>
+                      <span className="lp-link-url lp-link-url-mobile">
+                        {link.original_url}
+                      </span>
+                    </div>
+                    <div className="lp-link-card-mode">
+                      {renderModeBadge(link.monetization_mode || 'standard')}
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="lp-link-card-bottom">
+                    <div className="lp-link-card-stats">
+                      <span className="lp-chip-stat">
+                        <BarChart2 size={12} />
+                        {link.views} visitas
+                      </span>
+                      <span className="lp-chip-money">
+                        €{(link.earnings || 0).toFixed(4)}
+                      </span>
+                    </div>
+                    <div className="lp-link-card-actions">
+                      <button
+                        type="button"
+                        onClick={() => copyLink(link.slug)}
+                        className="lp-btn-ghost"
+                      >
+                        <Copy size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(link.id)}
+                        className="lp-btn-danger"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-        </section>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -413,137 +381,167 @@ const linksStyles = `
     100% { transform: rotate(360deg) scale(1.04); }
   }
 
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SHELL & INNER - Transparent, inherits LinksHub background
+     ═══════════════════════════════════════════════════════════════════════════ */
+
   .lp-links-shell {
     position: relative;
-    display: flex;
-    justify-content: center;
-    overflow-y: visible;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    /* Transparente - hereda fondo de LinksHub */
     background: transparent;
     z-index: 1;
   }
-
-  /* LinksHub maneja el sidebar offset - no duplicar aquí */
 
   .lp-links-inner {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 600px;
-    /* Mobile-first padding optimizado */
-    padding: 8px 14px 20px 14px;
+    max-width: 100%;
+    padding: 0;
     margin: 0 auto;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', system-ui, sans-serif;
     color: #e5e7eb;
-    /* Transparente - hereda fondo de LinksHub */
     background: transparent;
   }
 
-  @media (min-width: 769px) {
-    .lp-links-inner {
-      max-width: 800px;
-      padding: 20px 24px 40px 24px;
-    }
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SEARCH BAR - Modern, minimal glassmorphism
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  .lp-search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
   }
 
-  /* HEADER */
-  .lp-links-header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .lp-links-header p {
-    margin: 6px 0 0 0;
-    font-size: 13px;
-    color: #9ca3af;
-  }
-
-  .lp-chip {
-    display: inline-flex;
+  .lp-search-bar {
+    flex: 1;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(30, 64, 175, 0.8);
-    color: #e5e7eb;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    box-shadow:
-      0 0 0 1px rgba(15, 23, 42, 0.9),
-      0 0 18px rgba(59, 130, 246, 0.6);
-    animation: lp-chip-glow 4.5s ease-in-out infinite;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(30, 20, 28, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(251, 113, 133, 0.2);
+    border-radius: 14px;
+    transition: all 0.25s;
   }
 
-  .lp-chip-center {
+  .lp-search-bar:focus-within {
+    border-color: rgba(251, 113, 133, 0.5);
+    box-shadow: 0 0 30px rgba(251, 113, 133, 0.15);
+  }
+
+  .lp-search-icon {
+    color: #fda4af;
+    flex-shrink: 0;
+  }
+
+  .lp-search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #fff;
+  }
+
+  .lp-search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .lp-refresh-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    width: 100%;
+    background: rgba(30, 20, 28, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(251, 113, 133, 0.2);
+    border-radius: 14px;
+    color: #fda4af;
+    cursor: pointer;
+    transition: all 0.25s;
   }
 
-  .lp-chip-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.35);
+  .lp-refresh-btn:hover {
+    border-color: rgba(251, 113, 133, 0.5);
+    background: rgba(251, 113, 133, 0.15);
   }
 
-  @keyframes lp-chip-glow {
-    0%,100% {
-      box-shadow:
-        0 0 0 1px rgba(15,23,42,0.9),
-        0 0 12px rgba(59,130,246,0.4);
-    }
-    50% {
-      box-shadow:
-        0 0 0 1px rgba(129,140,248,0.9),
-        0 0 24px rgba(129,140,248,0.9);
-    }
+  .lp-refresh-btn:active {
+    transform: scale(0.95);
   }
 
-  /* CARDS */
-  .lp-links-card {
-    position: relative;
-    border-radius: 22px;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    background: radial-gradient(circle at top, rgba(15,23,42,0.98), rgba(15,23,42,0.96));
-    box-shadow:
-      0 20px 60px rgba(0,0,0,0.95),
-      0 0 0 1px rgba(15,23,42,0.9);
-    padding: 16px 16px 18px;
-    margin-bottom: 18px;
-    overflow: hidden;
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    transition:
-      transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1),
-      box-shadow 0.22s ease,
-      border-color 0.22s ease;
+  /* ═══════════════════════════════════════════════════════════════════════════
+     STATS ROW - Clean, minimal
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  .lp-stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
   }
 
-  .lp-links-card::before {
-    content: "";
-    position: absolute;
-    inset: -120px;
-    background:
-      radial-gradient(circle at 0% 0%, rgba(59,130,246,0.35), transparent 55%),
-      radial-gradient(circle at 100% 100%, rgba(129,140,248,0.25), transparent 55%);
-    opacity: 0.6;
-    mix-blend-mode: screen;
-    pointer-events: none;
+  .lp-stat-count {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
   }
 
-  .lp-links-card-main {
-    animation: lp-card-float 10s ease-in-out infinite;
+  .lp-stat-count strong {
+    color: #fda4af;
+    font-weight: 700;
   }
 
-  @keyframes lp-card-float {
-    0%,100% { transform: translateY(-1px); }
-    50% { transform: translateY(2px); }
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LOADING & EMPTY STATES
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  .lp-loading-state,
+  .lp-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .lp-loading-state svg {
+    color: #fda4af;
+  }
+
+  .lp-empty-state svg {
+    color: #fda4af;
+    opacity: 0.5;
+  }
+
+  .lp-empty-state p {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+
+  .lp-empty-state span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LINKS LIST - Clean container
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  .lp-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .lp-links-card:hover {
@@ -902,18 +900,18 @@ const linksStyles = `
 
   .lp-link-slug {
     font-weight: 700;
-    color: #e5e7eb;
-    font-size: 13px;
+    color: #fff;
+    font-size: 14px;
   }
 
-  .lp-link-flag-orange { color: #fdba74; }
-  .lp-link-flag-red { color: #fca5a5; }
-  .lp-link-flag-purple { color: #c4b5fd; }
+  .lp-link-flag-orange { color: #fb923c; }
+  .lp-link-flag-red { color: #fda4af; }
+  .lp-link-flag-purple { color: #f472b6; }
 
   .lp-link-url {
-    font-size: 11px;
-    color: #9ca3af;
-    max-width: 260px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 280px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -947,96 +945,74 @@ const linksStyles = `
 
   .lp-btn-ghost,
   .lp-btn-danger {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid transparent;
-    background: rgba(15,23,42,0.98);
+    border: 1px solid rgba(251, 113, 133, 0.15);
+    background: rgba(30, 20, 28, 0.6);
     color: #e5e7eb;
     cursor: pointer;
-    transition: all 0.18s ease-out;
-    box-shadow:
-      0 0 0 1px rgba(15,23,42,1),
-      0 10px 24px rgba(15,23,42,0.9);
+    transition: all 0.2s ease-out;
   }
 
-  .lp-btn-ghost svg { color: #bfdbfe; }
-  .lp-btn-danger svg { color: #fecaca; }
+  .lp-btn-ghost svg { color: #fda4af; }
+  .lp-btn-danger svg { color: #fca5a5; }
 
   .lp-btn-ghost:hover {
-    border-color: rgba(129,140,248,0.9);
-    box-shadow:
-      0 0 0 1px rgba(129,140,248,0.95),
-      0 0 22px rgba(79,70,229,0.9);
+    border-color: rgba(251, 113, 133, 0.5);
+    background: rgba(251, 113, 133, 0.15);
   }
 
   .lp-btn-danger:hover {
-    border-color: rgba(248,113,113,0.9);
-    box-shadow:
-      0 0 0 1px rgba(248,113,113,0.95),
-      0 0 22px rgba(248,113,113,0.9);
+    border-color: rgba(248, 113, 113, 0.6);
+    background: rgba(248, 113, 113, 0.2);
   }
 
   .lp-links-mode {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 3px 8px;
-    border-radius: 999px;
+    padding: 4px 10px;
+    border-radius: 8px;
     border-width: 1px;
     border-style: solid;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  /* LISTA MOBILE */
-  .lp-links-list {
-    margin-top: 6px;
-    display: none;
+    letter-spacing: 0.05em;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
-     MOBILE LINK CARDS - Premium Mobile-First Design
+     MOBILE LINK CARDS - Transparent Premium Design (Coral/Pink palette)
      ═══════════════════════════════════════════════════════════════════════════ */
 
   .lp-link-card {
     position: relative;
-    border-radius: 18px;
-    padding: 14px 14px 12px;
-    margin-bottom: 14px;
-    /* Premium glassmorphism background */
-    background: 
-      linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%),
-      rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
-    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 16px;
+    padding: 16px;
+    /* TRANSPARENT glassmorphism - see the vibrant background through */
+    background: rgba(30, 20, 28, 0.5);
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    border: 1px solid rgba(251, 113, 133, 0.2);
     box-shadow:
-      0 0 40px rgba(139, 92, 246, 0.1),
-      0 16px 40px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    /* Subtle float animation */
-    animation: lp-link-card-float 8s ease-in-out infinite;
-  }
-
-  @keyframes lp-link-card-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
+      0 0 30px rgba(251, 113, 133, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .lp-link-card:hover {
-    transform: translateY(-4px) scale(1.01);
-    border-color: rgba(139, 92, 246, 0.5);
+    border-color: rgba(251, 113, 133, 0.4);
+    background: rgba(30, 20, 28, 0.6);
+    transform: translateY(-2px);
     box-shadow:
-      0 0 60px rgba(139, 92, 246, 0.2),
-      0 24px 60px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 0 50px rgba(251, 113, 133, 0.12),
+      0 16px 48px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .lp-link-card:active {
@@ -1063,13 +1039,13 @@ const linksStyles = `
   }
 
   .lp-link-card-bottom {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(251, 113, 133, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .lp-link-card-stats {
@@ -1084,105 +1060,75 @@ const linksStyles = `
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 10px;
-    border-radius: 999px;
+    padding: 6px 10px;
+    border-radius: 10px;
     font-size: 11px;
     font-weight: 600;
   }
 
   .lp-chip-stat {
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    color: #e2e8f0;
+    background: rgba(30, 20, 28, 0.7);
+    border: 1px solid rgba(251, 113, 133, 0.15);
+    color: rgba(255, 255, 255, 0.8);
   }
 
   .lp-chip-stat svg {
-    color: #a5b4fc;
+    color: #fda4af;
   }
 
   .lp-chip-money {
-    background: rgba(34, 197, 94, 0.2);
-    border: 1px solid rgba(34, 197, 94, 0.5);
-    color: #bbf7d0;
-    /* Green glow */
-    box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
   }
 
   .lp-link-card-actions {
     display: inline-flex;
-    gap: 8px;
+    gap: 6px;
   }
 
-  /* RESPONSIVE */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     RESPONSIVE - Mobile First
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /* Desktop */
   .lp-desktop-only { display: table; }
   .lp-mobile-only { display: none; }
 
+  /* Tablet */
   @media (max-width: 900px) {
-    .lp-links-inner {
-      max-width: 100%;
-      padding: 20px 16px 140px 16px;
-    }
+    .lp-desktop-only { display: none; }
+    .lp-mobile-only { display: flex; flex-direction: column; gap: 12px; }
   }
 
+  /* Mobile */
   @media (max-width: 768px) {
-    .lp-links-shell {
-      left: 0;
-    }
-    .lp-desktop-only { display: none; }
-    .lp-mobile-only { display: block; }
-
-    .lp-links-filters-row {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 12px;
+    .lp-search-bar {
+      padding: 14px 16px;
     }
 
-    .lp-links-search {
-      max-width: 100%;
-    }
-
-    .lp-links-search input {
-      padding: 14px 14px 14px 38px;
+    .lp-search-bar input {
       font-size: 16px;
-      border-radius: 14px;
     }
 
-    .lp-links-refresh {
-      justify-content: center;
-      width: 100%;
-      padding: 14px;
-      border-radius: 14px;
-    }
-
-    .lp-links-meta {
-      font-size: 11px;
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .lp-links-meta-pill {
-      width: 100%;
-      justify-content: center;
-      padding: 8px 12px;
+    .lp-refresh-btn {
+      width: 52px;
+      height: 52px;
     }
 
     .lp-link-card {
       padding: 14px;
-      margin-bottom: 12px;
     }
 
     .lp-btn-ghost,
     .lp-btn-danger {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
     }
 
     .lp-chip-stat,
     .lp-chip-money {
-      padding: 6px 10px;
+      padding: 7px 12px;
       font-size: 11px;
     }
   }
