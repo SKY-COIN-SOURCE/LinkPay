@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { LinkService, Link } from '../../lib/linkService';
 import { useCachedLinks } from '../../context/DataCacheContext';
+import { useToast, useConfirm } from '../../components/ui/Toast';
 import '../../styles/PremiumBackground.css';
 
 export function LinksPage() {
@@ -23,6 +24,8 @@ export function LinksPage() {
   // DATOS CACHEADOS - Navegación instantánea
   // ═══════════════════════════════════════════════════════════════════════════
   const { links, loading, refresh } = useCachedLinks();
+  const toast = useToast();
+  const { confirm, ConfirmDialog } = useConfirm();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [animatedCount, setAnimatedCount] = useState(0);
@@ -35,13 +38,20 @@ export function LinksPage() {
   const activeLinks = links.filter(l => !deletedIds.has(l.id));
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('¿Eliminar enlace?')) {
+    const confirmed = await confirm(
+      '¿Eliminar enlace?',
+      'Esta acción no se puede deshacer. El enlace dejará de funcionar inmediatamente.',
+      'danger'
+    );
+
+    if (confirmed) {
       try {
         // Actualización optimista - marcar como eliminado inmediatamente
         setDeletedIds(prev => new Set(prev).add(id));
         await LinkService.deleteLink(id);
         // Refrescar caché en background
         refresh();
+        toast.success('Enlace eliminado correctamente');
       } catch (err) {
         // Revertir si falla
         setDeletedIds(prev => {
@@ -49,14 +59,14 @@ export function LinksPage() {
           newSet.delete(id);
           return newSet;
         });
-        alert('Error al eliminar.');
+        toast.error('Error al eliminar el enlace');
       }
     }
   };
 
   const copyLink = (slug: string) => {
     navigator.clipboard.writeText(`${window.location.origin}/l/${slug}`);
-    alert('Copiado');
+    toast.success('¡Enlace copiado al portapapeles!');
   };
 
   const filteredLinks = activeLinks.filter((l) => {
@@ -144,6 +154,7 @@ export function LinksPage() {
   return (
     <div className="lp-links-shell">
       <style>{linksStyles}</style>
+      <ConfirmDialog />
       <div className="lp-links-inner">
 
         {/* SEARCH BAR - Minimal, transparent */}

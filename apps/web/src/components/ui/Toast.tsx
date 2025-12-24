@@ -92,9 +92,9 @@ function ToastItem({ toast, onRemove, index }: { toast: Toast; onRemove: () => v
   };
 
   const colors = {
-    success: { bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.4)', icon: '#4ade80', glow: 'rgba(34, 197, 94, 0.3)' },
+    success: { bg: 'rgba(251, 113, 133, 0.15)', border: 'rgba(251, 113, 133, 0.4)', icon: '#fda4af', glow: 'rgba(251, 113, 133, 0.25)' },
     error: { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.4)', icon: '#f87171', glow: 'rgba(239, 68, 68, 0.3)' },
-    info: { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.4)', icon: '#60a5fa', glow: 'rgba(59, 130, 246, 0.3)' },
+    info: { bg: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)', icon: '#fb923c', glow: 'rgba(251, 146, 60, 0.25)' },
     warning: { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.4)', icon: '#fbbf24', glow: 'rgba(245, 158, 11, 0.3)' }
   };
 
@@ -216,7 +216,7 @@ const toastStyles = `
     color: #f1f5f9;
   }
 
-  /* Confirm Modal Styles */
+  /* Confirm Modal Styles - Warm Coral Palette */
   .lp-confirm-overlay {
     position: fixed;
     top: 0;
@@ -224,8 +224,8 @@ const toastStyles = `
     right: 0;
     bottom: 0;
     z-index: 10000;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
+    background: rgba(20, 10, 15, 0.9);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -240,11 +240,13 @@ const toastStyles = `
 
   .lp-confirm-modal {
     width: 100%;
-    max-width: 400px;
-    background: #0f172a;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
+    max-width: 380px;
+    background: rgba(30, 20, 28, 0.95);
+    border: 1px solid rgba(251, 113, 133, 0.3);
+    border-radius: 20px;
     padding: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(251, 113, 133, 0.15), 0 20px 50px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.25s ease;
   }
 
@@ -256,15 +258,15 @@ const toastStyles = `
   .lp-confirm-title {
     font-size: 18px;
     font-weight: 700;
-    color: #f1f5f9;
+    color: #fff;
     margin: 0 0 12px 0;
   }
 
-  .lp-confirm-title.danger { color: #ef4444; }
+  .lp-confirm-title.danger { color: #fda4af; }
 
   .lp-confirm-message {
     font-size: 14px;
-    color: #94a3b8;
+    color: rgba(255, 255, 255, 0.65);
     line-height: 1.6;
     margin: 0 0 24px 0;
   }
@@ -276,8 +278,8 @@ const toastStyles = `
   }
 
   .lp-confirm-btn {
-    padding: 10px 20px;
-    border-radius: 10px;
+    padding: 12px 22px;
+    border-radius: 12px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -286,22 +288,25 @@ const toastStyles = `
   }
 
   .lp-confirm-btn.secondary {
-    background: rgba(255,255,255,0.08);
-    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .lp-confirm-btn.secondary:hover {
-    background: rgba(255,255,255,0.12);
-    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
   }
 
   .lp-confirm-btn.danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #fb7185 0%, #f472b6 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(251, 113, 133, 0.3);
   }
 
   .lp-confirm-btn.danger:hover {
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 6px 25px rgba(251, 113, 133, 0.5);
+    transform: translateY(-1px);
   }
 `;
 
