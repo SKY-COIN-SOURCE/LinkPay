@@ -1430,7 +1430,7 @@ const revStyles = `
     color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    margin: 0 0 12px 2px;
+    margin: -4px 0 8px 2px;
   }
 
   .rev-empty {
