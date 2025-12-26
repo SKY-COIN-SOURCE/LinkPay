@@ -57,9 +57,9 @@ export function PayoutsPage() {
     bank: '',
   });
 
-  // Pagination for transactions
-  const [visibleCount, setVisibleCount] = useState(30);
-  const LOAD_MORE_COUNT = 30;
+  // Pagination for transactions - show only 2 by default like Revolut
+  const [visibleCount, setVisibleCount] = useState(2);
+  const LOAD_MORE_COUNT = 10;
 
   // Constants
   const MIN_PAYPAL = 5;
