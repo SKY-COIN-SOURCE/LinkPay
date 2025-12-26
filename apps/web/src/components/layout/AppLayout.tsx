@@ -588,7 +588,7 @@ const layoutStyles = `
       -webkit-overflow-scrolling: touch;
   }
 
-      /* ===== MOBILE NAV - SEMI-TRANSPARENT DOCK PEGADO AL BORDE ===== */
+      /* ===== MOBILE NAV - SPLIT BACKGROUND (gap for Home) ===== */
       .lp-mobile-nav {
         position: fixed !important;
       left: 0 !important;
@@ -596,47 +596,48 @@ const layoutStyles = `
       bottom: 0 !important;
       display: none;
       z-index: 60;
-      /* Sin padding ni margin - pegado exactamente al borde */
       padding: 0 !important;
       margin: 0 !important;
-      /* Asegurar que no haya espacio debajo */
       height: auto;
       max-height: none;
-      /* Fondo que se extiende más abajo para cubrir cualquier espacio */
       background: transparent;
   }
 
-      /* Extender fondo del nav más abajo para cubrir cualquier espacio */
-      .lp-mobile-nav::after {
+      /* BACKGROUND - starts lower so Home button floats above */
+      .lp-mobile-nav::before {
         content: "";
       position: absolute;
       left: 0;
       right: 0;
-      bottom: -200px;
-      height: calc(100% + 200px);
-      background: rgba(2, 6, 23, 0.75);
+      /* Start 20px from top - aligns with other nav items, Home floats above */
+      top: 20px;
+      bottom: -100px;
+      background: rgba(2, 6, 23, 0.9);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(99, 102, 241, 0.15);
       z-index: -1;
       pointer-events: none;
+  }
+
+      /* No ::after needed - single background */
+      .lp-mobile-nav::after {
+        display: none;
   }
 
       .lp-mobile-nav-inner {
         display: flex;
       align-items: flex-end;
       justify-content: space-evenly;
-      /* Semi-transparente con blur para ver el fondo */
       background: transparent;
-      /* Padding interno - reducido arriba para quitar espacio extra */
       padding-top: 0;
       padding-left: 8px;
       padding-right: 8px;
       padding-bottom: 10px;
-      border-top: 1px solid rgba(99, 102, 241, 0.2);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-      /* Asegurar que esté pegado al borde - sin margin */
+      /* No border - backgrounds have it */
+      border-top: none;
+      box-shadow: none;
       margin: 0;
-      /* Altura mínima reducida */
       min-height: 60px;
   }
 
