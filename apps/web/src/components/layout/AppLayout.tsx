@@ -85,7 +85,7 @@ export function AppLayout() {
         <SplashScreen onComplete={handleSplashComplete} minDuration={2800} />
       )}
 
-      <div 
+      <div
         className={`lp-app-shell ${showSplash ? 'lp-hidden' : ''}`}
         style={{
           opacity: showSplash ? 0 : 1,
@@ -627,8 +627,8 @@ const layoutStyles = `
       justify-content: space-evenly;
       /* Semi-transparente con blur para ver el fondo */
       background: transparent;
-      /* Padding interno - sin safe area que cree espacio */
-      padding-top: 10px;
+      /* Padding interno - reducido arriba para quitar espacio extra */
+      padding-top: 0;
       padding-left: 8px;
       padding-right: 8px;
       padding-bottom: 10px;
@@ -636,8 +636,8 @@ const layoutStyles = `
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
       /* Asegurar que esté pegado al borde - sin margin */
       margin: 0;
-      /* Altura mínima sin safe area */
-      min-height: 70px;
+      /* Altura mínima reducida */
+      min-height: 60px;
   }
 
       .lp-mobile-item {
@@ -652,8 +652,8 @@ const layoutStyles = `
       font-weight: 600;
       letter-spacing: 0.02em;
       flex: 1;
-      min-height: 56px;
-      padding: 6px 2px;
+      min-height: 48px;
+      padding: 4px 2px;
       border: none;
       background: transparent;
       cursor: pointer;
