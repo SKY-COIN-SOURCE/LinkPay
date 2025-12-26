@@ -1389,7 +1389,7 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-transactions {
-      margin: -10px -4px 0 -4px;
+      margin: -20px -4px 0 -4px;
       border-radius: 20px;
       padding: 6px 12px 14px 12px;
     }
