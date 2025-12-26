@@ -1134,13 +1134,13 @@ const revStyles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 90px !important;
+    padding-top: 30px !important;
     padding-bottom: 0;
   }
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 90px !important;
+      padding-top: 30px !important;
       padding-bottom: 0;
     }
   }
