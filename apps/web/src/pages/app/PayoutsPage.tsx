@@ -1139,8 +1139,8 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 60px;
-      padding-bottom: 36px;
+      padding-top: 120px;
+      padding-bottom: 50px;
     }
   }
 
