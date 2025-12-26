@@ -999,10 +999,10 @@ const revStyles = `
     color: #fff;
   }
 
-  /* Mobile: start below header */
+  /* Mobile: full screen - header is transparent overlay */
   @media (max-width: 768px) {
     .rev-shell {
-      top: calc(48px + env(safe-area-inset-top, 0px));
+      top: 0;
     }
   }
 
@@ -1124,7 +1124,7 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-content {
-      padding: 16px 16px calc(100px + env(safe-area-inset-bottom, 0px)) 16px;
+      padding: calc(48px + env(safe-area-inset-top, 0px) + 16px) 16px calc(100px + env(safe-area-inset-bottom, 0px)) 16px;
       max-width: 100%;
     }
   }
