@@ -57,8 +57,8 @@ export function PayoutsPage() {
     bank: '',
   });
 
-  // Pagination for transactions - show only 2 by default like Revolut
-  const [visibleCount, setVisibleCount] = useState(2);
+  // Pagination for transactions - show 3 by default
+  const [visibleCount, setVisibleCount] = useState(3);
   const LOAD_MORE_COUNT = 10;
 
   // Constants
@@ -203,7 +203,7 @@ export function PayoutsPage() {
       <div className="rev-content">
 
         {/* ═══════════════════════════════════════════════════════════════════
-            ZONA PRINCIPAL - BALANCE CENTRADO PROMINENTE (REVOLUT STYLE)
+            ZONA PRINCIPAL - BALANCE CENTRADO 
         ═══════════════════════════════════════════════════════════════════ */}
         <div className="rev-hero-zone">
           {/* BALANCE */}
@@ -214,26 +214,26 @@ export function PayoutsPage() {
               <span className="rev-amount-decimal">,{balance.toFixed(2).split('.')[1]} €</span>
             </div>
           </div>
+        </div>
 
-          {/* ACTION BUTTONS - 2 botones principales */}
-          <div className="rev-actions">
-            <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
-              <div className="rev-action-circle">
-                <ArrowDownLeft size={22} />
-              </div>
-              <span>Solicitar<br />retiro</span>
-            </button>
-            <button className="rev-action-item" onClick={() => setShowSend(true)}>
-              <div className="rev-action-circle">
-                <Send size={22} />
-              </div>
-              <span>Enviar<br />interno</span>
-            </button>
-          </div>
+        {/* ACTION BUTTONS - Pegados a la tarjeta */}
+        <div className="rev-actions">
+          <button className="rev-action-item" onClick={() => setShowWithdraw(true)}>
+            <div className="rev-action-circle">
+              <ArrowDownLeft size={22} />
+            </div>
+            <span>Solicitar<br />retiro</span>
+          </button>
+          <button className="rev-action-item" onClick={() => setShowSend(true)}>
+            <div className="rev-action-circle">
+              <Send size={22} />
+            </div>
+            <span>Enviar<br />interno</span>
+          </button>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            ACTIVIDAD RECIENTE - PANEL INFERIOR (30-35% pantalla)
+            ACTIVIDAD RECIENTE
         ═══════════════════════════════════════════════════════════════════ */}
         <section className="rev-transactions">
           <h3 className="rev-section-title">Actividad reciente</h3>
@@ -1114,33 +1114,34 @@ const revStyles = `
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
     padding: 24px 16px 100px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   @media (max-width: 768px) {
     .rev-content {
-      padding: 12px 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
+      padding: 16px 16px calc(100px + env(safe-area-inset-bottom, 0px)) 16px;
       max-width: 100%;
     }
   }
 
-  /* ─── HERO ZONE - BALANCE JUSTO DEBAJO DEL HEADER ──────────────────── */
+  /* ─── HERO ZONE - BALANCE + ACCIONES ────────────────────────────────────── */
   .rev-hero-zone {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
-    flex: 0 0 auto;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 90px !important;
+    padding-bottom: 0;
   }
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 120px;
-      padding-bottom: 50px;
+      padding-top: 90px !important;
+      padding-bottom: 0;
     }
   }
 
@@ -1258,18 +1259,22 @@ const revStyles = `
     background: #fff;
   }
 
-  /* ─── QUICK ACTIONS - COMPACTO ─────────────────────────────────────────── */
+  /* ─── QUICK ACTIONS - JUSTO ENCIMA DE ACTIVIDAD ─────────────────────────── */
   .rev-actions {
     display: flex;
     justify-content: center;
-    gap: 28px;
-    padding: 8px 0 0;
+    gap: 40px;
+    margin-top: 80px !important;
+    margin-bottom: 8px;
+    padding: 0;
     flex-wrap: wrap;
   }
 
-  @media (min-width: 769px) {
+  @media (max-width: 768px) {
     .rev-actions {
-      justify-content: center;
+      gap: 40px;
+      margin-top: 80px !important;
+      margin-bottom: 8px;
     }
   }
 
