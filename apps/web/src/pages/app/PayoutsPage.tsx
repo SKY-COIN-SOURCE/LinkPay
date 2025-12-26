@@ -1265,7 +1265,7 @@ const revStyles = `
     justify-content: center;
     gap: 40px;
     margin-top: 80px !important;
-    margin-bottom: 8px;
+    margin-bottom: 2px;
     padding: 0;
     flex-wrap: wrap;
   }
@@ -1274,7 +1274,7 @@ const revStyles = `
     .rev-actions {
       gap: 40px;
       margin-top: 80px !important;
-      margin-bottom: 8px;
+      margin-bottom: 2px;
     }
   }
 
