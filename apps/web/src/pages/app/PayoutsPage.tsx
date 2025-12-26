@@ -295,8 +295,7 @@ export function PayoutsPage() {
                   className="rev-tx-more"
                   onClick={() => setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, history.length))}
                 >
-                  Mostrar {nextBatchCount} más
-                  <ChevronDown size={16} />
+                  Ver todo
                 </button>
               )}
             </div>
@@ -1140,7 +1139,7 @@ const revStyles = `
 
   @media (max-width: 768px) {
     .rev-hero-zone {
-      padding-top: 32px;
+      padding-top: 60px;
       padding-bottom: 36px;
     }
   }
@@ -1367,28 +1366,27 @@ const revStyles = `
     font-size: 12px;
   }
 
-  /* ─── TRANSACTIONS - PANEL INFERIOR EXPANDIDO ───────────────────────────── */
+  /* ─── TRANSACTIONS - REVOLUT STYLE GLASSMORPHISM CARD ───────────────────── */
   .rev-transactions {
-    background: rgba(0, 30, 50, 0.4);
-    border-radius: 24px 24px 0 0;
-    padding: 20px 16px 30px;
-    margin: 0 -12px;
-    flex: 1;
-    min-height: 200px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 16px;
+    margin: 0;
+    flex: none;
+    overflow: visible;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   @media (max-width: 768px) {
     .rev-transactions {
-      flex: 1;
-      min-height: 280px;
-      padding: 20px 16px 120px;
-      display: flex;
-      flex-direction: column;
+      margin: 0 -4px;
+      border-radius: 20px;
+      padding: 14px 12px;
     }
   }
 
@@ -1401,34 +1399,33 @@ const revStyles = `
 
   .rev-tx-more {
     width: 100%;
-    margin: 10px 0 0;
-    padding: 10px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(15, 23, 42, 0.45);
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 13px;
+    margin: 12px 0 0;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: #60a5fa;
+    font-size: 14px;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: background 0.2s ease;
   }
 
   .rev-tx-more:hover {
-    background: rgba(30, 41, 59, 0.7);
-    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(59, 130, 246, 0.15);
   }
 
   .rev-section-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 16px 4px;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px 2px;
   }
 
   .rev-empty {
@@ -1437,45 +1434,41 @@ const revStyles = `
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 50px 20px;
+    padding: 40px 20px;
     color: rgba(255, 255, 255, 0.4);
-    flex: 1;
-    min-height: 180px;
+    min-height: 100px;
   }
 
   .rev-empty p {
-    margin: 16px 0 4px;
-    font-size: 16px;
+    margin: 12px 0 4px;
+    font-size: 14px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
   }
 
   .rev-empty span {
-    font-size: 13px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
   }
 
   .rev-tx-list {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
   }
 
   .rev-tx-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: background 0.15s;
-    border-radius: 12px;
-    margin: 0 -2px;
-    padding-left: 10px;
-    padding-right: 10px;
+    border-radius: 8px;
+    margin: 0;
   }
 
   .rev-tx-item:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .rev-tx-item:last-child {
@@ -1485,33 +1478,39 @@ const revStyles = `
   .rev-tx-left {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
   }
 
   .rev-tx-avatar {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+  }
+
+  .rev-tx-avatar svg {
+    width: 16px;
+    height: 16px;
   }
 
   .rev-tx-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
   }
 
   .rev-tx-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     color: #fff;
   }
 
   .rev-tx-date {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .rev-tx-right {
@@ -1523,27 +1522,27 @@ const revStyles = `
   }
 
   .rev-tx-amount {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
   }
 
-  .rev-tx-amount.positive { color: #22c55e; }
+  .rev-tx-amount.positive { color: #4ade80; }
   .rev-tx-amount.negative { color: #fff; }
 
   .rev-tx-status {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
-    padding: 2px 8px;
+    padding: 2px 6px;
     border-radius: 999px;
   }
 
   .rev-tx-status.pending {
-    background: rgba(245, 158, 11, 0.15);
+    background: rgba(245, 158, 11, 0.2);
     color: #fbbf24;
   }
 
   .rev-tx-status.failed {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(239, 68, 68, 0.2);
     color: #f87171;
   }
 
