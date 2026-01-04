@@ -625,6 +625,21 @@ export function DashboardPage() {
   // Animated revenue (responds to period filter)
   const animatedRevenue = useCountTo(filteredRevenue, 800, false);
 
+  // Chart height responsivo para móvil - reducir en pantallas pequeñas para que meta diaria se vea completa
+  const [chartHeight, setChartHeight] = useState(() => {
+    if (typeof window === 'undefined') return 180;
+    return window.innerWidth <= 768 ? 150 : 180;
+  });
+
+  useEffect(() => {
+    const updateChartHeight = () => {
+      setChartHeight(window.innerWidth <= 768 ? 150 : 180);
+    };
+    updateChartHeight();
+    window.addEventListener('resize', updateChartHeight);
+    return () => window.removeEventListener('resize', updateChartHeight);
+  }, []);
+
   // Memoized tooltip component for performance
   const CustomTooltip = useCallback(({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null;
@@ -975,7 +990,7 @@ export function DashboardPage() {
                     <span>No hay datos disponibles para este período</span>
                   </motion.div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={180}>
+                  <ResponsiveContainer width="100%" height={chartHeight}>
                     <AreaChart
                       data={chartData}
                       margin={{ top: 12, right: 10, left: 2, bottom: 10 }}

@@ -1134,12 +1134,20 @@
   -webkit-user-select: none;
 }
 
-/* Ensure chart container is responsive */
+/* Ensure chart container is responsive - Mobile first: reducir altura para que meta diaria se vea completa */
+@media (max-width: 768px) {
+  .lp-d2-chart {
+    height: 150px;
+    min-height: 150px;
+    max-height: 150px;
+  }
+}
+
 @media (max-width: 400px) {
   .lp-d2-chart {
-    height: 180px;
-    min-height: 180px;
-    max-height: 180px;
+    height: 140px;
+    min-height: 140px;
+    max-height: 140px;
   }
 }
 
