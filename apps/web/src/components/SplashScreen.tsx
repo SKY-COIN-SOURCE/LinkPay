@@ -135,9 +135,7 @@ export function SplashScreen({ onComplete, minDuration = 2800 }: SplashScreenPro
                 right: 0,
                 bottom: 0,
                 width: '100vw',
-                height: '100vh',
                 height: '100dvh',
-                minHeight: '100vh',
                 minHeight: '100dvh',
                 zIndex: 999999,
                 display: 'flex',
@@ -243,9 +241,7 @@ const splashStyles = `
     right: 0 !important;
     bottom: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
     height: 100dvh !important;
-    min-height: 100vh !important;
     min-height: 100dvh !important;
     z-index: 999999 !important;
     display: flex !important;
@@ -924,8 +920,6 @@ const splashStyles = `
      ============================================ */
   @media (max-width: 768px) {
     .lp-splash {
-      height: 100vh !important;
-      height: calc(var(--vh, 1vh) * 100) !important;
       height: 100dvh !important;
       visibility: visible !important;
       opacity: 1 !important;

@@ -12,12 +12,15 @@ import {
   ChevronDown,
   ChevronUp,
   TrendingUp,
+  TrendingDown,
   ExternalLink,
   Copy,
+  Zap,
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useCachedDashboard, useCachedPayouts } from '../../context/DataCacheContext';
 import { PremiumLoader } from '../../components/PremiumLoader';
+import { getUserGamification, calculateComparison, markGoalReached, shouldShowCelebration, GamificationData } from '../../lib/gamificationService';
 import './Dashboard.css';
 import '../app/Analytics.css'; // Importar estilos de Analytics para reutilizar cards
 
@@ -79,6 +82,51 @@ export function DashboardPage() {
   useEffect(() => {
     if (!loading && dashboardData) setHasAnimated(true);
   }, [loading, dashboardData]);
+
+  // Gamification state - datos reales por usuario
+  const [gamification, setGamification] = useState<GamificationData | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Cargar datos de gamificación del usuario
+  useEffect(() => {
+    getUserGamification().then(data => {
+      if (data) setGamification(data);
+    });
+  }, []);
+
+  // Calcular ingresos de HOY desde el timeline
+  const todayRevenueCalc = useMemo(() => {
+    const timeline = dashboardData?.timeline || [];
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    return timeline
+      .filter((item: any) => {
+        const itemDate = item.date || item.day;
+        if (!itemDate) return false;
+        const dateStr = typeof itemDate === 'string' ? itemDate.split('T')[0] : new Date(itemDate).toISOString().split('T')[0];
+        return dateStr === todayStr;
+      })
+      .reduce((acc: number, item: any) => acc + (item.earnings || 0), 0);
+  }, [dashboardData?.timeline]);
+
+  // Calcular comparison con datos reales
+  const comparisonPercent = useMemo(() => {
+    if (!gamification) return null;
+    return calculateComparison(todayRevenueCalc, gamification.yesterdayRevenue);
+  }, [todayRevenueCalc, gamification?.yesterdayRevenue]);
+
+  // Detectar si se alcanzó la meta para mostrar celebración
+  useEffect(() => {
+    if (!gamification) return;
+
+    if (shouldShowCelebration(todayRevenueCalc, gamification.dailyGoal, gamification.goalReached)) {
+      setShowCelebration(true);
+      markGoalReached(); // Marcar para no repetir
+      // Ocultar celebración después de 3 segundos
+      setTimeout(() => setShowCelebration(false), 3000);
+    }
+  }, [todayRevenueCalc, gamification]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -365,16 +413,6 @@ export function DashboardPage() {
 
     const filtered = filterByPeriod(timeline);
 
-    // DEBUG: Log timeline and filtered data
-    console.log('[Dashboard Debug]', {
-      timePeriod,
-      timelineLength: timeline.length,
-      timelineSample: timeline.slice(0, 3),
-      filteredLength: filtered.length,
-      filteredSample: filtered.slice(0, 3),
-      todayStr: now.toISOString().slice(0, 10),
-    });
-
     // Calculate filtered revenue
     const revenue = timePeriod === 'all'
       ? (dashboardData?.totalRevenue ?? 0)
@@ -428,103 +466,157 @@ export function DashboardPage() {
           return '';
         }
       } else {
-        // Total: show month/date at intervals
+        // Total: show day + abbreviated month (clearer format)
+        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
         const day = d.getDate();
-        const month = d.getMonth() + 1;
+        const monthAbbr = months[d.getMonth()];
         // Show labels at intervals (max 8 labels)
         const interval = Math.max(1, Math.floor(filtered.length / 8));
         if (index === 0 || index === filtered.length - 1 || index % interval === 0) {
-          return `${day}/${month}`;
+          return `${day} ${monthAbbr}`;
         }
         return '';
       }
     };
 
-    // Prepare chart data with proper date objects and labels
-    let chartPoints: {
-      date: Date;
-      value: number;
-      label: string;
-      fullDate: string;
-    }[];
+    // SIEMPRE generar el período completo con todos los puntos (relleno de valores)
+    // Esto asegura que: Hoy=24h, Semana=7días, Mes=30días
+    const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-    if (filtered.length === 0) {
-      // Fallback: generate placeholder points for empty data
-      const numPoints = timePeriod === 'today' ? 24 : timePeriod === 'week' ? 7 : timePeriod === 'month' ? 30 : 7;
-      const baseDate = new Date();
-      if (timePeriod === 'today') {
-        baseDate.setHours(0, 0, 0, 0);
-      } else if (timePeriod === 'week') {
-        baseDate.setDate(baseDate.getDate() - 7);
-      } else if (timePeriod === 'month') {
-        baseDate.setDate(baseDate.getDate() - 30);
+    // Crear mapa de earnings por fecha usando TODO el timeline (no filtered)
+    // Esto permite que cualquier período acceda a datos históricos
+    const earningsMap = new Map<string, number>();
+    timeline.forEach((item: any) => {
+      const date = parseDate(item);
+      const key = date.toISOString().slice(0, 10); // YYYY-MM-DD
+      earningsMap.set(key, (earningsMap.get(key) || 0) + (item.earnings || 0));
+    });
+
+    let chartPoints: { date: Date; value: number; label: string; fullDate: string; }[] = [];
+
+    if (timePeriod === 'today') {
+      // HOY: Generar 24 puntos (0h a 23h)
+      const today = new Date(now);
+      today.setHours(0, 0, 0, 0);
+      const todayKey = today.toISOString().slice(0, 10);
+      const todayEarnings = earningsMap.get(todayKey) || 0;
+
+      for (let h = 0; h < 24; h++) {
+        const date = new Date(today);
+        date.setHours(h);
+
+        // Etiquetas cada 4 horas para claridad
+        const label = (h % 4 === 0 || h === 23) ? `${h}h` : '';
+
+        // Para visualización, distribuir earnings en hora actual (o 0 si no hay)
+        const value = h === now.getHours() ? todayEarnings : 0;
+
+        chartPoints.push({
+          date,
+          value,
+          label,
+          fullDate: `Hoy a las ${h.toString().padStart(2, '0')}:00`
+        });
       }
 
-      chartPoints = Array.from({ length: numPoints }, (_, i) => {
-        const date = new Date(baseDate);
-        if (timePeriod === 'today') {
-          date.setHours(i);
-        } else {
-          date.setDate(baseDate.getDate() + i);
-        }
-        return {
+    } else if (timePeriod === 'week') {
+      // SEMANA: Generar exactamente 7 días (desde hace 6 días hasta hoy)
+      for (let d = 6; d >= 0; d--) {
+        const date = new Date(now);
+        date.setDate(now.getDate() - d);
+        date.setHours(0, 0, 0, 0);
+
+        const key = date.toISOString().slice(0, 10);
+        const value = earningsMap.get(key) || 0;
+
+        // Mostrar nombre del día, "Hoy" para el último
+        const label = d === 0 ? 'Hoy' : dayNames[date.getDay()];
+
+        chartPoints.push({
           date,
-          value: 0,
-          label: generateLabel({ date: date.toISOString() }, i),
-          fullDate: date.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            ...(timePeriod === 'today' ? { hour: '2-digit', minute: '2-digit' } : {})
-          })
-        };
-      });
+          value,
+          label,
+          fullDate: `${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}`
+        });
+      }
+
+    } else if (timePeriod === 'month') {
+      // MES: Generar TODOS los días del mes ACTUAL (enero = 31 días, etc.)
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate(); // Días en el mes actual
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+
+        const key = date.toISOString().slice(0, 10);
+        const value = earningsMap.get(key) || 0;
+
+        // Marcar "Hoy" si es el día actual, si no mostrar día
+        const isToday = day === now.getDate();
+        const label = isToday ? 'Hoy' : day.toString();
+
+        chartPoints.push({
+          date,
+          value,
+          label,
+          fullDate: `${day} ${monthNames[month]} ${year}`
+        });
+      }
+
     } else {
-      // Map filtered data to chart points with labels
-      chartPoints = filtered.map((t: any, i: number) => {
-        const date = parseDate(t);
-        return {
-          date,
-          value: t.earnings || 0,
-          label: generateLabel(t, i),
-          fullDate: date.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            ...(timePeriod === 'today' ? { hour: '2-digit', minute: '2-digit' } : {})
-          })
-        };
-      });
+      // TOTAL: Usar todos los datos disponibles con etiquetas claras
+      if (filtered.length === 0) {
+        // Sin datos: mostrar últimos 7 días vacíos
+        for (let d = 6; d >= 0; d--) {
+          const date = new Date(now);
+          date.setDate(now.getDate() - d);
+          date.setHours(0, 0, 0, 0);
+
+          chartPoints.push({
+            date,
+            value: 0,
+            label: d === 0 ? 'Hoy' : `${date.getDate()} ${monthNames[date.getMonth()]}`,
+            fullDate: `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`
+          });
+        }
+      } else {
+        // Con datos: mostrar todos los puntos disponibles
+        const interval = Math.max(1, Math.floor(filtered.length / 8));
+
+        filtered.forEach((item: any, i: number) => {
+          const date = parseDate(item);
+          const value = item.earnings || 0;
+
+          const showLabel = i === 0 || i === filtered.length - 1 || i % interval === 0;
+          const label = showLabel ? `${date.getDate()} ${monthNames[date.getMonth()]}` : '';
+
+          chartPoints.push({
+            date,
+            value,
+            label,
+            fullDate: `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`
+          });
+        });
+      }
     }
 
     // Calculate smart Y-axis domain for better visualization
     const values = chartPoints.map(p => p.value).filter(v => v > 0);
-    const maxValue = values.length > 0
-      ? Math.max(...values)
-      : 0;
-    const minValue = values.length > 0
-      ? Math.min(...values)
-      : 0;
+    const maxValue = values.length > 0 ? Math.max(...values) : 0;
 
-    // Add padding to domain (10% above max, ensure minimum range)
-    // If all values are the same, create a small range for visibility
-    let yDomainMax = maxValue > 0 ? maxValue * 1.1 : 0.1;
-    let yDomainMin = Math.max(0, minValue > 0 ? Math.max(0, minValue * 0.95) : 0);
+    // Add padding to domain
+    let yDomainMax = maxValue > 0 ? maxValue * 1.15 : 0.01;
+    let yDomainMin = 0;
 
-    // Ensure minimum range if all values are similar
-    if (maxValue > 0 && Math.abs(yDomainMax - yDomainMin) < maxValue * 0.1) {
-      yDomainMax = maxValue * 1.15;
-      yDomainMin = Math.max(0, maxValue * 0.85);
-    }
-
-    // Ensure we always have a visible range
-    if (yDomainMax === yDomainMin && yDomainMax > 0) {
-      yDomainMax = yDomainMax * 1.1;
-      yDomainMin = yDomainMin * 0.9;
-    }
+    // Calcular revenue como suma de los chartPoints (coherencia gráfico-número)
+    const calculatedRevenue = timePeriod === 'all'
+      ? (dashboardData?.totalRevenue ?? 0)
+      : chartPoints.reduce((acc, p) => acc + p.value, 0);
 
     return {
-      filteredRevenue: revenue,
+      filteredRevenue: calculatedRevenue,
       chartData: chartPoints,
       yDomain: [yDomainMin, yDomainMax]
     };
@@ -649,9 +741,25 @@ export function DashboardPage() {
       <div className="lp-dashboard-shell" ref={shellRef}>
         <div className="lp-dashboard-2" ref={dashboardRef}>
 
+          {/* ROW 0: STREAK HEADER - Gamification Hero */}
+          <motion.div
+            className={`lp-d2-streak-header ${showCelebration ? 'celebrating' : ''}`}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05 }}
+          >
+            <Zap size={20} className="lp-d2-streak-icon" />
+            <span className="lp-d2-streak-text">
+              {gamification?.streak ?? 0} DÍAS EN RACHA
+            </span>
+            <span className="lp-d2-streak-sub">
+              {(gamification?.streak ?? 0) > 0 ? '¡Sigue así!' : '¡Empieza hoy!'}
+            </span>
+          </motion.div>
+
           {/* ROW 1: EARNINGS + BALANCE */}
           <div className="lp-d2-row-top">
-            {/* EARNINGS CARD - Centered like balance */}
+            {/* EARNINGS CARD - Con streak y comparison */}
             <motion.div
               className="lp-d2-card lp-d2-earnings"
               initial={{ opacity: 0, y: 10 }}
@@ -663,7 +771,16 @@ export function DashboardPage() {
                 <span className="lp-d2-label">INGRESOS</span>
               </div>
               <div className="lp-d2-value green">{animatedRevenue.toFixed(4)}</div>
-              <span className="lp-d2-hint">{periodLabels[timePeriod]}</span>
+              {/* Comparison Badge - datos reales */}
+              <div className="lp-d2-comparison">
+                <span className="lp-d2-hint">{periodLabels[timePeriod]}</span>
+                {comparisonPercent !== null && (
+                  <span className={`lp-d2-comparison-badge ${comparisonPercent >= 0 ? 'positive' : 'negative'}`}>
+                    {comparisonPercent >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                    {comparisonPercent >= 0 ? '+' : ''}{comparisonPercent}%
+                  </span>
+                )}
+              </div>
             </motion.div>
 
             {/* BALANCE CARD */}
@@ -722,7 +839,47 @@ export function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* ROW 3: CHART with time selector */}
+          {/* ROW 3: DAILY GOAL - Gamification Progress Bar */}
+          <motion.div
+            className={`lp-d2-goal-card ${showCelebration ? 'celebrating' : ''}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+          >
+            <div className="lp-d2-goal-header">
+              <span className="lp-d2-goal-label">⭕ Meta diaria</span>
+              <span className="lp-d2-goal-target">€{(gamification?.dailyGoal ?? 5).toFixed(2)}</span>
+            </div>
+            <div className="lp-d2-goal-bar">
+              <motion.div
+                className="lp-d2-goal-fill"
+                initial={{ width: 0 }}
+                animate={{
+                  width: `${Math.min((todayRevenueCalc / (gamification?.dailyGoal ?? 5)) * 100, 100)}%`
+                }}
+                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+              />
+            </div>
+            <div className="lp-d2-goal-info">
+              <span className="lp-d2-goal-current">€{todayRevenueCalc.toFixed(4)}</span>
+              <span className="lp-d2-goal-percent">
+                {Math.min(Math.round((todayRevenueCalc / (gamification?.dailyGoal ?? 5)) * 100), 100)}%
+              </span>
+            </div>
+            {/* Confetti Animation when goal reached */}
+            {showCelebration && (
+              <div className="lp-d2-confetti-container">
+                {[...Array(20)].map((_, i) => (
+                  <div key={i} className="lp-d2-confetti" style={{
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 0.5}s`
+                  }} />
+                ))}
+              </div>
+            )}
+          </motion.div>
+
+          {/* ROW 4: CHART with time selector */}
           <motion.div
             className="lp-d2-chart-card"
             initial={{ opacity: 0, y: 10 }}
@@ -806,7 +963,8 @@ export function DashboardPage() {
                   opacity: { duration: 0.35 }
                 }}
               >
-                {chartData.length === 0 || chartData.every(p => p.value === 0) ? (
+                {/* Siempre mostrar gráfico - con valores 0 si no hay datos */}
+                {chartData.length === 0 ? (
                   <motion.div
                     className="lp-d2-chart-empty"
                     initial={{ opacity: 0, y: 10 }}
