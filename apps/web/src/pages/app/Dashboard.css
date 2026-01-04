@@ -899,11 +899,13 @@
 
 /* Dot pulse animation removed - dot is now static */
 
-/* STATS ROW - 4 columns */
+/* STATS ROW - SIEMPRE 4 columnas, diseño compacto para todos los dispositivos */
 .lp-d2-stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 6px;
+  /* Nunca romper a 2 columnas */
+  min-width: 0;
 }
 
 .lp-d2-stat {
@@ -911,12 +913,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 14px 10px;
+  /* Padding compacto para pantallas pequeñas */
+  padding: 10px 4px;
   background: transparent;
   border: 1px solid rgba(148, 163, 184, 0.15);
-  border-radius: 14px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.25s ease;
+  /* Prevenir overflow */
+  min-width: 0;
+  overflow: hidden;
 }
 
 .lp-d2-stat:hover {
@@ -925,8 +931,12 @@
 }
 
 .lp-d2-stat svg {
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   opacity: 0.9;
+  /* Iconos más pequeños para caber */
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .lp-d2-stat.purple svg {
@@ -946,7 +956,8 @@
 }
 
 .lp-d2-stat-value {
-  font-size: 17px;
+  /* Tamaño adaptable - se reduce si es necesario */
+  font-size: clamp(13px, 4vw, 17px);
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.3px;
@@ -954,14 +965,20 @@
   text-align: center;
   line-height: 1.2;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  /* Truncar si es muy largo */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-d2-stat-label {
-  font-size: 9px;
+  /* Tamaño mínimo legible pero compacto */
+  font-size: 8px;
   font-weight: 700;
   color: #cbd5e1;
-  letter-spacing: 0.8px;
-  margin-top: 5px;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
   text-transform: uppercase;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
@@ -1380,10 +1397,23 @@
   transform: translateY(-1px);
 }
 
-/* Mobile adjustments */
+/* Mobile adjustments - MANTENER 4 columnas siempre */
 @media (max-width: 400px) {
+  /* ELIMINADO: Ya no rompemos a 2 columnas */
+  /* Las 4 tarjetas siempre están en línea */
+  
   .lp-d2-stats-row {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 4px; /* Gap más pequeño en móvil */
+  }
+
+  .lp-d2-stat {
+    padding: 8px 2px; /* Aún más compacto */
+    border-radius: 10px;
+  }
+
+  .lp-d2-stat svg {
+    width: 14px;
+    height: 14px;
   }
 
   .lp-d2-value {
@@ -1391,7 +1421,12 @@
   }
 
   .lp-d2-stat-value {
-    font-size: 14px;
+    font-size: 12px; /* Más pequeño pero legible */
+  }
+  
+  .lp-d2-stat-label {
+    font-size: 7px; /* Ultra compacto */
+    letter-spacing: 0.3px;
   }
 
   /* MÓVIL: Botón toggle transparente (mismo que desktop) */

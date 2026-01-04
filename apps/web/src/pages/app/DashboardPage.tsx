@@ -223,6 +223,14 @@ export function DashboardPage() {
     return `€${v.toFixed(4)}`;
   }, []);
 
+  // Format numbers compactly for stats cards (fits in small space)
+  const formatCompact = useCallback((v: number) => {
+    if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
+    if (v >= 10000) return `${(v / 1000).toFixed(0)}k`;
+    if (v >= 1000) return `${(v / 1000).toFixed(1)}k`;
+    return v.toFixed(0);
+  }, []);
+
   // Función para colapsar con scroll suave hacia arriba - UX Premium
   const collapseWithScroll = useCallback(() => {
     // Cerrar el dropdown primero
@@ -685,7 +693,7 @@ export function DashboardPage() {
             {/* CLICKS */}
             <div className="lp-d2-stat purple">
               <MousePointer2 size={20} />
-              <span className="lp-d2-stat-value">{animatedClicks.toFixed(0)}</span>
+              <span className="lp-d2-stat-value">{formatCompact(animatedClicks)}</span>
               <span className="lp-d2-stat-label">CLICKS</span>
             </div>
 
