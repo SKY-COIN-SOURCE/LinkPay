@@ -618,6 +618,12 @@
   font-weight: 700;
 }
 
+.lp-d2-comparison-badge.neutral {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #94a3b8;
+}
+
 .lp-d2-comparison-badge.positive {
   background: rgba(34, 197, 94, 0.15);
   border: 1px solid rgba(74, 222, 128, 0.3);
@@ -632,6 +638,12 @@
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(248, 113, 113, 0.3);
   color: #f87171;
+}
+
+.lp-d2-comparison-text {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

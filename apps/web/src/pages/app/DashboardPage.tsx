@@ -110,11 +110,128 @@ export function DashboardPage() {
       .reduce((acc: number, item: any) => acc + (item.earnings || 0), 0);
   }, [dashboardData?.timeline]);
 
-  // Calcular comparison con datos reales
+  const comparisonLabel = useMemo(() => {
+    switch (timePeriod) {
+      case 'today':
+        return 'vs ayer';
+      case 'week':
+        return 'vs semana anterior';
+      case 'month':
+        return 'vs mes anterior';
+      default:
+        return 'vs periodo anterior';
+    }
+  }, [timePeriod]);
+
+  // Calcular comparison según el período seleccionado
   const comparisonPercent = useMemo(() => {
-    if (!gamification) return null;
-    return calculateComparison(todayRevenueCalc, gamification.yesterdayRevenue);
-  }, [todayRevenueCalc, gamification?.yesterdayRevenue]);
+    if (timePeriod === 'all') return null;
+
+    const timeline = dashboardData?.timeline || [];
+    if (timeline.length === 0) return null;
+
+    const now = new Date();
+    const todayKey = now.toISOString().slice(0, 10);
+
+    const parseDateKey = (item: any): string | null => {
+      if (item?.isoDate) return item.isoDate;
+      if (typeof item?.day === 'string') return item.day.split('T')[0];
+      if (typeof item?.date === 'string') {
+        if (item.date.includes('-') && item.date.length >= 10) {
+          return item.date.slice(0, 10);
+        }
+        const parts = item.date.trim().split(' ');
+        if (parts.length === 2) {
+          const day = parseInt(parts[0], 10);
+          const monthMap: Record<string, number> = {
+            'ene': 0, 'feb': 1, 'mar': 2, 'abr': 3, 'may': 4, 'jun': 5,
+            'jul': 6, 'ago': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dic': 11
+          };
+          const month = monthMap[parts[1].toLowerCase()];
+          if (!Number.isNaN(day) && month !== undefined) {
+            let year = now.getFullYear();
+            const testDate = new Date(year, month, day);
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            if (testDate > tomorrow) year -= 1;
+            return new Date(year, month, day).toISOString().slice(0, 10);
+          }
+        }
+      }
+      if (item?.created_at) {
+        return new Date(item.created_at).toISOString().slice(0, 10);
+      }
+      return null;
+    };
+
+    const earningsMap = new Map<string, number>();
+    timeline.forEach((item: any) => {
+      const key = parseDateKey(item);
+      if (!key) return;
+      earningsMap.set(key, (earningsMap.get(key) || 0) + (item.earnings || 0));
+    });
+
+    if (earningsMap.size === 0) return null;
+
+    const earliestKey = Array.from(earningsMap.keys()).sort()[0];
+
+    const sumRange = (startKey: string, endKey: string) => {
+      let sum = 0;
+      const cursor = new Date(`${startKey}T00:00:00`);
+      const end = new Date(`${endKey}T00:00:00`);
+      while (cursor <= end) {
+        const key = cursor.toISOString().slice(0, 10);
+        sum += earningsMap.get(key) || 0;
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      return sum;
+    };
+
+    let currentStartKey: string;
+    let currentEndKey: string;
+    let previousStartKey: string;
+    let previousEndKey: string;
+
+    if (timePeriod === 'today') {
+      currentStartKey = todayKey;
+      currentEndKey = todayKey;
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      previousStartKey = yesterday.toISOString().slice(0, 10);
+      previousEndKey = previousStartKey;
+    } else if (timePeriod === 'week') {
+      const currentStart = new Date(now);
+      currentStart.setDate(currentStart.getDate() - 6);
+      currentStartKey = currentStart.toISOString().slice(0, 10);
+      currentEndKey = todayKey;
+      const previousEnd = new Date(currentStart);
+      previousEnd.setDate(previousEnd.getDate() - 1);
+      previousEndKey = previousEnd.toISOString().slice(0, 10);
+      const previousStart = new Date(previousEnd);
+      previousStart.setDate(previousStart.getDate() - 6);
+      previousStartKey = previousStart.toISOString().slice(0, 10);
+    } else {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      currentStartKey = startOfMonth.toISOString().slice(0, 10);
+      currentEndKey = todayKey;
+      const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const prevMonthStart = new Date(prevMonthDate.getFullYear(), prevMonthDate.getMonth(), 1);
+      const prevMonthDays = new Date(prevMonthDate.getFullYear(), prevMonthDate.getMonth() + 1, 0).getDate();
+      const prevMonthEnd = new Date(
+        prevMonthDate.getFullYear(),
+        prevMonthDate.getMonth(),
+        Math.min(now.getDate(), prevMonthDays)
+      );
+      previousStartKey = prevMonthStart.toISOString().slice(0, 10);
+      previousEndKey = prevMonthEnd.toISOString().slice(0, 10);
+    }
+
+    if (previousStartKey < earliestKey) return null;
+
+    const currentTotal = sumRange(currentStartKey, currentEndKey);
+    const previousTotal = sumRange(previousStartKey, previousEndKey);
+    return calculateComparison(currentTotal, previousTotal);
+  }, [dashboardData?.timeline, timePeriod]);
 
   // Detectar si se alcanzó la meta para mostrar celebración
   useEffect(() => {
@@ -788,13 +905,11 @@ export function DashboardPage() {
               <div className="lp-d2-value green">{animatedRevenue.toFixed(4)}</div>
               {/* Comparison Badge - datos reales */}
               <div className="lp-d2-comparison">
-                <span className="lp-d2-hint">{periodLabels[timePeriod]}</span>
-                {comparisonPercent !== null && (
-                  <span className={`lp-d2-comparison-badge ${comparisonPercent >= 0 ? 'positive' : 'negative'}`}>
-                    {comparisonPercent >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                    {comparisonPercent >= 0 ? '+' : ''}{comparisonPercent}%
-                  </span>
-                )}
+                <span className={`lp-d2-comparison-badge ${comparisonPercent === null ? 'neutral' : comparisonPercent >= 0 ? 'positive' : 'negative'}`}>
+                  {comparisonPercent !== null && (comparisonPercent >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />)}
+                  {comparisonPercent === null ? '--' : `${comparisonPercent >= 0 ? '+' : ''}${comparisonPercent}%`}
+                </span>
+                <span className="lp-d2-comparison-text">{comparisonLabel}</span>
               </div>
             </motion.div>
 
