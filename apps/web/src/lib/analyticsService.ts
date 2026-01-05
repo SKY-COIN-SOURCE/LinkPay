@@ -300,27 +300,73 @@ export const AnalyticsService = {
     let events = (eventsRes.data as EventRow[]) || [];
     const links = linksRes.data || [];
 
-    // Fallback: si la vista analytics_events falla por RLS o vacía, intentamos desde click_events por link_id
+    // Fallback: si la vista analytics_events falla por RLS o vacía, intentamos desde click_events
+    // Incluye tanto links como bio_profiles para asegurar tracking completo
     if ((!events || events.length === 0) && links.length > 0) {
       const linkIds = links.map((l: any) => l.id);
-      const direct = await supabase
+
+      // Buscar clicks de links
+      const linkClicks = await supabase
         .from('click_events')
         .select('created_at, earned_amount, is_paid, link_id, country, device')
         .in('link_id', linkIds)
         .gte('created_at', since.toISOString())
         .lt('created_at', until.toISOString())
         .order('created_at', { ascending: false })
-        .limit(5000);
-      if (!direct.error && direct.data) {
-        events = direct.data as EventRow[];
+        .limit(2500);
+
+      // Buscar clicks de bio_profiles del usuario
+      const { data: bioProfiles } = await supabase
+        .from('bio_profiles')
+        .select('id')
+        .eq('user_id', user.id);
+
+      let bioClicks: any[] = [];
+      if (bioProfiles && bioProfiles.length > 0) {
+        const bioIds = bioProfiles.map(bp => bp.id);
+        const bioClicksRes = await supabase
+          .from('click_events')
+          .select('created_at, earned_amount, is_paid, bio_profile_id, country, device')
+          .in('bio_profile_id', bioIds)
+          .gte('created_at', since.toISOString())
+          .lt('created_at', until.toISOString())
+          .order('created_at', { ascending: false })
+          .limit(2500);
+        if (!bioClicksRes.error && bioClicksRes.data) {
+          bioClicks = bioClicksRes.data;
+        }
+      }
+
+      // Combinar ambos tipos de clicks
+      events = [
+        ...(linkClicks.data || []),
+        ...bioClicks
+      ] as EventRow[];
+    }
+
+    // Construir datos diarios para período actual
+    // IMPORTANTE: Siempre incluir datos de hoy desde click_events en tiempo real
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const hasTodayInDaily = dailyNowData.some(d => d.day === todayKey);
+
+    let dailyFromEvents: DailyRow[] = [];
+    if (events && events.length > 0) {
+      dailyFromEvents = buildDailyFromEvents(events, since, until);
+    }
+
+    // Combinar datos: usar dailyNowData pero agregar/reemplazar con datos fresh de events para hoy
+    let combinedDaily = dailyNowData.length ? [...dailyNowData] : dailyFromEvents;
+
+    // Si tenemos eventos pero dailyNowData no tiene hoy, agregar datos de hoy
+    if (!hasTodayInDaily && dailyFromEvents.length > 0) {
+      const todayFromEvents = dailyFromEvents.find(d => d.day === todayKey);
+      if (todayFromEvents) {
+        combinedDaily = combinedDaily.filter(d => d.day !== todayKey);
+        combinedDaily.push(todayFromEvents);
       }
     }
 
-    const dailyNow = ensureDailyContinuity(
-      dailyNowData.length ? dailyNowData : buildDailyFromEvents(events, since, until),
-      since,
-      until
-    );
+    const dailyNow = ensureDailyContinuity(combinedDaily, since, until);
     const dailyPrev = ensureDailyContinuity(
       dailyPrevData.length
         ? dailyPrevData

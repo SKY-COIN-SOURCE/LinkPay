@@ -98,13 +98,20 @@ export function DashboardPage() {
   const todayRevenueCalc = useMemo(() => {
     const timeline = dashboardData?.timeline || [];
     const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split('T')[0]; // "2026-01-05"
 
     return timeline
       .filter((item: any) => {
+        // Priorizar isoDate (formato YYYY-MM-DD) para comparación confiable
+        if (item.isoDate) {
+          return item.isoDate === todayStr;
+        }
+        // Fallback: parsear date/day field
         const itemDate = item.date || item.day;
         if (!itemDate) return false;
-        const dateStr = typeof itemDate === 'string' ? itemDate.split('T')[0] : new Date(itemDate).toISOString().split('T')[0];
+        const dateStr = typeof itemDate === 'string' && itemDate.includes('-')
+          ? itemDate.split('T')[0]
+          : new Date(itemDate).toISOString().split('T')[0];
         return dateStr === todayStr;
       })
       .reduce((acc: number, item: any) => acc + (item.earnings || 0), 0);
@@ -421,6 +428,7 @@ export function DashboardPage() {
   const { filteredRevenue, chartData, yDomain } = useMemo(() => {
     const timeline = dashboardData?.timeline || [];
     const now = new Date();
+    const todayKey = now.toISOString().slice(0, 10);
 
     // Helper to parse date from timeline item
     // Note: timeline dates come from formatDateKey which returns "15 dic" format
@@ -605,29 +613,42 @@ export function DashboardPage() {
     // Esto permite que cualquier período acceda a datos históricos
     const earningsMap = new Map<string, number>();
     timeline.forEach((item: any) => {
-      const date = parseDate(item);
-      const key = date.toISOString().slice(0, 10); // YYYY-MM-DD
+      // PRIORIDAD: usar isoDate directamente (formato "YYYY-MM-DD")
+      let key: string;
+      if (item.isoDate) {
+        key = item.isoDate;
+      } else {
+        const date = parseDate(item);
+        key = date.toISOString().slice(0, 10);
+      }
       earningsMap.set(key, (earningsMap.get(key) || 0) + (item.earnings || 0));
     });
 
     let chartPoints: { date: Date; value: number; label: string; fullDate: string; }[] = [];
 
     if (timePeriod === 'today') {
-      // HOY: Generar 24 puntos (0h a 23h)
+      // HOY: Mostrar progreso acumulativo del día
       const today = new Date(now);
       today.setHours(0, 0, 0, 0);
       const todayKey = today.toISOString().slice(0, 10);
       const todayEarnings = earningsMap.get(todayKey) || 0;
+      const currentHour = now.getHours();
 
       for (let h = 0; h < 24; h++) {
         const date = new Date(today);
         date.setHours(h);
 
-        // Etiquetas cada 4 horas para claridad
-        const label = (h % 4 === 0 || h === 23) ? `${h}h` : '';
+        // Etiquetas cada 2 horas: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22
+        const label = (h % 2 === 0) ? `${h}` : '';
 
-        // Para visualización, distribuir earnings en hora actual (o 0 si no hay)
-        const value = h === now.getHours() ? todayEarnings : 0;
+        // Mostrar progreso acumulativo hasta la hora actual
+        let value = 0;
+        if (h <= currentHour && todayEarnings > 0 && currentHour > 0) {
+          // Distribución gradual: sube hacia el total en hora actual
+          value = (todayEarnings / (currentHour + 1)) * (h + 1);
+        } else if (h <= currentHour && todayEarnings > 0) {
+          value = todayEarnings;
+        }
 
         chartPoints.push({
           date,
@@ -977,7 +998,7 @@ export function DashboardPage() {
             transition={{ delay: 0.18 }}
           >
             <div className="lp-d2-goal-header">
-              <span className="lp-d2-goal-label">⭕ Meta diaria</span>
+              <span className="lp-d2-goal-label">Meta diaria</span>
               <span className="lp-d2-goal-target">€{(gamification?.dailyGoal ?? 5).toFixed(2)}</span>
             </div>
             <div className="lp-d2-goal-bar">
@@ -1151,10 +1172,10 @@ export function DashboardPage() {
                         dataKey="label"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600, fontFamily: 'Inter, -apple-system, sans-serif' }}
-                        interval="preserveStartEnd"
-                        minTickGap={12}
-                        height={34}
+                        tick={{ fill: '#94a3b8', fontSize: 8, fontWeight: 600, fontFamily: 'Inter, -apple-system, sans-serif' }}
+                        interval={0}
+                        minTickGap={1}
+                        height={24}
                         style={{ userSelect: 'none' }}
                       />
                       <YAxis
