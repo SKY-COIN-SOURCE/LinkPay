@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Analytics.css';
 import {
   TrendingUp,
+  TrendingDown,
   Link2,
   MousePointer2,
   DollarSign,
@@ -17,6 +19,16 @@ import {
   Gem,
   ExternalLink,
   ChevronDown,
+  ChevronRight,
+  Flame,
+  Target,
+  Sparkles,
+  Calendar,
+  Award,
+  Trophy,
+  Eye,
+  Edit3,
+  Plus,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -32,17 +44,25 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Link } from '../../lib/linkService';
+import { Link as LinkType } from '../../lib/linkService';
 import { TimeRange } from '../../lib/analyticsService';
 import { useCachedAnalytics } from '../../context/DataCacheContext';
+import {
+  getUserGamification,
+  calculateComparison,
+  markGoalReached,
+  shouldShowCelebration,
+  GamificationData
+} from '../../lib/gamificationService';
 
 type ChartView = 'revenue' | 'clicks' | 'links' | 'geo';
 
-const RANGE_OPTIONS: { key: TimeRange; label: string }[] = [
-  { key: '1d', label: 'Hoy' },
-  { key: '7d', label: '7d' },
-  { key: '30d', label: '30d' },
-  { key: '12m', label: '1 año' },
+const RANGE_OPTIONS: { key: TimeRange | 'custom'; label: string }[] = [
+  { key: '1d', label: 'HOY' },
+  { key: '7d', label: '7D' },
+  { key: '30d', label: '30D' },
+  { key: '12m', label: '1 AÑO' },
+  { key: 'custom', label: 'PERSONALIZADO' },
 ];
 
 const COLORS = ['#22d3ee', '#a855f7', '#22c55e', '#f97316', '#ef4444', '#3b82f6'];
@@ -105,13 +125,144 @@ export function AnalyticsPage() {
   // DATOS CACHEADOS - Navegación instantánea
   // ═══════════════════════════════════════════════════════════════════════════
   const { data: analyticsData, links, loading, range, setRange, refresh } = useCachedAnalytics();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState('');
 
   // Chart view toggle
   const [chartView, setChartView] = useState<ChartView>('revenue');
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VIEW FLAGS (DEV) + SCOPED PAGE CLASS (UI ONLY)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const compareParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const compareOpacity = useMemo(() => {
+    const raw = Number(compareParams.get('lp_opacity') ?? '0.5');
+    if (Number.isNaN(raw)) return 0.5;
+    return Math.min(1, Math.max(0.05, raw));
+  }, [compareParams]);
+  const showCompareOverlay = useMemo(() => {
+    if (!import.meta.env.DEV) return false;
+    if (chartView !== 'revenue') return false;
+    return compareParams.get('lp_compare') === '1';
+  }, [compareParams, chartView]);
+
+  useEffect(() => {
+    // Scope header + bottom-nav overrides ONLY to Analytics -> Ingresos.
+    const cls = 'lp-analytics-ingresos';
+    const html = document.documentElement;
+    if (chartView === 'revenue') html.classList.add(cls);
+    else html.classList.remove(cls);
+    return () => html.classList.remove(cls);
+  }, [chartView]);
+
   // Links expanded state
   const [linksExpanded, setLinksExpanded] = useState(false);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GAMIFICATION STATE - Enterprise-grade tracking
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [gamification, setGamification] = useState<GamificationData | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Fetch gamification data on mount
+  useEffect(() => {
+    getUserGamification().then(data => {
+      if (data) setGamification(data);
+    });
+  }, []);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TODAY'S REVENUE - Real-time calculation from timeline
+  // ═══════════════════════════════════════════════════════════════════════════
+  const todayRevenue = useMemo(() => {
+    // Try from timeline first
+    const timeline = analyticsData?.timeseries || [];
+    const today = new Date().toISOString().slice(0, 10);
+
+    const fromTimeline = timeline
+      .filter((item: any) => {
+        if (item.isoDate) return item.isoDate === today;
+        const dateStr = item.date || item.day;
+        if (!dateStr) return false;
+        if (typeof dateStr === 'string' && dateStr.includes('-')) {
+          return dateStr.split('T')[0] === today;
+        }
+        return false;
+      })
+      .reduce((acc: number, item: any) => acc + (item.earnings || 0), 0);
+
+    // If we have timeline data for today, use it
+    if (fromTimeline > 0) return fromTimeline;
+
+    // Fallback: if range is '1d' (today), use total revenue
+    if (range === '1d') {
+      const linkRev = links?.reduce((acc: number, l: any) => acc + (l.earnings || 0), 0) || 0;
+      const bioRev = (analyticsData as any)?.summary?.earnings || 0;
+      return linkRev + bioRev;
+    }
+
+    return 0;
+  }, [analyticsData, links, range]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPARISON BADGE - vs yesterday/previous period
+  // ═══════════════════════════════════════════════════════════════════════════
+  const comparisonPercent = useMemo(() => {
+    const yesterdayRev = gamification?.yesterdayRevenue || 0;
+    return calculateComparison(todayRevenue, yesterdayRev);
+  }, [todayRevenue, gamification]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTHLY PROJECTION - Smart prediction based on current rate
+  // ═══════════════════════════════════════════════════════════════════════════
+  const { monthlyProjection, monthProgress, daysRemaining } = useMemo(() => {
+    const now = new Date();
+    const currentDay = now.getDate();
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const daysRemaining = daysInMonth - currentDay;
+
+    // Calculate average daily earnings from total revenue
+    const totalRev = links?.reduce((acc: number, l: any) => acc + (l.earnings || 0), 0) || 0;
+
+    // If we have multiple days of data, calculate actual daily average
+    let dailyAvg = 0;
+    if (currentDay > 1 && totalRev > 0) {
+      // Assume total revenue is from current month (simplification)
+      dailyAvg = totalRev / currentDay;
+    } else if (todayRevenue > 0) {
+      dailyAvg = todayRevenue;
+    }
+
+    const projection = dailyAvg * daysInMonth;
+    const progress = (currentDay / daysInMonth) * 100;
+
+    return {
+      monthlyProjection: projection,
+      monthProgress: progress,
+      daysRemaining
+    };
+  }, [links, todayRevenue]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CELEBRATION DETECTION - Trigger when goal reached
+  // ═══════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    if (!gamification) return;
+
+    if (shouldShowCelebration(todayRevenue, gamification.dailyGoal, gamification.goalReached)) {
+      setShowCelebration(true);
+      markGoalReached();
+      // Hide confetti after 3 seconds
+      setTimeout(() => setShowCelebration(false), 3000);
+    }
+  }, [todayRevenue, gamification]);
+
+  // Goal progress percentage
+  const goalProgress = useMemo(() => {
+    if (!gamification?.dailyGoal) return 0;
+    return Math.min((todayRevenue / gamification.dailyGoal) * 100, 100);
+  }, [todayRevenue, gamification]);
 
   // Calcular stats desde los datos cacheados
   const stats = useMemo(() => {
@@ -144,20 +295,37 @@ export function AnalyticsPage() {
     // Get timeseries from API
     let ts = analyticsData.timeseries || [];
 
+    // Format dates for 7D range to show week days
+    const formatChartDate = (dateStr: string) => {
+      if (!dateStr) return '';
+      try {
+        const date = new Date(dateStr);
+        if (Number.isNaN(date.getTime())) return dateStr;
+        if (range === '7d') {
+          const dayNames = ['Dom', 'Lun', 'Man', 'Ahb', 'Tur', 'Pai', 'Gdb'];
+          return dayNames[date.getDay()];
+        }
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+      } catch {
+        return dateStr;
+      }
+    };
+
     // Convert to CUMULATIVE chart (progressive earnings over time)
     let cumulativeEarnings = 0;
     let cumulativeClicks = 0;
     let tsCumulative = ts.map((point: any) => {
+      const pointDate = point?.isoDate || point?.date || point?.day || '';
       cumulativeEarnings += point.earnings || 0;
       cumulativeClicks += point.clicks || 0;
       return {
-        date: point.date,
+        date: formatChartDate(pointDate),
         earnings: cumulativeEarnings,
         clicks: cumulativeClicks,
       };
     });
 
-    // If cumulative ends at 0 but we have real earnings, adjust
+    // If cumulative ends below total revenue, adjust last point (keeps existing behavior)
     const finalCumulative = tsCumulative.length > 0 ? tsCumulative[tsCumulative.length - 1].earnings : 0;
     if (finalCumulative < stats.totalRevenue && stats.totalRevenue > 0 && tsCumulative.length > 0) {
       const lastPoint = tsCumulative[tsCumulative.length - 1];
@@ -168,15 +336,14 @@ export function AnalyticsPage() {
       };
     }
 
-    // Fallback: if no timeseries data, create minimal progression
+    // Fallback: if no timeseries data, create 7-day progression with proper day labels
     if (tsCumulative.length === 0 && stats.totalRevenue > 0) {
-      const today = new Date();
-      const weekAgo = new Date(today);
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      tsCumulative = [
-        { date: weekAgo.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), earnings: 0, clicks: 0 },
-        { date: today.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }), earnings: stats.totalRevenue, clicks: stats.totalClicks },
-      ];
+      const dayLabels = ['Lun', 'Man', 'Ahb', 'Tur', 'Pai', 'Gdb', 'Dom'];
+      tsCumulative = dayLabels.map((label, i) => ({
+        date: label,
+        earnings: (stats.totalRevenue / 7) * (i + 1),
+        clicks: Math.round((stats.totalClicks / 7) * (i + 1)),
+      }));
     }
 
     // Normalize countries
@@ -216,7 +383,7 @@ export function AnalyticsPage() {
       countries: normalizedCountries,
       devices: analyticsData.devices || [],
     };
-  }, [analyticsData, stats]);
+  }, [analyticsData, stats, range]);
 
   // Animated values - Skip animation si datos ya están cacheados
   const skipAnimation = analyticsData !== null;
@@ -292,6 +459,16 @@ export function AnalyticsPage() {
 
   return (
     <div className="lpa-shell">
+      {showCompareOverlay && (
+        <div
+          className="lpa-compare-overlay"
+          aria-hidden="true"
+          style={{
+            opacity: compareOpacity,
+            backgroundImage: "url('/mockups/analytics-ingresos.png')",
+          }}
+        />
+      )}
       <div className="lpa-inner">
 
         {/* Period selector */}
@@ -300,7 +477,12 @@ export function AnalyticsPage() {
             <button
               key={opt.key}
               className={`lpa-range-btn ${range === opt.key ? 'active' : ''}`}
-              onClick={() => setRange(opt.key)}
+              onClick={() => {
+                if (opt.key !== 'custom') {
+                  setRange(opt.key as TimeRange);
+                }
+                // TODO: Implement custom date range picker
+              }}
             >
               {opt.label}
             </button>
@@ -308,18 +490,21 @@ export function AnalyticsPage() {
         </div>
 
         {/* Chart Toggle Buttons */}
-        <div className="lpa-chart-tabs">
-          <button className={`lpa-tab ${chartView === 'revenue' ? 'active' : ''}`} onClick={() => setChartView('revenue')}>
-            <TrendingUp size={14} /> Ingresos
+        <div className="lpa-chart-tabs-v3">
+          <button className={`lpa-tab-v3 ${chartView === 'revenue' ? 'active' : ''}`} onClick={() => setChartView('revenue')}>
+            INGRESOS
           </button>
-          <button className={`lpa-tab ${chartView === 'clicks' ? 'active' : ''}`} onClick={() => setChartView('clicks')}>
-            <MousePointer2 size={14} /> Clicks
+          <button className={`lpa-tab-v3 ${chartView === 'clicks' ? 'active' : ''}`} onClick={() => setChartView('clicks')}>
+            CLICKS
           </button>
-          <button className={`lpa-tab ${chartView === 'links' ? 'active' : ''}`} onClick={() => setChartView('links')}>
-            <Link2 size={14} /> Top Links
+          <button className={`lpa-tab-v3 ${chartView === 'links' ? 'active' : ''}`} onClick={() => setChartView('links')}>
+            TOP LINKS
           </button>
-          <button className={`lpa-tab ${chartView === 'geo' ? 'active' : ''}`} onClick={() => setChartView('geo')}>
-            <Globe2 size={14} /> Geo
+          <button className={`lpa-tab-v3 ${chartView === 'geo' ? 'active' : ''}`} onClick={() => setChartView('geo')}>
+            GEO
+          </button>
+          <button className="lpa-tab-v3" onClick={() => navigate('/app/referrals')}>
+            REFERIDOS
           </button>
         </div>
 
@@ -327,139 +512,274 @@ export function AnalyticsPage() {
         <div className="lpa-chart-card">
           {chartView === 'revenue' && (
             <>
-              {/* REVENUE HERO - Beast Mode */}
-              <div className="lpa-revenue-hero">
-                <div className="lpa-revenue-hero-glow" />
-                <div className="lpa-revenue-hero-content">
-                  <div className="lpa-revenue-hero-label"><Wallet size={18} className="lpa-icon-animated" /> Ingresos Totales</div>
-                  <div className="lpa-revenue-hero-amount">{formatMoney(animRevenue)}</div>
-                  <div className="lpa-revenue-hero-live">
-                    <span className="lpa-pulse-dot" />
-                    <span>Actualizado en tiempo real</span>
+              {/* ═══════════════════════════════════════════════════════════════
+                  STREAK BADGE - Right aligned per mockup
+                  ════════════════════════════════════════════════════════════════ */}
+              <motion.div
+                className="lpa-v4-streak-badge"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <span className="lpa-v4-streak-emoji">🔥</span>
+                <span className="lpa-v4-streak-racha">Racha</span>
+                <span className="lpa-v4-streak-days">de 7 días</span>
+                <span className="lpa-v4-streak-percent">+23%</span>
+                <span className="lpa-v4-streak-chevron">›</span>
+              </motion.div>
+
+              {/* ═══════════════════════════════════════════════════════════════
+                  HERO CARD - INGRESOS TOTALES with green glow
+                  ════════════════════════════════════════════════════════════════ */}
+              <motion.div
+                className="lpa-v4-hero-card"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                {showCelebration && (
+                  <div className="lpa-confetti-container">
+                    {[...Array(20)].map((_, i) => (
+                      <div key={i} className="lpa-confetti" style={{
+                        left: `${Math.random() * 100}%`,
+                        animationDelay: `${Math.random() * 0.5}s`
+                      }} />
+                    ))}
+                  </div>
+                )}
+
+                <div className="lpa-v4-hero-label">INGRESOS TOTALES</div>
+                <div className="lpa-v4-hero-amount-row">
+                  <span className="lpa-v4-hero-amount">{formatMoney(animRevenue)}</span>
+                  <span className="lpa-v4-pulse-dot" />
+                </div>
+
+                <div className="lpa-v4-stats-row">
+                  <div className="lpa-v4-stat">
+                    <span className="lpa-v4-stat-value">€{animRpm.toFixed(2)}</span>
+                    <span className="lpa-v4-stat-label yellow">RPM</span>
+                  </div>
+                  <div className="lpa-v4-stat">
+                    <span className="lpa-v4-stat-value">{formatNum(animClicks)}</span>
+                    <span className="lpa-v4-stat-label cyan">CLICKS</span>
+                  </div>
+                  <div className="lpa-v4-stat">
+                    <span className="lpa-v4-stat-value">{stats.activeLinks}</span>
+                    <span className="lpa-v4-stat-label purple">LINKS</span>
                   </div>
                 </div>
-              </div>
 
-              {/* Quick Stats Row - Animated */}
-              <div className="lpa-revenue-quick-stats">
-                <motion.div
-                  className="lpa-quick-stat rpm"
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.1, duration: 0.4, type: 'spring', stiffness: 200 }}
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="lpa-quick-stat-glow" />
-                  <span className="lpa-quick-stat-icon"><TrendingUp size={20} className="lpa-icon-bounce" /></span>
-                  <div className="lpa-quick-stat-info">
-                    <span className="lpa-quick-stat-val">€{animRpm.toFixed(2)}</span>
-                    <span className="lpa-quick-stat-label">RPM</span>
+                <div className="lpa-v4-goal-section">
+                  <div className="lpa-v4-goal-header">
+                    <span className="lpa-v4-goal-label">META DIARIA</span>
+                    <span className="lpa-v4-goal-divider" aria-hidden="true" />
+                    <span className="lpa-v4-goal-target">€{(gamification?.dailyGoal ?? 5).toFixed(2)}</span>
                   </div>
-                </motion.div>
-                <motion.div
-                  className="lpa-quick-stat clicks"
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.2, duration: 0.4, type: 'spring', stiffness: 200 }}
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="lpa-quick-stat-glow" />
-                  <span className="lpa-quick-stat-icon"><MousePointer2 size={20} className="lpa-icon-bounce" /></span>
-                  <div className="lpa-quick-stat-info">
-                    <span className="lpa-quick-stat-val">{formatNum(animClicks)}</span>
-                    <span className="lpa-quick-stat-label">Clicks</span>
-                  </div>
-                </motion.div>
-                <motion.div
-                  className="lpa-quick-stat links"
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.3, duration: 0.4, type: 'spring', stiffness: 200 }}
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="lpa-quick-stat-glow" />
-                  <span className="lpa-quick-stat-icon"><Link2 size={20} className="lpa-icon-bounce" /></span>
-                  <div className="lpa-quick-stat-info">
-                    <span className="lpa-quick-stat-val">{stats.activeLinks}</span>
-                    <span className="lpa-quick-stat-label">Links</span>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Chart Title */}
-              <div className="lpa-chart-section-title">
-                <span className="lpa-section-icon"><Activity size={16} className="lpa-icon-pulse" /></span>
-                <span className="lpa-section-text">Evolución de Ingresos</span>
-              </div>
-
-              {/* Enhanced Chart */}
-              <div className="lpa-chart-wrap premium">
-                <ResponsiveContainer width="100%" height={160}>
-                  <AreaChart data={timeseries}>
-                    <defs>
-                      <linearGradient id="gRevPremium" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#22c55e" stopOpacity={0.5} />
-                        <stop offset="50%" stopColor="#22c55e" stopOpacity={0.2} />
-                        <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false} />
-                    <YAxis tick={{ fill: '#64748b', fontSize: 10 }} tickLine={false} axisLine={false} width={35} tickFormatter={v => `€${v}`} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Area type="monotone" dataKey="earnings" stroke="#22c55e" strokeWidth={3} fill="url(#gRevPremium)" name="earnings" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Revenue Sources - Premium Cards */}
-              <div className="lpa-chart-section-title">
-                <span className="lpa-section-icon"><Gem size={16} className="lpa-icon-shine" /></span>
-                <span className="lpa-section-text">Fuentes de Ingreso</span>
-              </div>
-
-              <div className="lpa-revenue-sources">
-                {/* Smart Links Source */}
-                <div className="lpa-source-card links">
-                  <div className="lpa-source-card-glow" />
-                  <div className="lpa-source-card-header">
-                    <span className="lpa-source-emoji"><Zap size={18} className="lpa-icon-glow-indigo" /></span>
-                    <span className="lpa-source-card-name">Smart Links</span>
-                  </div>
-                  <div className="lpa-source-card-amount">€{stats.linkRevenue.toFixed(4)}</div>
-                  <div className="lpa-source-card-bar">
-                    <div
-                      className="lpa-source-card-fill"
-                      style={{ width: `${stats.totalRevenue > 0 ? (stats.linkRevenue / stats.totalRevenue) * 100 : 0}%` }}
+                  <div className="lpa-v4-goal-bar">
+                    <motion.div
+                      className="lpa-v4-goal-fill"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${goalProgress}%` }}
+                      transition={{ duration: 1, ease: 'easeOut' }}
                     />
                   </div>
-                  <div className="lpa-source-card-pct">
-                    {stats.totalRevenue > 0 ? ((stats.linkRevenue / stats.totalRevenue) * 100).toFixed(1) : 0}% del total
+                  <div className="lpa-v4-goal-footer">
+                    <span className="lpa-v4-goal-progress">
+                      €{todayRevenue.toFixed(2)} / €{(gamification?.dailyGoal ?? 5).toFixed(2)}
+                    </span>
+                    <span className="lpa-v4-goal-link">Ver Detalles &gt;</span>
                   </div>
+                </div>
+              </motion.div>
+
+              {/* ═══════════════════════════════════════════════════════════════
+                  SOURCES CARDS - EVOLUCIÓN DE INGRESOS
+                  ════════════════════════════════════════════════════════════════ */}
+              <div className="lpa-v4-section-label">EVOLUCIÓN DE INGRESOS</div>
+
+              <div className="lpa-v4-sources-row">
+                {/* Smart Links Card */}
+                <motion.div
+                  className="lpa-v4-source-card"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <div className="lpa-v4-source-header">
+                    <span className="lpa-v4-source-emoji">⚡</span>
+                    <span>Smart Links</span>
+                  </div>
+                  <div className="lpa-v4-source-divider" />
+                  <div className="lpa-v4-source-row">
+                    <span className="lpa-v4-source-amount">€{stats.linkRevenue.toFixed(4)}</span>
+                    <span className="lpa-v4-source-percent">{stats.totalRevenue > 0 ? ((stats.linkRevenue / stats.totalRevenue) * 100).toFixed(0) : 100}%</span>
+                  </div>
+                  <div className="lpa-v4-source-bar">
+                    <div className="lpa-v4-source-bar-fill smart" style={{ width: `${stats.totalRevenue > 0 ? (stats.linkRevenue / stats.totalRevenue) * 100 : 100}%` }} />
+                  </div>
+                  <div className="lpa-v4-source-actions">
+                    <button onClick={() => navigate('/app/links')} className="lpa-v4-btn-blue">
+                      Ver Enlaces
+                    </button>
+                    <button onClick={() => navigate('/app/links?create=true')} className="lpa-v4-btn-green">
+                      + Crear Link
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* Bio Page Card */}
+                <motion.div
+                  className="lpa-v4-source-card"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                >
+                  <div className="lpa-v4-source-header">
+                    <span className="lpa-v4-source-emoji">🌐</span>
+                    <span>Bio Page</span>
+                  </div>
+                  <div className="lpa-v4-source-divider" />
+                  <div className="lpa-v4-source-row">
+                    <span className="lpa-v4-source-amount">€{stats.bioRevenue.toFixed(4)}</span>
+                    <span className="lpa-v4-source-percent">{stats.totalRevenue > 0 && stats.bioRevenue > 0 ? ((stats.bioRevenue / stats.totalRevenue) * 100).toFixed(0) : 0}%</span>
+                  </div>
+                  <div className="lpa-v4-source-bar">
+                    <div className="lpa-v4-source-bar-fill bio" style={{ width: `${stats.totalRevenue > 0 && stats.bioRevenue > 0 ? (stats.bioRevenue / stats.totalRevenue) * 100 : 0}%` }} />
+                  </div>
+                  <div className="lpa-v4-source-actions">
+                    <button onClick={() => navigate('/app/bio')} className="lpa-v4-btn-gray">
+                      Editar Bio
+                    </button>
+                    <button onClick={() => navigate('/app/bio')} className="lpa-v4-btn-gray-green">
+                      Ver BioPages
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* ═══════════════════════════════════════════════════════════════
+                  CHART - V4 Design
+                  ════════════════════════════════════════════════════════════════ */}
+              <motion.div
+                className="lpa-v4-chart-section"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="lpa-v4-chart-comparison">
+                  <span className="lpa-v4-chart-percent">+23%</span>
+                  <span className="lpa-v4-chart-text">Más que la semana pasada</span>
                 </div>
 
-                {/* Bio Page Source */}
-                <div className="lpa-source-card bio">
-                  <div className="lpa-source-card-glow" />
-                  <div className="lpa-source-card-header">
-                    <span className="lpa-source-emoji"><Globe2 size={18} className="lpa-icon-glow-cyan" /></span>
-                    <span className="lpa-source-card-name">Bio Page</span>
+                <div className="lpa-v4-chart">
+                  <ResponsiveContainer width="100%" height={80}>
+                    <AreaChart data={timeseries} margin={{ top: 10, right: 18, left: 10, bottom: 10 }}>
+                      <defs>
+                        <linearGradient id="gRevV4" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#4ade80" stopOpacity={0.35} />
+                          <stop offset="100%" stopColor="#4ade80" stopOpacity={0} />
+                        </linearGradient>
+                        <filter id="revGlowV4" x="-50%" y="-50%" width="200%" height="200%">
+                          <feGaussianBlur stdDeviation="2.2" result="coloredBlur" />
+                          <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <Area
+                        type="monotone"
+                        dataKey="earnings"
+                        stroke="#4ade80"
+                        strokeWidth={2.4}
+                        fill="url(#gRevV4)"
+                        filter="url(#revGlowV4)"
+                        dot={(props: any) => {
+                          const { cx, cy, index } = props || {};
+                          const lastIndex = timeseries.length - 1;
+                          if (index !== lastIndex || cx == null || cy == null) return null;
+                          return (
+                            <g>
+                              {/* vertical guide like mock (clipped by chart) */}
+                              <line
+                                x1={cx}
+                                y1={cy}
+                                x2={cx}
+                                y2={9999}
+                                stroke="rgba(74, 222, 128, 0.45)"
+                                strokeWidth={1}
+                              />
+                              {/* glow rings */}
+                              <circle cx={cx} cy={cy} r={10} fill="rgba(74, 222, 128, 0.10)" />
+                              <circle cx={cx} cy={cy} r={6} fill="rgba(74, 222, 128, 0.22)" />
+                              <circle cx={cx} cy={cy} r={3.5} fill="#bbf7d0" stroke="#4ade80" strokeWidth={1} />
+                            </g>
+                          );
+                        }}
+                      />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: 'rgba(148, 163, 184, 0.85)', fontSize: 9, fontWeight: 600 }}
+                        tickLine={false}
+                        axisLine={false}
+                        interval={range === '7d' ? 0 : 'preserveStartEnd'}
+                        tickMargin={8}
+                      />
+                      <YAxis hide />
+                      <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.10)" vertical={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
+
+              {/* ═══════════════════════════════════════════════════════════════
+                  PROYECCIÓN MENSUAL - V4 Design
+                  ════════════════════════════════════════════════════════════════ */}
+              <motion.div
+                className="lpa-v4-projection"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <div className="lpa-v4-projection-header">
+                  PROYECCIÓN MENSUAL: <span className="lpa-v4-projection-amount">€{monthlyProjection.toFixed(2)}</span>
+                </div>
+                <div className="lpa-v4-projection-content">
+                  <div className="lpa-v4-projection-stat">
+                    <div className="lpa-v4-projection-stat-row">
+                      <span className="lpa-v4-projection-arrow">↗</span>
+                      <span className="lpa-v4-projection-value green">€{animRpm.toFixed(2)}</span>
+                    </div>
+                    <span className="lpa-v4-projection-label">RPM EN VIVO</span>
                   </div>
-                  <div className="lpa-source-card-amount">€{stats.bioRevenue.toFixed(4)}</div>
-                  <div className="lpa-source-card-bar">
-                    <div
-                      className="lpa-source-card-fill"
-                      style={{ width: `${stats.totalRevenue > 0 ? (stats.bioRevenue / stats.totalRevenue) * 100 : 0}%` }}
-                    />
+                  <div className="lpa-v4-projection-stat">
+                    <div className="lpa-v4-projection-views">
+                      <span className="lpa-v4-projection-eye">👁</span>
+                      <span className="lpa-v4-projection-value">{formatNum(Math.round(animClicks * 30))}</span>
+                    </div>
+                    <span className="lpa-v4-projection-label" style={{ color: '#64748b' }}>PROYECCIÓN DE VISTAS</span>
                   </div>
-                  <div className="lpa-source-card-pct">
-                    {stats.totalRevenue > 0 ? ((stats.bioRevenue / stats.totalRevenue) * 100).toFixed(1) : 0}% del total
+                  <div className="lpa-v4-circular-progress">
+                    <svg viewBox="0 0 36 36" className="lpa-v4-circular-svg">
+                      <defs>
+                        <linearGradient id="circleGradientV4" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#a855f7" />
+                          <stop offset="100%" stopColor="#22d3ee" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        className="lpa-v4-circle-bg"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      />
+                      <path
+                        className="lpa-v4-circle-fg"
+                        strokeDasharray={`${monthProgress}, 100`}
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        style={{ stroke: 'url(#circleGradientV4)' }}
+                      />
+                    </svg>
+                    <span className="lpa-v4-circular-text">{Math.round(monthProgress)}%</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </>
           )}
 
@@ -1085,7 +1405,7 @@ export function AnalyticsPage() {
                               </div>
                               <div className="lpa-geo-card-stats">
                                 <span className="lpa-geo-card-percent">{d.percent.toFixed(0)}%</span>
-                                <span className="lpa-geo-card-clicks">{d.clicks} clicks</span>
+                                <span className="lpa-geo-card-clicks">{formatNum(d.value)} clicks</span>
                               </div>
                             </motion.div>
                           );

@@ -264,17 +264,16 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  /* Premium Deep Teal Ocean Background - More vibrant, less black */
-  background: linear-gradient(180deg,
-      #0c2d3a 0%,
-      #0f3d4a 15%,
-      #124a55 35%,
-      #0f4048 60%,
-      #0c3540 85%,
-      #092830 100%);
+  /* Premium 4K background with depth */
+  background: 
+    radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at center, rgba(6, 182, 212, 0.02) 0%, transparent 50%),
+    linear-gradient(180deg, #0a1628 0%, #0f1f3a 40%, #0a1628 100%);
+  background-attachment: fixed;
 }
 
-/* Gradient Layer - Multiple radial gradients for depth */
+/* Gradient Layer - Simplified dark theme */
 .lpa-shell::before {
   content: "";
   position: fixed;
@@ -282,38 +281,93 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(16, 185, 129, 0.45) 0%, transparent 50%),
-    radial-gradient(ellipse 100% 50% at 20% 25%, rgba(34, 211, 238, 0.35) 0%, transparent 45%),
-    radial-gradient(ellipse 90% 60% at 80% 20%, rgba(52, 211, 153, 0.32) 0%, transparent 40%),
-    radial-gradient(ellipse 70% 50% at 30% 70%, rgba(34, 197, 94, 0.28) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 70% 80%, rgba(20, 184, 166, 0.25) 0%, transparent 50%);
-  animation: lpa-bg-fade-up 1.2s ease-out;
+    radial-gradient(ellipse 120% 70% at 50% -10%, rgba(34, 211, 238, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 55% at 18% 28%, rgba(168, 85, 247, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 55% at 88% 35%, rgba(34, 197, 94, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 50% 95%, rgba(34, 211, 238, 0.06) 0%, transparent 60%);
+  opacity: 1;
 }
 
-/* Floating Particles Layer */
+/* Floating Particles Layer - subtle (static for perf) */
 .lpa-shell::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.18;
   background-image:
-    radial-gradient(1.5px 1.5px at 10% 15%, rgba(52, 211, 153, 0.9), transparent),
-    radial-gradient(1px 1px at 25% 30%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(2px 2px at 45% 12%, rgba(16, 185, 129, 0.95), transparent),
-    radial-gradient(1px 1px at 60% 40%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 75% 20%, rgba(34, 211, 238, 0.8), transparent),
-    radial-gradient(2px 2px at 88% 45%, rgba(6, 182, 212, 0.85), transparent),
-    radial-gradient(1px 1px at 15% 65%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 35% 75%, rgba(52, 211, 153, 0.7), transparent),
-    radial-gradient(2px 2px at 55% 70%, rgba(168, 85, 247, 0.6), transparent),
-    radial-gradient(1px 1px at 70% 85%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1.5px 1.5px at 85% 60%, rgba(34, 197, 94, 0.75), transparent),
-    radial-gradient(1px 1px at 5% 85%, rgba(255, 255, 255, 0.35), transparent);
-  background-size: 400px 300px;
-  animation: lpa-particles-float 25s linear infinite;
+    radial-gradient(1.5px 1.5px at 10% 15%, rgba(34, 211, 238, 0.75), transparent 60%),
+    radial-gradient(1px 1px at 25% 28%, rgba(34, 197, 94, 0.70), transparent 60%),
+    radial-gradient(2px 2px at 42% 10%, rgba(34, 211, 238, 0.65), transparent 60%),
+    radial-gradient(1px 1px at 60% 38%, rgba(168, 85, 247, 0.55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 78% 18%, rgba(34, 197, 94, 0.60), transparent 60%),
+    radial-gradient(1px 1px at 88% 42%, rgba(34, 211, 238, 0.55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 15% 62%, rgba(34, 211, 238, 0.45), transparent 60%),
+    radial-gradient(1px 1px at 35% 72%, rgba(34, 197, 94, 0.50), transparent 60%),
+    radial-gradient(2px 2px at 55% 68%, rgba(168, 85, 247, 0.45), transparent 60%),
+    radial-gradient(1px 1px at 72% 78%, rgba(34, 197, 94, 0.45), transparent 60%),
+    radial-gradient(1.5px 1.5px at 85% 58%, rgba(34, 211, 238, 0.45), transparent 60%),
+    radial-gradient(1px 1px at 5% 88%, rgba(99, 102, 241, 0.35), transparent 60%);
+  background-size: 420px 320px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DEV COMPARE OVERLAY (DEV-only, activable con ?lp_compare=1&lp_opacity=0.5)
+   Requiere colocar el mock recortado a 390x844 en:
+   apps/web/public/mockups/analytics-ingresos.png
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lpa-compare-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 390px 844px;
+}
+
+@media (max-width: 420px) {
+  .lpa-compare-overlay {
+    background-size: 100% auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCOPED OVERRIDES: SOLO Analytics → Ingresos (no afecta otras pantallas)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+html.lp-analytics-ingresos .lp-mobile-header {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 22, 40, 0.86) 0%,
+    rgba(10, 22, 40, 0.60) 55%,
+    rgba(10, 22, 40, 0.00) 100%
+  ) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+html.lp-analytics-ingresos .lp-header-title {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2px !important;
+  text-shadow: 0 10px 22px rgba(0, 0, 0, 0.55) !important;
+}
+
+html.lp-analytics-ingresos .lp-header-avatar-placeholder {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+html.lp-analytics-ingresos .lp-header-camera-icon,
+html.lp-analytics-ingresos .lp-header-avatar-pulse {
+  animation: none !important;
+}
+
+/* Importante: NO tocamos la navegación inferior desde esta vista.
+   (evita que “Inicio” se eleve al entrar en Analytics) */
 
 @keyframes lpa-bg-fade-up {
   0% {
@@ -355,11 +409,12 @@
   max-width: 600px;
   margin: 0 auto;
 
-  /* Start below MobileHeader (48px + safe area) */
-  padding: calc(48px + env(safe-area-inset-top, 12px) + 12px) 12px calc(90px + env(safe-area-inset-bottom, 20px)) 12px;
+  /* Start below MobileHeader with proper spacing */
+  padding: calc(48px + env(safe-area-inset-top, 12px) + 20px) 18px calc(90px + env(safe-area-inset-bottom, 20px)) 18px;
 
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', system-ui, sans-serif;
-  color: #e5e7eb;
+  color: #f1f5f9;
+  background: transparent;
 }
 
 @media (min-width: 769px) {
@@ -370,73 +425,132 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   RANGE BAR - Period selector
+   RANGE BAR - Period selector (EXACT MOCKUP MATCH)
+   Compact pills, gray background, cyan top glow on active
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .lpa-range-bar {
   display: flex;
-  gap: 3px;
-  padding: 4px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(99, 102, 241, 0.15);
-  border-radius: 16px;
-  margin-bottom: 18px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 0 30px rgba(99, 102, 241, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  gap: 4px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  margin: 0 auto 4px;
+  max-width: 360px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  position: relative;
+}
+
+.lpa-range-bar::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  height: 1.5px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.15) 10%,
+    rgba(255, 255, 255, 0.15) 90%,
+    transparent 100%);
+  z-index: 1;
 }
 
 .lpa-range-btn {
   flex: 1;
-  padding: 11px 8px;
-  border: none;
-  background: transparent;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 700;
+  min-width: 60px;
+  padding: 7px 3px;
+  min-height: 28px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%),
+    rgba(17, 24, 39, 0.35);
+  color: rgba(148, 163, 184, 0.65);
+  font-size: 7.5px;
+  font-weight: 600;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 12px;
+  letter-spacing: 0.15px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(28px) saturate(1.6) brightness(1.02);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6) brightness(1.02);
+}
+
+.lpa-range-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .lpa-range-btn:hover:not(.active) {
   color: #94a3b8;
-  background: rgba(255, 255, 255, 0.03);
 }
 
 .lpa-range-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
+/* Active state - Cyan glow per mockup */
 .lpa-range-btn.active {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.3));
-  color: #fff;
+  background: 
+    linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.1) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%),
+    rgba(17, 24, 39, 0.30);
+  color: #22d3ee;
+  font-weight: 700;
+  border: 1px solid transparent;
   box-shadow:
-    0 0 25px rgba(99, 102, 241, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    0 0 30px rgba(34, 211, 238, 0.35),
+    0 12px 24px rgba(34, 211, 238, 0.25),
+    inset 0 1px 0 rgba(34, 211, 238, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  position: relative;
+  backdrop-filter: blur(32px) saturate(1.7) brightness(1.03);
+  -webkit-backdrop-filter: blur(32px) saturate(1.7) brightness(1.03);
 }
 
-/* Active glow pulse */
+.lpa-range-btn.active::before {
+  background: linear-gradient(135deg, 
+    rgba(34, 211, 238, 0.4) 0%,
+    rgba(34, 211, 238, 0.2) 30%,
+    rgba(255, 255, 255, 0.1) 60%,
+    rgba(255, 255, 255, 0.05) 100%);
+}
+
+/* Cyan underline inside active pill */
 .lpa-range-btn.active::after {
-  content: '';
+  content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 120%;
-  height: 120%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  animation: range-glow-pulse 2s ease-in-out infinite;
+  left: 10px;
+  right: 10px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.95);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
 }
 
 @keyframes range-glow-pulse {
@@ -640,19 +754,35 @@
   position: relative;
   padding: 24px 16px;
   margin-bottom: 14px;
-  border-radius: 20px;
+  border-radius: 18px;
   text-align: center;
   overflow: hidden;
 
-  background:
-    linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.08) 50%, transparent 100%),
-    rgba(15, 23, 42, 0.95);
-  border: 2px solid rgba(34, 197, 94, 0.3);
+  /* Glassmorphism premium - tarjeta flotante */
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
+  /* Borde superior verde como Dashboard */
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 3px solid #22c55e;
+
+  /* Sombra flotante con glow verde sutil */
   box-shadow:
-    0 0 80px rgba(34, 197, 94, 0.15),
-    0 0 40px rgba(34, 197, 94, 0.1),
-    0 25px 50px -15px rgba(0, 0, 0, 0.5);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 40px rgba(34, 197, 94, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Transición suave */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lpa-revenue-hero:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.3),
+    0 0 50px rgba(34, 197, 94, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .lpa-revenue-hero-glow {
@@ -785,19 +915,35 @@
   position: relative;
   padding: 24px 16px;
   margin-bottom: 14px;
-  border-radius: 20px;
+  border-radius: 18px;
   text-align: center;
   overflow: hidden;
 
-  background:
-    linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(139, 92, 246, 0.08) 50%, transparent 100%),
-    rgba(15, 23, 42, 0.95);
-  border: 2px solid rgba(168, 85, 247, 0.3);
+  /* Glassmorphism premium - tarjeta flotante */
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
+  /* Borde superior púrpura */
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 3px solid #a855f7;
+
+  /* Sombra flotante con glow púrpura sutil */
   box-shadow:
-    0 0 80px rgba(168, 85, 247, 0.15),
-    0 0 40px rgba(168, 85, 247, 0.1),
-    0 25px 50px -15px rgba(0, 0, 0, 0.5);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 40px rgba(168, 85, 247, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Transición suave */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lpa-clicks-hero:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.3),
+    0 0 50px rgba(168, 85, 247, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .lpa-clicks-hero-glow {
@@ -1099,21 +1245,37 @@
 /* Links Hero */
 .lpa-links-hero {
   position: relative;
-  padding: 20px;
-  margin-bottom: 16px;
-  border-radius: 20px;
+  padding: 20px 16px;
+  margin-bottom: 14px;
+  border-radius: 18px;
   text-align: center;
   overflow: hidden;
 
-  background:
-    linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.08) 50%, transparent 100%),
-    rgba(15, 23, 42, 0.95);
-  border: 2px solid rgba(59, 130, 246, 0.3);
+  /* Glassmorphism premium - tarjeta flotante */
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
+  /* Borde superior azul */
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 3px solid #3b82f6;
+
+  /* Sombra flotante con glow azul sutil */
   box-shadow:
-    0 0 80px rgba(59, 130, 246, 0.15),
-    0 0 40px rgba(59, 130, 246, 0.1),
-    0 25px 50px -15px rgba(0, 0, 0, 0.5);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 40px rgba(59, 130, 246, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Transición suave */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lpa-links-hero:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.3),
+    0 0 50px rgba(59, 130, 246, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .lpa-links-hero-glow {
@@ -1460,24 +1622,32 @@
    LINKS ANALYTICS - BRUTAL MOBILE FIRST 🔥
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Links Hero - Big Number */
+/* Links Hero - Big Number - Glassmorphism Premium */
 .lpa-links-hero {
   position: relative;
   padding: 24px 16px;
   margin-bottom: 14px;
-  border-radius: 20px;
+  border-radius: 18px;
   text-align: center;
   overflow: hidden;
 
-  background:
-    linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 50%, transparent 100%),
-    rgba(15, 23, 42, 0.95);
-  border: 2px solid rgba(59, 130, 246, 0.4);
+  /* Glassmorphism premium - tarjeta flotante */
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
+  /* Borde superior azul */
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 3px solid #3b82f6;
+
+  /* Sombra flotante con glow azul sutil */
   box-shadow:
-    0 0 60px rgba(59, 130, 246, 0.2),
-    0 0 30px rgba(59, 130, 246, 0.1),
-    0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 40px rgba(59, 130, 246, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Transición suave */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .lpa-links-hero-glow {
@@ -2553,15 +2723,26 @@
   cursor: pointer;
   overflow: hidden;
   min-width: 0;
-  /* Allow flex shrinking */
 
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
-    rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Glassmorphism premium - Como Dashboard */
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
 
+  /* Sombra flotante premium */
   box-shadow:
-    0 8px 20px -8px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* Transición suave para hover */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lpa-quick-stat:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -3315,15 +3496,87 @@
    CHART TABS - Premium Section Toggle
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* V3 Chart Tabs - Exact match with design */
+.lpa-chart-tabs-v3 {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 0;
+  margin-bottom: 12px;
+  margin-top: 6px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.lpa-chart-tabs-v3::-webkit-scrollbar {
+  display: none;
+}
+
+.lpa-tab-v3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(148, 163, 184, 0.55);
+  font-size: 9px;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  position: relative;
+  line-height: 18px;
+  height: 18px;
+}
+
+.lpa-tab-v3:hover:not(.active) {
+  color: #94a3b8;
+}
+
+.lpa-tab-v3:active {
+  transform: scale(0.98);
+}
+
+/* Active state - White text with cyan underline */
+.lpa-tab-v3.active {
+  color: #22d3ee;
+  font-weight: 700;
+}
+
+.lpa-tab-v3.active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #22d3ee;
+  border-radius: 1px;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+  z-index: 2;
+}
+
+/* Legacy tabs for backward compatibility */
 .lpa-chart-tabs {
   display: flex;
-  justify-content: center;
-  gap: 3px;
-  padding: 4px;
-  margin-bottom: 12px;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 4px 0;
+  margin-bottom: 10px;
   background: transparent;
-  border-radius: 14px;
   border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .lpa-chart-tabs::-webkit-scrollbar {
@@ -3335,30 +3588,29 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 8px 10px;
+  padding: 6px 2px;
   border: none;
   background: transparent;
   color: #64748b;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-radius: 10px;
+  letter-spacing: 0.5px;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   position: relative;
+  border-radius: 0;
 }
 
 .lpa-tab svg {
   opacity: 0.7;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .lpa-tab:hover:not(.active) {
   color: #94a3b8;
-  background: rgba(255, 255, 255, 0.03);
 }
 
 .lpa-tab:hover:not(.active) svg {
@@ -3369,10 +3621,21 @@
   transform: scale(0.97);
 }
 
-/* Active state base */
+/* Active state - Green underline per mockup */
 .lpa-tab.active {
-  color: #fff;
-  font-weight: 800;
+  color: #22d3ee;
+  font-weight: 700;
+}
+
+.lpa-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #22d3ee;
+  border-radius: 1px;
 }
 
 .lpa-tab.active svg {
@@ -3421,45 +3684,27 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CHART CARD - Premium with Glow
+   CHART CARD - TRANSPARENTE para tarjetas individuales flotantes
+   Las secciones hero y stats ya son tarjetas independientes
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .lpa-chart-card {
   position: relative;
-  padding: 18px 16px;
-  border-radius: 18px;
-  margin-bottom: 14px;
+  padding: 0;
+  border-radius: 0;
+  margin-bottom: 0;
 
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
-    rgba(15, 23, 42, 0.95);
-
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
-  box-shadow:
-    0 0 60px rgba(99, 102, 241, 0.08),
-    0 20px 40px -20px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  /* TRANSPARENTE - Sin fondo contenedor */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-/* Animated glow border at top */
+/* Eliminar línea superior - no necesaria en diseño flotante */
 .lpa-chart-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 20px;
-  right: 20px;
-  height: 2px;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(99, 102, 241, 0.6),
-      rgba(168, 85, 247, 0.6),
-      rgba(34, 197, 94, 0.6),
-      transparent);
-  border-radius: 2px;
+  display: none;
 }
 
 .lpa-chart-title {
@@ -4321,4 +4566,2310 @@
 .lpa-geo-card-clicks {
   font-size: 10px;
   color: #64748b;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAMIFICATION COMPONENTS - Enterprise-Grade UX
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* -----------------------------------------------------------------------
+   STREAK HEADER - Fire Animation
+   ----------------------------------------------------------------------- */
+.lpa-streak-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(249, 115, 22, 0.1));
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lpa-streak-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(251, 146, 60, 0.1), transparent);
+  animation: lpa-streak-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes lpa-streak-shimmer {
+
+  0%,
+  100% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+.lpa-streak-header.celebrating {
+  border-color: rgba(74, 222, 128, 0.6);
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(34, 197, 94, 0.15));
+  animation: lpa-streak-pulse 0.5s ease-out;
+}
+
+@keyframes lpa-streak-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.lpa-streak-icon {
+  color: #fb923c;
+  filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.6));
+  animation: lpa-fire-flicker 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes lpa-fire-flicker {
+  0% {
+    transform: scale(1) rotate(-3deg);
+    filter: drop-shadow(0 0 6px rgba(251, 146, 60, 0.5));
+  }
+
+  100% {
+    transform: scale(1.1) rotate(3deg);
+    filter: drop-shadow(0 0 12px rgba(251, 146, 60, 0.8));
+  }
+}
+
+.lpa-streak-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fb923c;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.lpa-streak-motivational {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* -----------------------------------------------------------------------
+   COMPARISON BADGE - Positive/Negative States
+   ----------------------------------------------------------------------- */
+.lpa-comparison-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.lpa-comparison-badge.positive {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(16, 185, 129, 0.15));
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.lpa-comparison-badge.positive svg {
+  color: #22c55e;
+}
+
+.lpa-comparison-badge.negative {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.15));
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.lpa-comparison-badge.negative svg {
+  color: #ef4444;
+}
+
+.lpa-comparison-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-left: 2px;
+}
+
+/* -----------------------------------------------------------------------
+   REVENUE HERO ENHANCEMENTS
+   ----------------------------------------------------------------------- */
+.lpa-revenue-hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.lpa-revenue-hero-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.lpa-goal-mini {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #818cf8;
+}
+
+.lpa-goal-mini svg {
+  color: #818cf8;
+}
+
+/* -----------------------------------------------------------------------
+   CELEBRATION CONFETTI - CSS Animation
+   ----------------------------------------------------------------------- */
+.lpa-confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.lpa-confetti {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  border-radius: 2px;
+  animation: lpa-confetti-fall 2s ease-out forwards;
+}
+
+.lpa-confetti:nth-child(odd) {
+  background: linear-gradient(135deg, #a855f7, #c084fc);
+  width: 6px;
+  height: 10px;
+}
+
+.lpa-confetti:nth-child(3n) {
+  background: linear-gradient(135deg, #22d3ee, #67e8f9);
+  border-radius: 50%;
+}
+
+.lpa-confetti:nth-child(4n) {
+  background: linear-gradient(135deg, #fb923c, #fbbf24);
+}
+
+@keyframes lpa-confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(200px) rotate(720deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* -----------------------------------------------------------------------
+   DAILY GOAL CARD - Progress Tracking
+   ----------------------------------------------------------------------- */
+.lpa-goal-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.lpa-goal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #818cf8, #a855f7, #818cf8);
+}
+
+.lpa-goal-card.celebrating {
+  border-color: rgba(74, 222, 128, 0.5);
+  animation: lpa-goal-celebrate 0.5s ease-out;
+}
+
+.lpa-goal-card.celebrating::before {
+  background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e);
+}
+
+.lpa-goal-card.completed {
+  border-color: rgba(74, 222, 128, 0.5);
+}
+
+.lpa-goal-card.completed::before {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+@keyframes lpa-goal-celebrate {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.01);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  75% {
+    transform: scale(1.01);
+  }
+}
+
+.lpa-goal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.lpa-goal-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lpa-goal-icon {
+  color: #818cf8;
+  filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.5));
+}
+
+.lpa-goal-target {
+  font-size: 14px;
+  font-weight: 800;
+  color: #818cf8;
+}
+
+.lpa-goal-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.lpa-goal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+  transition: width 0.3s ease-out;
+}
+
+.lpa-goal-card.completed .lpa-goal-fill {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+}
+
+.lpa-goal-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lpa-goal-current {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.lpa-goal-percent {
+  font-size: 12px;
+  font-weight: 700;
+  color: #818cf8;
+}
+
+.lpa-goal-percent.complete {
+  color: #4ade80;
+  font-weight: 800;
+}
+
+/* -----------------------------------------------------------------------
+   PREDICTION CARD - Monthly Projection
+   ----------------------------------------------------------------------- */
+.lpa-prediction-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.lpa-prediction-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b5cf6, #a855f7, #c084fc);
+}
+
+.lpa-prediction-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.lpa-prediction-icon {
+  color: #a855f7;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+  animation: lpa-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes lpa-sparkle {
+
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1) rotate(10deg);
+    opacity: 0.8;
+  }
+}
+
+.lpa-prediction-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a855f7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lpa-prediction-content {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.lpa-prediction-phrase {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+}
+
+.lpa-prediction-amount {
+  font-size: 28px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #a855f7, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin: 4px 0;
+  text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+}
+
+.lpa-prediction-subtext {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+}
+
+.lpa-prediction-progress {
+  margin-top: 12px;
+}
+
+.lpa-prediction-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.lpa-prediction-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #a855f7);
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.lpa-prediction-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.lpa-prediction-info span:first-child {
+  font-weight: 600;
+  color: #a855f7;
+}
+
+/* -----------------------------------------------------------------------
+   CELEBRATING STATE FOR HERO
+   ----------------------------------------------------------------------- */
+.lpa-revenue-hero.celebrating {
+  border-color: rgba(74, 222, 128, 0.5);
+}
+
+.lpa-revenue-hero.celebrating .lpa-revenue-hero-glow {
+  background: radial-gradient(ellipse at center, rgba(74, 222, 128, 0.3), transparent 70%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   V2 DESIGN - Matching User's Mockup Exactly (January 2026)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* -----------------------------------------------------------------------
+   V2 STREAK BADGE - Inline with comparison
+   ----------------------------------------------------------------------- */
+.lpa-v2-streak-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin-bottom: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.lpa-v2-streak-icon {
+  color: #fb923c;
+  filter: drop-shadow(0 0 6px rgba(251, 146, 60, 0.6));
+  animation: lpa-fire-flicker 0.8s ease-in-out infinite alternate;
+}
+
+.lpa-v2-streak-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fb923c;
+}
+
+.lpa-v2-streak-percent {
+  font-size: 13px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.lpa-v2-streak-percent.positive {
+  color: #4ade80;
+}
+
+.lpa-v2-streak-percent.negative {
+  color: #f87171;
+}
+
+.lpa-v2-streak-arrow {
+  color: #64748b;
+  margin-left: auto;
+}
+
+/* -----------------------------------------------------------------------
+   V2 HERO CARD - Unified with green accent
+   ----------------------------------------------------------------------- */
+.lpa-v2-hero-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-top: 3px solid #22c55e;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.lpa-v2-hero-card.celebrating {
+  border-color: rgba(74, 222, 128, 0.6);
+  animation: lpa-goal-celebrate 0.5s ease-out;
+}
+
+.lpa-v2-hero-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.lpa-v2-hero-amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.lpa-v2-hero-amount {
+  font-size: 42px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(34, 197, 94, 0.3);
+}
+
+.lpa-v2-pulse-indicator {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: lpa-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+/* -----------------------------------------------------------------------
+   V2 STATS ROW - RPM | CLICKS | LINKS
+   ----------------------------------------------------------------------- */
+.lpa-v2-stats-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 12px;
+}
+
+.lpa-v2-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.lpa-v2-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v2-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lpa-v2-stat.rpm .lpa-v2-stat-label {
+  color: #fbbf24;
+}
+
+.lpa-v2-stat.clicks .lpa-v2-stat-label {
+  color: #22d3ee;
+}
+
+.lpa-v2-stat.links .lpa-v2-stat-label {
+  color: #a855f7;
+}
+
+/* -----------------------------------------------------------------------
+   V2 GOAL SECTION - Daily goal with orange bar
+   ----------------------------------------------------------------------- */
+.lpa-v2-goal-section {
+  padding: 0;
+}
+
+.lpa-v2-goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.lpa-v2-goal-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lpa-v2-goal-target {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v2-goal-bar {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.lpa-v2-goal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}
+
+.lpa-v2-goal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lpa-v2-goal-progress {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.lpa-v2-goal-progress::first-letter {
+  color: #fbbf24;
+}
+
+.lpa-v2-goal-link {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.lpa-v2-goal-link:hover {
+  color: #94a3b8;
+}
+
+/* -----------------------------------------------------------------------
+   V2 SECTION TITLE
+   ----------------------------------------------------------------------- */
+.lpa-v2-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 12px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lpa-v2-section-title::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #a855f7;
+  border-radius: 2px;
+}
+
+/* -----------------------------------------------------------------------
+   V2 SOURCES ROW - Side by side cards with actions
+   ----------------------------------------------------------------------- */
+.lpa-v2-sources-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.lpa-v2-source-card {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lpa-v2-source-card.smart-links {
+  border-top: 2px solid #818cf8;
+}
+
+.lpa-v2-source-card.bio-page {
+  border-top: 2px solid #22d3ee;
+}
+
+.lpa-v2-source-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.lpa-v2-source-icon {
+  color: #818cf8;
+}
+
+.lpa-v2-source-card.bio-page .lpa-v2-source-icon {
+  color: #22d3ee;
+}
+
+.lpa-v2-source-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v2-source-percent {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.lpa-v2-source-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.lpa-v2-btn {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: all 0.2s ease;
+  min-height: 32px;
+}
+
+.lpa-v2-btn.outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+}
+
+.lpa-v2-btn.outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.lpa-v2-btn.primary {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: white;
+}
+
+.lpa-v2-btn.primary:hover {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+}
+
+.lpa-v2-btn.secondary {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22d3ee;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+.lpa-v2-btn.secondary:hover {
+  background: rgba(34, 211, 238, 0.25);
+}
+
+/* -----------------------------------------------------------------------
+   V2 CHART CONTAINER
+   ----------------------------------------------------------------------- */
+.lpa-v2-chart-container {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.lpa-v2-chart-comparison {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lpa-v2-chart-badge {
+  font-size: 13px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.lpa-v2-chart-badge.positive {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.lpa-v2-chart-badge.negative {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.lpa-v2-chart-label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.lpa-v2-chart {
+  width: 100%;
+}
+
+/* -----------------------------------------------------------------------
+   V2 PROJECTION - With circular progress
+   ----------------------------------------------------------------------- */
+.lpa-v2-projection {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-top: 2px solid #a855f7;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.lpa-v2-projection-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a855f7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.lpa-v2-projection-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lpa-v2-projection-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.lpa-v2-projection-icon {
+  color: #64748b;
+}
+
+.lpa-v2-projection-icon.green {
+  color: #4ade80;
+}
+
+.lpa-v2-projection-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v2-projection-value.green {
+  color: #4ade80;
+}
+
+.lpa-v2-projection-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Circular Progress */
+.lpa-v2-circular-progress {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.lpa-v2-circular-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.lpa-v2-circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 3;
+}
+
+.lpa-v2-circle-fg {
+  fill: none;
+  stroke: url(#circleGradient);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke: #a855f7;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.5));
+  transition: stroke-dasharray 1s ease-out;
+}
+
+.lpa-v2-circular-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   V3 DESIGN - IPO-Ready Refinements (January 2026)
+   All cards flat, no top borders, emojis, blue/green buttons
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* -----------------------------------------------------------------------
+   V3 STREAK BADGE - Right aligned, emoji, white text
+   ----------------------------------------------------------------------- */
+.lpa-v3-streak-badge {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 8px 0;
+  margin-bottom: 12px;
+}
+
+.lpa-v3-streak-emoji {
+  font-size: 18px;
+  filter: brightness(1.1);
+}
+
+.lpa-v3-streak-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.lpa-v3-streak-percent {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4ade80;
+  margin-left: 4px;
+}
+
+/* -----------------------------------------------------------------------
+   V3 HERO CARD - Smaller, rectangular, FLAT
+   ----------------------------------------------------------------------- */
+.lpa-v3-hero-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lpa-v3-hero-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.lpa-v3-hero-amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.lpa-v3-hero-amount {
+  font-size: 52px;
+  font-weight: 900;
+  color: #22c55e;
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.3);
+  font-feature-settings: 'tnum';
+  letter-spacing: -1px;
+}
+
+.lpa-v3-pulse-indicator {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: lpa-pulse 2s ease-in-out infinite;
+}
+
+/* -----------------------------------------------------------------------
+   V3 STATS ROW
+   ----------------------------------------------------------------------- */
+.lpa-v3-stats-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 10px;
+}
+
+.lpa-v3-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.lpa-v3-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f1f5f9;
+  font-feature-settings: 'tnum';
+}
+
+.lpa-v3-stat-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lpa-v3-stat.rpm .lpa-v3-stat-label {
+  color: #94a3b8;
+}
+
+.lpa-v3-stat.clicks .lpa-v3-stat-label {
+  color: #94a3b8;
+}
+
+.lpa-v3-stat.links .lpa-v3-stat-label {
+  color: #94a3b8;
+}
+
+/* -----------------------------------------------------------------------
+   V3 GOAL SECTION
+   ----------------------------------------------------------------------- */
+.lpa-v3-goal-section {
+  padding: 0;
+}
+
+.lpa-v3-goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.lpa-v3-goal-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.lpa-v3-goal-target {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v3-goal-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.lpa-v3-goal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+.lpa-v3-goal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lpa-v3-goal-progress {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.lpa-v3-goal-link {
+  font-size: 10px;
+  color: #64748b;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* -----------------------------------------------------------------------
+   V3 SECTION TITLE
+   ----------------------------------------------------------------------- */
+.lpa-v3-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 10px 0 8px;
+}
+
+/* -----------------------------------------------------------------------
+   V3 SOURCES ROW - Flat, emojis, progress bars, blue/green buttons
+   ----------------------------------------------------------------------- */
+.lpa-v3-sources-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.lpa-v3-source-card {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.lpa-v3-source-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.lpa-v3-source-emoji {
+  font-size: 16px;
+}
+
+.lpa-v3-source-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lpa-v3-source-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v3-source-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 2px 0;
+}
+
+.lpa-v3-source-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.lpa-v3-source-fill.smart {
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+}
+
+.lpa-v3-source-fill.bio {
+  background: linear-gradient(90deg, #22d3ee, #67e8f9);
+}
+
+.lpa-v3-source-percent {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.lpa-v3-source-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* Blue filled button - Ver Enlaces, Editar BioPage */
+.lpa-v3-btn-blue {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #1e3a5f;
+  background: linear-gradient(135deg, #1e3a5f, #0f2744);
+  color: #ffffff;
+  cursor: pointer;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+.lpa-v3-btn-blue:hover {
+  background: linear-gradient(135deg, #2a4a6f, #1a3454);
+}
+
+/* Green filled button - + Crear Link, Ver BioPages */
+.lpa-v3-btn-green {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #22c55e;
+  background: #22c55e;
+  color: #ffffff;
+  cursor: pointer;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+.lpa-v3-btn-green:hover {
+  background: #16a34a;
+}
+
+/* -----------------------------------------------------------------------
+   V3 CHART SECTION - No container card, fluid, centered comparison
+   ----------------------------------------------------------------------- */
+.lpa-v3-chart-section {
+  margin-bottom: 16px;
+  padding: 12px 0;
+}
+
+.lpa-v3-chart-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lpa-v3-chart-percent {
+  font-size: 15px;
+  font-weight: 800;
+  color: #4ade80;
+}
+
+.lpa-v3-chart-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.lpa-v3-chart {
+  width: 100%;
+  height: 120px;
+  padding: 8px 0;
+}
+
+.lpa-v3-chart .recharts-wrapper {
+  margin: 0 auto;
+}
+
+/* -----------------------------------------------------------------------
+   V3 PROJECTION - Arrow up for RPM, eye left of number
+   ----------------------------------------------------------------------- */
+.lpa-v3-projection {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.lpa-v3-projection-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.lpa-v3-projection-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lpa-v3-projection-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.lpa-v3-projection-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lpa-v3-projection-arrow {
+  font-size: 20px;
+  font-weight: 900;
+  color: #4ade80;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.3),
+    1px 1px 0 rgba(34, 197, 94, 0.5);
+  transform: perspective(100px) rotateY(-10deg);
+  display: inline-block;
+}
+
+.lpa-v3-projection-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.lpa-v3-projection-value.green {
+  color: #4ade80;
+}
+
+.lpa-v3-projection-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.lpa-v3-projection-views {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lpa-v3-projection-eye {
+  font-size: 14px;
+}
+
+/* Circular Progress */
+.lpa-v3-circular-progress {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.lpa-v3-circular-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.lpa-v3-circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 3;
+}
+
+.lpa-v3-circle-fg {
+  fill: none;
+  stroke: #a855f7;
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.4));
+  transition: stroke-dasharray 1s ease-out;
+}
+
+.lpa-v3-circular-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   V4 DESIGN - EXACT 1:1 MOCKUP COPY - NYSE IPO LAUNCH
+   Colors, sizes, spacing exactly matching the design mockup
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* -----------------------------------------------------------------------
+   V4 STREAK BADGE - Right aligned, orange Racha + white días + green %
+   ----------------------------------------------------------------------- */
+.lpa-v4-streak-badge {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 4px 10px;
+  margin: 0 0 2px auto;
+  width: fit-content;
+  position: relative;
+
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%),
+    linear-gradient(135deg, rgba(251, 146, 60, 0.06) 0%, transparent 60%),
+    rgba(15, 23, 42, 0.30);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 8px;
+
+  box-shadow:
+    0 16px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(32px) saturate(1.7) brightness(1.03);
+  -webkit-backdrop-filter: blur(32px) saturate(1.7) brightness(1.03);
+}
+
+.lpa-v4-streak-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(251, 146, 60, 0.25) 0%,
+    rgba(255, 255, 255, 0.12) 40%,
+    rgba(255, 255, 255, 0.06) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.lpa-v4-streak-emoji {
+  font-size: 13px;
+}
+
+.lpa-v4-streak-racha {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(251, 146, 60, 0.95);
+}
+
+.lpa-v4-streak-days {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.lpa-v4-streak-percent {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4ade80;
+  margin-left: 1px;
+}
+
+.lpa-v4-streak-chevron {
+  font-size: 14px;
+  font-weight: 300;
+  color: #4ade80;
+  margin-left: 2px;
+  filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.25));
+}
+
+/* -----------------------------------------------------------------------
+   V4 HERO CARD - Green top glow, giant amount
+   ----------------------------------------------------------------------- */
+.lpa-v4-hero-card {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.02) 100%),
+    linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, transparent 60%),
+    rgba(15, 23, 42, 0.35);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 14px;
+  padding: 8px 14px;
+  margin-bottom: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(74, 222, 128, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(40px) saturate(1.8) brightness(1.05);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.05);
+}
+
+.lpa-v4-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(74, 222, 128, 0.5) 0%, 
+    rgba(74, 222, 128, 0.2) 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.lpa-v4-hero-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(241, 245, 249, 0.90);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+}
+
+.lpa-v4-hero-label::before,
+.lpa-v4-hero-label::after {
+  content: "";
+  height: 1.5px;
+  width: 70px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%);
+}
+
+.lpa-v4-hero-amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lpa-v4-hero-amount {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+  background: linear-gradient(135deg, #86efac 0%, #4ade80 40%, #22c55e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: 
+    drop-shadow(0 2px 8px rgba(74, 222, 128, 0.4))
+    brightness(1.1);
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.lpa-v4-pulse-dot {
+  width: 5px;
+  height: 5px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: lpa-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
+  margin-top: 8px;
+}
+
+/* -----------------------------------------------------------------------
+   V4 STATS ROW - Yellow RPM, Cyan CLICKS, Purple LINKS
+   ----------------------------------------------------------------------- */
+.lpa-v4-stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+}
+
+.lpa-v4-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.lpa-v4-stat:not(:first-child) {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lpa-v4-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+  color: #ffffff;
+}
+
+.lpa-v4-stat-label {
+  font-size: 7px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.lpa-v4-stat-label.yellow {
+  color: #fbbf24;
+  /* Yellow per mockup */
+}
+
+.lpa-v4-stat-label.cyan {
+  color: #22d3ee;
+  /* Cyan per mockup */
+}
+
+.lpa-v4-stat-label.purple {
+  color: #a855f7;
+  /* Purple per mockup */
+}
+
+/* -----------------------------------------------------------------------
+   V4 GOAL SECTION - Orange/yellow gradient bar
+   ----------------------------------------------------------------------- */
+.lpa-v4-goal-section {
+  padding: 0;
+}
+
+.lpa-v4-goal-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 4px;
+  justify-content: center;
+  position: relative;
+}
+
+.lpa-v4-goal-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 237, 213, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 6px;
+}
+
+.lpa-v4-goal-divider {
+  width: 50px;
+  height: 1.5px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%);
+  margin: 0 6px;
+}
+
+.lpa-v4-goal-target {
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 6px;
+  color: rgba(255, 255, 255, 0.90);
+  color: #ffffff;
+}
+
+.lpa-v4-goal-bar {
+  height: 8px;
+  max-width: 70%;
+  margin: 0 auto 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.lpa-v4-goal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.lpa-v4-goal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.lpa-v4-goal-progress {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(251, 191, 36, 0.85);
+  width: 100%;
+  text-align: center;
+}
+
+.lpa-v4-goal-link {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  transition: opacity 0.2s ease;
+}
+
+.lpa-v4-goal-link:hover {
+  opacity: 0.8;
+}
+
+/* -----------------------------------------------------------------------
+   V4 SECTION LABEL
+   ----------------------------------------------------------------------- */
+.lpa-v4-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(241, 245, 249, 0.90);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+  margin: 6px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+}
+
+.lpa-v4-section-label::before,
+.lpa-v4-section-label::after {
+  content: "";
+  height: 1.5px;
+  width: 70px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%);
+}
+
+/* -----------------------------------------------------------------------
+   V4 SOURCES ROW - Cards with green outline buttons
+   ----------------------------------------------------------------------- */
+.lpa-v4-sources-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.lpa-v4-source-card {
+  flex: 1;
+  max-width: 165px;
+  min-width: 158px;
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%),
+    rgba(15, 23, 42, 0.3);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 10px;
+  padding: 9px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+  box-shadow:
+    0 16px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(30px) saturate(1.6) brightness(1.02);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6) brightness(1.02);
+}
+
+.lpa-v4-source-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.3) 0%, 
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.lpa-v4-source-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 0;
+  padding-bottom: 1px;
+}
+
+.lpa-v4-source-emoji {
+  font-size: 16px;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+}
+
+/* Divider line below header - almost underline */
+.lpa-v4-source-divider {
+  width: 100%;
+  height: 1.5px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%);
+  margin: 1px 0 3px;
+  position: relative;
+}
+
+.lpa-v4-source-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lpa-v4-source-amount {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+  color: #ffffff;
+}
+
+.lpa-v4-source-percent {
+  font-size: 10px;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.lpa-v4-source-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+/* Progress bar for source cards */
+.lpa-v4-source-bar {
+  height: 5px;
+  background: rgba(100, 116, 139, 0.20);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 5px 0 7px;
+}
+
+.lpa-v4-source-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.lpa-v4-source-bar-fill.smart {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+}
+
+.lpa-v4-source-bar-fill.bio {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.22);
+}
+
+/* Ver Enlaces - ULTRA COMPACT per mockup */
+.lpa-v4-btn-blue {
+  flex: 1;
+  padding: 5px 8px !important;
+  min-height: 26px;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(96, 165, 250, 0.30) !important;
+  background: rgba(59, 130, 246, 0.25) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+  white-space: nowrap !important;
+}
+
+.lpa-v4-btn-blue:hover {
+  filter: brightness(1.06);
+}
+
+/* + Crear Link - ULTRA COMPACT per mockup */
+.lpa-v4-btn-green {
+  flex: 1;
+  padding: 5px 8px !important;
+  min-height: 26px;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(74, 222, 128, 0.25) !important;
+  background: rgba(34, 197, 94, 0.20) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+  white-space: nowrap !important;
+}
+
+.lpa-v4-btn-green:hover {
+  filter: brightness(1.06);
+}
+
+/* Editar BioPage - ULTRA COMPACT per mockup */
+.lpa-v4-btn-gray {
+  flex: 1;
+  padding: 5px 8px !important;
+  min-height: 26px;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(148, 163, 184, 0.20) !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+  white-space: nowrap !important;
+}
+
+.lpa-v4-btn-gray:hover {
+  background: rgba(148, 163, 184, 0.14) !important;
+}
+
+/* Ver BioPages - ULTRA COMPACT per mockup */
+.lpa-v4-btn-gray-green {
+  flex: 1;
+  padding: 5px 8px !important;
+  min-height: 26px;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(74, 222, 128, 0.20) !important;
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+  white-space: nowrap !important;
+}
+
+.lpa-v4-btn-gray-green:hover {
+  background: rgba(34, 197, 94, 0.16) !important;
+}
+
+/* Legacy green outline button */
+.lpa-v4-btn-outline {
+  flex: 1;
+  padding: 5px 6px;
+  font-size: 8px;
+  font-weight: 700;
+  border-radius: 4px;
+  border: 1px solid #22c55e;
+  background: transparent;
+  color: #22c55e;
+  cursor: pointer;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+}
+
+.lpa-v4-btn-outline:hover {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+/* -----------------------------------------------------------------------
+   V4 CHART SECTION
+   ----------------------------------------------------------------------- */
+.lpa-v4-chart-section {
+  margin-bottom: 10px;
+}
+
+.lpa-v4-chart {
+  position: relative;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+  margin-top: 6px;
+}
+
+.lpa-v4-chart::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.15), transparent);
+  pointer-events: none;
+}
+
+.lpa-v4-chart-comparison {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 5px;
+  margin-bottom: 4px;
+  margin-left: 2px;
+}
+
+.lpa-v4-chart-percent {
+  font-size: 20px;
+  font-weight: 800;
+  color: #4ade80;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 10px rgba(74, 222, 128, 0.30);
+}
+
+.lpa-v4-chart-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.80);
+}
+
+/* -----------------------------------------------------------------------
+   V4 PROJECTION - Purple header
+   ----------------------------------------------------------------------- */
+.lpa-v4-projection {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%),
+    linear-gradient(135deg, rgba(168, 85, 247, 0.03) 0%, transparent 60%),
+    rgba(15, 23, 42, 0.35);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 14px;
+  padding: 10px 16px 14px;
+  margin-top: 8px;
+  position: relative;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    0 0 50px rgba(168, 85, 247, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(35px) saturate(1.7) brightness(1.03);
+  -webkit-backdrop-filter: blur(35px) saturate(1.7) brightness(1.03);
+}
+
+.lpa-v4-projection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(168, 85, 247, 0.3) 0%,
+    rgba(255, 255, 255, 0.15) 30%, 
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.lpa-v4-projection-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(241, 245, 249, 0.95);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-align: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  position: relative;
+}
+
+.lpa-v4-projection-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 1.5px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%);
+}
+
+.lpa-v4-projection-amount {
+  color: #fbbf24;
+  font-weight: 800;
+}
+
+.lpa-v4-projection-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.lpa-v4-projection-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1;
+  position: relative;
+}
+
+/* Separator only between first two stats (RPM and Visitas), not before circle */
+.lpa-v4-projection-stat:first-child::after {
+  content: '';
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 70%;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.1) 30%, 
+    rgba(255, 255, 255, 0.1) 70%, 
+    transparent 100%);
+}
+
+.lpa-v4-projection-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lpa-v4-projection-arrow {
+  font-size: 16px;
+  font-weight: 900;
+  color: #4ade80;
+  filter: drop-shadow(0 2px 4px rgba(74, 222, 128, 0.3));
+}
+
+.lpa-v4-projection-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.lpa-v4-projection-value.green {
+  color: #4ade80;
+}
+
+.lpa-v4-projection-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(74, 222, 128, 0.90);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lpa-v4-projection-views {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lpa-v4-projection-eye {
+  font-size: 14px;
+}
+
+.lpa-v4-circular-progress {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.lpa-v4-circular-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.lpa-v4-circle-bg {
+  fill: none;
+  stroke: rgba(168, 85, 247, 0.20);
+  stroke-width: 1.8;
+}
+
+.lpa-v4-circle-fg {
+  fill: none;
+  stroke: url(#circleGradientV4);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.5));
+}
+
+.lpa-v4-circular-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
 }
