@@ -670,15 +670,27 @@ export function AnalyticsPage() {
                 </div>
 
                 <div className="lpa-v4-chart">
-                  <ResponsiveContainer width="100%" height={80}>
-                    <AreaChart data={timeseries} margin={{ top: 10, right: 18, left: 10, bottom: 10 }}>
+                  <ResponsiveContainer width="100%" height={110}>
+                    <AreaChart data={timeseries} margin={{ top: 8, right: 16, left: 8, bottom: 16 }}>
                       <defs>
                         <linearGradient id="gRevV4" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#4ade80" stopOpacity={0.35} />
+                          <stop offset="0%" stopColor="#4ade80" stopOpacity={0.6} />
+                          <stop offset="30%" stopColor="#4ade80" stopOpacity={0.35} />
+                          <stop offset="60%" stopColor="#4ade80" stopOpacity={0.15} />
                           <stop offset="100%" stopColor="#4ade80" stopOpacity={0} />
                         </linearGradient>
+                        {/* ClipPath para recortar la línea vertical exactamente en el XAxis (baseline) */}
+                        {/* ResponsiveContainer height: 110px, margin top: 8px, margin bottom: 16px */}
+                        {/* Área de dibujo (plot area): 110 - 8 - 16 = 86px */}
+                        {/* El XAxis está en y=86 (parte inferior del área de dibujo) */}
+                        {/* El clipPath recorta exactamente hasta y=86 (borde superior del XAxis) */}
+                        {/* IMPORTANTE: Usar clipPathUnits="userSpaceOnUse" para coordenadas absolutas */}
+                        <clipPath id="chartAreaClip" clipPathUnits="userSpaceOnUse">
+                          <rect x="-1000" y="0" width="2000" height="86" />
+                        </clipPath>
+                        {/* Filtro optimizado para nitidez 4K - blur controlado para máxima definición */}
                         <filter id="revGlowV4" x="-50%" y="-50%" width="200%" height="200%">
-                          <feGaussianBlur stdDeviation="2.2" result="coloredBlur" />
+                          <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
                           <feMerge>
                             <feMergeNode in="coloredBlur" />
                             <feMergeNode in="SourceGraphic" />
@@ -689,42 +701,74 @@ export function AnalyticsPage() {
                         type="monotone"
                         dataKey="earnings"
                         stroke="#4ade80"
-                        strokeWidth={2.4}
+                        strokeWidth={3.5}
                         fill="url(#gRevV4)"
                         filter="url(#revGlowV4)"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         dot={(props: any) => {
-                          const { cx, cy, index } = props || {};
+                          const { cx, cy, index, payload } = props || {};
                           const lastIndex = timeseries.length - 1;
                           if (index !== lastIndex || cx == null || cy == null) return null;
+                          // DIAGNÓSTICO: La línea vertical se dibuja aquí y debe terminar EXACTAMENTE en el XAxis
+                          // ResponsiveContainer height: 110px
+                          // AreaChart margin: top: 8, bottom: 16
+                          // Área del gráfico (plot area): 110 - 8 - 16 = 86px
+                          // En Recharts, el sistema de coordenadas tiene (0,0) en la esquina superior izquierda del plot area
+                          // El XAxis axisLine está en y=86 (parte inferior del plot area)
+                          // El strokeWidth del XAxis es 2px, así que el borde superior está en y=86 - 1 = 85
+                          // Para que la línea termine exactamente en el XAxis sin atravesarlo, usamos y2=85 (borde superior del XAxis)
+                          const chartAreaHeight = 86; // Altura exacta del plot area
+                          const xAxisStrokeWidth = 2; // strokeWidth del XAxis
+                          // El XAxis está centrado en y=86, así que el borde superior está en y=86 - 1 = 85
+                          // El clipPath recorta en y=86, así que la línea debe terminar en y=85 (justo antes del XAxis)
+                          // Usamos y2=85 para que termine exactamente en el borde superior del XAxis
+                          const xAxisTopY = chartAreaHeight - (xAxisStrokeWidth / 2); // Borde superior del XAxis = 85
+                          // La línea termina exactamente en el borde superior del XAxis, el clipPath evita que se pase
+                          // El radio del círculo visible más exterior (con stroke) es 4.5 + 1 (stroke/2) = 5.5
+                          const dotOuterRadius = 5.5;
+                          // La línea debe empezar desde el borde inferior del punto, no desde el centro
+                          const lineStartY = cy + dotOuterRadius;
                           return (
                             <g>
-                              {/* vertical guide like mock (clipped by chart) */}
-                              <line
-                                x1={cx}
-                                y1={cy}
-                                x2={cx}
-                                y2={9999}
-                                stroke="rgba(74, 222, 128, 0.45)"
-                                strokeWidth={1}
-                              />
-                              {/* glow rings */}
-                              <circle cx={cx} cy={cy} r={10} fill="rgba(74, 222, 128, 0.10)" />
-                              <circle cx={cx} cy={cy} r={6} fill="rgba(74, 222, 128, 0.22)" />
-                              <circle cx={cx} cy={cy} r={3.5} fill="#bbf7d0" stroke="#4ade80" strokeWidth={1} />
+                              {/* Layer A: Línea vertical (stem) - CLIPPED para terminar exactamente en el XAxis */}
+                              {/* Empieza desde el borde inferior del punto (cy + dotOuterRadius) */}
+                              <g clipPath="url(#chartAreaClip)">
+                                <line
+                                  x1={cx}
+                                  y1={lineStartY}
+                                  x2={cx}
+                                  y2={chartAreaHeight}
+                                  stroke="rgba(74, 222, 128, 0.6)"
+                                  strokeWidth={1.5}
+                                  strokeLinecap="butt"
+                                />
+                              </g>
+                              {/* Layer B: Dot y glow rings - SIN clip para mantener glow completo */}
+                              <circle cx={cx} cy={cy} r={14} fill="rgba(74, 222, 128, 0.12)" />
+                              <circle cx={cx} cy={cy} r={10} fill="rgba(74, 222, 128, 0.25)" />
+                              <circle cx={cx} cy={cy} r={6} fill="rgba(74, 222, 128, 0.4)" />
+                              <circle cx={cx} cy={cy} r={4.5} fill="#86efac" stroke="#4ade80" strokeWidth={2} />
+                              <circle cx={cx} cy={cy} r={2.5} fill="#ffffff" />
                             </g>
                           );
                         }}
                       />
                       <XAxis
                         dataKey="date"
-                        tick={{ fill: 'rgba(148, 163, 184, 0.85)', fontSize: 9, fontWeight: 600 }}
+                        tick={{ fill: 'rgba(255, 255, 255, 0.75)', fontSize: 10, fontWeight: 600 }}
                         tickLine={false}
-                        axisLine={false}
+                        axisLine={{
+                          stroke: 'rgba(74, 222, 128, 0.5)',
+                          strokeWidth: 2,
+                          strokeDasharray: '0'
+                        }}
                         interval={range === '7d' ? 0 : 'preserveStartEnd'}
-                        tickMargin={8}
+                        tickMargin={4}
+                        domain={['dataMin - 0.5', 'dataMax + 0.5']}
                       />
                       <YAxis hide />
-                      <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.10)" vertical={false} />
+                      <CartesianGrid strokeDasharray="2 4" stroke="rgba(148, 163, 184, 0.06)" vertical={false} strokeWidth={0.5} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>

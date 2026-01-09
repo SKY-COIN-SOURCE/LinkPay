@@ -15,6 +15,7 @@ import {
   X,
   ChevronRight,
   Home,
+  User,
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
@@ -62,15 +63,15 @@ export function AppLayout() {
     { icon: Settings, label: 'Ajustes', path: '/app/settings' },
   ];
 
-  // MOBILE NAV - 5 ITEMS: Bio, Links, Home, Wallet, Analytics
+  // MOBILE NAV - 5 ITEMS: Bio, Links, Inicio, Billetera, Análisis
   const mobileNavLeft = [
-    { icon: Smartphone, label: 'Bio', path: '/app/bio-editor' },
+    { icon: User, label: 'Bio', path: '/app/bio-editor' },
     { icon: Link2, label: 'Links', path: '/app/links' },
   ];
 
   const mobileNavRight = [
-    { icon: Wallet, label: 'Wallet', path: '/app/payouts' },
-    { icon: BarChart2, label: 'Analytics', path: '/app/analytics' },
+    { icon: Wallet, label: 'Billetera', path: '/app/payouts' },
+    { icon: BarChart2, label: 'Análisis', path: '/app/analytics' },
   ];
 
   const handleMoreNavClick = (path: string) => {
@@ -208,7 +209,7 @@ export function AppLayout() {
               <div className="lp-mobile-center-orb">
                 <Home className="lp-mobile-center-icon" size={26} strokeWidth={2.2} />
               </div>
-              <span className="lp-mobile-label">Home</span>
+              <span className="lp-mobile-label">Inicio</span>
             </NavLink>
 
             {/* RIGHT SIDE: Referidos, Wallet */}
@@ -375,19 +376,19 @@ const layoutStyles = `
   }
 
       .lp-sidebar-title {
-        font - size: 18px;
+        font-size: 18px;
       font-weight: 800;
       letter-spacing: -0.04em;
       color: #f9fafb;
   }
 
       .lp-sidebar-sub {
-        font - size: 11px;
+        font-size: 11px;
       color: #9ca3af;
   }
 
       .lp-sidebar-nav {
-        margin - top: 4px;
+        margin-top: 4px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -397,7 +398,7 @@ const layoutStyles = `
   }
 
       .lp-nav-section-label {
-        font - size: 11px;
+        font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: #6b7280;
@@ -483,11 +484,11 @@ const layoutStyles = `
   }
 
       .lp-nav-label {
-        white - space: nowrap;
+        white-space: nowrap;
   }
 
       .lp-sidebar-footer {
-        border - top: 1px solid rgba(30, 64, 175, 0.7);
+        border-top: 1px solid rgba(30, 64, 175, 0.7);
       padding-top: 12px;
       margin-top: 12px;
       display: flex;
@@ -515,7 +516,7 @@ const layoutStyles = `
   }
 
       .lp-lang-btn:hover {
-        border - color: rgba(148, 163, 184, 0.8);
+        border-color: rgba(148, 163, 184, 0.8);
       color: #e5e7eb;
   }
 
@@ -588,7 +589,7 @@ const layoutStyles = `
       -webkit-overflow-scrolling: touch;
   }
 
-      /* ===== MOBILE NAV - SPLIT BACKGROUND (gap for Home) ===== */
+      /* ===== MOBILE NAV - MOCK 1:1 (simple icons + green active) ===== */
       .lp-mobile-nav {
         position: fixed !important;
       left: 0 !important;
@@ -601,44 +602,33 @@ const layoutStyles = `
       height: auto;
       max-height: none;
       background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-top: none;
   }
 
-      /* BACKGROUND - starts lower so Home button floats above */
+      /* Remove legacy split background */
       .lp-mobile-nav::before {
-        content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      /* Start 20px from top - aligns with other nav items, Home floats above */
-      top: 20px;
-      bottom: -100px;
-      background: rgba(2, 6, 23, 0.9);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(99, 102, 241, 0.15);
-      z-index: -1;
-      pointer-events: none;
+        display: none;
   }
 
-      /* No ::after needed - single background */
       .lp-mobile-nav::after {
         display: none;
   }
 
       .lp-mobile-nav-inner {
         display: flex;
-      align-items: flex-end;
-      justify-content: space-evenly;
-      background: transparent;
-      padding-top: 0;
-      padding-left: 8px;
-      padding-right: 8px;
-      padding-bottom: 10px;
-      /* No border - backgrounds have it */
-      border-top: none;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(2, 6, 23, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 0 18px calc(env(safe-area-inset-bottom, 14px) + 10px) 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: none;
       margin: 0;
-      min-height: 60px;
+      min-height: auto;
+      height: fit-content;
   }
 
       .lp-mobile-item {
@@ -648,13 +638,13 @@ const layoutStyles = `
       justify-content: center;
       gap: 4px;
       text-decoration: none;
-      color: #64748b;
-      font-size: 10px;
+      color: rgba(148, 163, 184, 0.85);
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.02em;
       flex: 1;
       min-height: 48px;
-      padding: 4px 2px;
+      padding: 0 2px 6px 2px;
       border: none;
       background: transparent;
       cursor: pointer;
@@ -664,17 +654,17 @@ const layoutStyles = `
   }
 
       .lp-mobile-item:active {
-        transform: scale(0.95);
+        transform: scale(0.98);
   }
 
       .lp-mobile-item.active {
-        color: #f1f5f9;
+        color: #4ade80;
   }
 
       .lp-mobile-icon-pill {
-        width: 44px;
-      height: 44px;
-      border-radius: 16px;
+        width: 28px;
+      height: 28px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -683,72 +673,74 @@ const layoutStyles = `
   }
 
       .lp-mobile-item.active .lp-mobile-icon-pill {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-      box-shadow:
-      0 6px 20px rgba(99, 102, 241, 0.45),
-      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-      transform: translateY(-3px) scale(1.02);
+        background: transparent;
+      box-shadow: none;
+      transform: none;
   }
 
       .lp-mobile-icon {
-        color: #64748b;
+        color: rgba(148, 163, 184, 0.85);
       transition: all 0.25s ease;
   }
 
       .lp-mobile-item.active .lp-mobile-icon {
-        color: #ffffff;
+        color: #4ade80;
+      filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.35));
   }
 
       .lp-mobile-label {
-        white - space: nowrap;
+        white-space: nowrap;
       transition: all 0.2s ease;
+      color: rgba(148, 163, 184, 0.85);
   }
 
       .lp-mobile-item.active .lp-mobile-label {
-        font - weight: 700;
+        font-weight: 700;
+      color: #4ade80;
   }
 
-      /* ===== CENTER DASHBOARD ORB - HERO BUTTON ===== */
+      /* ===== CENTER (Inicio) - same style, just a touch bigger icon ===== */
       .lp-mobile-center {
         position: relative;
-      z-index: 10;
-      flex: 1.2;
+      flex: 1;
   }
 
       .lp-mobile-center-orb {
-        width: 52px;
-      height: 52px;
-      border-radius: 18px;
+        width: 28px;
+      height: 28px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-      box-shadow:
-      0 4px 20px rgba(99, 102, 241, 0.4),
-      0 0 0 2px rgba(255, 255, 255, 0.1) inset;
-      transform: translateY(-4px);
+      background: transparent;
+      box-shadow: none;
+      transform: none;
       transition: all 0.2s ease;
   }
 
       .lp-mobile-center:active .lp-mobile-center-orb {
-        transform: translateY(-2px) scale(0.95);
+        transform: scale(0.98);
   }
 
       .lp-mobile-center.active .lp-mobile-center-orb {
-        background: linear-gradient(135deg, #22c55e 0%, #10b981 50%, #059669 100%);
-      box-shadow:
-      0 6px 24px rgba(34, 197, 94, 0.5),
-      0 0 0 2px rgba(255, 255, 255, 0.15) inset;
-      transform: translateY(-6px);
+        background: transparent;
+      box-shadow: none;
+      transform: none;
   }
 
       .lp-mobile-center-icon {
-        color: #ffffff;
+        color: rgba(148, 163, 184, 0.85);
+      transition: all 0.25s ease;
+  }
+
+      .lp-mobile-center.active .lp-mobile-center-icon {
+        color: #4ade80;
+      filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.4));
   }
 
       .lp-mobile-center .lp-mobile-label {
-        font - weight: 700;
-      color: #e5e7eb;
+        font-weight: 700;
+      color: rgba(148, 163, 184, 0.85);
   }
 
       .lp-mobile-center.active .lp-mobile-label {
@@ -808,7 +800,7 @@ const layoutStyles = `
   }
 
       .lp-more-title {
-        font - size: 18px;
+        font-size: 18px;
       font-weight: 700;
       color: #f1f5f9;
       letter-spacing: -0.02em;
